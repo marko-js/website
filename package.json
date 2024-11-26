@@ -1,0 +1,22 @@
+{
+  "name": "website",
+  "description": "",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@marko/run": "^0.5.2",
+    "@marko/run-adapter-static": "^0.2.0",
+    "@marko/translator-tags": "^0.4.1",
+    "@types/node": "^22.10.0",
+    "gh-pages": "^6.2.0",
+    "marked": "^15.0.2",
+    "marko": "^5.36.1"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "marko-run",
+    "preview": "marko-run preview",
+    "build": "marko-run build",
+    "deploy": "BASE_URL=/marko-js/upgrade-dashboard/ marko-run build && gh-pages --nojekyll -d dist/public"
+  }
+}

@@ -1,0 +1,52 @@
+<h1>
+  <span class="red-light">
+    A declarative${" "}
+  </span>
+  <span class="yellow-light">
+    HTML-based${" "}
+  </span>
+  <span class="yellow-dark">
+    language${" "}
+  </span>
+   that makes
+  <span class="blue-light">
+    building${" "}
+  </span>
+  <span class="blue-dark">
+    web apps${" "}
+  </span>
+  <span class="green-light">
+    fun
+  </span>
+</h1>
+
+<div style="background:var(--color-red-subtle)">
+  Hello world
+</div>
+
+<style>
+  h1 span {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  h1 span.red-light {
+    background-image: var(--gradient-red-light);
+  }
+  h1 span.yellow-light {
+    background-image: var(--gradient-yellow-light);
+  }
+  h1 span.yellow-dark {
+    background-image: var(--gradient-yellow-dark);
+  }
+  h1 span.blue-light {
+    background-image: var(--gradient-blue-light);
+  }
+  h1 span.blue-dark {
+    background-image: var(--gradient-blue-dark);
+  }
+  h1 span.green-light {
+    background-image: var(--gradient-green-light);
+  }
+</style>

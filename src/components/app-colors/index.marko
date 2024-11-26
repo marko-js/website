@@ -1,0 +1,154 @@
+<style>
+  :root {
+    --color-black: #202124;
+    --color-white: #ffffff;
+    --color-red-dark: oklch(0.52354 0.250698 358.815);
+    --color-red-light: oklch(0.736305 0.237623 20.415);
+    --color-yellow-dark: oklch(0.672384 0.240601 57.12);
+    --color-yellow-light: oklch(0.88201 0.204727 92.355);
+    --color-green-dark: oklch(0.643244 0.1995 162.855);
+    --color-green-light: oklch(0.850336 0.204173 140.15);
+    --color-blue-dark: oklch(0.536703 0.204912 242.05);
+    --color-blue-light: oklch(0.779357 0.163263 217.3);
+    --color-purple-dark: oklch(0.463457 0.15346 294.701);
+    --color-purple-light: oklch(0.756829 0.126986 332.83);
+
+    --gradient-red-dark: linear-gradient(
+      to bottom right,
+      var(--color-red-dark),
+      color-mix(in oklch, var(--color-red-dark) 75%, var(--color-red-light))
+    );
+    --gradient-red-light: linear-gradient(
+      to bottom right,
+      var(--color-red-light),
+      color-mix(in oklch, var(--color-red-light) 75%, var(--color-red-dark))
+    );
+    --gradient-red: linear-gradient(
+      to bottom right,
+      var(--color-red-dark),
+      var(--color-red-light)
+    );
+    --gradient-yellow-dark: linear-gradient(
+      to bottom right,
+      var(--color-yellow-dark),
+      color-mix(
+        in oklch,
+        var(--color-yellow-dark) 75%,
+        var(--color-yellow-light)
+      )
+    );
+    --gradient-yellow-light: linear-gradient(
+      to bottom right,
+      var(--color-yellow-light),
+      color-mix(
+        in oklch,
+        var(--color-yellow-light) 75%,
+        var(--color-yellow-dark)
+      )
+    );
+    --gradient-green-dark: linear-gradient(
+      to bottom right,
+      var(--color-green-dark),
+      color-mix(in oklch, var(--color-green-dark) 75%, var(--color-green-light))
+    );
+    --gradient-green-light: linear-gradient(
+      to bottom right,
+      var(--color-green-light),
+      color-mix(in oklch, var(--color-green-light) 75%, var(--color-green-dark))
+    );
+    --gradient-blue-dark: linear-gradient(
+      to bottom right,
+      var(--color-blue-dark),
+      color-mix(in oklch, var(--color-blue-dark) 75%, var(--color-blue-light))
+    );
+    --gradient-blue-light: linear-gradient(
+      to bottom right,
+      var(--color-blue-light),
+      color-mix(in oklch, var(--color-blue-light) 75%, var(--color-blue-dark))
+    );
+    --gradient-purple-dark: linear-gradient(
+      to bottom right,
+      var(--color-purple-dark),
+      color-mix(
+        in oklch,
+        var(--color-purple-dark) 75%,
+        var(--color-purple-light)
+      )
+    );
+    --gradient-purple-light: linear-gradient(
+      to bottom right,
+      var(--color-purple-light),
+      color-mix(
+        in oklch,
+        var(--color-purple-light) 75%,
+        var(--color-purple-dark)
+      )
+    );
+  }
+
+  @media (prefers-color-scheme: light) {
+    body {
+      background: var(--color-white);
+    }
+    :root {
+      --color-red-subtle: color-mix(
+        in oklch,
+        var(--color-white) 80%,
+        var(--color-red-light)
+      );
+      --color-yellow-subtle: color-mix(
+        in oklch,
+        var(--color-white) 80%,
+        var(--color-yellow-light)
+      );
+      --color-green-subtle: color-mix(
+        in oklch,
+        var(--color-white) 80%,
+        var(--color-green-light)
+      );
+      --color-blue-subtle: color-mix(
+        in oklch,
+        var(--color-white) 80%,
+        var(--color-blue-light)
+      );
+      --color-purple-subtle: color-mix(
+        in oklch,
+        var(--color-white) 80%,
+        var(--color-purple-light)
+      );
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: var(--color-black);
+    }
+    :root {
+      --color-red-subtle: color-mix(
+        in rgba,
+        var(--color-black) 50%,
+        var(--color-red-dark)
+      );
+      --color-yellow-subtle: color-mix(
+        in rgba,
+        var(--color-black) 50%,
+        var(--color-yellow-dark)
+      );
+      --color-green-subtle: color-mix(
+        in rgba,
+        var(--color-black) 50%,
+        var(--color-green-dark)
+      );
+      --color-blue-subtle: color-mix(
+        in rgba,
+        var(--color-black) 50%,
+        var(--color-blue-dark)
+      );
+      --color-purple-subtle: color-mix(
+        in rgba,
+        var(--color-black) 50%,
+        var(--color-purple-dark)
+      );
+    }
+  }
+</style>

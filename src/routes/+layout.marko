@@ -1,0 +1,18 @@
+import pkg from "../../package.json";
+html lang="en"
+  head
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    meta name="description" content=pkg.description
+    title -- ${$global.meta.pageTitle || "Marko"}
+    link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"
+    link [
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css"
+    ]
+
+  body
+    app-header
+    app-colors
+    main
+      ${input.renderBody}
