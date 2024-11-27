@@ -1,31 +1,36 @@
 import fs from "fs/promises";
 import path from "path";
 import { marked } from "marked";
+import { type PluginOption } from "vite";
 
-export default function markodownPlugin() {
+export default function markodownPlugin(): PluginOption {
+  const virtualModuleId = "\0markodown:";
   return {
     name: "markodown",
+    enforce: "pre",
     resolveId(source, importer) {
-      if (source.replace(/\?.*$/, "").endsWith(".md.marko")) {
-        return path.resolve(path.dirname(importer), source);
+      if (/\.md(?:\?|$)/.test(source)) {
+        return (
+          virtualModuleId +
+          path.resolve(
+            path.dirname(importer ?? ""),
+            source.replace(".md", ".marko"),
+          )
+        );
       }
     },
     async load(id) {
-      console.log("LOAD", id);
-      const bareId = id.replace(/\?.*$/, "");
-      if (bareId.endsWith(".md.marko")) {
-        const actualFile = bareId.slice(0, -6);
-        console.log({ actualFile });
-        const src = await fs.readFile(actualFile);
-        return markodown(src);
-
-        return `<h1>Markodown</h1>`;
+      if (id.startsWith(virtualModuleId)) {
+        const actualFile = id
+          .slice(virtualModuleId.length)
+          .replace(".marko", ".md");
+        return marked((await fs.readFile(actualFile)).toString());
       }
     },
   };
 }
 
-function markodown(source) {
+function markodown(source: Buffer) {
   const filePath = this.resourcePath;
   const markdown = source
     .replace(/\&(?!\S+;)/g, "&amp;")
@@ -34,9 +39,9 @@ function markodown(source) {
     .replace(/(?<=\]\()\.*([\w\d\-\/]+)\.md/g, (match) => {
       // Markdown documents from external sources do not have a file path
       if (filePath) {
-        const linkpath = path.resolve(path.dirname(filePath), match);
-        const linkmatch = /(\/docs\/.*)\.md/.exec(linkpath);
-        return (linkmatch && linkmatch[1] + "/") || match;
+        const linkPath = path.resolve(path.dirname(filePath), match);
+        const linkMatch = /(\/docs\/.*)\.md/.exec(linkPath);
+        return (linkMatch && linkMatch[1] + "/") || match;
       }
       return match;
     });
@@ -108,13 +113,13 @@ function markodown(source) {
     }
 
     return `<code-block lang="${lang}" lines="${lines}" code=${JSON.stringify(
-      code
+      code,
     )}/>\n`;
   };
 
   markedRenderer.image = function (href, title, text) {
     let imageCode = `<img src=${JSON.stringify(href)} alt=${JSON.stringify(
-      text || ""
+      text || "",
     )} style="max-width:100%"/>`;
     return imageCode;
   };
@@ -127,11 +132,11 @@ function markodown(source) {
     `import tocRegistry from ${JSON.stringify(
       `./${path.relative(
         path.dirname(filePath),
-        require.resolve("./toc-registry")
-      )}`
+        require.resolve("./toc-registry"),
+      )}`,
     )};\n` +
     `static tocRegistry.set(${JSON.stringify(
-      path.relative(__dirname, filePath)
+      path.relative(__dirname, filePath),
     )}, ${JSON.stringify(toc.toHTML())});\n` +
     `export const title = ${JSON.stringify(title)};\n` +
     "-----\n" +
