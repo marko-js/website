@@ -1,0 +1,73 @@
+import { createHighlighter } from "shiki";
+import { createCssVariablesTheme } from "shiki";
+export interface Input {
+  lang: string;
+  text: string;
+  concise?: string;
+}
+static const customTheme = createCssVariablesTheme({
+  name: "marko-docs-code-block",
+  variablePrefix: "--shiki-",
+});
+static const highlighter = await createHighlighter({
+  langs: ["marko", "html", "css", "js", "ts", "json"],
+  themes: [customTheme],
+});
+
+<let/mode="concise"/>
+
+<const/highlightedText=highlighter.codeToHtml(input.text, {
+  lang: input.lang,
+  theme: "marko-docs-code-block",
+})/>
+
+<const/highlightedConcise=input.concise &&
+highlighter.codeToHtml(input.concise, {
+  lang: input.lang,
+  theme: "marko-docs-code-block",
+})/>
+
+<const/code=(mode === "concise" && highlightedConcise) || highlightedText/>
+-- $!{code}
+
+
+
+<style>
+  .shiki {
+    --shiki-foreground: var(--section-color-text);
+    --shiki-background: var(--section-color-subtle);
+    --shiki-token-constant: oklch(
+      from var(--section-color) l calc(c * 0.9) calc(h + 20 * var(--hue-unit))
+    );
+    --shiki-token-string: oklch(
+      from var(--section-color) l calc(c * 1.4) calc(h + 40 * var(--hue-unit))
+    );
+    --shiki-token-comment: oklch(
+      from var(--section-color) l calc(c * 0.4) calc(h + 60 * var(--hue-unit))
+    );
+    --shiki-token-keyword: oklch(
+      from var(--section-color) l calc(c * 1.8) calc(h + 80 * var(--hue-unit))
+    );
+    --shiki-token-parameter: oklch(
+      from var(--section-color) l calc(c * 1.3) calc(h + 25 * var(--hue-unit))
+    );
+    --shiki-token-function: oklch(
+      from var(--section-color) l calc(c * 1.5) calc(h + 45 * var(--hue-unit))
+    );
+    --shiki-token-string-expression: oklch(
+      from var(--section-color) l calc(c * 1.6) calc(h + 60 * var(--hue-unit))
+    );
+    --shiki-token-punctuation: oklch(
+      from var(--section-color) l calc(c * 0.5) calc(h + 10 * var(--hue-unit))
+    );
+    --shiki-token-link: oklch(
+      from var(--section-color) l calc(c * 1.4) calc(h + 90 * var(--hue-unit))
+    );
+
+    /* for [safari](https://lorenzomigliorero.medium.com/troubleshooting-cross-browser-compatibility-with-css-relative-color-specs-f0e2b072f57e) */
+    --hue-unit: 1;
+    @supports (color: lch(from black l c calc(h - 1deg))) {
+      --hue-unit: 1deg;
+    }
+  }
+</style>

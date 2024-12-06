@@ -1,32 +1,9 @@
-<header>
-  <img class="logo" src="./logo.svg" alt="" width=287 height=158>
-  <img class="logo logo-text" src="./logo-text.svg" alt="" width=73 height=23>
-</header>
+header
+  img.logo src="./logo.svg" alt="" width=287 height=158
+  img.logo.logo-text src="./logo-text.svg" alt="" width=73 height=23
 
-<div style="display:flex">
-  <div>
-    <div style="width:10em;height:5em;background:var(--gradient-red-dark)"/>
-    <div style="width:10em;height:5em;background:var(--gradient-red-light)"/>
-  </div>
-  <div>
-    <div style="width:10em;height:5em;background:var(--gradient-yellow-dark)"/>
-    <div style="width:10em;height:5em;background:var(--gradient-yellow-light)"/>
-  </div>
-  <div>
-    <div style="width:10em;height:5em;background:var(--gradient-green-dark)"/>
-    <div style="width:10em;height:5em;background:var(--gradient-green-light)"/>
-  </div>
-  <div>
-    <div style="width:10em;height:5em;background:var(--gradient-blue-dark)"/>
-    <div style="width:10em;height:5em;background:var(--gradient-blue-light)"/>
-  </div>
-  <div>
-    <div style="width:10em;height:5em;background:var(--gradient-purple-dark)"/>
-    <div style="width:10em;height:5em;background:var(--gradient-purple-light)"/>
-  </div>
-</div>
-
-<style>
+style
+  --
   .logo {
     height: 2.5em;
     width: auto;
@@ -36,77 +13,4 @@
     position: relative;
     top: -0.1em;
   }
-  :root {
-    --color-red-dark: oklch(0.52354 0.250698 358.815);
-    --color-red-light: oklch(0.736305 0.237623 20.415);
-    --color-yellow-dark: oklch(0.672384 0.240601 57.12);
-    --color-yellow-light: oklch(0.88201 0.204727 92.355);
-    --color-green-dark: oklch(0.643244 0.1995 162.855);
-    --color-green-light: oklch(0.850336 0.204173 140.15);
-    --color-blue-dark: oklch(0.536703 0.204912 242.05);
-    --color-blue-light: oklch(0.779357 0.163263 217.3);
-    --color-purple-dark: oklch(0.463457 0.15346 294.701);
-    --color-purple-light: oklch(0.756829 0.126986 332.83);
-
-    --gradient-red-dark: linear-gradient(
-      var(--color-red-dark),
-      color-mix(in oklch, var(--color-red-dark) 75%, var(--color-red-light))
-    );
-    --gradient-red-light: linear-gradient(
-      var(--color-red-light),
-      color-mix(in oklch, var(--color-red-light) 75%, var(--color-red-dark))
-    );
-    --gradient-red: linear-gradient(
-      var(--color-red-dark),
-      var(--color-red-light)
-    );
-    --gradient-yellow-dark: linear-gradient(
-      var(--color-yellow-dark),
-      color-mix(
-        in oklch,
-        var(--color-yellow-dark) 75%,
-        var(--color-yellow-light)
-      )
-    );
-    --gradient-yellow-light: linear-gradient(
-      var(--color-yellow-light),
-      color-mix(
-        in oklch,
-        var(--color-yellow-light) 75%,
-        var(--color-yellow-dark)
-      )
-    );
-    --gradient-green-dark: linear-gradient(
-      var(--color-green-dark),
-      color-mix(in oklch, var(--color-green-dark) 75%, var(--color-green-light))
-    );
-    --gradient-green-light: linear-gradient(
-      var(--color-green-light),
-      color-mix(in oklch, var(--color-green-light) 75%, var(--color-green-dark))
-    );
-    --gradient-blue-dark: linear-gradient(
-      var(--color-blue-dark),
-      color-mix(in oklch, var(--color-blue-dark) 75%, var(--color-blue-light))
-    );
-    --gradient-blue-light: linear-gradient(
-      var(--color-blue-light),
-      color-mix(in oklch, var(--color-blue-light) 75%, var(--color-blue-dark))
-    );
-    --gradient-purple-dark: linear-gradient(
-      var(--color-purple-dark),
-      color-mix(
-        in oklch,
-        var(--color-purple-dark) 75%,
-        var(--color-purple-light)
-      )
-    );
-    --gradient-purple-light: linear-gradient(
-      var(--color-purple-light),
-      color-mix(
-        in oklch,
-        var(--color-purple-light) 75%,
-        var(--color-purple-dark)
-      )
-    );
-  }
-</style>
+  --

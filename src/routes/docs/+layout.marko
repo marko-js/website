@@ -1,0 +1,146 @@
+export interface Input {
+  renderBody: Marko.Body;
+}
+
+${input.renderBody}
+
+style
+  --
+  :root {
+    --section-color: var(--color-blue-primary);
+  }
+
+  :root,
+  h1 ~ section,
+  .markdown-alert {
+    --section-color-subtle: oklch(from var(--section-color) l c h / 0.05);
+    --section-color-text: color-mix(
+      in oklab,
+      var(--section-color) 70%,
+      var(--color-text)
+    );
+  }
+
+  body {
+    padding: 0 2rem;
+    max-width: 50rem;
+    margin: auto;
+  }
+
+  p,
+  li {
+    line-height: 1.5;
+  }
+
+  h1 ~ section:nth-of-type(4n + 1) {
+    --section-color: var(--color-red-primary);
+  }
+  h1 ~ section:nth-of-type(4n + 2) {
+    --section-color: var(--color-green-primary);
+  }
+  h1 ~ section:nth-of-type(4n + 3) {
+    --section-color: var(--color-yellow-primary);
+  }
+
+  a {
+    color: var(--section-color-text);
+  }
+
+  :not(pre) > code {
+    color: var(--section-color-text);
+    background-color: var(--section-color-subtle);
+    padding: 0.15rem 0.3rem;
+    border-radius: 0.3rem;
+    border: 1px solid oklch(from var(--section-color) l c h / 0.2);
+  }
+
+  pre {
+    background-color: var(--section-color-subtle);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid oklch(from var(--section-color) l c h / 0.5);
+  }
+
+  .marko-codespan__tag {
+    &::before {
+      content: "<";
+    }
+    &::after {
+      content: ">";
+    }
+  }
+
+  .marko-codespan__attribute {
+    &::after {
+      content: "=";
+    }
+  }
+
+  :is(h1, h2, h3, h4, h5, h6) {
+    position: relative;
+    color: var(--section-color);
+
+    & > a:last-child {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      translate: -100% -50%;
+      width: 2rem;
+      height: 2rem;
+      text-align: center;
+      line-height: 2rem;
+      font-size: large;
+      opacity: 0;
+      text-decoration: none;
+
+      @media (pointer: coarse) {
+        opacity: 0.25;
+      }
+    }
+
+    &:hover > a:last-child,
+    &:focus-within > a:last-child {
+      opacity: 0.25;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  /* Alerts */
+
+  .markdown-alert {
+    border-left: 4px solid var(--section-color);
+    background-color: var(--section-color-subtle);
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+  }
+
+  .markdown-alert-title {
+    color: var(--section-color-text);
+    display: flex;
+    gap: 0.5rem;
+
+    & svg {
+      fill: currentColor;
+    }
+  }
+
+  .markdown-alert-caution {
+    --section-color: var(--color-red-secondary);
+  }
+
+  .markdown-alert-note {
+    --section-color: var(--color-blue-secondary);
+  }
+
+  .markdown-alert-tip {
+    --section-color: var(--color-yellow-secondary);
+  }
+
+  .markdown-alert-important {
+    --section-color: var(--color-green-secondary);
+  }
+  --

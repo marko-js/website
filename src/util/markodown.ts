@@ -1,238 +1,167 @@
 import fs from "fs/promises";
 import path from "path";
-import { marked } from "marked";
+import { Marked, type MarkedExtension, type TokensList } from "marked";
+import markedAlert from "marked-alert";
+import GithubSlugger from "github-slugger";
 import { type PluginOption } from "vite";
+import * as prettier from "prettier";
+import * as markoPrettier from "prettier-plugin-marko";
+import * as compiler from "@marko/compiler";
+
+markoPrettier.setCompiler(compiler, {});
 
 export default function markodownPlugin(): PluginOption {
-  const virtualModuleId = "\0markodown:";
+  // const docFileRegex = /docs.*\.md/;
+
   return {
     name: "markodown",
     enforce: "pre",
-    resolveId(source, importer) {
-      if (/\.md(?:\?|$)/.test(source)) {
-        return (
-          virtualModuleId +
-          path.resolve(
-            path.dirname(importer ?? ""),
-            source.replace(".md", ".marko"),
-          )
-        );
-      }
-    },
-    async load(id) {
-      if (id.startsWith(virtualModuleId)) {
-        const actualFile = id
-          .slice(virtualModuleId.length)
-          .replace(".marko", ".md");
-        return marked((await fs.readFile(actualFile)).toString());
-      }
+    async buildStart() {
+      const docsPath = path.join(process.cwd(), "src", "routes", "docs");
+      const docsFiles = await fs.readdir(docsPath);
+
+      const docsPages = path.join(docsPath, "_docs-pages");
+      await fs.mkdir(docsPages, { recursive: true });
+
+      await Promise.all(
+        docsFiles.map(async (file) => {
+          if (file.endsWith(".md")) {
+            const filePath = path.join(docsPath, file);
+            const content = await fs.readFile(filePath, "utf-8");
+            const markoContent = await mdToMarko(content);
+            const markoFilePath = path.join(
+              docsPages,
+              file.replace(".md", "+page.marko"),
+            );
+            await fs.writeFile(markoFilePath, markoContent);
+          }
+        }),
+      );
     },
   };
 }
 
-function markodown(source: Buffer) {
-  const filePath = this.resourcePath;
-  const markdown = source
-    .replace(/\&(?!\S+;)/g, "&amp;")
-    .replace(/https?:\/\/markojs\.com\//g, "/")
-    .replace(/(\#\w+)\./g, "$1") // TODO: fix marko-magic to not process jump links
-    .replace(/(?<=\]\()\.*([\w\d\-\/]+)\.md/g, (match) => {
-      // Markdown documents from external sources do not have a file path
-      if (filePath) {
-        const linkPath = path.resolve(path.dirname(filePath), match);
-        const linkMatch = /(\/docs\/.*)\.md/.exec(linkPath);
-        return (linkMatch && linkMatch[1] + "/") || match;
-      }
-      return match;
-    });
-
-  var markedRenderer = new marked.Renderer();
-  var toc = TOC();
-  var anchorCache = {};
-  var title;
-
-  markedRenderer.table = function (header, body) {
-    var output = '<table class="markdown-table">';
-    if (header) {
-      output += "<thead>" + header + "</thead>";
-    }
-
-    if (body) {
-      output += "<tbody>" + body + "</tbody>";
-    }
-    output += "</table>";
-    return output;
-  };
-
-  markedRenderer.blockquote = function (quote) {
-    var match = /^<p><strong>(\w+):<\/strong>/.exec(quote);
-    var className = match && match[1].toLowerCase();
-
-    if (!className) {
-      match = /\[!([^\]]+)\]\r?\n/.exec(quote);
-      if (match) {
-        className = match[1].toLowerCase();
-        quote =
-          quote.slice(0, match.index) +
-          `<strong>${match[1]}</strong><br>` +
-          quote.slice(match.index + match[0].length);
-      }
-    }
-    return `<blockquote class="${className}">${quote}</blockquote>`;
-  };
-
-  markedRenderer.heading = function (text, level) {
-    var anchorName = getAnchorName(text, anchorCache);
-    var linkText = text
-      .replace(/\s+\([^\)]+\)/g, "")
-      .replace(/\([^\)]+\)/g, "()")
-      .replace(/<\/?code\>/g, "")
-      .replace(/&amp;lt;/g, "&lt;");
-
-    title = title || linkText;
-
-    toc.addHeading(linkText, anchorName, level);
-
-    return (
-      `<h${level} id="${anchorName}">` +
-      `<a name="${anchorName}" class="anchor" href="#${anchorName}">` +
-      `<span class="header-link"></span>` +
-      `</a>` +
-      text +
-      `</h${level}>`
-    );
-  };
-
-  markedRenderer.code = function (code, lang, escaped) {
-    var lines = "";
-    var index = lang && lang.indexOf("{");
-
-    if (index && index !== -1) {
-      lines = lang.slice(index + 1, -1);
-      lang = lang.slice(0, index);
-    }
-
-    return `<code-block lang="${lang}" lines="${lines}" code=${JSON.stringify(
-      code,
-    )}/>\n`;
-  };
-
-  markedRenderer.image = function (href, title, text) {
-    let imageCode = `<img src=${JSON.stringify(href)} alt=${JSON.stringify(
-      text || "",
-    )} style="max-width:100%"/>`;
-    return imageCode;
-  };
-
-  const markoSource = marked(markdown, {
-    renderer: markedRenderer,
-  }).replace(/\$/g, "&#36;");
-
-  return (
-    `import tocRegistry from ${JSON.stringify(
-      `./${path.relative(
-        path.dirname(filePath),
-        require.resolve("./toc-registry"),
-      )}`,
-    )};\n` +
-    `static tocRegistry.set(${JSON.stringify(
-      path.relative(__dirname, filePath),
-    )}, ${JSON.stringify(toc.toHTML())});\n` +
-    `export const title = ${JSON.stringify(title)};\n` +
-    "-----\n" +
-    markoSource +
-    "\n-----\n"
+async function mdToMarko(source: string) {
+  return new Marked().use(markedAlert(), headingSections(), markoDocs()).parse(
+    // remove zero-width spaces (recommended from marked docs)
+    source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
+    {
+      gfm: true,
+    },
   );
 }
 
-function getAnchorName(title, anchorCache) {
-  var anchorName = title
-    .replace(/<[^>]*>|&[^;]*;/g, "")
-    .replace(/[^A-Z0-9\- ]+/gi, "")
-    .trim()
-    .replace(/[ \-]+/g, "-")
-    .toLowerCase();
-  var repeat =
-    anchorCache[anchorName] != null
-      ? ++anchorCache[anchorName]
-      : (anchorCache[anchorName] = 0);
-  if (repeat) {
-    anchorName += "_" + repeat;
+declare module "marked" {
+  namespace Tokens {
+    interface Code {
+      html?: string;
+      concise?: string;
+    }
   }
-  return anchorName;
 }
 
-function Node(text, anchorName, level) {
-  this.text = text;
-  this.anchorName = anchorName;
-  this.level = level;
-  this.childNodes = [];
+function markoDocs(): MarkedExtension {
+  return {
+    async: true,
+    async walkTokens(token) {
+      if (token.type === "code" && token.lang === "marko") {
+        [token.html, token.concise] = await Promise.all([
+          prettier.format(token.text, {
+            parser: "marko",
+            plugins: [markoPrettier],
+            markoSyntax: "html",
+          }),
+          prettier.format(token.text, {
+            parser: "marko",
+            plugins: [markoPrettier],
+            markoSyntax: "concise",
+          }),
+        ]);
+      } else if (token.type === "codespan") {
+        token.text = (token.text as string).replaceAll("${", "\\\\${");
+      }
+    },
+    renderer: {
+      code({ lang, text, concise, html }) {
+        if (lang === "marko") {
+          return `<code-block lang="${lang}" text=${JSON.stringify(html)} concise=${JSON.stringify(concise)} />`;
+        } else {
+          return `<code-block lang="${lang}" text=${JSON.stringify(text)} />`;
+        }
+      },
+      codespan(token) {
+        if (/^<[\w-]+>$/.test(token.text))
+          return `<code class="marko-codespan__tag">${token.text.substring(1, token.text.length - 1)}</code>`;
+        if (/^[\w-]+=$/.test(token.text))
+          return `<code class="marko-codespan__attribute">${token.text.substring(0, token.text.length - 1)}</code>`;
+        return false;
+      },
+    },
+  };
 }
 
-Node.prototype.toHTML = function (ignoreSelf) {
-  var out = "";
+function headingSections(): MarkedExtension {
+  let sectionDepth = 0;
+  let closeSections = false;
 
-  if (!ignoreSelf && this.text && this.anchorName) {
-    out += '<a href="#' + this.anchorName + '">' + this.text + "</a>";
-  }
+  let tokens: TokensList | undefined;
 
-  if (this.childNodes.length) {
-    out += '<ul class="toc toc-level' + this.level + '">';
-    this.childNodes.forEach(function (childNode) {
-      out += "<li>" + childNode.toHTML() + "</li>";
-    });
-    out += "</ul>";
-  }
-
-  return out;
-};
-
-function TOC() {
-  var root = new Node(null, null, 0);
-  var currentParent = root;
+  const githubSlugger = new GithubSlugger();
 
   return {
-    addHeading: function (text, anchorName, level) {
-      var curParentLevel = currentParent.level;
+    tokenizer: {
+      heading() {
+        if (!closeSections) {
+          tokens = this.lexer.tokens;
+          tokens.push({ type: "close-sections", raw: "" });
+          closeSections = true;
+        }
+        return false;
+      },
+    },
+    walkTokens(token) {
+      if (tokens && token.type === "close-sections") {
+        /*
+           I can't _believe_ this awkward two-step hack is the way, but it looks like what they do it
+           in [official plugins](https://github.com/bent10/marked-extensions/blob/main/packages/footnote/src/index.ts)
+        */
+        tokens.push({ ...token });
+        token.type = "space";
+        token.raw = "";
+        tokens = undefined;
+      }
+    },
+    renderer: {
+      heading({ depth, text, tokens }) {
+        let result = "";
 
-      var newNode = new Node(text, anchorName, level);
-      var emptyNode;
-      var i;
-
-      if (level > curParentLevel + 1) {
-        if (currentParent.childNodes.length) {
-          currentParent =
-            currentParent.childNodes[currentParent.childNodes.length - 1];
+        if (depth > sectionDepth) {
+          if (depth > sectionDepth + 1) {
+            throw new Error(
+              "Document does not have proper header nesting; don't skip any levels",
+            );
+          }
         } else {
-          emptyNode = new Node(null, null, currentParent.level + 1);
-          emptyNode.parent = currentParent;
-          currentParent.childNodes.push(emptyNode);
-          currentParent = emptyNode;
+          result += "</section>".repeat(sectionDepth - depth + 1);
         }
 
-        while (currentParent.level !== level - 1) {
-          emptyNode = new Node(null, null, currentParent.level + 1);
-          emptyNode.parent = currentParent;
-          currentParent.childNodes.push(emptyNode);
-          currentParent = emptyNode;
-        }
-      } else if (level < currentParent.level + 1) {
-        while (currentParent.level !== level - 1) {
-          currentParent = currentParent.parent;
-        }
-      }
+        const slug = githubSlugger.slug(text);
 
-      currentParent.childNodes.push(newNode);
-      newNode.parent = currentParent;
+        result += `<section id="${slug}"><h${depth}>${this.parser.parseInline(tokens)}<a href="#${slug}">#</a></h${depth}>`;
+
+        sectionDepth = depth;
+
+        return result;
+      },
     },
-    toHTML: function () {
-      var target = root;
 
-      if (root.childNodes.length === 1) {
-        target = root.childNodes[0];
-      }
-
-      return target.toHTML(true);
-    },
+    extensions: [
+      {
+        name: "close-sections",
+        renderer() {
+          return "</section>".repeat(sectionDepth);
+        },
+      },
+    ],
   };
 }

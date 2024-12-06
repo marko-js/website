@@ -1,0 +1,52 @@
+import * as lzString from "lz-string";
+
+import type { PlaygroundFile } from "<playground>";
+
+export interface Input {
+  value: PlaygroundFile[];
+}
+
+static {
+  function getInitialValue(): PlaygroundFile[] | null {
+    try {
+      if (typeof window !== "undefined") {
+        return JSON.parse(
+          lzString.decompressFromEncodedURIComponent(window.location.hash.slice(1)),
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    return null;
+  }
+}
+
+<let/value=getInitialValue() || input.value/>
+<lifecycle<{ isUpdating?: boolean, handler: () => void }>
+  handler() {
+    try {
+      if (!this.isUpdating) {
+        value = JSON.parse(lzString.decompressFromEncodedURIComponent(window.location.hash.slice(1)))
+      } else {
+        this.isUpdating = false;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  onMount() {
+    window.addEventListener(
+      "hashchange",
+      this.handler,
+    );
+  }
+  onUpdate() {
+    this.isUpdating = true;
+    window.location.hash = lzString.compressToEncodedURIComponent(JSON.stringify(value));
+  }
+  onDestroy() {
+    window.removeEventListener("hashchange", this.handler);
+  }
+/>
+<return:=value/>

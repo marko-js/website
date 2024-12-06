@@ -4,13 +4,13 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@marko/run": "^0.5.2",
+    "@marko/run": "^0.5.5",
     "@marko/run-adapter-static": "^0.2.0",
-    "@marko/translator-tags": "^0.4.1",
-    "@types/node": "^22.10.0",
-    "gh-pages": "^6.2.0",
-    "marked": "^15.0.2",
-    "marko": "^5.36.1"
+    "@shikijs/monaco": "^1.24.0",
+    "lz-string": "^1.5.0",
+    "marko": "^5.36.3",
+    "monaco-editor-core": "^0.52.0",
+    "shiki": "^1.24.0"
   },
   "private": true,
   "scripts": {
@@ -18,5 +18,17 @@
     "preview": "marko-run preview",
     "build": "marko-run build",
     "deploy": "BASE_URL=/marko-js/upgrade-dashboard/ marko-run build && gh-pages --nojekyll -d dist/public"
+  },
+  "devDependencies": {
+    "@marko/compiler": "^5.38.3",
+    "@marko/translator-tags": "^0.4.5",
+    "@types/node": "^22.10.1",
+    "gh-pages": "^6.2.0",
+    "github-slugger": "^2.0.0",
+    "marked": "^15.0.3",
+    "marked-alert": "^2.1.2",
+    "prettier": "^3.4.2",
+    "prettier-plugin-marko": "^3.1.8",
+    "vite-plugin-monaco-editor": "^1.1.0"
   }
 }
