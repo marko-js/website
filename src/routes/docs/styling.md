@@ -4,7 +4,7 @@ This section explains some different ways to style HTML within Marko. From simpl
 
 ## Inline Styles
 
-Marko [enhances the HTML `<style>` tag](./language.md#ltstylegt) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
+Marko [enhances the HTML `<style>` tag](./core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
 
 By default, all styles defined in the template are **globally scoped**. As such, many Marko projects use patterns like [BEM](https://getbem.com/introduction/) to avoid name conflicts.
 
@@ -45,7 +45,7 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 
 ### Inline CSS Modules
 
-If the `<style>` tag has a [Tag Variable](./language.md#Tag-Variable), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
 
 ```marko
 <style/styles>
@@ -77,7 +77,7 @@ You may still provide a custom file extension to enable to use of preprocessors.
 
 ## Auto-Discovered Styles
 
-Styling files adjacent a [custom tag are automatically discovered](./custom-tag.md#Supporting-Files). These files are imported and processed the same as [inline styles](#Inline-Styles).
+Styling files adjacent a [custom tag are automatically discovered](./custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
 
 _style.css_
 
@@ -93,12 +93,12 @@ _index.marko_
 <div class="fancy">Hello!</div>
 ```
 
-> [!Tip]
+> [!TIP]
 > When a template is becoming too large it can be helpful to pull its styling into an associated style file such as this.
 
 ## Imported Styles
 
-Styles may also be [imported](./language.md#Import).
+Styles may also be [imported](./language.md#import).
 
 _fancy.css_
 
@@ -116,8 +116,8 @@ import "./fancy.css";
 <div class="fancy">Hello!</div>
 ```
 
-> [!Tip]
-> Although generally [inline](#Inline-Styles) or [autodiscovered](./#Auto-Discovered-Styles) styles are preferred, importing styles can be helpful when sharing across templates.
+> [!TIP]
+> Although generally [inline](#inline-styles) or [autodiscovered](#auto-discovered-styles) styles are preferred, importing styles can be helpful when sharing across templates.
 
 ### Imported CSS Modules
 
@@ -138,5 +138,5 @@ import styles from "./something.module.css";
 <div class=styles.fancy/>
 ```
 
-> [!Caution]
+> [!CAUTION]
 > Since most bundlers are configured by default to support css modules for `*.module.css` files, this should work out of the box. If it is not supported by a bundler there is almost certainly a plugin.

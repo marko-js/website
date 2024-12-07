@@ -2,9 +2,9 @@
 
 ## `<if>` / `<else>`
 
-The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./langauge.md#Attribute-Tags).
+The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./language.md#attribute-tags-named-content).
 
-An `<if>` is applied when its `value=` attribute ([shorthand used below](./language.md#value-shorthand)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and may be followed by an `<else>`.
+An `<if>` is applied when its `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and may be followed by an `<else>`.
 
 The `<else>` tag may have its own condition as an `if=` attribute.
 When it has a condition, the condition is checked before the `<else>` is applied and another `<else>` may follow.
@@ -25,7 +25,7 @@ Expressions in the if/else chain are evaluated in order.
 
 ## `<for>`
 
-The `<for>` control flow tag allows for writing content or applying [attribute tags](./langauge.md#Attribute-Tags) while iterating. Its [content](./language.md#Tag-content) has access to information about each iteration through the [Tag Parameters]('./language.md#Tag-Parameters-and-Arguments').
+The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags-named-content) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters-and-arguments').
 
 The `<for>` tag can iterate over:
 
@@ -76,13 +76,13 @@ This means the previous example can simplified to:
 
 ## `<let>`
 
-The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#Tag-Variable).
+The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables).
 
 ```marko
 <let/x=1/>
 ```
 
-The `value=` attribute (usually with a [shorthand](./language.md#value-shorthand)) provides an initial value for its state.
+The `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) provides an initial value for its state.
 
 When a tag variable is updated, everywhere it is used also re-runs. This is the core of Marko's reactive system.
 
@@ -94,21 +94,20 @@ When a tag variable is updated, everywhere it is used also re-runs. This is the 
 </button>
 ```
 
-In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#Tag-Variable), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
+In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#tag-variables), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
 
 ### Controllable Let
 
-Let may also be [controlled](./TODO) with its `valueChange=` attribute.
+Let may also be **controlled** with its `valueChange=` attribute.
 
 ```marko
 <let/_x="HELLO"/>
 <let/x=_x valueChange(newValue) { _x = newValue.toUpperCase() }/>
 ```
 
-In the above `let/_x` is as normal. However the other `let/x` is provided a [`valueChange` change handler](./TODO). This handler is called whenever `x` is updated. In this example the change handler sets the `_x` state to be the requested value converted to UPPERCASE. This might seem obscure, but it makes intercepting state changes as easy as adding a change handler!
+In the above `let/_x` is as normal. However the other `let/x` is provided a [`valueChange` change handler](./language.md#shorthand-change-handlers-two-way-binding). This handler is called whenever `x` is updated. In this example the change handler sets the `_x` state to be the requested value converted to UPPERCASE. This might seem obscure, but it makes intercepting state changes as easy as adding a change handler!
 
-Another common pattern is to create ["controllable state"](TODO).
-The simplest way implement controllable state is to (typically using the [change handler shorthand](./language.md#change-handler-shorthand)) bind a `<let>` to an [`input`](./language.md#input).
+Another common pattern is to create **controllable state**. The simplest way implement controllable state is to (typically using the [change handler shorthand](./language.md#shorthand-change-handlers-two-way-binding)) bind a `<let>` to an [`input`](./language.md#input).
 
 ```marko
 <let/count:=input.count/>
@@ -119,7 +118,7 @@ However if the parent passes in both `count=` and `countChange=` attributes then
 
 ## `<const>`
 
-The `<const>` exposes its `value=` attribute (usually with a [shorthand](./language.md#value-shorthand)) through its [Tag Variable](./language.md#Tag-Variable).
+The `<const>` exposes its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) through its [Tag Variable](./language.md#tag-variables).
 
 Extending the [`<let>`](#let) example we could derive data from the `count` state like so:
 
@@ -133,10 +132,10 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 </button>
 ```
 
-> [!Note]
+> [!NOTE]
 > The `<const>` tag is locally scoped, and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
 
-> [!Tip]
+> [!TIP]
 > The implementation of the `<const>` tag above is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
 > ```marko
@@ -145,9 +144,9 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 
 ## `<return>`
 
-The `<return>` tag allows any [custom tag](./language#Custom-Tag) to expose a [Tag Variable](./language.md#Tag-Variable).
+The `<return>` tag allows any [custom tag](./custom-tag.md) to expose a [Tag Variable](./language.md#tag-variables).
 
-The `value=` attribute (usually expressed via the [shorthand](./language.md#value-shorthand)) is made available as the tag variable of the template.
+The `value=` attribute (usually expressed via the [shorthand](./language.md#shorthand-value)) is made available as the tag variable of the template.
 
 _answer.marko_
 
@@ -192,7 +191,7 @@ In the above the exposed tag variable is initialized to an UPPERCASE version of 
 The `<script>` tag has special behavior in Marko.
 
 The content of a `<script>` tag is executed first when the template has finished rendering and is mounted in the browser.
-It will also be executed _again_ after any [Tag Variable](#Tag-Variable) or [Tag Parameter](#Tag-Parameters-and-Arguments) it references has changed.
+It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters-and-arguments) it references has changed.
 
 ```marko
 <let/count=1/>
@@ -207,7 +206,7 @@ It will also be executed _again_ after any [Tag Variable](#Tag-Variable) or [Tag
 </script>
 ```
 
-Often the `<script>` tag is coupled with the [`$signal` api](#$signal) to apply some side effect, and cleanup afterward.
+Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signal) to apply some side effect, and cleanup afterward.
 
 ```marko
 <script>
@@ -219,8 +218,8 @@ Often the `<script>` tag is coupled with the [`$signal` api](#$signal) to apply 
 </script>
 ```
 
-> [!Tip]
-> There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script) fallback.
+> [!TIP]
+> There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
 
 ## `<style>`
 
@@ -259,7 +258,7 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 <div class="fancy-less">Hello!</div>
 ```
 
-If the `<style>` tag has a [Tag Variable](./language.md#Tag-Variable), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
 
 ```marko
 <style/styles>
@@ -273,8 +272,8 @@ If the `<style>` tag has a [Tag Variable](./language.md#Tag-Variable), it levera
 <div.${styles.foo} />
 ```
 
-> [!Tip]
-> There are very few cases where you should be using a _real_ inline `<style>` tag but if needed you can use the fallback [`<html-style>`](#html-style) tag.
+> [!TIP]
+> There are very few cases where you should be using a _real_ inline `<style>` tag but if needed you can use the fallback [`<html-style>`](#html-script--html-style) tag.
 
 ## `<define>`
 
@@ -291,9 +290,9 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](#Tag-Variable) reflects the attributes the `<define>` tag was provided (including the [content](./langauge.md#Tag-Content)).
+The [Tag Variable](#Tag-Variable) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
 
-> [!Tip]
+> [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
 >
 > ```marko
@@ -340,12 +339,12 @@ client import { WorldMap } from "world-map-api";
 />
 ```
 
-> [!Tip]
+> [!TIP]
 > All attributes on the `<lifecycle>` tag attributes available as the `this` in any of the event handler attributes.
 
 ## `<id>`
 
-The `<id>` tag exposes a [Tag Variable](./language.md#Tag-Variable) with a short unique id string (compatible with [`id=` and aria attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)).
+The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a short unique id string (compatible with [`id=` and aria attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)).
 
 ```marko
 <id/cheeseId/>
@@ -355,7 +354,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#Tag-Variable) with a short
 
 ## `<log>`
 
-The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) of its `value=` attribute (shown here using [the shorthand](./language.md#Value-Shorthand)).
+The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) of its `value=` attribute (shown here using [the shorthand](./language.md#shorthand-value)).
 
 The log is re-executed each time its tag variable updates.
 
@@ -387,7 +386,7 @@ This debugger executes on the initial render and whenever `input.firstName` or `
 
 ## `<await>`
 
-The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#Value-Shorthand) and exposes it through a [tag parameter](./language.md#Tag-Parameters).
+The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters-and-arguments).
 
 ```marko
 <await|user|=getUser()>
@@ -418,11 +417,11 @@ If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder)
 
 ## `<try>`
 
-The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#Attribute-Tag): `@catch` and `@placeholder`.
+The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#attribute-tags-named-content): `@catch` and `@placeholder`.
 
 ### `@catch`
 
-When a runtime error occurs in the [content](./language.md#Tag-Content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#Tag-Parameters-and-Arguments) of the `@catch`.
+When a runtime error occurs in the [content](./language.md#tag-content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#tag-parameters-and-arguments) of the `@catch`.
 
 ```marko
 <try>
@@ -437,7 +436,7 @@ When a runtime error occurs in the [content](./language.md#Tag-Content) of the `
 
 ### `@placeholder`
 
-The [content](./language.md#Tag-Content) of the `@placeholder` [attribute tag](./language.md#Attribute-Tag) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
+The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags-named-content) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
 
 ## `<html-comment>`
 
@@ -447,7 +446,7 @@ By default, [html comments](./language.md#Comments) are stripped from the output
 <html-comment>Hello, view source</html-comment>
 ```
 
-This tag also exposes a [tag variable](./language.md#Tag-Variables) which contains a getter to the reference of the [comment node](https://developer.mozilla.org/en-US/docs/Web/API/Comment) in the DOM.
+This tag also exposes a [tag variable](./language.md#tag-variables) which contains a getter to the reference of the [comment node](https://developer.mozilla.org/en-US/docs/Web/API/Comment) in the DOM.
 
 ```marko
 <html-comment/commentNode/>
@@ -459,7 +458,7 @@ This tag also exposes a [tag variable](./language.md#Tag-Variables) which contai
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag#ltscriptgt) and [`<style>`](./native-tag#ltstylegt) tags are enhanced to enable best practices and help developers avoid common footguns.
+The [`<script>`](./native-tag#script) and [`<style>`](./native-tag#style) tags are enhanced to enable best practices and help developers avoid common footguns.
 
 Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
 

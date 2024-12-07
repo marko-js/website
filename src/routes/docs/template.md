@@ -5,11 +5,11 @@ These methods are used to generate an HTML string on the server, and to modify t
 
 ## `Template.render(input)`
 
-| Parameter | Default | Details                                                                                                                   |
-| :-------- | :------ | :------------------------------------------------------------------------------------------------------------------------ |
-| `input`   | `{}`    | The [`input` object](./references.md#input) for the template. May also include [`$global`](#inputglobal) for global state |
+| Parameter | Default | Details                                                                                                                 |
+| :-------- | :------ | :---------------------------------------------------------------------------------------------------------------------- |
+| `input`   | `{}`    | The [`input` object](./language.md#input) for the template. May also include [`$global`](#inputglobal) for global state |
 
-For use on the **server**, the `.render()` API on a Marko template provides an object containing a variety of ways to generate an HTML string. Its first parameter becomes the [`input`](./references.md#input) available within the template.
+For use on the **server**, the `.render()` API on a Marko template provides an object containing a variety of ways to generate an HTML string. Its first parameter becomes the [`input`](./language.md#input) available within the template.
 
 ### Async Iterator
 
@@ -57,7 +57,7 @@ The render result is a [thenable](https://developer.mozilla.org/en-US/docs/Web/J
 const html = await Template.render({});
 ```
 
-> [!Note]
+> [!NOTE]
 > By using thenable and `await`, you are opting out of Marko's streaming capabilities.
 
 #### toString
@@ -68,18 +68,18 @@ The result implements a `toString()` that returns the buffered `html` synchronou
 const html = Template.render({}).toString();
 ```
 
-> [!Caution]
-> If there is any async behavior (i.e. an [`<await>` tag](./core-tags#await)) this method will throw.
+> [!CAUTION]
+> If there is any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) this method will throw.
 
 ## `Template.mount(input, node, position?)`
 
 | Parameter  | Default       | Details                                                                                                                                                                                       |
 | :--------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `input`    | `{}`          | The [`input` object](./references.md#input) for the template. May also include [`$global`](#inputglobal) for global state                                                                     |
+| `input`    | `{}`          | The [`input` object](./language.md#input) for the template. May also include [`$global`](#inputglobal) for global state                                                                       |
 | `node`     | `undefined`   | A reference to the DOM node where the template will be rendered                                                                                                                               |
 | `position` | `"beforeend"` | Location to render the template, relative to `node`. Value follows the [Element.insertAdjacentHTML API](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position) |
 
-For use in the **browser/client**, The `.mount()` API on a Marko template builds up a [reactive](./reactivity.md) DOM and inserts it at the specified `node` and `position`. The `input` argument becomes the [`input`](./references.md#input) available within the template.
+For use in the **browser/client**, The `.mount()` API on a Marko template builds up a [reactive](./reactivity.md) DOM and inserts it at the specified `node` and `position`. The `input` argument becomes the [`input`](./language.md#input) available within the template.
 
 ```js
 template.mount({}, document.body); // append to the body.
@@ -91,7 +91,7 @@ Or with a `position` override
 template.mount({}, document.body, "afterbegin"); // prepended to the body
 ```
 
-> [!Note]
+> [!NOTE]
 > Valid values for `position` include
 >
 > - `"beforebegin"`: Before the element.
@@ -113,7 +113,7 @@ template.mount({}, document.body, "afterbegin"); // prepended to the body
 
 ### Render Result
 
-The [`.mount()` API](#Templatemountinput-node-position) returns an object with helpers used update and destroy the instance of the template and DOM that was built.
+The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used update and destroy the instance of the template and DOM that was built.
 
 ```js
 const instance = template.mount({ name: "foo" }, document.body);
@@ -124,7 +124,7 @@ const instance = template.mount({ name: "foo" }, document.body);
 
 #### instance.update(input)
 
-The `.update()` method allows providing new [`input`](./language-guide.md#input) to the instance of the template with a reactive update.
+The `.update()` method allows providing new [`input`](./language.md#input) to the instance of the template with a reactive update.
 
 ```js
 instance.update({ name: "bar" });
@@ -134,7 +134,7 @@ This update to the `input` is applied synchronously.
 
 #### instance.destroy()
 
-The `.destroy()` method causes every [`$signal`](./language-guide.md#signal) to be aborted and runs cleanup for the instance.
+The `.destroy()` method causes every [`$signal`](./language.md#signal) to be aborted and runs cleanup for the instance.
 
 ```js
 instance.destroy();
@@ -142,7 +142,7 @@ instance.destroy();
 
 ## `input.$global`
 
-When a template is rendered via the [`render`](#Templaterenderinput) or [`mount`](#Templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
+When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
 
 Some properties on the `$global` are picked up by Marko itself and have predefined functionality.
 

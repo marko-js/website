@@ -2,7 +2,7 @@
 
 ## Element References
 
-All native tags expose a [Tag Variable](./language.md#Tag-Variable) which provides a getter to the reference of the DOM node.
+All native tags expose a [Tag Variable](./language.md#tag-variables) which provides a getter to the reference of the DOM node.
 
 ```marko
 <div/ref/>
@@ -12,7 +12,7 @@ All native tags expose a [Tag Variable](./language.md#Tag-Variable) which provid
 </script>
 ```
 
-> [!Caution]
+> [!CAUTION]
 > The node reference is only available in the browser. If you try to access a DOM node from the server, it will result in an error.
 
 ## Enhanced Attributes
@@ -74,8 +74,8 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
 </button>
 ```
 
-> [!Note]
-> Event handlers are typically written using the [method shorthand](./language.md#Shorthand-Methods) for readability.
+> [!NOTE]
+> Event handlers are typically written using the [method shorthand](./language.md#shorthand-methods) for readability.
 
 The value for the attribute must either be a function or a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value. This allows for conditional event handlers:
 
@@ -89,7 +89,7 @@ The value for the attribute must either be a function or a [falsy](https://devel
 </button>
 ```
 
-> [!Tip]
+> [!TIP]
 > Since native events are all lowercase, the `onCamelCase` event naming can help with readability of multi-word events:
 >
 > ```marko
@@ -98,7 +98,7 @@ The value for the attribute must either be a function or a [falsy](https://devel
 >
 > Some [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) may emit non lowercase event names, in which case (pun intended 😏) you should use `on-` which preserves the casing.
 
-> [!Caution]
+> [!CAUTION]
 > Although Marko _does_ support [native html inline event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes), and that's pretty cool, you probably shouldn't use them since they're detached from Marko's reactivity system and may lead to [CSP]() / [XSS]() issues.
 >
 > ```marko
@@ -127,7 +127,7 @@ In HTML, `<textarea>` holds its value inside its body. In Marko, this state may 
 
 ### Change Handlers
 
-Some native tags in Marko have additional attributes which make them [controllable](TODO). All of these attributes end with `Change`, and are designed to take advantage of the [bind shorthand](./language.md#Shorthand-Change-Handlers-Two-Way-Binding).
+Some native tags in Marko have additional attributes which make them **controllable**. All of these attributes end with `Change`, and are designed to take advantage of the [bind shorthand](./language.md#shorthand-change-handlers-two-way-binding).
 
 There are several DOM elements that maintain internal state separate from an associated attribute. In Marko such attributes are "uncontrolled", meaning that Marko will _only_ set the attribute value by default and not the internal value.
 
@@ -192,7 +192,7 @@ The `valueChange` is called whenever the `<input>` _would have_ updated its inte
 
 There is now a single state _and_ updates from both sources are handled. Typing in the `<input>` and clicking the `<button>` cause changes to both the `<div>` and the `<input>` itself. Everything is in sync!
 
-Marko has [a shorthand](./language.md#Shorthand-Change-Handlers-Two-Way-Binding) for simple reflective change handlers like this, allowing the example to be simplified to:
+Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding) for simple reflective change handlers like this, allowing the example to be simplified to:
 
 ```marko
 <let/message="Hello"/>
@@ -255,7 +255,7 @@ The `<input>` tag has 3 change handlers, which are each related to an input type
 <input type="checkbox" checked:=checked>
 ```
 
-The [added `checkedValue=` attribute](#ltinput-typeradiogt-and-ltinput-typecheckboxgt) also has a change handler.
+The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.
 
 ```marko
 <let/checked="foo"/>
@@ -264,11 +264,11 @@ The [added `checkedValue=` attribute](#ltinput-typeradiogt-and-ltinput-typecheck
 
 #### `<select>` (`valueChange=`)
 
-Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#ltselectgt), which is also controllable with a `Change` handler.
+Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#select), which is also controllable with a `Change` handler.
 
 #### `<textarea>` (`valueChange=`)
 
-The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#lttextareagt).
+The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#textarea).
 
 ```marko
 <let/text=""/>
@@ -310,7 +310,7 @@ Some native tags have special meaning in Marko, and don't behave exactly like th
 
 ### `<script>`
 
-Marko's [script tag](./core-tags.md#ltscriptgt) is used for browser effects.
+Marko's [`<script>` tag](./core-tag.md#script) is used for browser effects.
 
 A native HTML `<script>` may be included with `<html-script>`.
 
@@ -322,12 +322,12 @@ A native HTML `<script>` may be included with `<html-script>`.
 
 ### `<style>`
 
-Marko's [style tag](./core-tags.md#ltstylegt) generates `.css` files.
+Marko's [`<style>` tag](./core-tag.md#style) generates `.css` files.
 
 Though almost never recommended, a native HTML `<style>` may be included with `<html-style>`.
 
 ### `<!-- comment -->`
 
-By default, Marko strips [comments](./language.md#Comments) from the output.
+By default, Marko strips [comments](./language.md#comments) from the output.
 
-A native HTML `<!-- comment -->` may be included with [`<html-comment>`](./core-tags#lthtmlcommentgt)
+A native HTML `<!-- comment -->` may be included with [`<html-comment>`](./core-tag.md#html-comment)

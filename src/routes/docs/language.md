@@ -5,12 +5,12 @@ Marko is a superset of [well-formed](https://en.wikipedia.org/wiki/Well-formed_d
 The language makes HTML more strict while extending it with control flow and reactive data bindings. It does this by meshing JavaScript syntax features with HTML and introducing a few new syntaxes of its own. Most HTML is valid Marko but there are some important deviations.
 
 > [!TIP]
-> Marko also supports a [beautiful concise syntax](./concise.md). If you'd prefer to see the documentation using this syntax, just click the `switch syntax` button in the corner of any Marko code sample.
+> Marko also supports a [beautiful concise syntax](./concise-syntax.md). If you'd prefer to see the documentation using this syntax, just click the `switch syntax` button in the corner of any Marko code sample.
 
 > TODO: Move this to concise mode docs but link to it from getting-started.md [name=Doctor P]
 
 > [!IMPORTANT]
-> Text at the root of a template (outside any tags) must be prefixed with the [concise syntax's `--`](./concise.md#text) to denote it is text. The parser starts in concise mode and would otherwise try to parse what you meant to be text as a concise tag declaration.
+> Text at the root of a template (outside any tags) must be prefixed with the [concise syntax's `--`](./concise-syntax.md#text) to denote it is text. The parser starts in concise mode and would otherwise try to parse what you meant to be text as a concise tag declaration.
 >
 > ```marko
 > -- Root level text
@@ -35,17 +35,17 @@ Within Marko templates a few variables are automatically made available.
 
 ### `input`
 
-Gives access to the [attributes](#Attributes) the template was provided as a custom tag or the data passed in through the [top level api](./template-api.md).
+Gives access to the [attributes](#Attributes) the template was provided as a custom tag or the data passed in through the [top level api](./template.md).
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which is aborted when the given template or [tag content](./#Tag-Content) is removed from the DOM, or if the expression the `$signal` is used in was invalidated.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which is aborted when the given template or [tag content](#tag-content) is removed from the DOM, or if the expression the `$signal` is used in was invalidated.
 
 This is primarily to handle cleaning up side effects.
 
 ### `$global`
 
-Gives access the ["render globals"](./template-api.md#$global) provided through the [top level api](./template-api.md).
+Gives access the ["render globals"](./template.md#inputglobal) provided through the [top level api](./template.md).
 
 ## Statements
 
@@ -61,7 +61,7 @@ import sum from "sum"
 <div data-number=sum(1, 2)></div>
 ```
 
-There is also a shorthand for importing [custom tags](#Custom-Tag) by using angle brackets in the `from` of the import, which will use Marko's [custom tag discovery logic](#Custom-Tags).
+There is also a shorthand for importing [custom tags](./custom-tag.md) by using angle brackets in the `from` of the import, which will use Marko's [custom tag discovery logic](./custom-tag.md).
 
 ```marko
 import MyTag from "<my-tag>"
@@ -113,7 +113,7 @@ client console.log("in the browser")
 
 ## Tags
 
-As you might expect, Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tags.md) are provided. You can also build your own [custom tags](./custom-tags.md) and [install third-party tags](./custom-tags.md#using-tags-from-npm) from `npm`.
+Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tags.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
 
 All of these types of tags use the same syntax:
 
@@ -121,9 +121,9 @@ All of these types of tags use the same syntax:
 <my-tag/>
 ```
 
-`.marko` files are [automatically discovered](./custom-tag#Discovery) as [custom tags](./custom-tag) (no need for `import`).
+`.marko` files are [automatically discovered](./custom-tag#custom-tag-discovery) as [custom tags](./custom-tag) (no need for `import`).
 
-All tags can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags) when there is no [content](#Tag-Content). This means `<div/>` is valid, unlike in HTML. Additionally [`void` tags](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) like `<input>` and `<br>` can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags).
+All tags can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags) when there is no [content](#tag-content). This means `<div/>` is valid, unlike in HTML. Additionally [`void` tags](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) like `<input>` and `<br>` can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags).
 
 In all closing tags, the tag name may be omitted.
 
@@ -133,9 +133,9 @@ In all closing tags, the tag name may be omitted.
 
 ### Dynamic Tag
 
-You can also dynamically output a native tag, [custom tag](#Custom-Tag), or [tag content](#Tag-Content) by `${interpolating}` within the tag name.
+In place of the tag name, an `${interpolation}` may be used to dynamically output a [native tag](./native-tag.md), [custom tag](./custom-tag.md), or [tag content](#tag-content).
 
-With a dynamic tag the closing tag should be `</>`, or if there is no [content](#Tag-Content) you can self close the tag.
+With a dynamic tag the closing tag should be `</>`, or if there is no [content](#tag-content) the tag may be self-closed.
 
 #### Dynamic Native Tags
 
@@ -163,7 +163,7 @@ import MyTagB from "<my-tag-b>"
 > ```
 
 > [!NOTE]
-> If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tags.md#Define) tag works under the hood 🤯.
+> If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.
 >
 > ```marko
 > <define/Message>
@@ -172,11 +172,11 @@ import MyTagB from "<my-tag-b>"
 > <${Message}/>
 > ```
 >
-> Although in this case you should prefer a [PascalCase](#PascalCase-Variables) `<Message>` tag instead.
+> Although in this case you should prefer a [PascalCase](#pascalcase-variables) `<Message>` tag instead.
 
 #### Conditional Parent Tags
 
-When a dynamic tag name is [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) it will output the tag's [content](#Tag-Content) only. This is useful for conditional parenting and fallback content.
+When a dynamic tag name is [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) it will output the tag's [content](#tag-content) only. This is useful for conditional parenting and fallback content.
 
 ```marko
 // Only wrap the text with an anchor when we have an `input.href`.
@@ -185,7 +185,7 @@ When a dynamic tag name is [falsy](https://developer.mozilla.org/en-US/docs/Glos
 
 #### PascalCase Variables
 
-Local variable names that start with an upper case letter (`PascalCase`) can also be used as tag names without the explicit dynamic tag syntax. This is useful for referencing an imported custom tag or with the [`<define>` tag](#Define).
+Local variable names that start with an upper case letter (`PascalCase`) can also be used as tag names without the explicit dynamic tag syntax. This is useful for referencing an imported custom tag or with the [`<define>` tag](./core-tag.md#define).
 
 ```marko
 import MyTag from "./my-tag.marko"
@@ -327,7 +327,7 @@ It is common for a tag to use a single input property; therefore Marko allows a 
 <my-tag value=1/>
 ```
 
-The [method shorthand](#Shorthand-Methods) can be combined with the value attribute to give us the _value method shorthand_.
+The [method shorthand](#shorthand-methods) can be combined with the value attribute to give us the _value method shorthand_.
 
 ```marko
 <my-tag() {
@@ -345,7 +345,7 @@ The [method shorthand](#Shorthand-Methods) can be combined with the value attrib
 
 ### Attribute Termination
 
-Attributes can be terminated with a comma. This is useful in [concise mode](#Concise-Mode).
+Attributes can be terminated with a comma. This is useful in [concise mode](./concise-syntax.md#attributes-on-multiple-lines).
 
 ```marko
 <my-tag a=1, b=2/>
@@ -365,7 +365,7 @@ Markup within a tag is made available as the `content` property of its [`input`]
 <my-tag>Content</my-tag>
 ```
 
-The implementation of `<my-tag>` above can write out the content by passing its `input.content` to a [dynamic tag](#Dynamic-Tag):
+The implementation of `<my-tag>` above can write out the content by passing its `input.content` to a [dynamic tag](#dynamic-tag):
 
 ```marko
 <div>
@@ -389,7 +389,7 @@ This uses the same syntax as [template literals](https://developer.mozilla.org/e
 
 ## Attribute Tags (Named Content)
 
-Tags prefixed with an `@` are called "Attribute Tags" and allow for passing named or repeated [content](#Tag-Content) as additional attributes.
+Tags prefixed with an `@` are called "Attribute Tags" and allow for passing named or repeated [content](#tag-content) as additional attributes.
 
 For example, a "layout" tag may need to receive `header` content separetly from its default content. With "Attribute Tags" it is possible to pass these isolated sections of content.
 
@@ -405,7 +405,7 @@ For example, a "layout" tag may need to receive `header` content separetly from 
 
 The attribute tag name (without the leading `@`) becomes a property on the [input](#input) of the parent tag[^1] with the value being an object containing the "attribute tag's" attributes, including the content.
 
-[^1]: Control flow tags such as `<if>` and `<for>` are an exception and allow for [dynamically creating attribute tags](#Dynamic-Attribute-Tags).
+[^1]: Control flow tags such as `<if>` and `<for>` are an exception and allow for [dynamically creating attribute tags](#dynamic-attribute-tags).
 
 In the above `@header` will be made available to `<my-layout>` as `input.header`. The `class` attribute from `@header` becomes `input.header.class` and its content becomes `input.header.content`.
 
@@ -472,7 +472,7 @@ Would provide the following as input
 
 ### Repeated Attribute Tags
 
-[Attribute Tags](#Attribute-Tags) with the same name can be repeated.
+[Attribute Tags](#attribute-tags-named-content) with the same name can be repeated.
 
 When an attribute tag is repeated, all instances can be consumed using the [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol).
 
@@ -500,7 +500,7 @@ The above example uses two `<@item>` tags, but `<my-menu>` receives only a singl
 }
 ```
 
-The other `<@item>`'s can be reached through the iterator. The most comon way to do so is with a [for tag](./custom-tags.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
+The other `<@item>`'s can be reached through the iterator. The most comon way to do so is with a [for tag](./core-tag.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
 
 ```marko
 <for|item| of=input.item>
@@ -514,7 +514,7 @@ The other `<@item>`'s can be reached through the iterator. The most comon way to
 ```
 
 > [!TIP]
-> If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./custom-tags.md#const)
+> If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
 >
 > ```marko
 > <const/items=[...input.items || []]/>
@@ -524,7 +524,7 @@ The other `<@item>`'s can be reached through the iterator. The most comon way to
 
 ### Dynamic Attribute Tags
 
-Attribute tags generally are provided directly to their immediate parent. The exception to this is [control flow tags](./core-tags#Control-Flow) which are used to dynamically apply attribute tags.
+Attribute tags generally are provided directly to their immediate parent. The exception to this is control flow tags ([`<if>`](./core-tag.md#if--else) and [`<for>`](./core-tag.md#for)), which are used to dynamically apply attribute tags.
 
 ```marko
 <my-message>
@@ -537,7 +537,7 @@ Attribute tags generally are provided directly to their immediate parent. The ex
 </my-message>
 ```
 
-In this case the `@title` received by `<my-message>` depends on `welcome`.
+In this case, the `@title` received by `<my-message>` depends on `welcome`.
 
 ```marko
 <my-select>
@@ -552,7 +552,7 @@ In this case the `@title` received by `<my-message>` depends on `welcome`.
 Here, `<my-select>` unconditionally receives the first `@option`, and also all of the `@option` tags applied by the `<for>` loop.
 
 > [!NOTE]
-> You can't mix [attribute tags](#Attribute-Tags) with default [content](#Tag-Content) while inside a [control flow tag](./custom-tags.md#Control-Flow)
+> You can't mix [attribute tags](#attribute-tags-named-content) with default [content](#tag-content) while inside a [control flow tag](./core-tag.md#if--else).
 
 ## Tag Variables
 
@@ -573,11 +573,11 @@ Native tags have an implicitly returned tag variable that contains a reference t
 
 In this case `myDiv` will be a variable which can be called to get the `myDiv` element in the browser.
 
-Using the [core `<return>` tag](./core-tags.md#return), any custom tag can return a value into it's parents scope as a tag variable.
+Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return a value into it's parents scope as a tag variable.
 
 ### Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#Statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
 
 ```marko
 <form>
@@ -592,7 +592,7 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
 
 ## Tag Parameters and Arguments
 
-A child may give information to its parent [content](#Tag-Content) using tag parameters.
+A child may give information to its parent [content](#tag-content) using tag parameters.
 
 ```marko
 // child.marko
@@ -638,10 +638,10 @@ Which the parent would receive as multiple Tag Parameters
 
 ### Scope
 
-Tag parameters are scoped to the [tag content](#Tag-Content) only.
+Tag parameters are scoped to the [tag content](#tag-content) only.
 This means you cannot access the tag parameters outside the body of the tag.
 
-> [!CAUTION] > [Attribute tags](#Attribute-Tags) cannot access the tag parameters of their parent since they are evaluated as attributes.
+> [!CAUTION] > [Attribute tags](#attribute-tags-named-content) cannot access the tag parameters of their parent since they are evaluated as attributes.
 
 ## Comments
 
@@ -656,7 +656,7 @@ Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [Jav
 ```
 
 > [!NOTE]
-> Comments are ignored completely. To include a literal HTML comment in the output, use the [`<html-comment>` core tag](./core-tags.md#html-comment).
+> Comments are ignored completely. To include a literal HTML comment in the output, use the [`<html-comment>` core tag](./core-tag.md#html-comment).
 
 <!-- TODO: should the assets transform move to core? -->
 <!-- TODO: we probably want to take the examples from existing body-content docs -->

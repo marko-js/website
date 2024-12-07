@@ -40,7 +40,7 @@ div
 
 ## Text
 
-Two or more hyphens (`--`) followed by whitespace may be used to begin [content](./langauge.md#Tag-Content).
+Two or more hyphens (`--`) followed by whitespace may be used to begin [content](./language.md#tag-content).
 
 If text immediately follows the hyphens, the content is terminated at the end of the line.
 
@@ -70,7 +70,7 @@ details
     implicitly closed
 ```
 
-> [!Tip]
+> [!TIP]
 > There may be _more_ than two hyphens if necessary, but the number hyphens in the open and close must match.
 >
 > ```marko
@@ -99,7 +99,7 @@ The output is:
 <Hello World></Hello> <Welcome to Marko></Welcome>
 ```
 
-The proper way to include root level text is with [string literals or code fences](#Text).
+The proper way to include root level text is with [string literals or code fences](#text).
 
 ```
 "Hello World"
@@ -132,7 +132,7 @@ div
     p
 ```
 
-> [!Tip]
+> [!TIP]
 > You can use the nesting syntax (`>`) to limit the amount of space before deeply nested content
 >
 > ```

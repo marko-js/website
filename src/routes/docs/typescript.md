@@ -20,7 +20,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   ```
   This will automatically expose type-checking and autocomplete for the published tags.
 
-> [!Tip]
+> [!TIP]
 > You can also use the `script-lang` method for sites and apps.
 > Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined.
 > This helps when incrementally migrating to TypeScript allowing folders to opt-in or opt-out of strict type checking.
@@ -99,14 +99,14 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.TemplateInput<Input>`**
   - The object accepted by the render methods of a template. It includes the template's `Input` and `$global` values.
 - **`Marko.Body<Params, Return>`**
-  - Used to type [tag content](./language.md#Tag-Content)
+  - Used to type [tag content](./language.md#tag-content)
 - **`Marko.Renderable`**
-  - All values accepted by the [`<${dynamic}/>` tag](./syntax.md#dynamic-tagname)
+  - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tag)
   - `string | Marko.Template | Marko.Body | { content: Marko.Body}`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
 - **`Marko.RenderResult`**
-  - The result of [rendering a Marko template](./template.md#rendering)
+  - The result of [rendering a Marko template](./template.md#templaterenderinput)
   - `ReturnType<template.renderSync>`
   - `Awaited<ReturnType<template.render>>`
 - **`Marko.NativeTags`**
@@ -116,13 +116,13 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
   - Helper to extract the parameters and return types from a `Marko.Body`
 - **`Marko.AttrTag<T>`**
-  - Used to represent types for [attributes tags](./language.md#Attribute-Tags-Named-Content)
+  - Used to represent types for [attributes tags](./language.md#attribute-tags-named-content)
   - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
 
 ### Deprecated
 
 - **`Marko.Component<Input, State>`**
-  - The base class for a [class component](./class-components.md)
+  - The base class for a [class component](https://markojs.com/v5/docs/class-components/#class-components)
 - **`Marko.Out`**
   - The render context with methods like `write`, `beginAsync`, etc.
   - `ReturnType<template.render>`
@@ -131,7 +131,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 
 ### Typing `content`
 
-A commonly used type from the `Marko` namespace is `Marko.Body` which can be used to type the [content](./language.md#Tag-Content) in `input.content`:
+A commonly used type from the `Marko` namespace is `Marko.Body` which can be used to type the [content](./language.md#tag-content) in `input.content`:
 
 _child.marko_
 
@@ -269,7 +269,13 @@ declare global {
 
 ## TypeScript Syntax in `.marko`
 
-Any [JavaScript expression in Marko](./syntax.md#inline-javascript) can also be written as a TypeScript expression.
+Any JavaScript expression in Marko can also be written as a TypeScript expression.
+
+```marko
+<my-tag foo=1 as any>
+  ${(input.el as HTMLInputElement).value}
+</my-tag>
+```
 
 ### Tag Type Parameters
 
