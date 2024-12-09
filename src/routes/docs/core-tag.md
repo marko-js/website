@@ -54,7 +54,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
-The `<for>` has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same paramaters as the loop itself) that is used to give each iteration a unique key.
+The `<for>` has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
 
 ```marko
 <for|user| of=users by=user => user.id>
@@ -107,14 +107,14 @@ Let may also be **controlled** with its `valueChange=` attribute.
 
 In the above `let/_x` is as normal. However the other `let/x` is provided a [`valueChange` change handler](./language.md#shorthand-change-handlers-two-way-binding). This handler is called whenever `x` is updated. In this example the change handler sets the `_x` state to be the requested value converted to UPPERCASE. This might seem obscure, but it makes intercepting state changes as easy as adding a change handler!
 
-Another common pattern is to create **controllable state**. The simplest way implement controllable state is to (typically using the [change handler shorthand](./language.md#shorthand-change-handlers-two-way-binding)) bind a `<let>` to an [`input`](./language.md#input).
+Another common pattern is to create **controllable state**. The simplest way to implement controllable state is to bind a `<let>` to an [`input`](./language.md#input) (typically using the [change handler shorthand](./language.md#shorthand-change-handlers-two-way-binding)).
 
 ```marko
 <let/count:=input.count/>
 ```
 
-Now when the parent tag provides only a `count=` attribute then the child will maintain the `count` state.
-However if the parent passes in both `count=` and `countChange=` attributes then the parent signals that it can control the state causing our local `<let>` to simply reflect whatever is in `input.count`.
+Now, when the parent tag provides only a `count=` attribute, the child will maintain the `count` state.
+However, if the parent passes in both `count=` and `countChange=` attributes then the parent signals that it can control the state causing our local `<let>` to simply reflect whatever is in `input.count`.
 
 ## `<const>`
 
@@ -133,7 +133,7 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 ```
 
 > [!NOTE]
-> The `<const>` tag is locally scoped, and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
+> The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
 
 > [!TIP]
 > The implementation of the `<const>` tag above is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
@@ -164,9 +164,9 @@ The return value may then be used in the parent template:
 
 ### Assignable Return Value
 
-By default, an exposed variable can not be assigned to. Assignment may be enabled with the `valueChange=` attribute on the `<return>`.
+By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
 
-If a `valueChange=` attribute is provided, it is called whenever the tag variable is assigned to.
+If a `valueChange=` attribute is provided, it is called whenever the tag variable is assigned a value.
 
 _uppercase.marko_
 
@@ -178,7 +178,7 @@ _uppercase.marko_
 }/>
 ```
 
-In the above the exposed tag variable is initialized to an UPPERCASE version of `input.value` and when new values are assigned it will first UPPERCASE the value before storing it into state.
+In the above example, the exposed tag variable is initialized to an UPPERCASE version of `input.value` and when new values are assigned it will first UPPERCASE the value before storing it in state.
 
 ```marko
 <uppercase/value = ""/>
@@ -306,13 +306,13 @@ The `<lifecycle>` tag is used to synchronize side-effects from imperative client
 ```marko
 <lifecycle
   onMount() {
-    // Called once this on tag is attached to the dom, and never again.
+    // Called once this tag is attached to the dom, and never again.
   }
   onUpdate() {
     // Called every time the dependencies of the `onUpdate` function are invalidated.
   }
   onDestroy() {
-    // Called once this on is removed from the dom.
+    // Called once this tag is removed from the dom.
   }
 />
 ```
@@ -364,7 +364,7 @@ The log is re-executed each time its tag variable updates.
 <button onClick() { count++ }>Log</button>
 ```
 
-This logs `Current count: 0` on both server and client, and again whenever `count` changes.
+This logs `Current count: 0` on both server and client and again whenever `count` changes.
 
 ## `<debug>`
 
@@ -373,7 +373,7 @@ The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org
 ```marko
 <const/{ stuff } = input/>
 
-<debug/> // Can be useful to inspect render scoped variables with a debugger.
+<debug/> // Can be useful to inspect render-scoped variables with a debugger.
 ```
 
 If a `value=` attribute is included, the debugger will be executed whenever it changes.
