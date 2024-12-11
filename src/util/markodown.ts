@@ -27,13 +27,14 @@ export default function markodownPlugin(): PluginOption {
         docsFiles.map(async (file) => {
           if (file.endsWith(".md")) {
             const filePath = path.join(docsPath, file);
-            const content = await fs.readFile(filePath, "utf-8");
-            const markoContent = await mdToMarko(content);
-            const markoFilePath = path.join(
-              docsPages,
-              file.replace(".md", "+page.marko"),
+            await fs.writeFile(
+              path.join(docsPages, file.replace(".md", "+page.marko")),
+              await mdToMarko(await fs.readFile(filePath, "utf-8")),
             );
-            await fs.writeFile(markoFilePath, markoContent);
+            await fs.writeFile(
+              path.join(docsPages, file.replace(".md", "+meta.json")),
+              `{ "pageTitle": "${file.substring(0, file.length - 3)}" }`,
+            );
           }
         }),
       );

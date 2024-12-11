@@ -1,0 +1,35 @@
+export interface Input<T> {
+  value: T;
+  key: string;
+}
+
+<let/internalValue=input.value/>
+
+<effect() {
+  const existingValue = localStorage.getItem(input.key);
+  if (existingValue) {
+    internalValue = JSON.parse(existingValue);
+  }
+
+  window.addEventListener(
+    "storage",
+    (e) => {
+      if (e.key === input.key) {
+        internalValue = JSON.parse(e.newValue ?? "");
+      }
+    },
+    { signal: $signal },
+  );
+}/>
+
+<return=internalValue valueChange(newValue) {
+  newValue = JSON.stringify(newValue);
+  localStorage.setItem(input.key, newValue);
+  window.dispatchEvent(
+    new StorageEvent("storage", {
+      key: input.key,
+      newValue,
+      storageArea: localStorage,
+    }),
+  );
+}/>

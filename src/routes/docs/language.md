@@ -10,7 +10,7 @@ The language makes HTML more strict while extending it with control flow and rea
 > TODO: Move this to concise mode docs but link to it from getting-started.md [name=Doctor P]
 
 > [!IMPORTANT]
-> Text at the root of a template (outside any tags) must be prefixed with the [concise syntax's `--`](./concise-syntax.md#text) to denote it is text. The parser starts in concise mode and would otherwise try to parse what you meant to be text as a concise tag declaration.
+> Text at the root of a template (outside any tags) must be prefixed with the [concise syntax's text marker (`--`)](./concise-syntax.md#text) to denote it is text. The parser starts in concise mode and would otherwise try to parse what you meant to be text as a concise tag declaration.
 >
 > ```marko
 > -- Root level text
@@ -21,12 +21,12 @@ The language makes HTML more strict while extending it with control flow and rea
 Below is not only valid Marko code, but also a representation of almost all of Marko's syntax. You can view information about each piece of syntax by clicking on it.
 
 <pre>
-<a href="#Statements">import "...";</a>
+<a href="#statements">import "...";</a>
 
-&lt;<a href="#Tags">tag-name</a>|<a href="#Tag-Parameters">tag, parameters</a>|/<a href="#Tag-Variables">tagVariable</a> ...<a href="#Attributes">attributes</a>&gt;
-  <a href="#Tag-Content">content</a>
-  &lt;<a href="#Attribute-Tags">@attribute-tag</a>/&gt;
-&lt;/<a href="#Tags">tag-name</a>&gt;
+&lt;<a href="#tags">tag-name</a>|<a href="#tag-parameters-and-arguments">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>&gt;
+  <a href="#tag-content">content</a>
+  &lt;<a href="#attribute-tags-named-content">@attribute-tag</a>/&gt;
+&lt;/<a href="#tags">tag-name</a>&gt;
 </pre>
 
 ## Template Variables
@@ -35,7 +35,7 @@ Within Marko templates a few variables are automatically made available.
 
 ### `input`
 
-Gives access to the [attributes](#Attributes) the template was provided as a custom tag or the data passed in through the [top level api](./template.md).
+Gives access to the [attributes](#attributes) the template was provided as a custom tag or the data passed in through the [top level api](./template.md).
 
 ### `$signal`
 

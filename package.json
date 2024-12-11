@@ -4,13 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "@docsearch/css": "^3.8.0",
+    "@docsearch/js": "^3.8.0",
     "@marko/run": "^0.5.5",
     "@marko/run-adapter-static": "^0.2.0",
-    "@shikijs/monaco": "^1.24.0",
+    "@shikijs/monaco": "^1.24.1",
     "lz-string": "^1.5.0",
     "marko": "^5.36.3",
-    "monaco-editor-core": "^0.52.0",
-    "shiki": "^1.24.0"
+    "monaco-editor-core": "^0.52.2",
+    "shiki": "^1.24.1"
   },
   "private": true,
   "scripts": {
@@ -21,14 +23,14 @@
   },
   "devDependencies": {
     "@marko/compiler": "^5.38.3",
-    "@marko/translator-tags": "^0.4.5",
+    "@marko/translator-tags": "^0.4.6",
     "@types/node": "^22.10.1",
     "gh-pages": "^6.2.0",
     "github-slugger": "^2.0.0",
     "marked": "^15.0.3",
     "marked-alert": "^2.1.2",
     "prettier": "^3.4.2",
-    "prettier-plugin-marko": "^3.1.8",
+    "prettier-plugin-marko": "^3.1.9",
     "vite-plugin-monaco-editor": "^1.1.0"
   }
 }

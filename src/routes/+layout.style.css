@@ -1,0 +1,101 @@
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(
+    to bottom right,
+    color-mix(in oklab, var(--color-blue-primary) 30%, var(--color-background)),
+    color-mix(
+      in oklab,
+      var(--color-blue-secondary) 30%,
+      var(--color-background)
+    )
+  );
+  position: fixed;
+  inset: 0;
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  z-index: 1;
+
+  .logo {
+    height: 2rem;
+  }
+}
+
+:root {
+  color-scheme: light dark;
+  scroll-padding-top: 4rem;
+
+  --color-red-dark: oklch(0.52354 0.250698 358.815);
+  --color-red-light: oklch(0.736305 0.237623 20.415);
+  --color-yellow-dark: oklch(0.672384 0.240601 57.12);
+  --color-yellow-light: oklch(0.88201 0.204727 92.355);
+  --color-green-dark: oklch(0.643244 0.1995 162.855);
+  --color-green-light: oklch(0.850336 0.204173 140.15);
+  --color-blue-dark: oklch(0.536703 0.204912 242.05);
+  --color-blue-light: oklch(0.779357 0.163263 217.3);
+  --color-purple-dark: oklch(0.463457 0.15346 294.701);
+  --color-purple-light: oklch(0.756829 0.126986 332.83);
+
+  --color-background: light-dark(white, #202124);
+  --color-foreground: light-dark(black, white);
+  --color-red-primary: light-dark(
+    var(--color-red-dark),
+    var(--color-red-light)
+  );
+  --color-red-secondary: light-dark(
+    var(--color-red-light),
+    var(--color-red-dark)
+  );
+  --color-yellow-primary: light-dark(
+    var(--color-yellow-dark),
+    var(--color-yellow-light)
+  );
+  --color-yellow-secondary: light-dark(
+    var(--color-yellow-light),
+    var(--color-yellow-dark)
+  );
+  --color-green-primary: light-dark(
+    var(--color-green-dark),
+    var(--color-green-light)
+  );
+  --color-green-secondary: light-dark(
+    var(--color-green-light),
+    var(--color-green-dark)
+  );
+  --color-blue-primary: light-dark(
+    var(--color-blue-dark),
+    var(--color-blue-light)
+  );
+  --color-blue-secondary: light-dark(
+    var(--color-blue-light),
+    var(--color-blue-dark)
+  );
+  --color-purple-primary: light-dark(
+    var(--color-purple-dark),
+    var(--color-purple-light)
+  );
+  --color-purple-secondary: light-dark(
+    var(--color-purple-light),
+    var(--color-purple-dark)
+  );
+}

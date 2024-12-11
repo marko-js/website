@@ -2,7 +2,56 @@ export interface Input {
   renderBody: Marko.Body;
 }
 
-${input.renderBody}
+local-let/mode="html" key="syntax-mode"
+nav
+  button onClick() {
+    mode = mode === "html" ? "concise" : "html";
+  }
+    -- ${mode} mode
+  ul
+    li
+      local-let/open=true key="nav-reference-open"
+      details [
+        open=open
+        onToggle(e) {
+          open = (e.target as HTMLDetailsElement).open;
+        }
+      ]
+        summary -- Reference
+        ul
+          li
+            a href="../language/" -- Language
+          li
+            a href="../custom-tag/" -- Custom Tags
+          li
+            a href="../reactivity/" -- Reactivity
+          li
+            a href="../core-tag/" -- Core Tags
+          li
+            a href="../native-tag/" -- Native Tags
+          li
+            a href="../concise-syntax/" -- Concise Syntax
+          li
+            a href="../template/" -- Template API
+          li
+            a href="../typescript/" -- TypeScript
+    li
+      local-let/open=true key="nav-guides-open"
+      details [
+        open=open
+        onToggle(e) {
+          open = (e.target as HTMLDetailsElement).open;
+        }
+      ]
+        summary -- Guides
+        ul
+          li
+            a href="../styling/" -- Styling
+          li
+            a href="../getting-started/" -- Getting Started
+
+main class=mode === "concise" && "concise-mode"
+  ${input.renderBody}
 
 style
   --
@@ -13,18 +62,35 @@ style
   :root,
   h1 ~ section,
   .markdown-alert {
-    --section-color-subtle: oklch(from var(--section-color) l c h / 0.05);
+    --section-color-translucent: oklch(from var(--section-color) l c h / 0.05);
     --section-color-text: color-mix(
       in oklab,
       var(--section-color) 70%,
-      var(--color-text)
+      var(--color-foreground)
     );
   }
 
-  body {
-    padding: 0 2rem;
+  main {
+    padding: 3rem 2rem;
     max-width: 50rem;
-    margin: auto;
+    margin-left: 15rem;
+  }
+
+  nav {
+    position: fixed;
+    inset: 0;
+    padding-top: 3rem;
+    width: 15rem;
+    overflow-y: scroll;
+
+    ul {
+      list-style-type: none;
+      padding-left: 1rem;
+    }
+
+    details {
+      user-select: none;
+    }
   }
 
   p,
@@ -32,14 +98,17 @@ style
     line-height: 1.5;
   }
 
-  h1 ~ section:nth-of-type(4n + 1) {
+  h1 ~ section:nth-of-type(5n + 3) {
     --section-color: var(--color-red-primary);
   }
-  h1 ~ section:nth-of-type(4n + 2) {
+  h1 ~ section:nth-of-type(5n + 1) {
     --section-color: var(--color-green-primary);
   }
-  h1 ~ section:nth-of-type(4n + 3) {
+  h1 ~ section:nth-of-type(5n + 2) {
     --section-color: var(--color-yellow-primary);
+  }
+  h1 ~ section:nth-of-type(5n + 4) {
+    --section-color: var(--color-purple-primary);
   }
 
   a {
@@ -48,17 +117,18 @@ style
 
   :not(pre) > code {
     color: var(--section-color-text);
-    background-color: var(--section-color-subtle);
+    background-color: var(--section-color-translucent);
     padding: 0.15rem 0.3rem;
     border-radius: 0.3rem;
     border: 1px solid oklch(from var(--section-color) l c h / 0.2);
   }
 
   pre {
-    background-color: var(--section-color-subtle);
+    background-color: var(--section-color-translucent);
     padding: 1rem;
     border-radius: 0.5rem;
     border: 1px solid oklch(from var(--section-color) l c h / 0.5);
+    overflow-x: scroll;
   }
 
   .marko-codespan__tag {
@@ -112,7 +182,7 @@ style
 
   .markdown-alert {
     border-left: 4px solid var(--section-color);
-    background-color: var(--section-color-subtle);
+    background-color: var(--section-color-translucent);
     padding: 0.5rem 1rem;
     margin: 1rem 0;
     border-radius: 0.5rem;
@@ -122,8 +192,10 @@ style
     color: var(--section-color-text);
     display: flex;
     gap: 0.5rem;
+    align-items: center;
+    margin: 0.5rem;
 
-    & svg {
+    svg {
       fill: currentColor;
     }
   }

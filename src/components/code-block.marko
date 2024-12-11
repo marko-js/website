@@ -1,5 +1,5 @@
-import { createHighlighter } from "shiki";
-import { createCssVariablesTheme } from "shiki";
+static import { createHighlighter } from "shiki";
+static import { createCssVariablesTheme } from "shiki";
 export interface Input {
   lang: string;
   text: string;
@@ -14,28 +14,39 @@ static const highlighter = await createHighlighter({
   themes: [customTheme],
 });
 
-<let/mode="concise"/>
-
-<const/highlightedText=highlighter.codeToHtml(input.text, {
+const/highlightedText=highlighter.codeToHtml(input.text, {
   lang: input.lang,
   theme: "marko-docs-code-block",
-})/>
+})
 
-<const/highlightedConcise=input.concise &&
+const/highlightedConcise=input.concise &&
 highlighter.codeToHtml(input.concise, {
   lang: input.lang,
   theme: "marko-docs-code-block",
-})/>
+})
 
-<const/code=(mode === "concise" && highlightedConcise) || highlightedText/>
--- $!{code}
+if=input.concise
+  div.html-code-block -- $!{highlightedText}
+  div.concise-code-block -- $!{highlightedConcise}
+else -- $!{highlightedText}
 
+style
+  --
+  .concise-code-block {
+    display: none;
+  }
 
+  .concise-mode .concise-code-block {
+    display: block;
+  }
 
-<style>
+  .concise-mode .html-code-block {
+    display: none;
+  }
+
   .shiki {
     --shiki-foreground: var(--section-color-text);
-    --shiki-background: var(--section-color-subtle);
+    --shiki-background: var(--section-color-translucent);
     --shiki-token-constant: oklch(
       from var(--section-color) l calc(c * 0.9) calc(h + 20 * var(--hue-unit))
     );
@@ -70,4 +81,4 @@ highlighter.codeToHtml(input.concise, {
       --hue-unit: 1deg;
     }
   }
-</style>
+  --

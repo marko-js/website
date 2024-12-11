@@ -30,21 +30,21 @@ declare module "@marko/run" {
 	}> {}
 }
 
-declare module "../src/routes/_index/+page.marko" {
+declare module "../src/routes/docs/+handler" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/"];
-    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Route = Run.Routes["/docs"];
+    export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
     export const route: Run.HandlerTypeFn<Route>;
   }
 }
 
-declare module "../src/routes/docs/+page.marko" {
+declare module "../src/routes/_index/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs"];
+    export type Route = Run.Routes["/"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -190,7 +190,7 @@ declare module "../src/routes/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/" | "/docs" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/playground"];
+    export type Route = Run.Routes["/" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/playground"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -204,7 +204,7 @@ declare module "../src/routes/docs/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko"];
+    export type Route = Run.Routes["/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -213,18 +213,18 @@ declare module "../src/routes/docs/+layout.marko" {
 }
 
 type Routes = {
-	"/_index": { verb: "get"; meta: typeof import("../src/routes/_index/+meta.json"); };
+	"/_index": { verb: "get"; };
 	"/docs": { verb: "get"; };
-	"/docs/_docs-pages/concise-syntax": { verb: "get"; };
-	"/docs/_docs-pages/core-tag": { verb: "get"; };
-	"/docs/_docs-pages/custom-tag": { verb: "get"; };
-	"/docs/_docs-pages/getting-started": { verb: "get"; };
-	"/docs/_docs-pages/language": { verb: "get"; };
-	"/docs/_docs-pages/native-tag": { verb: "get"; };
-	"/docs/_docs-pages/reactivity": { verb: "get"; };
-	"/docs/_docs-pages/styling": { verb: "get"; };
-	"/docs/_docs-pages/template": { verb: "get"; };
-	"/docs/_docs-pages/typescript": { verb: "get"; };
-	"/docs/_docs-pages/why-marko": { verb: "get"; };
+	"/docs/_docs-pages/concise-syntax": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/concise-syntax+meta.json"); };
+	"/docs/_docs-pages/core-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/core-tag+meta.json"); };
+	"/docs/_docs-pages/custom-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/custom-tag+meta.json"); };
+	"/docs/_docs-pages/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/getting-started+meta.json"); };
+	"/docs/_docs-pages/language": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/language+meta.json"); };
+	"/docs/_docs-pages/native-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/native-tag+meta.json"); };
+	"/docs/_docs-pages/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/reactivity+meta.json"); };
+	"/docs/_docs-pages/styling": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/styling+meta.json"); };
+	"/docs/_docs-pages/template": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/template+meta.json"); };
+	"/docs/_docs-pages/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/typescript+meta.json"); };
+	"/docs/_docs-pages/why-marko": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/why-marko+meta.json"); };
 	"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
 }
