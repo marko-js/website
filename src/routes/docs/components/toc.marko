@@ -1,0 +1,61 @@
+// Table of Contents
+
+import type { RecursiveList } from "<tree>";
+
+let/sections=undefined as RecursiveList | undefined
+if=sections
+  ul.table-of-contents
+    tree item=sections
+
+effect() {
+  const mainSections: RecursiveList = [];
+  function getSectionList(section: Element) {
+    const subsections: RecursiveList = [];
+    section
+      .querySelectorAll(":scope > section")
+      .forEach((subsection) => subsections.push(...getSectionList(subsection)));
+    const headerContent = section.firstChild?.textContent;
+    return [
+      {
+        id: section.id,
+        title:
+          headerContent?.substring(0, headerContent.length - 1) || section.id,
+        children: subsections,
+      },
+    ];
+  }
+  document
+    .querySelectorAll("main > section > section")
+    .forEach((section) => mainSections.push(...getSectionList(section)));
+  sections = mainSections;
+}
+
+style
+  --
+  .table-of-contents {
+    ul {
+      font-size: 0.9em;
+    }
+
+    a {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    > li:nth-of-type(5n + 1) {
+      --section-color-text: var(--color-green-primary);
+    }
+    > li:nth-of-type(5n + 2) {
+      --section-color-text: var(--color-yellow-primary);
+    }
+    > li:nth-of-type(5n + 3) {
+      --section-color-text: var(--color-red-primary);
+    }
+    > li:nth-of-type(5n + 4) {
+      --section-color-text: var(--color-purple-primary);
+    }
+  }
+  --

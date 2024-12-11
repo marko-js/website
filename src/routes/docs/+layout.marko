@@ -2,6 +2,15 @@ export interface Input {
   renderBody: Marko.Body;
 }
 
+define/Outline|input: { page: string; renderBody: Marko.Renderable }|
+  if=$global.url.href.endsWith(input.page + "/")
+    strong
+      ${input.renderBody}
+    toc
+  else
+    a href=`../${input.page}/`
+      ${input.renderBody}
+
 local-let/mode="html" key="syntax-mode"
 nav
   button onClick() {
@@ -20,21 +29,21 @@ nav
         summary -- Reference
         ul
           li
-            a href="../language/" -- Language
+            Outline page="language" -- Language
           li
-            a href="../custom-tag/" -- Custom Tags
+            Outline page="custom-tag" -- Custom Tags
           li
-            a href="../reactivity/" -- Reactivity
+            Outline page="reactivity" -- Reactivity
           li
-            a href="../core-tag/" -- Core Tags
+            Outline page="core-tag" -- Core Tags
           li
-            a href="../native-tag/" -- Native Tags
+            Outline page="native-tag" -- Native Tags
           li
-            a href="../concise-syntax/" -- Concise Syntax
+            Outline page="concise-syntax" -- Concise Syntax
           li
-            a href="../template/" -- Template API
+            Outline page="template" -- Template API
           li
-            a href="../typescript/" -- TypeScript
+            Outline page="typescript" -- TypeScript
     li
       local-let/open=true key="nav-guides-open"
       details [
@@ -46,9 +55,9 @@ nav
         summary -- Guides
         ul
           li
-            a href="../styling/" -- Styling
+            Outline page="styling" -- Styling
           li
-            a href="../getting-started/" -- Getting Started
+            Outline page="getting-started" -- Getting Started
 
 main class=mode === "concise" && "concise-mode"
   ${input.renderBody}

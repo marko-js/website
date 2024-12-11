@@ -1,0 +1,13 @@
+export type RecursiveList = {id: string, title: string, children: RecursiveList}[];
+export interface Input {
+  item: RecursiveList;
+}
+
+const/{ item }=input
+
+for|item| of=item
+  li
+    a href=`#${item.id}` -- ${item.title}
+    if=(item.children.length)
+      ul
+        tree item=item.children
