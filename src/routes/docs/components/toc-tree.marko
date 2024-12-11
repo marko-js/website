@@ -1,0 +1,35 @@
+export type RecursiveList = {id: string, title: string, children: RecursiveList}[];
+export interface Input {
+  item: RecursiveList;
+}
+client const observer = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    entry.target.dispatchEvent(
+      new CustomEvent("visibility-change", { detail: entry.isIntersecting }),
+    );
+  }
+});
+
+const/{ item }=input
+
+for|item| of=item
+  li
+    let/visible=false
+    a href=`#${item.id}` class=visible && "visible" -- ${item.title}
+    if=(item.children.length)
+      ul
+        toc-tree item=item.children
+    effect() {
+      const section = document.getElementById(item.id);
+      if (section) {
+        observer.observe(section);
+        section.addEventListener(
+          "visibility-change",
+          (e) => {
+            visible = e.detail;
+          },
+          { signal: $signal },
+        );
+        $signal.onabort = () => observer.unobserve(section);
+      }
+    }
