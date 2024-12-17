@@ -101,7 +101,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.Body<Params, Return>`**
   - Used to type [tag content](./language.md#tag-content)
 - **`Marko.Renderable`**
-  - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tag)
+  - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tags)
   - `string | Marko.Template | Marko.Body | { content: Marko.Body}`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
@@ -116,7 +116,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
   - Helper to extract the parameters and return types from a `Marko.Body`
 - **`Marko.AttrTag<T>`**
-  - Used to represent types for [attributes tags](./language.md#attribute-tags-named-content)
+  - Used to represent types for [attributes tags](./language.md#attribute-tags)
   - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
 
 ### Deprecated

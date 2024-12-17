@@ -2,7 +2,7 @@
 
 ## `<if>` / `<else>`
 
-The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./language.md#attribute-tags-named-content).
+The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./language.md#attribute-tags).
 
 An `<if>` is applied when its `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and may be followed by an `<else>`.
 
@@ -25,7 +25,7 @@ Expressions in the if/else chain are evaluated in order.
 
 ## `<for>`
 
-The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags-named-content) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters-and-arguments').
+The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters).
 
 The `<for>` tag can iterate over:
 
@@ -96,25 +96,61 @@ When a tag variable is updated, everywhere it is used also re-runs. This is the 
 
 In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#tag-variables), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
 
+> [!NOTE]
+> The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
+>
+> ```marko
+> <let/count=input.initialCount/>
+> <p>Count: ${count}</p>
+> <p>Input Count: ${input.initialCount}</p>
+> ```
+>
+> Here, even if `input.initialCount` changes, `count` remains at its initial value.
+
 ### Controllable Let
 
-Let may also be **controlled** with its `valueChange=` attribute.
+The `<let>` tag can be made **controllable** using its `valueChange=` attribute, similarly to [native tag change handlers](./native-tag.md#change-handlers). This enables interception and transformation of state changes, or synchronization of state between parent and child components.
 
 ```marko
-<let/_x="HELLO"/>
-<let/x=_x valueChange(newValue) { _x = newValue.toUpperCase() }/>
+<let/value="HELLO"/>
+<let/controlled_value=value valueChange(newValue) { value = newValue.toUpperCase() }/>
 ```
 
-In the above `let/_x` is as normal. However the other `let/x` is provided a [`valueChange` change handler](./language.md#shorthand-change-handlers-two-way-binding). This handler is called whenever `x` is updated. In this example the change handler sets the `_x` state to be the requested value converted to UPPERCASE. This might seem obscure, but it makes intercepting state changes as easy as adding a change handler!
+In this example:
 
-Another common pattern is to create **controllable state**. The simplest way to implement controllable state is to bind a `<let>` to an [`input`](./language.md#input) (typically using the [change handler shorthand](./language.md#shorthand-change-handlers-two-way-binding)).
+1. `value` holds the base state with an initial value of "HELLO"
+2. `controlled_value` reflects the value of `value`, but its `valueChange` handler ensures all updates are uppercase
+3. Any changes to `controlled_value` are intercepted, transformed to uppercase, and stored in `value`
+
+A more common use case is creating state that can be optionally controlled by a parent component:
 
 ```marko
+// counter.marko
+
 <let/count:=input.count/>
+
+<button onClick() { count++ }>
+  Clicked ${count} times
+</button>
 ```
 
-Now, when the parent tag provides only a `count=` attribute, the child will maintain the `count` state.
-However, if the parent passes in both `count=` and `countChange=` attributes then the parent signals that it can control the state causing our local `<let>` to simply reflect whatever is in `input.count`.
+This creates two possible behaviors:
+
+1. **Uncontrolled**: If the parent only provides `count=`, the child maintains its own state:
+
+   ```marko
+   <counter count=0/>
+   ```
+
+2. **Controlled**: If the parent provides both `count=` and `countChange=`, the parent takes control of the state:
+
+   ```marko
+   <let/count=0/>
+   <counter count:=count/>
+   <button onClick() { count = 0 }>
+     Reset
+   </button>
+   ```
 
 ## `<const>`
 
@@ -191,7 +227,7 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 The `<script>` tag has special behavior in Marko.
 
 The content of a `<script>` tag is executed first when the template has finished rendering and is mounted in the browser.
-It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters-and-arguments) it references has changed.
+It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters) it references has changed.
 
 ```marko
 <let/count=1/>
@@ -386,7 +422,7 @@ This debugger executes on the initial render and whenever `input.firstName` or `
 
 ## `<await>`
 
-The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters-and-arguments).
+The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters).
 
 ```marko
 <await|user|=getUser()>
@@ -417,11 +453,11 @@ If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder)
 
 ## `<try>`
 
-The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#attribute-tags-named-content): `@catch` and `@placeholder`.
+The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#attribute-tags): `@catch` and `@placeholder`.
 
 ### `@catch`
 
-When a runtime error occurs in the [content](./language.md#tag-content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#tag-parameters-and-arguments) of the `@catch`.
+When a runtime error occurs in the [content](./language.md#tag-content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#tag-parameters) of the `@catch`.
 
 ```marko
 <try>
@@ -436,7 +472,7 @@ When a runtime error occurs in the [content](./language.md#tag-content) of the `
 
 ### `@placeholder`
 
-The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags-named-content) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
+The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
 
 ## `<html-comment>`
 

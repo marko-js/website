@@ -68,9 +68,7 @@ style
     --section-color: var(--color-blue-primary);
   }
 
-  :root,
-  h1 ~ section,
-  .markdown-alert {
+  * {
     --section-color-translucent: oklch(from var(--section-color) l c h / 0.05);
     --section-color-text: color-mix(
       in oklab,

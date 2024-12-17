@@ -36,7 +36,7 @@ or when using the [`<define>` tag](./core-tag.md#define)
 ```
 
 > [!NOTE]
-> If you need to reference a local variable that is _not_ `PascalCase`, you can do so using a [dynamic tag](./language.md#dynamic-tag).
+> If you need to reference a local variable that is _not_ `PascalCase`, you can do so using a [dynamic tag](./language.md#dynamic-tags).
 >
 > ```marko
 > import { camelCaseTag } from "somewhere"

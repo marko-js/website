@@ -2,6 +2,11 @@ export interface Input<T> {
   value: T;
   key: string;
 }
+static declare global {
+  interface WindowEventMap {
+    "local-storage-update": CustomEvent<StorageEvent>;
+  }
+}
 
 <let/internalValue=input.value/>
 
@@ -10,14 +15,19 @@ export interface Input<T> {
   if (existingValue) {
     internalValue = JSON.parse(existingValue);
   }
+  /** TODO(hoisting bug): this should happen automatically */
+  const input_key = input.key;
 
+  const handleStorageChange = (e: StorageEvent) => {
+    if (e.key === input_key) {
+      internalValue = JSON.parse(e.newValue ?? "");
+    }
+  };
+
+  window.addEventListener("storage", handleStorageChange, { signal: $signal });
   window.addEventListener(
-    "storage",
-    (e) => {
-      if (e.key === input.key) {
-        internalValue = JSON.parse(e.newValue ?? "");
-      }
-    },
+    "local-storage-update",
+    (e) => handleStorageChange(e.detail),
     { signal: $signal },
   );
 }/>
@@ -26,10 +36,12 @@ export interface Input<T> {
   newValue = JSON.stringify(newValue);
   localStorage.setItem(input.key, newValue);
   window.dispatchEvent(
-    new StorageEvent("storage", {
-      key: input.key,
-      newValue,
-      storageArea: localStorage,
+    new CustomEvent("local-storage-update", {
+      detail: {
+        key: input.key,
+        newValue,
+        storageArea: localStorage,
+      },
     }),
   );
 }/>

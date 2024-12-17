@@ -79,7 +79,7 @@ function markoDocs(): MarkedExtension {
           }),
         ]);
       } else if (token.type === "codespan") {
-        token.text = (token.text as string).replaceAll("${", "\\\\${");
+        // token.text = (token.text as string).replaceAll("${", "${");
       } else if (token.type === "link") {
         if (/\.\/[\w-]+.md/.test(token.href)) {
           token.href = "." + token.href.replace(".md", "");
@@ -99,7 +99,9 @@ function markoDocs(): MarkedExtension {
           return `<code class="marko-codespan__tag">${token.text.substring(1, token.text.length - 1)}</code>`;
         if (/^[\w-]+=$/.test(token.text))
           return `<code class="marko-codespan__attribute">${token.text.substring(0, token.text.length - 1)}</code>`;
-        return false;
+        return `<code>${token.text
+          .replaceAll("${", "&#36;{")
+          .replaceAll("<", "&lt;")}</code>`;
       },
     },
   };

@@ -6,7 +6,7 @@ The core of Marko's reactive system is [the `<let>` tag](./core-tag.md#let).
 
 ## Reactive Variables
 
-In Marko [Tag Variables](./language.md#tag-variables), [Tag Parameters](./language.md#tag-parameters-and-arguments), and [`input`](./language.md#input) are all reactive. This means they are tracked by the Marko compiler and when these values are caused to update any dependent [render expressions](#render-expressions) are also updated.
+In Marko, [Tag Variables](./language.md#tag-variables), [Tag Parameters](./language.md#tag-parameters), and [`input`](./language.md#input) are all reactive. This means they are tracked by the Marko compiler and when these values are caused to update any dependent [render expressions](#render-expressions) are also updated.
 
 ## Render Expressions
 

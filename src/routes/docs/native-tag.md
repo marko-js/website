@@ -2,7 +2,7 @@
 
 ## Element References
 
-All native tags expose a [Tag Variable](./language.md#tag-variables) which provides a getter to the reference of the DOM node.
+All native tags expose a [Tag Variable](./language.md#tag-variables) that provides a getter to the reference of the DOM node.
 
 ```marko
 <div/ref/>
@@ -13,26 +13,26 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) which provi
 ```
 
 > [!CAUTION]
-> The node reference is only available in the browser. If you try to access a DOM node from the server, it will result in an error.
+> The node reference is only available in the browser. Attempting to access a DOM node from the server will result in an error.
 
 ## Enhanced Attributes
 
 ### `class=`
 
-In addition to a string, Marko supports passing arrays and objects to the `class=` attribute.
+In addition to strings, Marko supports passing arrays and objects to the `class=` attribute.
 
 ```marko
-<!-- string: -->
+<!-- String -->
 <div class="a c"/>
 
-<!-- object: -->
-<div class={ a:true, b:false, c:true }/>
+<!-- Object -->
+<div class={ a: true, b: false, c: true }/>
 
-<!-- array: -->
-<div class=["a", null, { c:true }]/>
+<!-- Array -->
+<div class=["a", null, { c: true }]/>
 ```
 
-All of the examples listed here have the same result:
+All examples above result in the same HTML:
 
 ```html
 <div class="a c"></div>
@@ -40,28 +40,28 @@ All of the examples listed here have the same result:
 
 ### `style=`
 
-In addition to a string, Marko supports passing arrays and objects to the `style=` attribute.
+In addition to strings, Marko supports passing arrays and objects to the `style=` attribute.
 
 ```marko
-<!-- string: -->
+<!-- String -->
 <div style="display:block;margin-right:16px"/>
 
-<!-- object: -->
+<!-- Object -->
 <div style={ display: "block", color: false, "margin-right": 16 }/>
 
-<!-- array: -->
+<!-- Array -->
 <div style=["display:block", null, { "margin-right": 16 }]/>
 ```
 
-All of the examples listed here have the same result:
+All examples above result in the same HTML:
 
-```marko
+```html
 <div style="display:block;margin-right:16px;"></div>
 ```
 
-### Event handlers
+### Event Handlers
 
-Attributes on native tags that begin with `on` followed by `-` or a captial letter are attached as [event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+Attributes on native tags that begin with `on` followed by `-` or a capital letter are attached as [event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
 
 When the attribute starts with `on-` the event name casing is preserved, otherwise the event name is all lowercased.
 
@@ -72,12 +72,18 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
 <button onClick() { alert("Hi!") }>
   Say Hi
 </button>
+
+// equivalent to
+
+<button on-click() { alert("Hi!") }>
+  Sat Hi
+</button>
 ```
 
 > [!NOTE]
 > Event handlers are typically written using the [method shorthand](./language.md#shorthand-methods) for readability.
 
-The value for the attribute must either be a function or a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value. This allows for conditional event handlers:
+The value for the attribute must be either a function or a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value, allowing for conditional event handlers:
 
 ```marko
 <let/clicked=false/>
@@ -99,7 +105,7 @@ The value for the attribute must either be a function or a [falsy](https://devel
 > Some [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) may emit non lowercase event names, in which case (pun intended 😏) you should use `on-` which preserves the casing.
 
 > [!CAUTION]
-> Although Marko _does_ support [native html inline event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes), and that's pretty cool, you probably shouldn't use them since they're detached from Marko's reactivity system and may lead to [CSP]() / [XSS]() issues.
+> Even though Marko _does_ support [native HTML inline event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes), it's recommended to avoid them since they're detached from Marko's reactivity system and may lead to [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) / [XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) issues.
 >
 > ```marko
 > <button onclick="this.innerHTML++">0</button>
@@ -111,25 +117,25 @@ The HTML `<input>` tag has a `value=` attribute that reflects the state of the `
 
 #### `<input type="radio">` and `<input type="checkbox">`
 
-Radios and Checkboxes support a `checkedValue=` attribute. When this attribute matches the input's `value=` attribute, it will be `checked`.
+Radio and checkbox inputs support a `checkedValue=` attribute. When this attribute matches the input's `value=` attribute, it will be `checked`.
 
 `checkedValue=` may be set to a string, in which case only one value will match (for use with `type="radio"`), or an array of strings, in which case multiple values may match (for use with `type="checkbox"`).
 
 #### `<select>`
 
-The `<select>` tag is unique in that its state is internally synchronized with its the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
+The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
 
 `value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with`<select multiple>`).
 
 #### `<textarea>`
 
-In HTML, `<textarea>` holds its value inside its body. In Marko, this state may also be held in the `value=` attribute. This is useful for the textarea change handler.
+In HTML, `<textarea>` holds its value inside its body. In Marko, this state can also be held in the `value=` attribute, which is useful for the textarea change handler.
 
 ### Change Handlers
 
-Some native tags in Marko have additional attributes which make them **controllable**. All of these attributes end with `Change`, and are designed to take advantage of the [bind shorthand](./language.md#shorthand-change-handlers-two-way-binding).
+Some native tags in Marko have additional attributes that make them **controllable**. These attributes end with `Change` and are designed to work with the [bind shorthand](./language.md#shorthand-change-handlers-two-way-binding).
 
-There are several DOM elements that maintain internal state separate from an associated attribute. In Marko such attributes are "uncontrolled", meaning that Marko will _only_ set the attribute value by default and not the internal value.
+For DOM elements that maintain internal state separate from an associated attribute, Marko uses "uncontrolled" attributes by default, meaning it only sets the attribute value and not the internal value.
 
 ```marko
 <input value="hello">
@@ -137,9 +143,9 @@ There are several DOM elements that maintain internal state separate from an ass
 
 Above is among the simplest of examples, but interestingly its behavior is different across frameworks in subtle ways.
 
-In some frameworks this will (conceptually) create a "read only" `<input>`. Marko opts not to do this, instead the user can freely type in the `<input>`.
+In some frameworks, like React, this would be a "read-only" `<input>`. Marko takes a different approach, allowing the input's state to be managed natively by the browser.
 
-Adding `state` complicates things further.
+Adding state introduces some nuances in behavior.
 
 ```marko
 <let/message="hello"/>
@@ -151,14 +157,14 @@ Adding `state` complicates things further.
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-Now typing in the `<input>` and then clicking the `<button>` leads to a (perhaps) suprising behavior.
-Firstly, the `<div>` text is not updated until we click the `<button>` and then `<input>` doesn't get set to "goodbye"!
+In this example, typing in the `<input>` and then clicking the `<button>` might not behave as expected. The `<div>` text updates only when the button is clicked, and the `<input>` doesn't reflect the new "goodbye" value.
 
-The issue here is that there are actually two states not one. The state owned by Marko in the `<let/message>` and the internal state of the `<input>` value. These states are also updated at different times.
+This occurs because there are two separate states, which update independently:
 
-To solve this problem, at a fundamental level, the two states and their updates need to be synchronized.
+1. The Marko-managed state in `<let/message>`
+2. The internal state of the `<input>` value
 
-To help with this, Marko has a special `valueChange` attribute on `<input>`.
+To synchronize these two states and their updates, Marko includes a special `valueChange` attribute on `<input>`.
 
 ```marko
 <let/message = "hello"/>
@@ -170,15 +176,17 @@ To help with this, Marko has a special `valueChange` attribute on `<input>`.
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-In the above we've set the `valueChange` attribute to an empty function.
+The `valueChange` attribute transforms the behavior:
 
-Running through the previous steps (typing in the `<input>` and clicking `<button>`) we see a different behavior.
+- Typing in the `<input>` updates both the `<input>` and the `<div>`
+- Clicking the `<button>` updates both the `<input>` and the `<div>`
 
-Typing in the `<input>` does _nothing_ and clicking the `<button>` now updates the `<input>` to "goodbye".
+There is now only one state! This synchronization occurs because `valueChange`:
 
-This is because with the `valueChange` attribute the `<input>` will ignore its internal state changes and is synchronized with the state provided through the `value=` attribute. There is now only one state!
+1. Captures internal `<input>` changes
+2. Updates the `message` variable, which then updates the `value=` attribute
 
-The `valueChange` is called whenever the `<input>` _would have_ updated its internal state with a new value. However since `valueChange` does nothing, we are in essence ignoring the updates from the `<input>`.
+The `valueChange` function is called whenever the `<input>` would normally update, allowing a parent component to synchronize its state with the input's internal state.
 
 ```marko
 <let/message = "hello"/>
@@ -190,7 +198,7 @@ The `valueChange` is called whenever the `<input>` _would have_ updated its inte
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-There is now a single state _and_ updates from both sources are handled. Typing in the `<input>` and clicking the `<button>` cause changes to both the `<div>` and the `<input>` itself. Everything is in sync!
+In this example, there is a single state _and_ updates from both sources are handled. Typing in the `<input>` and clicking the `<button>` cause changes to both the `<div>` and the `<input>` itself. Everything is in sync!
 
 Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding) for simple reflective change handlers like this, allowing the example to be simplified to:
 
@@ -204,9 +212,9 @@ Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding)
 <button onClick() { message = "Goodbye" }>Click Me</>
 ```
 
-With this shorthand all that is needed to go from "uncontrolled" to "controlled" for the `value` attribute was to swap from `value=` to `value:=`, easy!
+With this shorthand all that is needed to go from "uncontrolled" to "controlled" for the `value` attribute was to swap from `value=` to `value:=`.
 
-As a final example lets do something simple, but interesting, with a manual `valueChange` handler.
+For cases besides the most simple, manual `valueChange` handlers are required.
 
 ```marko
 <let/message = "hello"/>
@@ -218,19 +226,17 @@ As a final example lets do something simple, but interesting, with a manual `val
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-When typing into the `<input>` above all changes are intercepted _and manipulated_. The `<input>` now disallows any UPPER_CASE characters! This pattern is incredibly useful for [input masking](https://css-tricks.com/input-masking/) and more - and it's built in!
-
-TLDR:
+All changes to this `<input>` are intercepted _and manipulated_. In this example, all UPPERCASE characters are automatically converted to lowercase. This pattern is useful for [input masking](https://css-tricks.com/input-masking/) and more - and it's built in!
 
 ```marko
-// uncontrolled - browser owns the state
+// uncontrolled - The browser owns the state
 <input value="hello">
 
-// controlled - we own the state
-<let/value="hello"/>
-<input value:=value>
+// controlled - The `inputValue` tag variable owns the state
+<let/inputValue="hello"/>
+<input value:=inputValue>
 
-// controlled - and we can get crazy with it
+// controlled - Modifications to `<input>` are transformed
 <let/creditCardNumber="5555 5555 555"/>
 <input
   value=creditCardNumber
