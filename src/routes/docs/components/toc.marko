@@ -7,7 +7,8 @@ if=sections
   ul.table-of-contents
     toc-tree item=sections
 
-effect() {
+script
+  --
   const mainSections: RecursiveList = [];
   function getSectionList(section: Element) {
     const subsections: RecursiveList = [];
@@ -28,7 +29,7 @@ effect() {
     .querySelectorAll("main > section > section")
     .forEach((section) => mainSections.push(...getSectionList(section)));
   sections = mainSections;
-}
+  --
 
 style
   --

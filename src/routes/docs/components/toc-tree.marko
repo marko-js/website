@@ -19,7 +19,8 @@ for|item| of=item
     if=(item.children.length)
       ul
         toc-tree item=item.children
-    effect() {
+    script
+      --
       const section = document.getElementById(item.id);
       if (section) {
         observer.observe(section);
@@ -28,8 +29,10 @@ for|item| of=item
           (e) => {
             visible = e.detail;
           },
-          { signal: $signal },
+          {
+            signal: $signal,
+          },
         );
         $signal.onabort = () => observer.unobserve(section);
       }
-    }
+      --

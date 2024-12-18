@@ -10,27 +10,29 @@ static declare global {
 
 <let/internalValue=input.value/>
 
-<effect() {
+<script>
   const existingValue = localStorage.getItem(input.key);
   if (existingValue) {
     internalValue = JSON.parse(existingValue);
   }
   /** TODO(hoisting bug): this should happen automatically */
   const input_key = input.key;
-
   const handleStorageChange = (e: StorageEvent) => {
     if (e.key === input_key) {
       internalValue = JSON.parse(e.newValue ?? "");
     }
   };
-
-  window.addEventListener("storage", handleStorageChange, { signal: $signal });
+  window.addEventListener("storage", handleStorageChange, {
+    signal: $signal,
+  });
   window.addEventListener(
     "local-storage-update",
     (e) => handleStorageChange(e.detail),
-    { signal: $signal },
+    {
+      signal: $signal,
+    },
   );
-}/>
+</script>
 
 <return=internalValue valueChange(newValue) {
   newValue = JSON.stringify(newValue);
