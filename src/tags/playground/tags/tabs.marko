@@ -1,0 +1,111 @@
+import type { PlaygroundFile } from "../playground.marko";
+export interface Input {
+  files: PlaygroundFile[];
+  filesChange: (files: PlaygroundFile[]) => void;
+  selected: number;
+  selectedChange?: (newSelected: number) => void;
+}
+
+<let/tabs:=input.files/>
+<let/selected:=input.selected/>
+
+<div class="tabs">
+  <for|tab, i| of=tabs>
+    <const/tabSelected=selected === i/>
+
+    <let/editing=false/>
+
+    <div
+      aria-selected=tabSelected && "true"
+      tabindex=0
+      role="button"
+      onClick() {
+        if (tabSelected && i > 0) {
+          editing = true;
+        }
+        selected = i;
+      }
+      onKeypress(e) {
+        if (e.key === " " || e.key === "Enter") {
+          if (tabSelected && i > 0) {
+            editing = true;
+          }
+          selected = i;
+        }
+      }
+      class="tab"
+    >
+      <if=editing>
+        <let/length=tab.name.length/>
+        <input/curr
+          value=tab.name
+          size=length
+          onBlur(e) {
+            tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, name: (e.target as HTMLInputElement).value });
+            editing = false;
+          }
+          onInput(e) {
+            length = (e.target as HTMLInputElement).value.length;
+          }
+        >
+        <script>
+          curr().focus();
+          curr().setSelectionRange(0, curr().value.indexOf("."));
+        </script>
+      </if>
+      <else>
+        ${tab.name}
+      </else>
+
+      <if=(i > 0)>
+        <button
+          aria-label="close"
+          onClick(e) {
+            e.stopPropagation();
+            if (selected > i) {
+              selected -= 1;
+            } else if (selected === i) {
+              selected = 0;
+            }
+            tabs = tabs.toSpliced(i, 1);
+          }
+          class="close-button"
+        >
+          ×
+        </button>
+      </if>
+    </div>
+  </for>
+
+  <button
+    aria-label="Add file"
+    onClick() {
+      tabs = tabs.concat({ name: `Tag${tabs.length}.marko`, content: ""});
+    }
+  >
+    +
+  </button>
+</div>
+
+<style>
+  .tabs {
+    display: flex;
+    overflow: scroll;
+    scrollbar-width: thin;
+
+    .tab {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-bottom: 2px solid transparent;
+      text-wrap: nowrap;
+
+      &:hover {
+        background-color: #888;
+      }
+      &[aria-selected="true"] {
+        border-color: var(--color-foreground);
+      }
+    }
+  }
+</style>

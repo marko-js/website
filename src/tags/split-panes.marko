@@ -1,0 +1,75 @@
+export interface Pane extends Marko.HTML.Div {}
+export interface Input {
+  first: Marko.AttrTag<Pane>;
+  second: Marko.AttrTag<Pane>;
+}
+const/{ first, second }=input
+
+let/editorSize=0.5
+
+match-media/isVertical="(max-aspect-ratio: 1/1)"
+
+div.panes/container
+  div ...first style=[first.style, { "flex-grow": editorSize }]
+    ${first.content}
+  button.divider [
+    aria-label="resize display panes"
+    onPointerdown(e) {
+      (e.target as HTMLButtonElement).setPointerCapture(e.pointerId);
+    }
+    onPointermove(e) {
+      if (e.buttons) {
+        const rect = container().getBoundingClientRect();
+        const fraction = isVertical
+          ? (e.clientY - rect.top) / rect.height
+          : (e.clientX - rect.left) / rect.width;
+        editorSize = Math.min(0.8, Math.max(0.2, fraction));
+      }
+    }
+    onPointerup(e) {
+      (e.target as HTMLButtonElement).releasePointerCapture(e.pointerId);
+    }
+    onPointercancel(e) {
+      (e.target as HTMLButtonElement).releasePointerCapture(e.pointerId);
+    }
+  ]
+  div ...second style=[first.style, { "flex-grow": 1 - editorSize }]
+    ${second.content}
+
+
+style --
+  .panes {
+    display: flex;
+    position: fixed;
+    inset: 3rem 0 0 0;
+
+    * {
+      flex-basis: 0;
+    }
+  }
+
+  .panes > div {
+    overflow: hidden;
+  }
+
+  .divider {
+    all: unset;
+    cursor: col-resize;
+    min-height: 3px;
+    min-width: 3px;
+    background-color: var(--color-foreground);
+    opacity: 0.3;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  @media (max-aspect-ratio: 1/1) {
+    .panes {
+      flex-direction: column;
+    }
+    .divider {
+      cursor: row-resize;
+    }
+  }

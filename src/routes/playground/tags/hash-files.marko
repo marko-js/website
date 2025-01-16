@@ -1,0 +1,28 @@
+import * as lzString from "lz-string";
+import type { PlaygroundFile } from "<playground>";
+export interface Input {
+  value: PlaygroundFile[];
+}
+static const EMPTY = [
+  {
+    name: "index.marko",
+    content: "",
+  },
+];
+
+<let/value=EMPTY/>
+<lifecycle
+  onMount() {
+    const initialValue = JSON.parse(
+      lzString.decompressFromEncodedURIComponent(window.location.hash.slice(1)),
+    );
+    value = initialValue || input.value;
+  }
+  onUpdate() {
+    window.location.hash = lzString.compressToEncodedURIComponent(
+      JSON.stringify(value),
+    );
+  }
+/>
+
+<return:=value/>

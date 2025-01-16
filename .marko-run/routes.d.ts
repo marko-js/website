@@ -25,6 +25,9 @@ declare module "@marko/run" {
 			"/docs/template": Routes["/docs/_docs-pages/template"];
 			"/docs/typescript": Routes["/docs/_docs-pages/typescript"];
 			"/docs/why-marko": Routes["/docs/_docs-pages/why-marko"];
+			"/docs/run/file-based-routing": Routes["/docs/_docs-pages/run/file-based-routing"];
+			"/docs/run/getting-started": Routes["/docs/_docs-pages/run/getting-started"];
+			"/docs/run/typescript": Routes["/docs/_docs-pages/run/typescript"];
 			"/playground": Routes["/playground"];
 		}
 	}> {}
@@ -173,6 +176,39 @@ declare module "../src/routes/docs/_docs-pages/why-marko+page.marko" {
   }
 }
 
+declare module "../src/routes/docs/_docs-pages/run/file-based-routing+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/run/file-based-routing"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_docs-pages/run/getting-started+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/run/getting-started"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_docs-pages/run/typescript+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/run/typescript"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
 declare module "../src/routes/playground/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
@@ -190,7 +226,7 @@ declare module "../src/routes/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/playground"];
+    export type Route = Run.Routes["/" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/docs/run/file-based-routing" | "/docs/run/getting-started" | "/docs/run/typescript" | "/playground"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -204,7 +240,7 @@ declare module "../src/routes/docs/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko"];
+    export type Route = Run.Routes["/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/docs/run/file-based-routing" | "/docs/run/getting-started" | "/docs/run/typescript"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -226,5 +262,8 @@ type Routes = {
 	"/docs/_docs-pages/template": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/template+meta.json"); };
 	"/docs/_docs-pages/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/typescript+meta.json"); };
 	"/docs/_docs-pages/why-marko": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/why-marko+meta.json"); };
+	"/docs/_docs-pages/run/file-based-routing": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/run/file-based-routing+meta.json"); };
+	"/docs/_docs-pages/run/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/run/getting-started+meta.json"); };
+	"/docs/_docs-pages/run/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_docs-pages/run/typescript+meta.json"); };
 	"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
 }

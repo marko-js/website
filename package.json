@@ -6,13 +6,13 @@
   "dependencies": {
     "@docsearch/css": "^3.8.2",
     "@docsearch/js": "^3.8.2",
-    "@marko/run": "^0.5.10",
+    "@marko/run": "^0.5.14",
     "@marko/run-adapter-static": "^0.2.1",
-    "@shikijs/monaco": "^1.24.2",
+    "@shikijs/monaco": "^1.27.0",
     "lz-string": "^1.5.0",
-    "marko": "^6.0.0-3.13",
+    "marko": "^6.0.0-next.3.19",
     "monaco-editor-core": "^0.52.2",
-    "shiki": "^1.24.2"
+    "shiki": "^1.27.0"
   },
   "private": true,
   "scripts": {
@@ -22,17 +22,22 @@
     "deploy": "BASE_URL=/marko-js/upgrade-dashboard/ marko-run build && gh-pages --nojekyll -d dist/public"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.6",
     "autoprefixer": "^10.4.20",
-    "gh-pages": "^6.2.0",
+    "gh-pages": "^6.3.0",
     "github-slugger": "^2.0.0",
-    "marked": "^15.0.4",
+    "marked": "^15.0.6",
     "marked-alert": "^2.1.2",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.1",
     "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^10.1.2",
+    "postcss-preset-env": "^10.1.3",
     "prettier": "^3.4.2",
     "prettier-plugin-marko": "^3.1.12",
     "vite-plugin-monaco-editor": "^1.1.0"
+  },
+  "overrides": {
+    "@marko/run": {
+      "marko": "^6.0.0-3.13"
+    }
   }
 }

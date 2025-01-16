@@ -77,12 +77,12 @@ static function staticFn() {
   // can NOT use `T` here
 }
 
-$ const instanceFn = (val: T) => {
+<const/instanceFn(val: T) {
   // can use `T` here
-}
+}/>
 
 // can use `as T` here
-<select on-input(evt => input.onSelect(options[evt.target.value] as T))>
+<select onInput(evt) { input.onSelect(options[evt.target.value] as T) }>
   <for|value, i| of=input.options>
     <option value=i>${value}</option>
   </for>

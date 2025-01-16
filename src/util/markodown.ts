@@ -7,35 +7,38 @@ import { type PluginOption } from "vite";
 import * as prettier from "prettier";
 import * as markoPrettier from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
+import { glob } from "glob";
 
 markoPrettier.setCompiler(compiler, {});
 
 export default function markodownPlugin(): PluginOption {
-  // const docFileRegex = /docs.*\.md/;
-
   return {
     name: "markodown",
     enforce: "pre",
     async buildStart() {
       const docsPath = path.join(process.cwd(), "src", "routes", "docs");
-      const docsFiles = await fs.readdir(docsPath);
-
       const docsPages = path.join(docsPath, "_docs-pages");
       await fs.mkdir(docsPages, { recursive: true });
 
+      const mdFiles = glob.sync("**/*.md", {
+        cwd: docsPath,
+        ignore: "_docs-pages/**",
+      });
+
       await Promise.all(
-        docsFiles.map(async (file) => {
-          if (file.endsWith(".md")) {
-            const filePath = path.join(docsPath, file);
-            await fs.writeFile(
-              path.join(docsPages, file.replace(".md", "+page.marko")),
-              await mdToMarko(await fs.readFile(filePath, "utf-8")),
-            );
-            await fs.writeFile(
-              path.join(docsPages, file.replace(".md", "+meta.json")),
-              `{ "pageTitle": "${file.substring(0, file.length - 3)}" }`,
-            );
-          }
+        mdFiles.map(async (file) => {
+          const content = await fs.readFile(path.join(docsPath, file), "utf-8");
+          await fs.mkdir(path.dirname(path.join(docsPages, file)), {
+            recursive: true,
+          });
+          await fs.writeFile(
+            path.join(docsPages, file.replace(".md", "+page.marko")),
+            await mdToMarko(content),
+          );
+          await fs.writeFile(
+            path.join(docsPages, file.replace(".md", "+meta.json")),
+            `{ "pageTitle": "${path.basename(file, ".md")}" }`,
+          );
         }),
       );
     },
@@ -107,6 +110,11 @@ function markoDocs(): MarkedExtension {
   };
 }
 
+/**
+ * Wrap all headings and their contents (everything until the
+ * next heading of the same depth) in a `<section>` tag, instead
+ * of keeping a flat structure for the whole document
+ */
 function headingSections(): MarkedExtension {
   let sectionDepth = 0;
   let closeSections = false;
@@ -129,7 +137,7 @@ function headingSections(): MarkedExtension {
     walkTokens(token) {
       if (tokens && token.type === "close-sections") {
         /*
-           I can't _believe_ this awkward two-step hack is the way, but it looks like what they do it
+           I can't _believe_ this awkward two-step hack is the way, but it looks like it's what they do
            in [official plugins](https://github.com/bent10/marked-extensions/blob/main/packages/footnote/src/index.ts)
         */
         tokens.push({ ...token });

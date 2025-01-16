@@ -1,0 +1,25 @@
+export interface Input {
+  value: string;
+  fallback?: boolean;
+}
+
+<const/{ value: query, fallback }=input/>
+<let/isMatch=(
+  typeof window !== "undefined" ? window.matchMedia(query).matches : !!fallback
+)/>
+
+<script>
+  const mq = window.matchMedia(query);
+  isMatch = !!mq.matches;
+  mq.addEventListener(
+    "change",
+    () => {
+      isMatch = !!mq.matches;
+    },
+    {
+      signal: $signal,
+    },
+  );
+</script>
+
+<return=isMatch/>

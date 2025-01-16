@@ -1,15 +1,15 @@
 export interface Input {
-  renderBody: Marko.Body;
+  content: Marko.Body;
 }
 
-define/Outline|input: { page: string; renderBody: Marko.Renderable }|
+define/Outline|input: { page: string; content: Marko.Renderable }|
   if=$global.url.href.endsWith(input.page + "/")
     strong
-      ${input.renderBody}
+      ${input.content}
     toc
   else
-    a href=`../${input.page}/`
-      ${input.renderBody}
+    a href=`/docs/${input.page}/`
+      ${input.content}
 
 local-let/mode="html" key="syntax-mode"
 nav
@@ -58,9 +58,25 @@ nav
             Outline page="styling" -- Styling
           li
             Outline page="getting-started" -- Getting Started
+    li
+      local-let/open=true key="nav-run-open"
+      details [
+        open=open
+        onToggle(e) {
+          open = (e.target as HTMLDetailsElement).open;
+        }
+      ]
+        summary -- Marko Run
+        ul
+          li
+            Outline page="run/getting-started" -- Getting Started
+          li
+            Outline page="run/file-based-routing" -- File-based Routing
+          li
+            Outline page="run/typescript" -- TypeScript
 
 main class=mode === "concise" && "concise-mode"
-  ${input.renderBody}
+  ${input.content}
 
 style
   --
@@ -89,6 +105,11 @@ style
     padding-top: 3rem;
     width: 15rem;
     overflow-y: scroll;
+    --section-color: var(--color-foreground);
+
+    a {
+      text-decoration: none;
+    }
 
     ul {
       list-style-type: none;
