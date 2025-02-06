@@ -1,29 +1,115 @@
-h1
-  -- A${" "}
-  span -- declarative
-  -- ${" "}
-  span -- HTML-Based
-  -- ${" "}
-  span -- Language
-  --  that makes${" "}
-  span -- Building
-  -- ${" "}
-  span -- Web Apps
-  -- ${" "}
-  span -- Fun
+<main>
+  <h1>
+    A
+    <strong class="gradient-text">
+      declarative
+    </strong>
+    ${" "}
+    <strong class="gradient-text">
+      HTML-Based
+    </strong>
+    ${" "}
+    <strong class="gradient-text">
+      Language
+    </strong>
+    ${" "} that makes
+    <strong class="gradient-text">
+      Building
+    </strong>
+    ${" "}
+    <strong class="gradient-text">
+      Web Apps
+    </strong>
+    ${" "}
+    <strong class="gradient-text">
+      Fun
+    </strong>
+  </h1>
 
-a href="docs/" -- Get Started
+  <p>
+    <a href="docs/">
+      Get Started
+    </a>
+  </p>
 
-style
-  --
+  <h2>
+    Favored by the
+    <strong class="gradient-text">
+      developers
+    </strong>
+     that
+    <strong class="gradient-text">
+      matter
+    </strong>
+  </h2>
+
+  <div class="quotes">
+    <figure>
+      <blockquote>
+        <p>🚀 Marko.js: The ULTIMATE web dev secret weapon! ⚡️</p>
+        <p>Pros:</p>
+        <ul>
+          <li>
+            Performance that makes other frameworks look like they're walking 🏃‍♂️
+          </li>
+          <li>Syntax so clean you could eat off it</li>
+          <li>
+            Progressive rendering that'll make your users think you're a web wizard 🧙‍♂️
+          </li>
+        </ul>
+        <p>Cons:</p>
+        <ul>
+          <li>Might make your other frameworks jealous 🤣</li>
+        </ul>
+      </blockquote>
+      <figcaption>Claude 3.5 Haiku </figcaption>
+    </figure>
+    <figure>
+      <blockquote>
+        <p>
+          Marko is easily one of the most underrated JS frameworks out there. It delivers insane performance with built-in streaming, partial hydration, and zero-JS-by-default.
+        </p>
+        <p>
+          While other frameworks struggle with hydration issues and client-side bloat, Marko optimizes everything${" "}
+          <em>out of the box</em>
+          ${" "}. No extra configs, no unnecessary complexity—just a fast, efficient, and scalable solution for modern web apps.
+        </p>
+        <p>
+          If you care about performance and DX, you need to give Marko a serious look. 🚀🔥 #MarkoJS #WebDev #JavaScript
+        </p>
+      </blockquote>
+      <figcaption>GPT-4o </figcaption>
+    </figure>
+    <figure>
+      <blockquote>
+        <strong>Marko: My Code's Superhero!</strong>
+        <p>
+          Forget slow renders and clunky code! Marko swooped in and saved my projects!
+        </p>
+        <p>
+          ⚡️ Lightning-fast performance? Check! Easy to use? Double-check! Happy users? You betcha! 🎉
+        </p>
+        <p>
+          Marko isn't just a framework, it's my secret weapon. Try it and unleash your inner coding superhero! 🦸‍♀️
+        </p>
+        <p>Five stars! ⭐⭐⭐⭐⭐</p>
+      </blockquote>
+      <figcaption>Gemini 2.0 Flash </figcaption>
+    </figure>
+  </div>
+</main>
+
+<style>
   body {
     padding: 4rem 1rem;
   }
+  main > * {
+    max-width: 50rem;
+    margin: 1lh auto;
+  }
 
-  h1 span {
+  .gradient-text {
     background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     color: transparent;
     background-image: linear-gradient(
       to bottom right,
@@ -34,20 +120,64 @@ style
     --text-gradient-start: var(--color-red-primary);
     --text-gradient-end: var(--color-red-secondary);
   }
-  h1 span:nth-of-type(5n + 1) {
+  .gradient-text:nth-of-type(5n + 1) {
     --text-gradient-start: var(--color-blue-primary);
     --text-gradient-end: var(--color-blue-secondary);
   }
-  h1 span:nth-of-type(5n + 2) {
+  .gradient-text:nth-of-type(5n + 2) {
     --text-gradient-start: var(--color-green-primary);
     --text-gradient-end: var(--color-green-secondary);
   }
-  h1 span:nth-of-type(5n + 3) {
+  .gradient-text:nth-of-type(5n + 3) {
     --text-gradient-start: var(--color-yellow-primary);
     --text-gradient-end: var(--color-yellow-secondary);
   }
-  h1 span:nth-of-type(5n + 4) {
+  .gradient-text:nth-of-type(5n + 4) {
     --text-gradient-start: var(--color-purple-primary);
     --text-gradient-end: var(--color-purple-secondary);
   }
-  --
+
+  .quotes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(22rem, 90vw), 1fr));
+    gap: 1rem;
+    max-width: 100%;
+
+    figure {
+      background-color: #8884;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      blockquote {
+        margin: 0;
+        > * {
+          margin: 0;
+
+          &:not(:first-child) {
+            margin-top: 0.5lh;
+          }
+        }
+      }
+
+      figcaption {
+        margin-top: 1rem;
+        font-style: italic;
+        font-size: 0.9rem;
+        text-align: right;
+        color: var(--color-blue-primary);
+        cite {
+          font-style: normal;
+          opacity: 0.7;
+        }
+
+        &::before {
+          content: "— "
+        }
+      }
+    }
+  }
+</style>

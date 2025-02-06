@@ -11,23 +11,23 @@ export interface Input {
 
 <div class="tabs">
   <for|tab, i| of=tabs>
-    <const/tabSelected=selected === i/>
+    <const/isSelected=selected === i/>
 
     <let/editing=false/>
 
     <div
-      aria-selected=tabSelected && "true"
+      aria-selected=isSelected && "true"
       tabindex=0
       role="button"
       onClick() {
-        if (tabSelected && i > 0) {
+        if (isSelected && i > 0) {
           editing = true;
         }
         selected = i;
       }
-      onKeypress(e) {
-        if (e.key === " " || e.key === "Enter") {
-          if (tabSelected && i > 0) {
+      onKeyPress(e, el) {
+        if (e.target === el && (e.key === " " || e.key === "Enter")) {
+          if (isSelected && i > 0) {
             editing = true;
           }
           selected = i;
@@ -44,13 +44,22 @@ export interface Input {
             tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, name: (e.target as HTMLInputElement).value });
             editing = false;
           }
+          onKeyPress(e) {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+              tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, name: (e.target as HTMLInputElement).value });
+              editing = false;
+            } else if (e.key === "Escape") {
+              editing = false;
+            }
+          }
           onInput(e) {
             length = (e.target as HTMLInputElement).value.length;
           }
         >
         <script>
           curr().focus();
-          curr().setSelectionRange(0, curr().value.indexOf("."));
+          curr().setSelectionRange(0, curr().value.lastIndexOf("."));
         </script>
       </if>
       <else>

@@ -1,5 +1,5 @@
-import * as lzString from "lz-string";
 import type { PlaygroundFile } from "<playground>";
+client import { compress, decompress } from "./hasher";
 export interface Input {
   value: PlaygroundFile[];
 }
@@ -13,15 +13,15 @@ static const EMPTY = [
 <let/value=EMPTY/>
 <lifecycle
   onMount() {
-    const initialValue = JSON.parse(
-      lzString.decompressFromEncodedURIComponent(window.location.hash.slice(1)),
-    );
-    value = initialValue || input.value;
+    decompress(window.location.hash.slice(1))
+      .then((decompressed) => {
+        value = JSON.parse(decompressed) || input.value;
+      });
   }
   onUpdate() {
-    window.location.hash = lzString.compressToEncodedURIComponent(
-      JSON.stringify(value),
-    );
+    compress(JSON.stringify(value)).then((compressed) => {
+      window.location.hash = compressed;
+    });
   }
 />
 

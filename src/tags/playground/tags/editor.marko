@@ -10,7 +10,7 @@ client import * as monaco from "monaco-editor-core";
 
 let/files:=input.files
 let/selected=0
-let/updateFile=true
+let/forceUpdateEditorFile=true
 
 let/file=(files.at(selected) as PlaygroundFile) valueChange(newValue) {
   files = files.toSpliced(selected, 1, newValue);
@@ -21,7 +21,7 @@ tabs [
   selected=selected
   selectedChange(newSelected) {
     selected = newSelected;
-    updateFile = true;
+    forceUpdateEditorFile = true;
   }
 ]
 div.editor/container
@@ -34,11 +34,9 @@ lifecycle<{
       theme: "vitesse-dark",
       automaticLayout: true,
     });
-
-    this.onUpdate?.();
   } onUpdate() {
-    if (updateFile) {
-      updateFile = false;
+    if (forceUpdateEditorFile) {
+      forceUpdateEditorFile = false;
       this.changeHandler?.dispose();
 
       const model = this.editor!.getModel()!;

@@ -4,14 +4,18 @@ export interface PlaygroundFile {
 }
 export interface Input {
   files: PlaygroundFile[];
-  filesChange: (files: PlaygroundFile[]) => void;
+  filesChange?: (files: PlaygroundFile[]) => void;
 }
+
+let/files:=input.files
 
 split-panes
   @first
-    editor files:=input.files
+    editor files:=files
   @second
     iframe.result
+
+
 
 style --
   iframe.result {
