@@ -49,7 +49,7 @@ An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
 It is aborted when
 
 1. The expression is invalidated
-2. The template or [tag content](#tag-content)
+2. The template or [tag content](#tag-content) is removed from the DOM
 
 This is primarily to handle cleaning up side effects.
 
@@ -483,7 +483,7 @@ This example uses two `<@item>` tags, but `<my-menu>` receives only a single `it
     value: "foo",
     content: /* Foo Item */,
     [Symbol.iterator]() {
-      // Not the exact implementation, but essentially this is what the funcition contains
+      // Not the exact implementation, but essentially this is what the function contains
       yield* [
         { value: "foo", content: /* Foo Item */ },
         { value: "bar", content: /* Bar Item */ }
@@ -506,7 +506,7 @@ The other `<@item>` tags are reached through the iterator. The most comon way to
 > If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
 >
 > ```marko
-> <const/items=[...input.items || []]/>
+> <const/items=[...input.item || []]/>
 >
 > <div>${items.length}</div>
 > ```

@@ -36,18 +36,17 @@ export interface Input {
       class="tab"
     >
       <if=editing>
-        <let/length=tab.name.length/>
+        <let/length=tab.path.length/>
         <input/curr
-          value=tab.name
+          value=tab.path
           size=length
           onBlur(e) {
-            tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, name: (e.target as HTMLInputElement).value });
+            tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, path: (e.target as HTMLInputElement).value });
             editing = false;
           }
           onKeyPress(e) {
-            e.stopPropagation();
             if (e.key === "Enter") {
-              tabs = tabs.toSpliced(i, 1, { ...tabs.at(i)!, name: (e.target as HTMLInputElement).value });
+              (e.target as HTMLInputElement).blur();
               editing = false;
             } else if (e.key === "Escape") {
               editing = false;
@@ -63,7 +62,7 @@ export interface Input {
         </script>
       </if>
       <else>
-        ${tab.name}
+        ${tab.path}
       </else>
 
       <if=(i > 0)>
@@ -89,7 +88,7 @@ export interface Input {
   <button
     aria-label="Add file"
     onClick() {
-      tabs = tabs.concat({ name: `Tag${tabs.length}.marko`, content: ""});
+      tabs = tabs.concat({ path: `Tag${tabs.length}.marko`, content: ""});
     }
   >
     +

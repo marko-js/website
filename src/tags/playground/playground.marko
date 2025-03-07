@@ -1,5 +1,5 @@
 export interface PlaygroundFile {
-  name: string;
+  path: string;
   content: string;
 }
 export interface Input {
@@ -7,15 +7,13 @@ export interface Input {
   filesChange?: (files: PlaygroundFile[]) => void;
 }
 
-let/files:=input.files
+let/tabIndex=0
 
 split-panes
   @first
-    editor files:=files
+    editor files:=input.files tabIndex:=tabIndex
   @second
-    iframe.result
-
-
+    playground-output files=input.files selected=tabIndex
 
 style --
   iframe.result {

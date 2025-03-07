@@ -1,0 +1,11 @@
+export interface Input {
+  key: string;
+}
+<let/internalValue=$global.url.searchParams.get(input.key)/>
+
+<return=internalValue valueChange(newValue: string) {
+  $global.url.searchParams.set(input.key, newValue);
+  $global.url.hash = window.location.hash;
+  history.replaceState(null, "", $global.url.toString())
+  internalValue = newValue;
+}/>

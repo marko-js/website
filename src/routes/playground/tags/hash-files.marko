@@ -3,14 +3,8 @@ client import { compress, decompress } from "./hasher";
 export interface Input {
   value: PlaygroundFile[];
 }
-static const EMPTY = [
-  {
-    name: "index.marko",
-    content: "",
-  },
-];
 
-<let/value=EMPTY/>
+<let/value=[] as PlaygroundFile[]/>
 <lifecycle
   onMount() {
     decompress(window.location.hash.slice(1))

@@ -1,0 +1,19 @@
+export interface Input<T> {
+  value: T;
+  delay?: number;
+}
+
+<const/{ value, delay }=input>
+<let/debounced=value>
+
+<script>
+  const timeout = setTimeout(() => {
+    debounced = value;
+  }, delay ?? 500)
+
+  $signal.onabort = () => {
+    clearTimeout(timeout);
+  };
+</script>
+
+<return=debounced/>

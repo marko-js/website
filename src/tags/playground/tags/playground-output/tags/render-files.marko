@@ -1,0 +1,86 @@
+import type { PlaygroundFile } from "../../../playground.marko";
+export interface Input {
+  value: PlaygroundFile[];
+  markoVersion: string;
+  selected: number;
+  render?: boolean;
+  output?: "dom" | "html" | "hydrate";
+}
+client import { compile } from "../utils/compile";
+client const decoder = new TextDecoder();
+
+const/files=input.value
+
+let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)
+let/showLoadingMessage=false
+
+lifecycle onMount() {
+  setTimeout(() => {
+    if (compiled === null) {
+      showLoadingMessage = true;
+    }
+  }, 500);
+}
+
+script=async () => {
+  const timeout = setTimeout(() => {
+    showLoadingMessage = true;
+  }, 500)
+  compiled = await compile(files, input.markoVersion, files[input.selected].path, {
+    output: input.output,
+    bundle: input.render,
+    signal: $signal,
+  });
+  clearTimeout(timeout);
+  showLoadingMessage = false;
+}
+
+if=showLoadingMessage -- Installing Packages...
+else if=compiled
+  if=compiled.errors.length
+    for|error| of=compiled.errors
+      pre.codeOutput -- ${error.text}
+  else if=compiled.outputFiles?.length
+    const/contents=decoder.decode(compiled.outputFiles[0].contents)
+    if=input.render
+      let/error=null as null | { message: string, stack?: string }
+      script -- if (contents) error = null
+      if=error
+        pre.codeOutput -- ${error.message}: ${error.stack}
+      else
+        iframe title="code output" srcdoc=`
+          <body>
+            <script>
+              window.onerror = function (message, source, lineno, colno, error) {
+                window.parent.postMessage(
+                  {
+                    type: "iframe-error",
+                    error: { message, source, lineno, colno, stack: error?.stack },
+                  },
+                  "*",
+                );
+                return true;
+              };
+            </script>
+            <script type="module">${contents}</script>
+          </body>`
+        script --
+          window.addEventListener("message", (e) => {
+            if (e.data.type === "iframe-error") {
+              error = e.data.error
+            }
+          }, { signal: $signal})
+    else
+      pre.codeOutput -- ${contents}
+
+style
+  --
+  pre.codeOutput {
+    overflow-y: scroll;
+    margin: 0 0.5rem;
+  }
+  iframe {
+    height: 100%;
+    border: none;
+  }
+  --

@@ -1,0 +1,59 @@
+import type { PlaygroundFile } from "../../playground.marko";
+import { getPackageMetadata, getVersionFromRange } from "./utils/npm-install"
+
+static const previewTypes: Record<string, {
+  render: boolean;
+  output: "dom" | "html" | "hydrate";
+}> = {
+  "Preview": {
+    output: "dom",
+    render: true,
+  },
+  "Compiled (HTML)": {
+    output: "html",
+    render: false,
+  },
+  "Compiled (DOM)": {
+    output: "dom",
+    render: false,
+  }
+};
+export interface Input {
+  files: PlaygroundFile[];
+  selected: number;
+}
+
+search-let/markoVersion key="version"
+let/availableMarkoVersions=markoVersion ? [markoVersion] : ["latest"]
+let/previewType="Preview"
+
+lifecycle onMount=async () => {
+  const meta = await getPackageMetadata("marko");
+  availableMarkoVersions = meta.allVersions.toSorted((a, b) =>  -a.localeCompare(b, undefined, { numeric: true }));
+  markoVersion = getVersionFromRange(meta, markoVersion ?? "latest") ?? getVersionFromRange(meta, "latest")!;
+}
+
+div.output
+  div.output-header
+    select value:=previewType
+      for|option| in=previewTypes
+        option -- ${option}
+    div
+      -- marko@
+      select value:=markoVersion
+        for|version| of=availableMarkoVersions by(version) { return version } 
+          option -- ${version}
+  if=input.files.length && markoVersion
+    render-files=input.files markoVersion=markoVersion selected=input.selected ...previewTypes[previewType]
+
+style --
+  .output {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+    }
+  }

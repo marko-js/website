@@ -2,15 +2,16 @@ import type { PlaygroundFile } from "../playground.marko";
 
 export interface Input {
   files: PlaygroundFile[];
-  filesChange: (files: PlaygroundFile[]) => void;
+  filesChange?: (files: PlaygroundFile[]) => void;
+  tabIndex?: number;
+  tabIndexChange?: (tabIndex: number) => void;
 }
 
 client import "./init-shiki-monaco"
 client import * as monaco from "monaco-editor-core";
 
 let/files:=input.files
-let/selected=0
-let/forceUpdateEditorFile=true
+let/selected=(input.tabIndex || 0) valueChange=input.tabIndexChange
 
 let/file=(files.at(selected) as PlaygroundFile) valueChange(newValue) {
   files = files.toSpliced(selected, 1, newValue);
@@ -18,36 +19,36 @@ let/file=(files.at(selected) as PlaygroundFile) valueChange(newValue) {
 
 tabs [
   files:=files
-  selected=selected
-  selectedChange(newSelected) {
-    selected = newSelected;
-    forceUpdateEditorFile = true;
-  }
+  selected:=selected
 ]
 div.editor/container
 
 lifecycle<{
   editor?: monaco.editor.IStandaloneCodeEditor;
   changeHandler?: monaco.IDisposable;
+  updatedInternally?: boolean;
 }> onMount() {
     this.editor = monaco.editor.create(container(), {
       theme: "vitesse-dark",
       automaticLayout: true,
+      tabSize: 2,
     });
   } onUpdate() {
-    if (forceUpdateEditorFile) {
-      forceUpdateEditorFile = false;
+    if (this.updatedInternally) {
+      this.updatedInternally = false;
+    } else {
       this.changeHandler?.dispose();
 
       const model = this.editor!.getModel()!;
       model.setValue(file.content);
       monaco.editor.setModelLanguage(
         model,
-        file.name.substring(file.name.lastIndexOf(".") + 1),
+        file.path.substring(file.path.lastIndexOf(".") + 1),
       );
 
       this.changeHandler = this.editor!.onDidChangeModelContent(() => {
         file = { ...file, content: this.editor?.getValue() || "" };
+        this.updatedInternally = true;
       });
     }
   } onDestroy() {

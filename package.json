@@ -4,15 +4,21 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@docsearch/css": "^3.8.2",
-    "@docsearch/js": "^3.8.2",
-    "@marko/run": "^0.5.15",
+    "@docsearch/css": "^3.9.0",
+    "@docsearch/js": "^3.9.0",
+    "@marko/run": "^0.5.17",
     "@marko/run-adapter-static": "^0.2.1",
-    "@shikijs/monaco": "^1.27.0",
+    "@shikijs/monaco": "^3.1.0",
+    "@types/semver": "^7.5.8",
+    "@types/tar-stream": "^3.1.3",
+    "esbuild-wasm": "^0.25.0",
     "lz-string": "^1.5.0",
-    "marko": "^6.0.0-next.3.26",
+    "marko": "^6.0.0-next.3.51",
     "monaco-editor-core": "^0.52.2",
-    "shiki": "^1.27.0"
+    "semver": "^7.7.1",
+    "shiki": "^3.1.0",
+    "tar-stream": "^3.1.7",
+    "vite-plugin-node-polyfills": "^0.23.0"
   },
   "private": true,
   "scripts": {
@@ -22,23 +28,23 @@
     "deploy": "BASE_URL=/marko-js/upgrade-dashboard/ marko-run build && gh-pages --nojekyll -d dist/public"
   },
   "devDependencies": {
-    "@marko/type-check": "^1.3.13",
-    "@types/node": "^22.10.6",
+    "@marko/type-check": "^1.3.19",
+    "@types/node": "^22.13.9",
     "autoprefixer": "^10.4.20",
     "gh-pages": "^6.3.0",
     "github-slugger": "^2.0.0",
-    "marked": "^15.0.6",
+    "marked": "^15.0.7",
     "marked-alert": "^2.1.2",
-    "postcss": "^8.5.1",
+    "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^10.1.3",
-    "prettier": "^3.4.2",
+    "postcss-preset-env": "^10.1.5",
+    "prettier": "^3.5.3",
     "prettier-plugin-marko": "^3.1.12",
     "vite-plugin-monaco-editor": "^1.1.0"
   },
   "overrides": {
     "@marko/run": {
-      "marko": "^6.0.0-3.13"
+      "marko": "6.0.0-next.3.51"
     }
   }
 }
