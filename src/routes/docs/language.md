@@ -506,7 +506,7 @@ The other `<@item>` tags are reached through the iterator. The most comon way to
 > If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
 >
 > ```marko
-> <const/items=[...input.item || []]/>
+> <const/items=[...input.item || []]>
 >
 > <div>${items.length}</div>
 > ```

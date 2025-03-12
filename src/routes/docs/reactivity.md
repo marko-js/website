@@ -19,7 +19,7 @@ These reactive expressions may exist throughout the template in attributes, plac
 > [static statements](./language.md#static) which are evaluated _once_ when the template is loaded.
 
 ```marko
-<let/count=0/>
+<let/count=0>
 
 <button onClick() { count++ }>
   Current: ${count}

@@ -1,14 +1,16 @@
-// Table of Contents
-
 import type { RecursiveList } from "<toc-tree>";
 
-let/sections=undefined as RecursiveList | undefined
-if=sections
-  ul.table-of-contents
-    toc-tree item=sections
+<let/sections=undefined as RecursiveList | undefined/>
+<if=sections>
+  <nav class="table-of-contents">
+    <strong>On this Page</strong>
+    <ul>
+      <toc-tree item=sections/>
+    </ul>
+  </nav>
+</if>
 
-script
-  --
+<script>
   const mainSections: RecursiveList = [];
   function getSectionList(section: Element) {
     const subsections: RecursiveList = [];
@@ -29,49 +31,4 @@ script
     .querySelectorAll("main > section > section")
     .forEach((section) => mainSections.push(...getSectionList(section)));
   sections = mainSections;
-  --
-
-style
-  --
-  .table-of-contents {
-    ul {
-      font-size: 0.9em;
-    }
-
-    a {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      text-decoration: none;
-      border-color: transparent;
-      transition: border-color 0.5s;
-    }
-
-    > li:nth-of-type(5n) {
-      --section-color: var(--color-blue-primary);
-    }
-    > li:nth-of-type(5n + 1) {
-      --section-color: var(--color-green-primary);
-    }
-    > li:nth-of-type(5n + 2) {
-      --section-color: var(--color-yellow-primary);
-    }
-    > li:nth-of-type(5n + 3) {
-      --section-color: var(--color-red-primary);
-    }
-    > li:nth-of-type(5n + 4) {
-      --section-color: var(--color-purple-primary);
-    }
-
-    :not(.visible) + ul:not(:has(.visible)) {
-      display: none;
-    }
-
-    .visible {
-      margin-left: -1em;
-      padding-left: calc(1em - 1px);
-      border-left: 1px solid rgb(from currentColor r g b / 0.5);
-    }
-  }
-  --
+</script>

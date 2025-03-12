@@ -79,7 +79,7 @@ This means the previous example can simplified to:
 The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables).
 
 ```marko
-<let/x=1/>
+<let/x=1>
 ```
 
 The `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) provides an initial value for its state.
@@ -87,7 +87,7 @@ The `value=` attribute (usually with a [shorthand](./language.md#shorthand-value
 When a tag variable is updated, everywhere it is used also re-runs. This is the core of Marko's reactive system.
 
 ```marko
-<let/count=1/>
+<let/count=1>
 
 <button onClick() { count++ }>
   Current count: ${count}
@@ -100,7 +100,7 @@ In this template, `count` is incremented when the button is clicked. Since `coun
 > The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
 >
 > ```marko
-> <let/count=input.initialCount/>
+> <let/count=input.initialCount>
 > <p>Count: ${count}</p>
 > <p>Input Count: ${input.initialCount}</p>
 > ```
@@ -112,8 +112,8 @@ In this template, `count` is incremented when the button is clicked. Since `coun
 The `<let>` tag can be made **controllable** using its `valueChange=` attribute, similarly to [native tag change handlers](./native-tag.md#change-handlers). This enables interception and transformation of state changes, or synchronization of state between parent and child components.
 
 ```marko
-<let/value="HELLO"/>
-<let/controlled_value=value valueChange(newValue) { value = newValue.toUpperCase() }/>
+<let/value="HELLO">
+<let/controlled_value=value valueChange(newValue) { value = newValue.toUpperCase() }>
 ```
 
 In this example:
@@ -127,7 +127,7 @@ A more common use case is creating state that can be optionally controlled by a 
 ```marko
 // counter.marko
 
-<let/count:=input.count/>
+<let/count:=input.count>
 
 <button onClick() { count++ }>
   Clicked ${count} times
@@ -145,7 +145,7 @@ This creates two possible behaviors:
 2. **Controlled**: If the parent provides both `count=` and `countChange=`, the parent takes control of the state:
 
    ```marko
-   <let/count=0/>
+   <let/count=0>
    <counter count:=count/>
    <button onClick() { count = 0 }>
      Reset
@@ -159,8 +159,8 @@ The `<const>` exposes its `value=` attribute (usually with a [shorthand](./langu
 Extending the [`<let>`](#let) example we could derive data from the `count` state like so:
 
 ```marko
-<let/count=1/>
-<const/doubleCount=count * 2/>
+<let/count=1>
+<const/doubleCount=count * 2>
 
 <button onClick() { count++ }>
   Current count: ${count}
@@ -172,10 +172,10 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
 
 > [!TIP]
-> The implementation of the `<const>` tag above is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
+> The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
 > ```marko
-> <return=input.value/>
+> <return=input.value>
 > ```
 
 ## `<return>`
@@ -187,7 +187,7 @@ The `value=` attribute (usually expressed via the [shorthand](./language.md#shor
 _answer.marko_
 
 ```marko
-<return=42/>
+<return=42>
 ```
 
 The return value may then be used in the parent template:
@@ -207,7 +207,7 @@ If a `valueChange=` attribute is provided, it is called whenever the tag variabl
 _uppercase.marko_
 
 ```marko
-<let/value = input.value.toUpperCase()/>
+<let/value = input.value.toUpperCase()>
 
 <return=value valueChange(newValue) {
   value = newValue.toUpperCase();
@@ -230,7 +230,7 @@ The content of a `<script>` tag is executed first when the template has finished
 It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters) it references has changed.
 
 ```marko
-<let/count=1/>
+<let/count=1>
 <button/myButton onClick() { count++ }>
   Current count: ${count}
 </button>
@@ -332,7 +332,7 @@ The [Tag Variable](#Tag-Variable) reflects the attributes the `<define>` tag was
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
 >
 > ```marko
-> <return=input/>
+> <return=input>
 > ```
 
 ## `<lifecycle>`
@@ -358,8 +358,8 @@ The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be
 ```marko
 client import { WorldMap } from "world-map-api";
 
-<let/lat = 0/>
-<let/lon = 0/>
+<let/lat = 0>
+<let/lon = 0>
 <div/container/>
 <lifecycle<{ map: WorldMap }>
   onMount() {
@@ -395,7 +395,7 @@ The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/doc
 The log is re-executed each time its tag variable updates.
 
 ```
-<let/count = 0/>
+<let/count = 0>
 <log=`Current count: ${count}`>
 <button onClick() { count++ }>Log</button>
 ```
@@ -407,7 +407,7 @@ This logs `Current count: 0` on both server and client and again whenever `count
 The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) within the template that will be executed once the tag renders.
 
 ```marko
-<const/{ stuff } = input/>
+<const/{ stuff } = input>
 
 <debug/> // Can be useful to inspect render-scoped variables with a debugger.
 ```
@@ -415,7 +415,7 @@ The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org
 If a `value=` attribute is included, the debugger will be executed whenever it changes.
 
 ```marko
-<debug=[input.firstName, input.lastName]/>
+<debug=[input.firstName, input.lastName]>
 ```
 
 This debugger executes on the initial render and whenever `input.firstName` or `input.lastName` changes.
@@ -461,7 +461,7 @@ When a runtime error occurs in the [content](./language.md#tag-content) of the `
 
 ```marko
 <try>
-  <const/foo = { bar: { baz: 1 } }/>
+  <const/foo = { bar: { baz: 1 } }>
   ${foo.baz.bar} // 💥 boom! 👇
 
   <@catch|err|>

@@ -1,0 +1,265 @@
+:root {
+  --section-color: var(--color-blue-primary);
+}
+
+* {
+  --section-color-translucent: oklch(from var(--section-color) l c h / 0.05);
+  --section-color-text: color-mix(
+    in oklab,
+    var(--section-color) 70%,
+    var(--color-foreground)
+  );
+}
+
+/* Layout */
+
+main {
+  padding: 3rem 2rem;
+}
+
+.pages {
+  padding-top: 3rem;
+  display: none;
+}
+
+.mobile-nav-toggle {
+  display: none;
+}
+
+@media (max-width: 50rem) {
+  [data-mobile-nav] {
+    overflow: hidden;
+  }
+  [data-mobile-nav] .pages {
+    display: block;
+    position: fixed;
+    inset: 0;
+    overflow: scroll;
+    background-color: var(--color-background);
+    z-index: 1;
+  }
+  .mobile-nav-toggle {
+    display: block;
+  }
+}
+
+@media (min-width: 50rem) {
+  .pages {
+    position: fixed;
+    inset: 0;
+    width: 15rem;
+    overflow-y: scroll;
+    display: block;
+  }
+
+  main {
+    margin-left: 15rem;
+    max-width: 50rem;
+  }
+}
+
+.table-of-contents > :first-child {
+  display: none;
+}
+
+@media (min-width: 80rem) {
+  .table-of-contents {
+    position: fixed;
+    inset: 3rem 0 0 70rem;
+    overflow-y: scroll;
+  }
+
+  .table-of-contents > :first-child {
+    display: block;
+    font-size: larger;
+  }
+}
+
+/* Main Document */
+
+p,
+li {
+  line-height: 1.5;
+}
+
+h1 ~ section:nth-of-type(5n + 3) {
+  --section-color: var(--color-red-primary);
+}
+h1 ~ section:nth-of-type(5n + 1) {
+  --section-color: var(--color-green-primary);
+}
+h1 ~ section:nth-of-type(5n + 2) {
+  --section-color: var(--color-yellow-primary);
+}
+h1 ~ section:nth-of-type(5n + 4) {
+  --section-color: var(--color-purple-primary);
+}
+
+a {
+  color: var(--section-color-text);
+}
+
+:not(pre) > code {
+  color: var(--section-color-text);
+  background-color: var(--section-color-translucent);
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.3rem;
+  border: 1px solid oklch(from var(--section-color) l c h / 0.2);
+}
+
+pre {
+  background-color: var(--section-color-translucent);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid oklch(from var(--section-color) l c h / 0.5);
+  overflow-x: scroll;
+}
+
+.marko-codespan__tag {
+  &::before {
+    content: "<";
+  }
+  &::after {
+    content: ">";
+  }
+}
+
+.marko-codespan__attribute {
+  &::after {
+    content: "=";
+  }
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+  color: var(--section-color);
+
+  & > a:last-child {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    translate: -100% -50%;
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    line-height: 2rem;
+    font-size: large;
+    opacity: 0;
+    text-decoration: none;
+
+    @media (pointer: coarse) {
+      opacity: 0.25;
+    }
+  }
+
+  &:hover > a:last-child,
+  &:focus-within > a:last-child {
+    opacity: 0.25;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+/* Alerts */
+
+.markdown-alert {
+  border-left: 4px solid var(--section-color);
+  background-color: var(--section-color-translucent);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+}
+
+.markdown-alert-title {
+  color: var(--section-color-text);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem;
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+.markdown-alert-caution {
+  --section-color: var(--color-red-secondary);
+}
+
+.markdown-alert-note {
+  --section-color: var(--color-blue-secondary);
+}
+
+.markdown-alert-tip {
+  --section-color: var(--color-yellow-secondary);
+}
+
+.markdown-alert-important {
+  --section-color: var(--color-green-secondary);
+}
+
+/* Navigation */
+
+.pages a {
+  text-decoration: none;
+  color: var(--color-foreground);
+}
+
+.pages strong {
+  color: var(--section-color);
+}
+
+nav ul {
+  list-style-type: none;
+  padding-left: 1rem;
+}
+
+nav details {
+  user-select: none;
+}
+
+.table-of-contents ul {
+  font-size: 0.9em;
+}
+
+.table-of-contents a {
+  color: var(--color-foreground);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+  border-color: transparent;
+  transition:
+    font-weight 0.25s,
+    color 0.25s;
+}
+
+.table-of-contents a.visible {
+  color: var(--section-color);
+  font-weight: bold;
+}
+
+.table-of-contents a[aria-current="true"] {
+  margin-left: -0.5rem;
+  padding-left: calc(0.5rem - 1px);
+  border-left: 1px solid currentColor;
+}
+
+.table-of-contents > ul > li:nth-of-type(5n) {
+  --section-color: var(--color-blue-primary);
+}
+.table-of-contents > ul > li:nth-of-type(5n + 1) {
+  --section-color: var(--color-green-primary);
+}
+.table-of-contents > ul > li:nth-of-type(5n + 2) {
+  --section-color: var(--color-yellow-primary);
+}
+.table-of-contents > ul > li:nth-of-type(5n + 3) {
+  --section-color: var(--color-red-primary);
+}
+.table-of-contents > ul > li:nth-of-type(5n + 4) {
+  --section-color: var(--color-purple-primary);
+}

@@ -1,15 +1,15 @@
-static import { createHighlighter } from "shiki";
-static import { createCssVariablesTheme } from "shiki";
+server import { createHighlighter } from "shiki";
+server import { createCssVariablesTheme } from "shiki";
 export interface Input {
   lang: string;
   text: string;
   concise?: string;
 }
-static const customTheme = createCssVariablesTheme({
+server const customTheme = createCssVariablesTheme({
   name: "marko-docs-code-block",
   variablePrefix: "--shiki-",
 });
-static const highlighter = await createHighlighter({
+server const highlighter = await createHighlighter({
   langs: ["marko", "html", "css", "js", "ts", "json", "fs"],
   themes: [customTheme],
 });

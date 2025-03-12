@@ -86,7 +86,7 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
 The value for the attribute must be either a function or a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value, allowing for conditional event handlers:
 
 ```marko
-<let/clicked=false/>
+<let/clicked=false>
 <button onClick=!clicked && (() => {
   alert("First click!");
   clicked = true;
@@ -148,7 +148,7 @@ In some frameworks, like React, this would be a "read-only" `<input>`. Marko tak
 Adding state introduces some nuances in behavior.
 
 ```marko
-<let/message="hello"/>
+<let/message="hello">
 
 <input value=message>
 
@@ -167,7 +167,7 @@ This occurs because there are two separate states, which update independently:
 To synchronize these two states and their updates, Marko includes a special `valueChange` attribute on `<input>`.
 
 ```marko
-<let/message = "hello"/>
+<let/message = "hello">
 
 <input value=message valueChange() {}>
 
@@ -189,7 +189,7 @@ There is now only one state! This synchronization occurs because `valueChange`:
 The `valueChange` function is called whenever the `<input>` would normally update, allowing a parent component to synchronize its state with the input's internal state.
 
 ```marko
-<let/message = "hello"/>
+<let/message = "hello">
 
 <input value=message valueChange(newMessage) { message = newMessage }>
 
@@ -203,7 +203,7 @@ In this example, there is a single state _and_ updates from both sources are han
 Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding) for simple reflective change handlers like this, allowing the example to be simplified to:
 
 ```marko
-<let/message="Hello"/>
+<let/message="Hello">
 
 <input value:=message>
 
@@ -217,7 +217,7 @@ With this shorthand all that is needed to go from "uncontrolled" to "controlled"
 For cases besides the most simple, manual `valueChange` handlers are required.
 
 ```marko
-<let/message = "hello"/>
+<let/message = "hello">
 
 <input value=message valueChange(newMessage) { message = newMessage.toLowerCase() }>
 
@@ -233,11 +233,11 @@ All changes to this `<input>` are intercepted _and manipulated_. In this example
 <input value="hello">
 
 // controlled - The `inputValue` tag variable owns the state
-<let/inputValue="hello"/>
+<let/inputValue="hello">
 <input value:=inputValue>
 
 // controlled - Modifications to `<input>` are transformed
-<let/creditCardNumber="5555 5555 555"/>
+<let/creditCardNumber="5555 5555 555">
 <input
   value=creditCardNumber
   valueChange(v) {
@@ -251,20 +251,20 @@ All changes to this `<input>` are intercepted _and manipulated_. In this example
 The `<input>` tag has 3 change handlers, which are each related to an input type.
 
 ```marko
-<let/text=""/>
+<let/text="">
 <input type="text" value:=text>
 <input type="text" value=text valueChange(value) { text = value.toLowerCase() }>
 ```
 
 ```marko
-<let/checked=false/>
+<let/checked=false>
 <input type="checkbox" checked:=checked>
 ```
 
 The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.
 
 ```marko
-<let/checked="foo"/>
+<let/checked="foo">
 <input type="radio" value="foo" checkedValue:=checked>
 ```
 
@@ -277,7 +277,7 @@ Traditionally, the value of a `<select>` is controlled via the `selected=` attri
 The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#textarea).
 
 ```marko
-<let/text=""/>
+<let/text="">
 <textarea value:=text/>
 ```
 
@@ -286,7 +286,7 @@ The `<textarea>` tag has a change handler for [Marko's added `value=` attribute]
 The `<details>` tag has a change handler for its `open=` attribute.
 
 ```marko
-<let/open=false/>
+<let/open=false>
 <details open:=open/>
 
 <button onClick() { open = false }>
@@ -299,7 +299,7 @@ The `<details>` tag has a change handler for its `open=` attribute.
 The `<dialog>` tag has a change handler for its `open=` attribute.
 
 ```marko
-<let/open=false/>
+<let/open=false>
 <dialog open:=open>Hello!</dialog>
 
 <button onClick() { open = !open }>

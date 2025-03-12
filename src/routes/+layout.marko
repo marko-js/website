@@ -2,6 +2,13 @@ import pkg from "../../package.json";
 import docsearch from "@docsearch/js";
 import "@docsearch/css";
 import markoLogo from "./logo.svg";
+import { faBars } from "@fortawesome/free-solid-svg-icons"
+
+export interface Input {
+  content: Marko.Body;
+}
+
+let/mobileNav=false
 
 html lang="en"
   head
@@ -14,7 +21,7 @@ html lang="en"
     link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
 
-  body
+  body data-mobile-nav=mobileNav
     header
       a href="/"
         img.logo src=markoLogo alt="Marko Logo - Go to Homepage"
@@ -31,5 +38,8 @@ html lang="en"
         --
 
       social-links
+
+      button.mobile-nav-toggle onClick() { mobileNav = !mobileNav } aria-label="Show Navigation"
+        fa-icon=faBars
 
     ${input.content}

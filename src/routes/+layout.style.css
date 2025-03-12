@@ -20,7 +20,7 @@ body {
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
   background: linear-gradient(
     to bottom right,
     color-mix(in oklab, var(--color-blue-primary) 30%, var(--color-background)),
@@ -34,11 +34,31 @@ header {
   inset: 0;
   height: 2rem;
   padding: 0.5rem 1rem;
-  z-index: 1;
+  z-index: 10;
 
   .logo {
     height: 2rem;
   }
+}
+
+.mobile-nav-toggle {
+  background-color: var(--color-foreground);
+  border: none;
+  border-radius: 2rem;
+  height: 2.25rem;
+  width: 2.25rem;
+
+  svg {
+    height: 1.25rem;
+
+    path {
+      fill: var(--color-background);
+    }
+  }
+}
+
+#docsearch {
+  flex-grow: 1;
 }
 
 :root {

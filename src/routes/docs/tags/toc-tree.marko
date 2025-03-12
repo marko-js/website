@@ -5,27 +5,41 @@ export interface Input {
 static interface VisibilityChangeEventDetail {
   isIntersecting: boolean;
 }
-client const observer = new IntersectionObserver((entries) => {
-  for (const entry of entries) {
-    entry.target.dispatchEvent(
-      new CustomEvent<VisibilityChangeEventDetail>("visibility-change", {
-        detail: { isIntersecting: entry.isIntersecting },
-      }),
-    );
-  }
-});
+client const observer = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      entry.target.dispatchEvent(
+        new CustomEvent<VisibilityChangeEventDetail>("visibility-change", {
+          detail: { isIntersecting: entry.isIntersecting },
+        }),
+      );
+    }
+  },
+  {
+    rootMargin: "-50px 0px 0px 0px",
+  },
+);
+<const/{ item }=input/>
 
-const/{ item }=input
-
-for|item| of=item
-  li
-    let/visible=false
-    a href=`#${item.id}` class=visible && "visible" -- ${item.title}
-    if=(item.children.length)
-      ul
-        toc-tree item=item.children
-    script
-      --
+<for|item| of=item>
+  <li>
+    <let/visible=false/>
+    <let/current=false/>
+    <a
+      href=`#${item.id}`
+      class={
+        visible,
+      }
+      aria-current=(current && "true")
+    >
+      ${item.title}
+    </a>
+    <if=(item.children.length)>
+      <ul>
+        <toc-tree item=item.children/>
+      </ul>
+    </if>
+    <script>
       const section = document.getElementById(item.id);
       if (section) {
         observer.observe(section);
@@ -40,4 +54,16 @@ for|item| of=item
         );
         $signal.onabort = () => observer.unobserve(section);
       }
-      --
+      current = window.location.hash === `#${item.id}`;
+      window.addEventListener(
+        "hashchange",
+        (e) => {
+          current = new URL(e.newURL).hash === `#${item.id}`;
+        },
+        {
+          signal: $signal,
+        },
+      );
+    </script>
+  </li>
+</for>
