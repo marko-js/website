@@ -9,7 +9,7 @@ export interface Input {
 client import { compile } from "../utils/compile";
 client const decoder = new TextDecoder();
 
-const/files=input.value
+debounce/files=input.value
 
 let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)
 let/showLoadingMessage=false
@@ -41,10 +41,10 @@ else if=compiled
     for|error| of=compiled.errors
       pre.codeOutput -- ${error.text}
   else if=compiled.outputFiles?.length
-    const/contents=decoder.decode(compiled.outputFiles[0].contents)
+    const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)
+    const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)
     if=input.render
       let/error=null as null | { message: string, stack?: string }
-      script -- if (contents) error = null
       if=error
         pre.codeOutput -- ${error.message}: ${error.stack}
       else
@@ -62,8 +62,10 @@ else if=compiled
                 return true;
               };
             </script>
-            <script type="module">${contents}</script>
+            <script type="module">${scriptContent}</script>
+            <style>${styleContent ?? ""}</style>
           </body>`
+        script -- if (scriptContent || styleContent) error = null
         script --
           window.addEventListener("message", (e) => {
             if (e.data.type === "iframe-error") {
@@ -71,7 +73,7 @@ else if=compiled
             }
           }, { signal: $signal})
     else
-      pre.codeOutput -- ${contents}
+      pre.codeOutput -- ${scriptContent}
 
 style
   --
