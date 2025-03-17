@@ -44,6 +44,17 @@ declare module "../src/routes/docs/+handler" {
   }
 }
 
+declare module "../src/routes/docs/+middleware" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs" | "/docs/concise-syntax" | "/docs/core-tag" | "/docs/custom-tag" | "/docs/getting-started" | "/docs/language" | "/docs/native-tag" | "/docs/reactivity" | "/docs/styling" | "/docs/template" | "/docs/typescript" | "/docs/why-marko" | "/docs/run/file-based-routing" | "/docs/run/getting-started" | "/docs/run/typescript"];
+    export type Context = Run.MultiRouteContext<Route>;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
 declare module "../src/routes/_index/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };

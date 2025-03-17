@@ -1,0 +1,73 @@
+server import { createHighlighter } from "shiki";
+server import { theme } from "./theme"
+import { faCode, faIndent } from "@fortawesome/free-solid-svg-icons";
+export interface Input {
+  lang: string;
+  text: string;
+  concise?: string;
+}
+server const highlighter = await createHighlighter({
+  langs: ["marko", "html", "css", "js", "ts", "json", "fs"],
+  themes: [theme],
+});
+
+const/highlightedText=highlighter.codeToHtml(input.text, {
+  lang: input.lang,
+  theme: "marko-dark"
+})
+
+const/highlightedConcise=input.concise &&
+  highlighter.codeToHtml(input.concise, {
+    lang: input.lang,
+    theme: "marko-dark",
+  })
+
+
+if=input.concise
+  local-let/mode="html" key="syntax-mode"
+  div.html-code-block
+    button.mode-switch onClick() { mode = "concise" } title="HTML mode" aria-label="switch to concise mode"
+      fa-icon=faCode
+    -- $!{highlightedText}
+  div.concise-code-block
+    button.mode-switch onClick() { mode = "html" } title="Concise mode" aria-label="switch to HTML mode"
+      fa-icon=faIndent
+    -- $!{highlightedConcise}
+else -- $!{highlightedText}
+
+style
+  --
+  .concise-code-block {
+    display: none;
+  }
+
+  .concise-mode .concise-code-block {
+    display: block;
+  }
+
+  .concise-mode .html-code-block {
+    display: none;
+  }
+
+  .concise-code-block, .html-code-block {
+    position: relative;
+  }
+
+  .mode-switch {
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    right: 0.25rem;
+    top: 0.25rem;
+    border: 1px solid var(--color-section);
+    background: none;
+    border-radius: 0.25rem;
+
+    svg {
+      width: 100%;
+      path {
+        fill: var(--color-section);
+      }
+    }
+  }
+  --

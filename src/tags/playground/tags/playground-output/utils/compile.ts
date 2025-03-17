@@ -260,6 +260,37 @@ export async function compile(
   }
 }
 
+export async function compileAst(
+  files: PlaygroundFile[],
+  version: string,
+  entryPoint: string,
+) {
+  const { compiler, translator } = await getMarkoPackages(version);
+
+  const prefix = version.startsWith("5") ? "components" : "tags";
+  const fsMap: Record<string, string> = Object.fromEntries(
+    files.map(({ path, content }) => [`/${prefix}/` + path, content]),
+  );
+  const fs = fsShim(fsMap);
+
+  compiler.taglib.clearCaches();
+
+  try {
+    return compiler.compileFileSync(`/${prefix}/` + entryPoint, {
+      ast: true,
+      code: false,
+      output: "source",
+      cache: new Map(),
+      fileSystem: fs,
+      translator,
+    });
+  } catch (e) {
+    return {
+      error: e,
+    };
+  }
+}
+
 interface CompileError {
   name: "CompileError";
   message: string;

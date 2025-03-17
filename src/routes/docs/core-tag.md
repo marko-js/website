@@ -30,17 +30,21 @@ The `<for>` control flow tag allows for writing content or applying [attribute t
 The `<for>` tag can iterate over:
 
 - Arrays and [Iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with the `of=` attribute
+
   ```marko
   <for|item, index| of=["a", "b", "c"]>
     ${index}: ${item}
   </for>
   ```
+
 - Object properties and values with the `in=` attribute
+
   ```marko
   <for|key, value| in={a: 1, b: 2, c: 3}>
     ${key}: ${value}
   </for>
   ```
+
 - Ranges of numbers with the `to=`, `from=`, and `step=` attributes
 
   ```marko
@@ -54,7 +58,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
-The `<for>` has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
+The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
 
 ```marko
 <for|user| of=users by=user => user.id>
@@ -171,6 +175,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
 
+<!--  -->
+
 > [!TIP]
 > The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
@@ -184,9 +190,9 @@ The `<return>` tag allows any [custom tag](./custom-tag.md) to expose a [Tag Var
 
 The `value=` attribute (usually expressed via the [shorthand](./language.md#shorthand-value)) is made available as the tag variable of the template.
 
-_answer.marko_
-
 ```marko
+/* answer.marko */
+
 <return=42>
 ```
 
@@ -204,9 +210,9 @@ By default, an exposed variable can not be assigned a value. Value assignment ma
 
 If a `valueChange=` attribute is provided, it is called whenever the tag variable is assigned a value.
 
-_uppercase.marko_
-
 ```marko
+/* uppercase.marko */
+
 <let/value = input.value.toUpperCase()>
 
 <return=value valueChange(newValue) {
@@ -326,7 +332,7 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](#Tag-Variable) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
 
 > [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
@@ -358,15 +364,15 @@ The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be
 ```marko
 client import { WorldMap } from "world-map-api";
 
-<let/lat = 0>
-<let/lon = 0>
+<let/latitude = 0>
+<let/longitude = 0>
 <div/container/>
 <lifecycle<{ map: WorldMap }>
   onMount() {
-    this.map = new WorldMap(container(), { lat, lon, zoom });
+    this.map = new WorldMap(container(), { latitude, longitude, zoom });
   }
   onUpdate() {
-    this.map.setCoords(lat, lon);
+    this.map.setCoords(latitude, longitude);
     this.map.setZoom(zoom);
   }
   onDestroy() {
@@ -394,7 +400,7 @@ The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/doc
 
 The log is re-executed each time its tag variable updates.
 
-```
+```marko
 <let/count = 0>
 <log=`Current count: ${count}`>
 <button onClick() { count++ }>Log</button>

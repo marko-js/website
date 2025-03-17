@@ -79,17 +79,15 @@ You may still provide a custom file extension to enable to use of preprocessors.
 
 Styling files adjacent a [custom tag are automatically discovered](./custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
 
-_style.css_
-
 ```css
+/* style.css */
 .fancy {
   color: green;
 }
 ```
 
-_index.marko_
-
 ```marko
+/* index.marko */
 <div class="fancy">Hello!</div>
 ```
 
@@ -100,40 +98,36 @@ _index.marko_
 
 Styles may also be [imported](./language.md#import).
 
-_fancy.css_
-
 ```css
+/* fancy.css */
 .fancy {
   color: red;
 }
 ```
 
-_index.marko_
-
 ```marko
+/* index.marko */
 import "./fancy.css";
 
 <div class="fancy">Hello!</div>
 ```
 
 > [!TIP]
-> Although generally [inline](#inline-styles) or [autodiscovered](#auto-discovered-styles) styles are preferred, importing styles can be helpful when sharing across templates.
+> Although generally [inline](#inline-styles) or [auto-discovered](#auto-discovered-styles) styles are preferred, importing styles can be helpful when sharing across templates.
 
 ### Imported CSS Modules
 
 [CSS Module files](https://github.com/css-modules/css-modules) may also be imported.
 
-_something.module.css_
-
 ```css
+/* something.module.css */
 .fancy {
   color: red;
 }
 ```
 
-_index.marko_
-
 ```marko
+/* index.marko */
 import styles from "./something.module.css";
 <div class=styles.fancy/>
 ```

@@ -6,11 +6,12 @@ Custom Tags in Marko allow for reusing markup across the application.
 
 When you use a `<Tag>` in Marko it is resolved in the following order:
 
-1. [Local Variables](#local-variable-custom-tags)
-2. [Relative Custom Tags](#relative-custom-tags)
-3. [Installed Custom Tags](#installed-custom-tags)
-4. [Core Tags](./core-tag.md)
-5. [Native Tags](./native-tag.md)
+- [Custom Tag Discovery](#custom-tag-discovery)
+  - [Priority](#priority)
+  - [Local Variable Custom Tags](#local-variable-custom-tags)
+  - [Relative Custom Tags](#relative-custom-tags)
+  - [Installed Custom Tags](#installed-custom-tags)
+  - [Supporting Files](#supporting-files)
 
 ## Local Variable Custom Tags
 
@@ -54,7 +55,7 @@ If Marko did not resolve a [local variable tag name](#local-variable-custom-tags
 
 Let's take a look at an example directory structure to understand this better:
 
-```
+```fs
 tags/
     app-header.marko
     app-footer.marko
@@ -89,9 +90,9 @@ If no Local Variable or Relative Custom Tag is found, Marko checks installed tag
 
 Packages that provide Marko Custom Tags must include a `marko.json` at the root which tells Marko where the exported tags are.
 
-_marko.json_
-
 ```json
+/* marko.json */
+
 {
   "exports": "./dist/tags"
 }
@@ -104,6 +105,8 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 >
 > For example, when exporting `dist/tags`, `dist/tags/tags/` could contain private components only available _within_ the library.
 
+<!--  -->
+
 > [!CAUTION]
 > If two packages export the tag name, Marko will choose the one it finds first. To prevent collisions, tag libraries are encouraged to prefix all exported tag names, e.g. `ebay-`. If you must use tags with conflicting names, you can import by path to disambiguate.
 
@@ -111,7 +114,7 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
 
-```
+```fs
 foo.marko
 foo.style.css
 foo.marko-tag.json
@@ -121,7 +124,7 @@ Here, the `<foo>` tag has associated styles and metadata.
 
 When the file is named `index.marko` the prefix is optional.
 
-```
+```fs
 tags/
   bar/
     index.marko
@@ -135,7 +138,7 @@ Here, the `<bar>` tag has an associated `style.css` and the `<baz>` tag has an a
 
 For `style` files any extension may be used allowing for CSS preprocessors.
 
-```
+```fs
 tags/
   less/
     index.marko

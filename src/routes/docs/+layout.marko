@@ -1,3 +1,4 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 export interface Input {
   content: Marko.Body;
 }
@@ -11,12 +12,7 @@ define/Outline|input: { page: string; content: Marko.Renderable }|
     a href=`/docs/${input.page}/`
       ${input.content}
 
-local-let/mode="html" key="syntax-mode"
 nav.pages
-  button onClick() {
-    mode = mode === "html" ? "concise" : "html";
-  }
-    -- ${mode} mode
   ul
     li
       local-let/open=true key="nav-reference-open"
@@ -56,8 +52,6 @@ nav.pages
         ul
           li
             Outline page="styling" -- Styling
-          li
-            Outline page="getting-started" -- Getting Started
     li
       local-let/open=true key="nav-run-open"
       details [
@@ -75,5 +69,28 @@ nav.pages
           li
             Outline page="run/typescript" -- TypeScript
 
+local-let/mode="html" key="syntax-mode"
 main class=mode === "concise" && "concise-mode"
   ${input.content}
+
+  hr
+
+  section#contributors
+    h2
+      -- Contributors
+      a href="#contributors" -- #
+    p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
+    ul
+      for|contributor| of=$global.contributors
+        li
+          a href=contributor.url
+            img src=contributor.photo alt=""
+            -- ${contributor.username}
+      li
+        a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
+            "/docs/".length,
+            $global.url.pathname.length - 1,
+          )}.md`
+          div
+            fa-icon=faPlus
+          -- You?

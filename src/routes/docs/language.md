@@ -26,6 +26,8 @@ The language makes HTML more strict while extending it with control flow and rea
 > [!TIP]
 > Jump to the section for a syntax by clicking on it.
 
+<!--  -->
+
 > [!NOTE]
 > The legend above is not comprehensive. See also:
 >
@@ -395,7 +397,7 @@ Here, `@header` is available to `<my-layout>` as `input.header`. The `class` att
 The full [input](./language.md#input) object provided to `<my-tag>` in this example would look like:
 
 ```js
-// a representation of `input` recieved by `my-layout.marko` (from the previous code snippet)
+// a representation of `input` received by `my-layout.marko` (from the previous code snippet)
 {
   title: "Welcome",
   header: {
@@ -430,7 +432,7 @@ The implementation of `my-layout.marko` might look like
     </main>
 
     <footer>
-      Copywrite ♾️
+      Copyright ♾️
     </footer>
   </body>
 </html>
@@ -493,7 +495,7 @@ This example uses two `<@item>` tags, but `<my-menu>` receives only a single `it
 }
 ```
 
-The other `<@item>` tags are reached through the iterator. The most comon way to do so is with a [for tag](./core-tag.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
+The other `<@item>` tags are reached through the iterator. The most common way to do so is with a [for tag](./core-tag.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
 
 ```marko
 <for|item| of=input.item>
@@ -705,6 +707,8 @@ import MyTagB from "<my-tag-b>"
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
 > ```
+
+<!--  -->
 
 > [!NOTE]
 > If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.

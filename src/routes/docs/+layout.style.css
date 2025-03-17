@@ -1,12 +1,12 @@
 :root {
-  --section-color: var(--color-blue-primary);
+  --color-section: var(--color-blue-primary);
 }
 
 * {
-  --section-color-translucent: oklch(from var(--section-color) l c h / 0.05);
-  --section-color-text: color-mix(
+  --color-section-translucent: oklch(from var(--color-section) l c h / 0.05);
+  --color-section-text: color-mix(
     in oklab,
-    var(--section-color) 70%,
+    var(--color-section) 70%,
     var(--color-foreground)
   );
 }
@@ -22,14 +22,7 @@ main {
   display: none;
 }
 
-.mobile-nav-toggle {
-  display: none;
-}
-
 @media (max-width: 50rem) {
-  [data-mobile-nav] {
-    overflow: hidden;
-  }
   [data-mobile-nav] .pages {
     display: block;
     position: fixed;
@@ -37,9 +30,6 @@ main {
     overflow: scroll;
     background-color: var(--color-background);
     z-index: 1;
-  }
-  .mobile-nav-toggle {
-    display: block;
   }
 }
 
@@ -65,7 +55,7 @@ main {
 @media (min-width: 80rem) {
   .table-of-contents {
     position: fixed;
-    inset: 3rem 0 0 70rem;
+    inset: 3.25rem 0 0 70rem;
     overflow-y: scroll;
   }
 
@@ -83,35 +73,35 @@ li {
 }
 
 h1 ~ section:nth-of-type(5n + 3) {
-  --section-color: var(--color-red-primary);
+  --color-section: var(--color-red-primary);
 }
 h1 ~ section:nth-of-type(5n + 1) {
-  --section-color: var(--color-green-primary);
+  --color-section: var(--color-green-primary);
 }
 h1 ~ section:nth-of-type(5n + 2) {
-  --section-color: var(--color-yellow-primary);
+  --color-section: var(--color-yellow-primary);
 }
 h1 ~ section:nth-of-type(5n + 4) {
-  --section-color: var(--color-purple-primary);
+  --color-section: var(--color-purple-primary);
 }
 
 a {
-  color: var(--section-color-text);
+  color: var(--color-section-text);
 }
 
 :not(pre) > code {
-  color: var(--section-color-text);
-  background-color: var(--section-color-translucent);
+  color: var(--color-section-text);
+  background-color: var(--color-section-translucent);
   padding: 0.15rem 0.3rem;
   border-radius: 0.3rem;
-  border: 1px solid oklch(from var(--section-color) l c h / 0.2);
+  border: 1px solid oklch(from var(--color-section) l c h / 0.2);
 }
 
 pre {
-  background-color: var(--section-color-translucent);
+  background-color: var(--color-section-translucent);
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid oklch(from var(--section-color) l c h / 0.5);
+  border: 1px solid var(--color-section);
   overflow-x: scroll;
 }
 
@@ -132,7 +122,7 @@ pre {
 
 :is(h1, h2, h3, h4, h5, h6) {
   position: relative;
-  color: var(--section-color);
+  color: var(--color-section);
 
   & > a:last-child {
     position: absolute;
@@ -165,15 +155,15 @@ pre {
 /* Alerts */
 
 .markdown-alert {
-  border-left: 4px solid var(--section-color);
-  background-color: var(--section-color-translucent);
+  border-left: 4px solid var(--color-section);
+  background-color: var(--color-section-translucent);
   padding: 0.5rem 1rem;
   margin: 1rem 0;
   border-radius: 0.5rem;
 }
 
 .markdown-alert-title {
-  color: var(--section-color-text);
+  color: var(--color-section-text);
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -185,19 +175,19 @@ pre {
 }
 
 .markdown-alert-caution {
-  --section-color: var(--color-red-secondary);
+  --color-section: var(--color-red-secondary);
 }
 
 .markdown-alert-note {
-  --section-color: var(--color-blue-secondary);
+  --color-section: var(--color-blue-secondary);
 }
 
 .markdown-alert-tip {
-  --section-color: var(--color-yellow-secondary);
+  --color-section: var(--color-yellow-secondary);
 }
 
 .markdown-alert-important {
-  --section-color: var(--color-green-secondary);
+  --color-section: var(--color-green-secondary);
 }
 
 /* Navigation */
@@ -208,7 +198,7 @@ pre {
 }
 
 .pages strong {
-  color: var(--section-color);
+  color: var(--color-section);
 }
 
 nav ul {
@@ -218,6 +208,12 @@ nav ul {
 
 nav details {
   user-select: none;
+  margin: 0.5rem;
+}
+
+nav details > summary {
+  list-style: none;
+  font-weight: bold;
 }
 
 .table-of-contents ul {
@@ -238,7 +234,7 @@ nav details {
 }
 
 .table-of-contents a.visible {
-  color: var(--section-color);
+  color: var(--color-section);
   font-weight: bold;
 }
 
@@ -249,17 +245,60 @@ nav details {
 }
 
 .table-of-contents > ul > li:nth-of-type(5n) {
-  --section-color: var(--color-blue-primary);
+  --color-section: var(--color-blue-primary);
 }
 .table-of-contents > ul > li:nth-of-type(5n + 1) {
-  --section-color: var(--color-green-primary);
+  --color-section: var(--color-green-primary);
 }
 .table-of-contents > ul > li:nth-of-type(5n + 2) {
-  --section-color: var(--color-yellow-primary);
+  --color-section: var(--color-yellow-primary);
 }
 .table-of-contents > ul > li:nth-of-type(5n + 3) {
-  --section-color: var(--color-red-primary);
+  --color-section: var(--color-red-primary);
 }
 .table-of-contents > ul > li:nth-of-type(5n + 4) {
-  --section-color: var(--color-purple-primary);
+  --color-section: var(--color-purple-primary);
+}
+
+/* Contributors */
+
+hr {
+  border-color: #888;
+  margin: 3rem 0;
+}
+
+#contributors ul {
+  display: flex;
+  list-style-type: none;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+}
+
+#contributors ul > li > a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-foreground);
+  font-size: x-small;
+}
+
+#contributors ul > li > a > :first-child {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-section);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    height: 2rem;
+
+    path {
+      fill: var(--color-section);
+    }
+  }
 }

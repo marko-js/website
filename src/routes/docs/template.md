@@ -13,7 +13,7 @@ For use on the **server**, the `.render()` API on a Marko template provides an o
 
 ### Async Iterator
 
-The render result contains an [async interator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols), which allows consumption through a [`for await` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of).
+The render result contains an [async iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols), which allows consumption through a [`for await` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of).
 
 ```js
 import Template from "./template.marko";
@@ -156,18 +156,18 @@ This is used to, for example, prevent continued rendering after an incoming requ
 
 ### `$global.cspNonce`
 
-> <code>string | undefined</code>
+> `string | undefined`
 
 This value should be a string that represents a valid [csp nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce). Marko will automatically set this value as the `nonce` on all assets (`<script>`, `<style>`, etc) rendered by the template.
 
 ### `$global.renderId`
 
-> <code>string | undefined</code>
+> `string | undefined`
 
 The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
 
 ### `$global.runtimeId`
 
-> <code>string | undefined</code>
+> `string | undefined`
 
 The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particualarily useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).

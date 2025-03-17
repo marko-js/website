@@ -33,9 +33,8 @@ This can be `export type Input` or `export interface Input`.
 
 ### Example
 
-_PriceField.marko_
-
 ```marko
+/* PriceField.marko */
 export interface Input {
   currency: string;
   amount: number;
@@ -133,9 +132,8 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 
 A commonly used type from the `Marko` namespace is `Marko.Body` which can be used to type the [content](./language.md#tag-content) in `input.content`:
 
-_child.marko_
-
 ```marko
+/* child.marko */
 export interface Input {
   content?: Marko.Body;
 }
@@ -143,9 +141,8 @@ export interface Input {
 
 Here, all of the following are acceptable:
 
-_index.marko_
-
 ```marko
+/* index.marko */
 <child/>
 <child>Text in render body</child>
 <child>
@@ -155,9 +152,8 @@ _index.marko_
 
 Passing other values (including components) causes a type error:
 
-_index.marko_
-
 ```marko
+/* index.marko */
 import OtherTag from "<other-tag>";
 <child content=OtherTag/>
 ```
@@ -166,9 +162,8 @@ import OtherTag from "<other-tag>";
 
 Tag parameters are provided to the `content` by the child tag. For this reason, `Marko.Body` allows typing of its parameters:
 
-_for-by-two.marko_
-
 ```marko
+/* for-by-two.marko */
 export interface Input {
   to: number;
   content: Marko.Body<[number]>
@@ -179,9 +174,8 @@ export interface Input {
 </for>
 ```
 
-_index.marko_
-
 ```marko
+/* index.marko */
 <for-by-two|i| to=10>
   <div>${i}</div>
 </for-by-two>
@@ -191,9 +185,8 @@ _index.marko_
 
 All attribute tags are typed as iterable with a `[Symbol.iterator]`, regardless of intent. This means all attribute tag inputs must be wrapped in `Marko.AttrTag`.
 
-_my-select.marko_
-
 ```marko
+/* my-select.marko */
 export interface Input {
   option: Marko.AttrTag<Marko.Input<"option">>
 }
@@ -209,9 +202,8 @@ export interface Input {
 
 The types for native tags are accessed via the global `Marko.Input` type. Here's an example of a component that extends the `button` html tag:
 
-_color-button.marko_
-
 ```marko
+/* color-button.marko */
 export interface Input extends Marko.Input<"button"> {
   color: string;
   content?: Marko.Body;
@@ -224,7 +216,7 @@ $ const { color, ...attrs } = input;
 </button>
 ```
 
-### Registering a new native tag (e.g. for custom elements).
+### Registering a new native tag (e.g. for custom elements)
 
 ```ts
 interface MyCustomElementAttributes {
@@ -287,17 +279,15 @@ Any JavaScript expression in Marko can also be written as a TypeScript expressio
 
 ### Tag Type Arguments
 
-_components/child.marko_
-
 ```marko
+/* components/child.marko */
 export interface Input<T> {
   value: T;
 }
 ```
 
-_index.marko_
-
 ```marko
+/* index.marko */
 // number would be inferred in this case, but we can be explicit
 <child<number> value=1 />
 ```
@@ -319,11 +309,11 @@ The types of attribute values can _usually_ be inferred. When needed, you can as
 />
 ```
 
-# JSDoc Support
+## JSDoc Support
 
 For existing projects that want to incrementally add type safety, adding full TypeScript support is a big leap. This is why Marko also includes full support for [incremental typing via JSDoc](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html).
 
-## Setup
+### Setup
 
 You can enable type checking in an existing `.marko` file by adding a `// @ts-check` comment at the top:
 
@@ -348,7 +338,6 @@ Once that has been enabled, you can start by typing the input with JSDoc. Here's
 <div>${firstName} ${lastName}</div>
 ```
 
-# CI Type Checking
+## CI Type Checking
 
-For type checking Marko files outside of your editor there is the ["@marko/type-check" cli](https://github.com/marko-js/language-server/tree/main/packages/type-check).
-Check out the CLI documentation for more information.
+For type checking Marko files outside of your editor there is the [`@marko/type-check` cli](https://github.com/marko-js/language-server/tree/main/packages/type-check). See the CLI documentation for more information.

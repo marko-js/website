@@ -1,4 +1,7 @@
-import type { PlaygroundFile } from "../playground.marko";
+import type { PlaygroundFile } from "<playground>";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import styles from "./tabs.module.css"
+
 export interface Input {
   files: PlaygroundFile[];
   filesChange: (files: PlaygroundFile[]) => void;
@@ -9,7 +12,7 @@ export interface Input {
 <let/tabs:=input.files/>
 <let/selected:=input.selected/>
 
-<div class="tabs">
+<div class=styles.tabs>
   <for|tab, i| of=tabs>
     <const/isSelected=selected === i/>
 
@@ -33,7 +36,7 @@ export interface Input {
           selected = i;
         }
       }
-      class="tab"
+      class=styles.tab
     >
       <if=editing>
         <let/length=tab.path.length/>
@@ -86,34 +89,12 @@ export interface Input {
   </for>
 
   <button
+    class=styles.add
     aria-label="Add file"
     onClick() {
       tabs = tabs.concat({ path: `Tag${tabs.length}.marko`, content: ""});
     }
   >
-    +
+    <fa-icon=faPlus/>
   </button>
 </div>
-
-<style>
-  .tabs {
-    display: flex;
-    overflow: scroll;
-    scrollbar-width: thin;
-
-    .tab {
-      display: flex;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border-bottom: 2px solid transparent;
-      text-wrap: nowrap;
-
-      &:hover {
-        background-color: #888;
-      }
-      &[aria-selected="true"] {
-        border-color: var(--color-foreground);
-      }
-    }
-  }
-</style>

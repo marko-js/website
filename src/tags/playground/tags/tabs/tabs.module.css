@@ -1,0 +1,56 @@
+.tabs {
+  display: flex;
+  overflow: scroll;
+  scrollbar-width: thin;
+  background-color: #161626;
+  align-items: center;
+
+  .tab {
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    text-wrap: nowrap;
+
+    &:hover {
+      background-color: #37375a;
+    }
+    &[aria-selected="true"] {
+      background-color: var(--color-background);
+    }
+
+    button {
+      background: none;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: -0.5rem -1rem;
+
+      &:hover,
+      &:focus {
+        color: var(--color-red-dark);
+      }
+    }
+  }
+}
+
+.add {
+  background: none;
+  border: none;
+  padding: 0 0.5rem;
+  height: 1rem;
+  width: 1rem;
+
+  svg {
+    height: 100%;
+    path {
+      fill: #4e4e89;
+    }
+  }
+}
+
+.add:hover {
+  svg {
+    path {
+      fill: var(--color-blue-light);
+    }
+  }
+}

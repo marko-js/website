@@ -2,8 +2,8 @@ import type { PlaygroundFile } from "../../playground.marko";
 import { getPackageMetadata, getVersionFromRange } from "./utils/npm-install"
 
 static const previewTypes: Record<string, {
-  render: boolean;
-  output: "dom" | "html" | "hydrate";
+  render?: boolean;
+  output: "dom" | "html" | "hydrate" | "ast";
 }> = {
   "Preview": {
     output: "dom",
@@ -16,6 +16,9 @@ static const previewTypes: Record<string, {
   "Compiled (DOM)": {
     output: "dom",
     render: false,
+  },
+  "AST": {
+    output: "ast",
   }
 };
 export interface Input {
@@ -43,8 +46,15 @@ div.output
       select value:=markoVersion
         for|version| of=availableMarkoVersions by(version) { return version } 
           option -- ${version}
-  if=input.files.length && markoVersion
-    render-files=input.files markoVersion=markoVersion selected=input.selected ...previewTypes[previewType]
+  if=markoVersion
+    if=previewTypes[previewType].output === "ast"
+      render-ast=input.files selected=input.selected markoVersion=markoVersion
+    else if=input.files.length
+      render-files=input.files
+        ,markoVersion=markoVersion
+        ,selected=input.selected
+        ,render=previewTypes[previewType].render
+        ,output=previewTypes[previewType].output
 
 style --
   .output {

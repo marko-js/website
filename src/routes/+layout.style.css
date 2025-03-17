@@ -22,18 +22,14 @@ header {
   align-items: center;
   gap: 0.5rem;
   background: linear-gradient(
-    to bottom right,
-    color-mix(in oklab, var(--color-blue-primary) 30%, var(--color-background)),
-    color-mix(
-      in oklab,
-      var(--color-blue-secondary) 30%,
-      var(--color-background)
-    )
+    to bottom,
+    var(--color-background) 80%,
+    transparent 100%
   );
   position: fixed;
   inset: 0;
-  height: 2rem;
-  padding: 0.5rem 1rem;
+  height: 2.5rem;
+  padding: 0.25rem 1rem 1rem;
   z-index: 10;
 
   .logo {
@@ -61,6 +57,19 @@ header {
   flex-grow: 1;
 }
 
+.mobile-nav-toggle {
+  display: block;
+}
+
+@media (min-width: 50rem) {
+  [data-mobile-nav] {
+    overflow: visible;
+  }
+  .mobile-nav-toggle {
+    display: none;
+  }
+}
+
 :root {
   color-scheme: light dark;
   scroll-padding-top: 4rem;
@@ -76,7 +85,7 @@ header {
   --color-purple-dark: oklch(0.463457 0.15346 294.701);
   --color-purple-light: oklch(0.756829 0.126986 332.83);
 
-  --color-background: light-dark(white, #202124);
+  --color-background: light-dark(white, #202034);
   --color-foreground: light-dark(black, white);
   --color-red-primary: light-dark(
     var(--color-red-dark),

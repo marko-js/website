@@ -8,7 +8,7 @@
 - Resumability
   - Avoid redoing server work
   - Avoid bundling server only operations
-- Fine grained reactivty
+- Fine grained reactivity
 
 ## DX
 

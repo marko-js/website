@@ -31,6 +31,8 @@ Here, a `count` Tag Variable is mutated by a button click. Because the text cont
 > [!CAUTION]
 > In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.
 
+<!--  -->
+
 > [!TIP]
 > Marko is a **compiled language**, and its reactive graph is discovered at compile time instead of during runtime. This is in contrast with many of the other leading approaches, such as [Signals in SolidJS](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity) and [Hooks in React](https://react.dev/reference/react/hooks).
 
