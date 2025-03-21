@@ -1,0 +1,36 @@
+# Marko
+
+> Marko is a superset of well-formed HTML that makes building web applications fun and productive. It combines HTML with JavaScript syntax features and introduces reactivity for building high-performance web applications with rich client interactions.
+
+Marko's key features include:
+- Streaming and high throughput rendering
+- Built-in progressive rendering and resumability
+- Fine-grained reactivity system
+- HTML-based syntax with granular JavaScript integration
+- TypeScript support with full type checking
+- Zero-JS-by-default with sub-component partial hydration
+
+## Full Documentation
+- [Reference Documentation](https://markojs.com/docs/llms/reference-full.md): Official documentation site for Marko
+
+## Core Documentation
+
+- [Why Choose Marko](https://markojs.com/docs/llms/why-marko.md): Performance benefits, developer experience, and core principles
+- [Language Reference](https://markojs.com/docs/llms/language.md): Complete language syntax and features documentation
+- [Core Tags](https://markojs.com/docs/llms/core-tag.md): Built-in Marko tags and their functionality
+- [Native Tags](https://markojs.com/docs/llms/native-tag.md): How HTML tags work in Marko
+- [Custom Tags](https://markojs.com/docs/llms/custom-tag.md): Creating and using custom components
+- [Reactivity](https://markojs.com/docs/llms/reactivity.md): Understanding Marko's reactive system
+- [TypeScript Support](https://markojs.com/docs/llms/typescript.md): Using TypeScript with Marko
+- [Template API](https://markojs.com/docs/llms/template.md): API reference for Marko templates
+
+## Guides
+
+- [Getting Started](https://markojs.com/docs/llms/run/getting-started.md): Quick start guide for new projects
+- [Styling](https://markojs.com/docs/llms/styling.md): Guide to styling in Marko applications
+- [File-based Routing](https://markojs.com/docs/llms/run/file-based-routing.md): How routing works in Marko applications
+- [Concise Syntax](https://markojs.com/docs/llms/concise-syntax.md): Alternative compact syntax for Marko templates
+
+## Optional
+
+- [TypeScript Configuration](https://markojs.com/docs/llms/run/typescript.md): Detailed TypeScript setup and configuration
