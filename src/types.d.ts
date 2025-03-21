@@ -7,8 +7,14 @@ declare module "*.css" {
 
 declare module "@marko/run" {
   interface Context {
-    meta: { pageTitle: string };
+    meta: { pageTitle: string; headings: HeadingList };
   }
 }
+
+export type HeadingList = {
+  id: string;
+  title: string;
+  children: HeadingList;
+}[];
 
 export {};

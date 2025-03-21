@@ -1,6 +1,6 @@
-export type RecursiveList = {id: string, title: string, children: RecursiveList}[];
+import type { HeadingList } from "../../../types";
 export interface Input {
-  item: RecursiveList;
+  value: HeadingList;
 }
 static interface VisibilityChangeEventDetail {
   isIntersecting: boolean;
@@ -19,28 +19,27 @@ client const observer = new IntersectionObserver(
     rootMargin: "-50px 0px 0px 0px",
   },
 );
-<const/{ item }=input/>
 
-<for|item| of=item>
+<for|heading| of=input.value>
   <li>
     <let/visible=false/>
     <let/current=false/>
     <a
-      href=`#${item.id}`
+      href=`#${heading.id}`
       class={
         visible,
       }
       aria-current=(current && "true")
     >
-      ${item.title}
+      ${heading.title}
     </a>
-    <if=(item.children.length)>
+    <if=(heading.children.length)>
       <ul>
-        <toc-tree item=item.children/>
+        <toc-tree=heading.children/>
       </ul>
     </if>
     <script>
-      const section = document.getElementById(item.id);
+      const section = document.getElementById(heading.id);
       if (section) {
         observer.observe(section);
         section.addEventListener(
@@ -54,11 +53,11 @@ client const observer = new IntersectionObserver(
         );
         $signal.onabort = () => observer.unobserve(section);
       }
-      current = window.location.hash === `#${item.id}`;
+      current = window.location.hash === `#${heading.id}`;
       window.addEventListener(
         "hashchange",
         (e) => {
-          current = new URL(e.newURL).hash === `#${item.id}`;
+          current = new URL(e.newURL).hash === `#${heading.id}`;
         },
         {
           signal: $signal,

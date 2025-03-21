@@ -2,14 +2,23 @@ import pkg from "../../package.json";
 import docsearch from "@docsearch/js";
 import "@docsearch/css";
 import markoLogo from "./logo.svg";
-import { faBars } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faLaptopCode } from "@fortawesome/free-solid-svg-icons"
 
 export interface Input {
   content: Marko.Body;
 }
 
 let/mobileNav=false
+let/headerCollapse=false
+script --
+  let lastScrollY = window.scrollY;
+  window.addEventListener("scroll", () => {
+    const currentScrollY = window.scrollY;
+    headerCollapse = currentScrollY > lastScrollY;
+    lastScrollY = currentScrollY;
+  }, { signal: $signal })
 
+<!DOCTYPE html>
 html lang="en"
   head
     meta charset="UTF-8"
@@ -21,7 +30,7 @@ html lang="en"
     link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
 
-  body data-mobile-nav=mobileNav
+  body data-mobile-nav=mobileNav data-header-collapse=headerCollapse
     header
       a href="/"
         img.logo src=markoLogo alt="Marko Logo - Go to Homepage"
@@ -36,6 +45,9 @@ html lang="en"
           apiKey: "82f1b630f11e1afa4767f051af953a28",
         });
         --
+      
+      a href="/playground/" title="playground"
+        fa-icon=faLaptopCode
 
       social-links
 

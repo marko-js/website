@@ -1,4 +1,4 @@
-# Core Tag Reference
+# Core Tags
 
 ## `<if>` / `<else>`
 
@@ -129,8 +129,7 @@ In this example:
 A more common use case is creating state that can be optionally controlled by a parent component:
 
 ```marko
-// counter.marko
-
+/* counter.marko */
 <let/count:=input.count>
 
 <button onClick() { count++ }>
@@ -192,7 +191,6 @@ The `value=` attribute (usually expressed via the [shorthand](./language.md#shor
 
 ```marko
 /* answer.marko */
-
 <return=42>
 ```
 
@@ -212,7 +210,6 @@ If a `valueChange=` attribute is provided, it is called whenever the tag variabl
 
 ```marko
 /* uppercase.marko */
-
 <let/value = input.value.toUpperCase()>
 
 <return=value valueChange(newValue) {

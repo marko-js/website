@@ -1,4 +1,4 @@
-import { decompressFromEncodedURIComponent } from "lz-string";
+import lzString from "lz-string";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -43,6 +43,6 @@ export async function decompress(value: string) {
 
     return result;
   } else {
-    return decompressFromEncodedURIComponent(value);
+    return lzString.decompressFromEncodedURIComponent(value);
   }
 }

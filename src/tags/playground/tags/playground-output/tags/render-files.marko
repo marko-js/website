@@ -8,6 +8,7 @@ export interface Input {
 }
 client import { compile } from "../utils/compile";
 client const decoder = new TextDecoder();
+client import { highlighter } from "../../init-shiki-monaco";
 
 debounce/files=input.value
 
@@ -73,7 +74,14 @@ else if=compiled
             }
           }, { signal: $signal})
     else
-      pre.codeOutput -- ${scriptContent}
+      const/highlighted=highlighter.codeToHtml(scriptContent, {
+        lang: "js",
+        themes: {
+          light: "marko-light",
+          dark: "marko-dark"
+        }
+      })
+      pre.codeOutput -- $!{highlighted}
 
 style
   --

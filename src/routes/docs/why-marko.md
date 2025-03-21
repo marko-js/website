@@ -22,3 +22,46 @@
 
 - Use the platform when possible
 - Localization of Concerns
+
+> [!NOTE]
+> Testing [links](https://markojs.com/docs/) and `code blocks` for notes
+>
+> ```marko
+> <div>Test Code Block</div>
+> ```
+
+<!-- -->
+
+> [!IMPORTANT]
+> Testing [links](https://markojs.com/docs/) and `code blocks` for notes
+>
+> ```marko
+> <div>Test Code Block</div>
+> ```
+
+<!-- -->
+
+> [!TIP]
+> Testing [links](https://markojs.com/docs/) and `code blocks` for notes
+>
+> ```marko
+> <div>Test Code Block</div>
+> ```
+
+<!--  -->
+
+> [!WARNING]
+> Testing [links](https://markojs.com/docs/) and `code blocks` for notes
+>
+> ```marko
+> <div>Test Code Block</div>
+> ```
+
+<!--  -->
+
+> [!CAUTION]
+> Testing [links](https://markojs.com/docs/) and `code blocks` for notes
+>
+> ```marko
+> <div>Test Code Block</div>
+> ```

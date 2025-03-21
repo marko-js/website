@@ -92,7 +92,6 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 
 ```json
 /* marko.json */
-
 {
   "exports": "./dist/tags"
 }

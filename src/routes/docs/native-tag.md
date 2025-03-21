@@ -76,7 +76,7 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
 // equivalent to
 
 <button on-click() { alert("Hi!") }>
-  Sat Hi
+  Say Hi
 </button>
 ```
 

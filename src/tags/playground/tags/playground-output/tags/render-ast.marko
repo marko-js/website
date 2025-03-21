@@ -35,7 +35,10 @@ else if=compiled && "error" in compiled
 else if=compiled
   const/highlighted=highlighter.codeToHtml(JSON.stringify(compiled.ast, null, 2), {
     lang: "json",
-    theme: "marko-dark"
+    themes: {
+      light: "marko-light",
+      dark: "marko-dark"
+    }
   })
   pre.codeOutput -- $!{highlighted}
 

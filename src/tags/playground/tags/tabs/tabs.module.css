@@ -2,7 +2,7 @@
   display: flex;
   overflow: scroll;
   scrollbar-width: thin;
-  background-color: #161626;
+  background-color: light-dark(#efeff6, #161626);
   align-items: center;
 
   .tab {
@@ -12,7 +12,7 @@
     text-wrap: nowrap;
 
     &:hover {
-      background-color: #37375a;
+      background-color: light-dark(#dcdce7, #37375a);
     }
     &[aria-selected="true"] {
       background-color: var(--color-background);
@@ -26,7 +26,7 @@
 
       &:hover,
       &:focus {
-        color: var(--color-red-dark);
+        color: var(--color-red-primary);
       }
     }
   }
@@ -42,7 +42,7 @@
   svg {
     height: 100%;
     path {
-      fill: #4e4e89;
+      fill: light-dark(#afafc5, #4e4e89);
     }
   }
 }
@@ -50,7 +50,7 @@
 .add:hover {
   svg {
     path {
-      fill: var(--color-blue-light);
+      fill: var(--color-blue-primary);
     }
   }
 }

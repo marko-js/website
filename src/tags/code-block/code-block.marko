@@ -1,59 +1,76 @@
 server import { createHighlighter } from "shiki";
-server import { theme } from "./theme"
-import { faCode, faIndent } from "@fortawesome/free-solid-svg-icons";
+server import { markoDark, markoLight } from "./theme"
+import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { compress } from "../../routes/playground/tags/hasher";
+
+import type { PlaygroundFile } from "../playground/playground.marko";
 export interface Input {
   lang: string;
   text: string;
   concise?: string;
+  filename?: string;
 }
 server const highlighter = await createHighlighter({
   langs: ["marko", "html", "css", "js", "ts", "json", "fs"],
-  themes: [theme],
+  themes: [markoDark, markoLight],
 });
 
 const/highlightedText=highlighter.codeToHtml(input.text, {
   lang: input.lang,
-  theme: "marko-dark"
+  themes: {
+    light: "marko-light",
+    dark: "marko-dark"
+  }
 })
 
 const/highlightedConcise=input.concise &&
   highlighter.codeToHtml(input.concise, {
     lang: input.lang,
-    theme: "marko-dark",
+    themes: {
+      light: "marko-light",
+      dark: "marko-dark"
+    }
   })
 
-
+if=input.filename
+  div.filename -- ${input.filename}
 if=input.concise
-  local-let/mode="html" key="syntax-mode"
-  div.html-code-block
-    button.mode-switch onClick() { mode = "concise" } title="HTML mode" aria-label="switch to concise mode"
-      fa-icon=faCode
-    -- $!{highlightedText}
-  div.concise-code-block
-    button.mode-switch onClick() { mode = "html" } title="Concise mode" aria-label="switch to HTML mode"
-      fa-icon=faIndent
-    -- $!{highlightedConcise}
-else -- $!{highlightedText}
+  div.code-block-mode-toggle
+    await|hash|=compress(JSON.stringify([{ path: "index.marko", content: input.text } as PlaygroundFile]))
+      a.code-block-action href=`/playground/#${hash}` title="View in playground"
+        fa-icon=faCode
+    div.html -- $!{highlightedText}
+    div.concise -- $!{highlightedConcise}
+else
+  -- $!{highlightedText}
 
 style
   --
-  .concise-code-block {
-    display: none;
-  }
-
-  .concise-mode .concise-code-block {
-    display: block;
-  }
-
-  .concise-mode .html-code-block {
-    display: none;
-  }
-
-  .concise-code-block, .html-code-block {
+  .code-block-mode-toggle {
     position: relative;
+
+    .concise {
+      display: none;
+    }
   }
 
-  .mode-switch {
+  [data-concise-mode] .code-block-mode-toggle {
+    .html {
+      display: none;
+    }
+    .concise {
+      display: block;
+    }
+  }
+
+  .filename {
+    color: var(--color-section);
+    font-family: monospace;
+    margin-bottom: -0.75rem;
+    margin-left: 0.5rem;
+  }
+
+  .code-block-action {
     position: absolute;
     width: 2rem;
     height: 2rem;
@@ -62,9 +79,13 @@ style
     border: 1px solid var(--color-section);
     background: none;
     border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 
     svg {
-      width: 100%;
+      width: 70%;
       path {
         fill: var(--color-section);
       }

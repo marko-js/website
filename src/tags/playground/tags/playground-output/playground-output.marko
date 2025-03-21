@@ -32,7 +32,9 @@ let/previewType="Preview"
 
 lifecycle onMount=async () => {
   const meta = await getPackageMetadata("marko");
-  availableMarkoVersions = meta.allVersions.toSorted((a, b) =>  -a.localeCompare(b, undefined, { numeric: true }));
+  availableMarkoVersions = meta.allVersions
+    .filter((v) => v.startsWith("5") || v.startsWith("6"))
+    .toSorted((a, b) =>  -a.localeCompare(b, undefined, { numeric: true }));
   markoVersion = getVersionFromRange(meta, markoVersion ?? "latest") ?? getVersionFromRange(meta, "latest")!;
 }
 

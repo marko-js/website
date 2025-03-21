@@ -5,7 +5,7 @@ export interface Input extends Marko.Input<"svg"> {
 
 const/{ value, ...svgInput }=input
 
-const/[width, height, _ligatures, _unicode, svgPathData]=(input.value.icon)
+const/[width, height, _ligatures, _unicode, svgPathData]=value.icon
 
 svg viewBox=`0 0 ${width} ${height}` ...svgInput
   for|pathData| of=(Array.isArray(svgPathData) ? svgPathData : [svgPathData])

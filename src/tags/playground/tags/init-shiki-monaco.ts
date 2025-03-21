@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor-core";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
-import { theme } from "../../code-block/theme";
+import { markoDark, markoLight } from "../../code-block/theme";
 
 import markoLang from "@shikijs/langs/marko";
 import javascriptLang from "@shikijs/langs/javascript";
@@ -27,7 +27,7 @@ const langs = [
 
 export const highlighter = await createHighlighterCore({
   langs,
-  themes: [theme],
+  themes: [markoDark, markoLight],
   engine: createOnigurumaEngine(import("shiki/wasm")),
 });
 for (const lang of langs) {

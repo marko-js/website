@@ -1,0 +1,26 @@
+.switch {
+  width: 1.5rem;
+  > input {
+    display: none;
+  }
+
+  > input:checked + .off {
+    display: none;
+  }
+  > input:not(:checked) + .off + .on {
+    display: none;
+  }
+
+  svg {
+    width: 100%;
+
+    path {
+      fill: currentColor;
+    }
+  }
+}
+
+.label {
+  display: inline-flex;
+  gap: 0.5rem;
+}

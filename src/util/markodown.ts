@@ -8,6 +8,7 @@ import * as prettier from "prettier";
 import * as markoPrettier from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
 import { glob } from "glob";
+import type { HeadingList } from "../types";
 
 markoPrettier.setCompiler(compiler, {});
 
@@ -31,13 +32,14 @@ export default function markodownPlugin(): PluginOption {
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
             recursive: true,
           });
+          const { markoCode, headings } = await mdToMarko(content);
           await fs.writeFile(
             path.join(docsPages, file.replace(".md", "+page.marko")),
-            await mdToMarko(content),
+            markoCode,
           );
           await fs.writeFile(
             path.join(docsPages, file.replace(".md", "+meta.json")),
-            `{ "pageTitle": "${path.basename(file, ".md")}" }`,
+            `{ "pageTitle": "${headings[0].title}", "headings": ${JSON.stringify(headings)} }`,
           );
         }),
       );
@@ -46,13 +48,18 @@ export default function markodownPlugin(): PluginOption {
 }
 
 async function mdToMarko(source: string) {
-  return new Marked().use(markedAlert(), headingSections(), markoDocs()).parse(
-    // remove zero-width spaces (recommended from marked docs)
-    source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
-    {
-      gfm: true,
-    },
-  );
+  const headings: HeadingList = [];
+  const markoCode = await new Marked()
+    .use(markedAlert(), headingSections(headings), markoDocs())
+    .parse(
+      // remove zero-width spaces (recommended from marked docs)
+      source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
+      {
+        gfm: true,
+      },
+    );
+
+  return { headings, markoCode };
 }
 
 declare module "marked" {
@@ -60,6 +67,7 @@ declare module "marked" {
     interface Code {
       html?: string;
       concise?: string;
+      filename?: string;
     }
   }
 }
@@ -68,6 +76,14 @@ function markoDocs(): MarkedExtension {
   return {
     async: true,
     async walkTokens(token) {
+      if (token.type === "code") {
+        // named files begin with `/* file.name */\n`
+        const match = (token.text as string).match(/^\/\* (\w+\.\w+) \*\/\n/);
+        if (match) {
+          token.text = (token.text as string).substring(match[0].length);
+          token.filename = match[1];
+        }
+      }
       if (token.type === "code" && token.lang === "marko") {
         [token.html, token.concise] = await Promise.all([
           prettier.format(token.text, {
@@ -90,12 +106,17 @@ function markoDocs(): MarkedExtension {
       }
     },
     renderer: {
-      code({ lang, text, concise, html }) {
-        if (lang === "marko") {
-          return `<code-block lang="${lang}" text=${JSON.stringify(html)} concise=${JSON.stringify(concise)} />`;
-        } else {
-          return `<code-block lang="${lang}" text=${JSON.stringify(text)} />`;
+      code({ lang, text, concise, html, filename }) {
+        let out = `<code-block lang="${lang}"`;
+        if (filename) {
+          out += ` filename="${filename}"`;
         }
+        if (lang === "marko") {
+          out += ` text=${JSON.stringify(html)} concise=${JSON.stringify(concise)}`;
+        } else {
+          out += ` text=${JSON.stringify(text)}`;
+        }
+        return out + "/>";
       },
       codespan(token) {
         return `<code>${token.text
@@ -111,8 +132,8 @@ function markoDocs(): MarkedExtension {
  * next heading of the same depth) in a `<section>` tag, instead
  * of keeping a flat structure for the whole document
  */
-function headingSections(): MarkedExtension {
-  let sectionDepth = 0;
+function headingSections(headings: HeadingList): MarkedExtension {
+  let lastSectionDepth = 0;
   let closeSections = false;
 
   let tokens: TokensList | undefined;
@@ -146,21 +167,31 @@ function headingSections(): MarkedExtension {
       heading({ depth, text, tokens }) {
         let result = "";
 
-        if (depth > sectionDepth) {
-          if (depth > sectionDepth + 1) {
+        if (depth > lastSectionDepth) {
+          if (depth > lastSectionDepth + 1) {
             throw new Error(
               "Document does not have proper header nesting; don't skip any levels",
             );
           }
         } else {
-          result += "</section>".repeat(sectionDepth - depth + 1);
+          result += "</section>".repeat(lastSectionDepth - depth + 1);
         }
 
         const slug = githubSlugger.slug(text);
 
         result += `<section id="${slug}"><h${depth}>${this.parser.parseInline(tokens)}<a href="#${slug}">#</a></h${depth}>`;
 
-        sectionDepth = depth;
+        lastSectionDepth = depth;
+
+        let headingList = headings;
+        for (let i = 1; i < depth; i++) {
+          headingList = headingList[headingList.length - 1].children;
+        }
+        headingList.push({
+          id: slug,
+          title: text.replace(/`/g, ""),
+          children: [],
+        });
 
         return result;
       },
@@ -170,7 +201,7 @@ function headingSections(): MarkedExtension {
       {
         name: "close-sections",
         renderer() {
-          return "</section>".repeat(sectionDepth);
+          return "</section>".repeat(lastSectionDepth);
         },
       },
     ],

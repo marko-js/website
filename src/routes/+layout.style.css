@@ -21,20 +21,28 @@ header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(
-    to bottom,
-    var(--color-background) 80%,
-    transparent 100%
-  );
   position: fixed;
+  background-color: var(--color-background);
   inset: 0;
   height: 2.5rem;
-  padding: 0.25rem 1rem 1rem;
+  padding: 0.5rem 1rem;
   z-index: 10;
+  transition: top 0.25s;
+
+  svg {
+    height: 1.25rem;
+    path {
+      fill: var(--color-foreground);
+    }
+  }
 
   .logo {
     height: 2rem;
   }
+}
+
+[data-header-collapse] header {
+  top: -3.5rem;
 }
 
 .mobile-nav-toggle {
@@ -127,4 +135,12 @@ header {
     var(--color-purple-light),
     var(--color-purple-dark)
   );
+}
+
+@media (prefers-color-scheme: dark) {
+  .shiki,
+  .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
 }

@@ -23,13 +23,14 @@ tabs [
 ]
 div.editor/container
 
+match-media/darkMode="(prefers-color-scheme: dark)"
 lifecycle<{
   editor?: monaco.editor.IStandaloneCodeEditor;
   changeHandler?: monaco.IDisposable;
   updatedInternally?: boolean;
 }> onMount() {
     this.editor = monaco.editor.create(container(), {
-      theme: "marko-dark",
+      theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "marko-dark" : "marko-light",
       automaticLayout: true,
       tabSize: 2,
     });
@@ -37,19 +38,22 @@ lifecycle<{
     if (this.updatedInternally) {
       this.updatedInternally = false;
     } else {
-      this.changeHandler?.dispose();
+      monaco.editor.setTheme(darkMode ? "marko-dark" : "marko-light");
+      if (file) {
+        this.changeHandler?.dispose();
 
-      const model = this.editor!.getModel()!;
-      model.setValue(file.content);
-      monaco.editor.setModelLanguage(
-        model,
-        file.path.substring(file.path.lastIndexOf(".") + 1),
-      );
+        const model = this.editor!.getModel()!;
+        model.setValue(file.content);
+        monaco.editor.setModelLanguage(
+          model,
+          file.path.substring(file.path.lastIndexOf(".") + 1),
+        );
 
-      this.changeHandler = this.editor!.onDidChangeModelContent(() => {
-        file = { ...file, content: this.editor?.getValue() || "" };
-        this.updatedInternally = true;
-      });
+        this.changeHandler = this.editor!.onDidChangeModelContent(() => {
+          file = { ...file, content: this.editor?.getValue() || "" };
+          this.updatedInternally = true;
+        });
+      }
     }
   } onDestroy() {
     this.editor?.getModel()?.dispose();

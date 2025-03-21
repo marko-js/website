@@ -7,70 +7,80 @@ define/Outline|input: { page: string; content: Marko.Renderable }|
   if=$global.url.href.endsWith(input.page + "/")
     strong
       ${input.content}
-    toc
+    nav.table-of-contents
+      strong -- On this Page
+      ul
+        toc-tree=$global.meta.headings[0].children
   else
     a href=`/docs/${input.page}/`
       ${input.content}
 
-nav.pages
-  ul
-    li
-      local-let/open=true key="nav-reference-open"
-      details [
-        open=open
-        onToggle(e) {
-          open = (e.target as HTMLDetailsElement).open;
-        }
-      ]
-        summary -- Reference
-        ul
-          li
-            Outline page="language" -- Language
-          li
-            Outline page="custom-tag" -- Custom Tags
-          li
-            Outline page="reactivity" -- Reactivity
-          li
-            Outline page="core-tag" -- Core Tags
-          li
-            Outline page="native-tag" -- Native Tags
-          li
-            Outline page="concise-syntax" -- Concise Syntax
-          li
-            Outline page="template" -- Template API
-          li
-            Outline page="typescript" -- TypeScript
-    li
-      local-let/open=true key="nav-guides-open"
-      details [
-        open=open
-        onToggle(e) {
-          open = (e.target as HTMLDetailsElement).open;
-        }
-      ]
-        summary -- Guides
-        ul
-          li
-            Outline page="styling" -- Styling
-    li
-      local-let/open=true key="nav-run-open"
-      details [
-        open=open
-        onToggle(e) {
-          open = (e.target as HTMLDetailsElement).open;
-        }
-      ]
-        summary -- Marko Run
-        ul
-          li
-            Outline page="run/getting-started" -- Getting Started
-          li
-            Outline page="run/file-based-routing" -- File-based Routing
-          li
-            Outline page="run/typescript" -- TypeScript
+local-let/syntaxMode="html" key="syntax-mode"
+let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
 
-local-let/mode="html" key="syntax-mode"
-main class=mode === "concise" && "concise-mode"
+div.sidebar
+  nav.pages
+    ul
+      li
+        local-let/open=true key="nav-reference-open"
+        details [
+          open=open
+          onToggle(e) {
+            open = (e.target as HTMLDetailsElement).open;
+          }
+        ]
+          summary -- Reference
+          ul
+            li
+              Outline page="language" -- Language
+            li
+              Outline page="custom-tag" -- Custom Tags
+            li
+              Outline page="reactivity" -- Reactivity
+            li
+              Outline page="core-tag" -- Core Tags
+            li
+              Outline page="native-tag" -- Native Tags
+            li
+              Outline page="concise-syntax" -- Concise Syntax
+            li
+              Outline page="template" -- Template API
+            li
+              Outline page="typescript" -- TypeScript
+      li
+        local-let/open=true key="nav-guides-open"
+        details [
+          open=open
+          onToggle(e) {
+            open = (e.target as HTMLDetailsElement).open;
+          }
+        ]
+          summary -- Guides
+          ul
+            li
+              Outline page="styling" -- Styling
+      li
+        local-let/open=true key="nav-run-open"
+        details [
+          open=open
+          onToggle(e) {
+            open = (e.target as HTMLDetailsElement).open;
+          }
+        ]
+          summary -- Marko Run
+          ul
+            li
+              Outline page="run/getting-started" -- Getting Started
+            li
+              Outline page="run/file-based-routing" -- File-based Routing
+            li
+              Outline page="run/typescript" -- TypeScript
+  div.controls
+    id/modeId
+    strong id=modeId -- Syntax Mode
+    switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
+
+main data-concise-mode=isConciseMode
   ${input.content}
 
   hr

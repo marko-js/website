@@ -10,13 +10,13 @@ In Marko, [Tag Variables](./language.md#tag-variables), [Tag Parameters](./langu
 
 ## Render Expressions
 
-Any expression within a `.marko` template that references a [reactive variable](#reactive-variables) is considered reactive and will be updated along side that variable.
+Any expression within a `.marko` template that references a [reactive variable](#reactive-variables) is considered reactive and will be updated alongside that variable.
 
-These reactive expressions may exist throughout the template in attributes, placeholders, script content, etc.
+These reactive expressions may exist throughout the template in [attributes](./language.md#attributes), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), and [script content](./core-tag.md#script).
 
 > [!NOTE]
 > All JavaScript expressions withing the Marko template may be reactive with the exception of
-> [static statements](./language.md#static) which are evaluated _once_ when the template is loaded.
+> [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server`, and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
 
 ```marko
 <let/count=0>

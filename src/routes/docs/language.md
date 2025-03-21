@@ -10,7 +10,7 @@ The language makes HTML more strict while extending it with control flow and rea
 <a href="#statements">import "...";</a>
 
 &lt;<a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>&gt;
-  <a href="#tag-content">content</a> with <a href="#text-placeholders">&#36;{placeholders}</a>
+  <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
   &lt;<a href="#attribute-tags">@attribute-tags</a>/&gt;
 &lt;/&gt;
 </pre>
@@ -19,7 +19,7 @@ The language makes HTML more strict while extending it with control flow and rea
 <a href="#statements">import "...";</a>
 
 <a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>
-  -- <a href="#tag-content">content</a> with <a href="#text-placeholders">&#36;{placeholders}</a>
+  -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
   <a href="#attribute-tags">@attribute-tags</a>
 </pre>
 
@@ -83,6 +83,9 @@ import sum from "sum"
 
 <div data-number=sum(1, 2)></div>
 ```
+
+> [!NOTE]
+> This syntax is a shorthand for [`static import`](#static). For server and client specific imports, you can use [`server` and `client`](#server-and-client) statements.
 
 #### Tag `import` shorthand
 
@@ -361,7 +364,7 @@ The implementation of `<my-tag>` above can write out the content by passing its 
 </div>
 ```
 
-### Text Placeholders
+### Dynamic Text
 
 Dynamic text content can be `${interpolated}` in the tag content.
 This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
@@ -593,16 +596,14 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
 While rendering [content](#tag-content), child may pass information _back_ to its parent using tag parameters.
 
 ```marko
-// child.marko
-
+/* child.marko */
 <div>
   <${input.content} number=1337 />
 </div>
 ```
 
 ```marko
-// parent.marko
-
+/* parent.marko */
 <child|params|>
   Rendered with ${params.number} as the `number=` attribute.
 </child>
