@@ -1,17 +1,11 @@
-import prepareLlmstxt from "./prepare-llmstxt";
+import path from "node:path";
+import prepareLlmsTxt from "./prepare-llmstxt";
+import fs from "node:fs";
 
-const referenceDocs = prepareLlmstxt(
+const referenceDir = path.join(process.cwd(), "docs", "reference");
+const referenceDocs = prepareLlmsTxt(
   "This is the reference documentation for the Marko Language & JavaScript Framework",
-  [
-    "language",
-    "custom-tag",
-    "reactivity",
-    "core-tag",
-    "native-tag",
-    "concise-syntax",
-    "template",
-    "typescript",
-  ],
+  fs.readdirSync(referenceDir).map((file) => path.join(referenceDir, file)),
 );
 
 export const GET = (() => {

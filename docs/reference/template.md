@@ -170,4 +170,4 @@ The `runtimeId` is used to isolate runtimes when there are multiple copies on th
 
 > `string | undefined`
 
-The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particualarily useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
+The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).

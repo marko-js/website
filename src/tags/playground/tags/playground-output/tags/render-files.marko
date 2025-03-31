@@ -10,46 +10,58 @@ client import { compile } from "../utils/compile";
 client const decoder = new TextDecoder();
 client import { highlighter } from "../../init-shiki-monaco";
 
-debounce/files=input.value
+<debounce/files=input.value/>
 
-let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)
-let/showLoadingMessage=false
+<let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)/>
+<let/showLoadingMessage=false/>
 
-lifecycle onMount() {
+<lifecycle onMount() {
   setTimeout(() => {
     if (compiled === null) {
       showLoadingMessage = true;
     }
   }, 500);
-}
+}/>
 
-script=async () => {
+<script>
   const timeout = setTimeout(() => {
     showLoadingMessage = true;
-  }, 500)
-  compiled = await compile(files, input.markoVersion, files[input.selected].path, {
-    output: input.output,
-    bundle: input.render,
-    signal: $signal,
-  });
+  }, 500);
+  compiled = await compile(
+    files,
+    input.markoVersion,
+    files[input.selected].path,
+    {
+      output: input.output,
+      bundle: input.render,
+      signal: $signal,
+    },
+  );
   clearTimeout(timeout);
   showLoadingMessage = false;
-}
+</script>
 
-if=showLoadingMessage -- Installing Packages...
-else if=compiled
-  if=compiled.errors.length
-    for|error| of=compiled.errors
-      pre.codeOutput -- ${error.text}
-  else if=compiled.outputFiles?.length
-    const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)
-    const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)
-    if=input.render
-      let/error=null as null | { message: string, stack?: string }
-      if=error
-        pre.codeOutput -- ${error.message}: ${error.stack}
-      else
-        iframe title="code output" srcdoc=`
+<if=showLoadingMessage>
+  Installing Packages...
+</if>
+<else if=compiled>
+  <if=(compiled.errors.length)>
+    <for|error| of=compiled.errors>
+      <pre class="codeOutput">${error.text}</pre>
+    </for>
+  </if>
+  <else if=(compiled.outputFiles?.length)>
+    <const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)/>
+    <const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)/>
+    <if=input.render>
+      <let/error=null as null | { message: string; stack?: string }/>
+      <if=error>
+        <pre class="codeOutput">${error.message}: ${error.stack}</pre>
+      </if>
+      <else>
+        <iframe
+          title="code output"
+          srcdoc=`
           <body>
             <script>
               window.onerror = function (message, source, lineno, colno, error) {
@@ -66,25 +78,39 @@ else if=compiled
             <script type="module">${scriptContent}</script>
             <style>${styleContent ?? ""}</style>
           </body>`
-        script -- if (scriptContent || styleContent) error = null
-        script --
-          window.addEventListener("message", (e) => {
-            if (e.data.type === "iframe-error") {
-              error = e.data.error
-            }
-          }, { signal: $signal})
-    else
-      const/highlighted=highlighter.codeToHtml(scriptContent, {
+        />
+        <script>
+          if (scriptContent || styleContent) error = null;
+        </script>
+        <script>
+          window.addEventListener(
+            "message",
+            (e) => {
+              if (e.data.type === "iframe-error") {
+                error = e.data.error;
+              }
+            },
+            {
+              signal: $signal,
+            },
+          );
+        </script>
+      </else>
+    </if>
+    <else>
+      <const/highlighted=highlighter.codeToHtml(scriptContent, {
         lang: "js",
         themes: {
           light: "marko-light",
-          dark: "marko-dark"
-        }
-      })
-      pre.codeOutput -- $!{highlighted}
+          dark: "marko-dark",
+        },
+      })/>
+      <pre class="codeOutput">$!{highlighted}</pre>
+    </else>
+  </else>
+</else>
 
-style
-  --
+<style>
   pre.codeOutput {
     overflow-y: scroll;
     margin: 0 0.5rem;
@@ -93,4 +119,4 @@ style
     height: 100%;
     border: none;
   }
-  --
+</style>

@@ -7,7 +7,7 @@ define/Outline|input: { page: string; content: Marko.Renderable }|
   if=$global.url.href.endsWith(input.page + "/")
     strong
       ${input.content}
-    nav.table-of-contents
+    nav.table-of-contents aria-label="On this Page"
       strong -- On this Page
       ul
         toc-tree=$global.meta.headings[0].children
@@ -22,32 +22,6 @@ div.sidebar
   nav.pages
     ul
       li
-        local-let/open=true key="nav-reference-open"
-        details [
-          open=open
-          onToggle(e) {
-            open = (e.target as HTMLDetailsElement).open;
-          }
-        ]
-          summary -- Reference
-          ul
-            li
-              Outline page="language" -- Language
-            li
-              Outline page="custom-tag" -- Custom Tags
-            li
-              Outline page="reactivity" -- Reactivity
-            li
-              Outline page="core-tag" -- Core Tags
-            li
-              Outline page="native-tag" -- Native Tags
-            li
-              Outline page="concise-syntax" -- Concise Syntax
-            li
-              Outline page="template" -- Template API
-            li
-              Outline page="typescript" -- TypeScript
-      li
         local-let/open=true key="nav-guides-open"
         details [
           open=open
@@ -58,7 +32,45 @@ div.sidebar
           summary -- Guides
           ul
             li
-              Outline page="styling" -- Styling
+              Outline page="guide/styling" -- Styling
+      li
+        local-let/open=true key="nav-explanation-open"
+        details [
+          open=open
+          onToggle(e) {
+            open = (e.target as HTMLDetailsElement).open;
+          }
+        ]
+          summary -- Explanation
+          ul
+            li
+              Outline page="explanation/why-marko" -- Why Marko?
+      li
+        local-let/open=true key="nav-reference-open"
+        details [
+          open=open
+          onToggle(e) {
+            open = (e.target as HTMLDetailsElement).open;
+          }
+        ]
+          summary -- Reference
+          ul
+            li
+              Outline page="reference/language" -- Language
+            li
+              Outline page="reference/custom-tag" -- Custom Tags
+            li
+              Outline page="reference/reactivity" -- Reactivity
+            li
+              Outline page="reference/core-tag" -- Core Tags
+            li
+              Outline page="reference/native-tag" -- Native Tags
+            li
+              Outline page="reference/concise-syntax" -- Concise Syntax
+            li
+              Outline page="reference/template" -- Template API
+            li
+              Outline page="reference/typescript" -- TypeScript
       li
         local-let/open=true key="nav-run-open"
         details [
@@ -70,11 +82,11 @@ div.sidebar
           summary -- Marko Run
           ul
             li
-              Outline page="run/getting-started" -- Getting Started
+              Outline page="marko-run/getting-started" -- Getting Started
             li
-              Outline page="run/file-based-routing" -- File-based Routing
+              Outline page="marko-run/file-based-routing" -- File-based Routing
             li
-              Outline page="run/typescript" -- TypeScript
+              Outline page="marko-run/typescript" -- TypeScript
   div.controls
     id/modeId
     strong id=modeId -- Syntax Mode
@@ -90,17 +102,18 @@ main data-concise-mode=isConciseMode
       -- Contributors
       a href="#contributors" -- #
     p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
-    ul
-      for|contributor| of=$global.contributors
+    await|contributors|=$global.contributors
+      ul
+        for|contributor| of=contributors
+          li
+            a href=contributor.url
+              img src=contributor.photo alt=""
+              -- ${contributor.username}
         li
-          a href=contributor.url
-            img src=contributor.photo alt=""
-            -- ${contributor.username}
-      li
-        a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
-            "/docs/".length,
-            $global.url.pathname.length - 1,
-          )}.md`
-          div
-            fa-icon=faPlus
-          -- You?
+          a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
+              "/docs/".length,
+              $global.url.pathname.length - 1,
+            )}.md`
+            div
+              fa-icon=faPlus
+            -- You?

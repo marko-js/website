@@ -16,7 +16,7 @@ These reactive expressions may exist throughout the template in [attributes](./l
 
 > [!NOTE]
 > All JavaScript expressions withing the Marko template may be reactive with the exception of
-> [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server`, and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
+> [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server` and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
 
 ```marko
 <let/count=0>
@@ -45,5 +45,5 @@ This update queue is typically scheduled after a [microtask](https://developer.m
 If additional updates are scheduled after the queue is consumed but _before the update is painted_, they are deferred until the next frame. This accomplishes a few things:
 
 - Content ready to display to the user is not blocked.
-- It is not possible to lock up the application in an infinte update loop.
+- It is not possible to lock up the application in an infinite update loop.
 - The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).

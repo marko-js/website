@@ -13,12 +13,11 @@ static declare global {
 <script>
   const existingValue = localStorage.getItem(input.key);
   if (existingValue) {
-    internalValue = JSON.parse(existingValue);
+    // TODO(Marko Bug?): This breaks hydration as of marko@6.0.0-next.3.71
+    // internalValue = JSON.parse(existingValue);
   }
-  /** TODO(hoisting bug): this should happen automatically */
-  const input_key = input.key;
   const handleStorageChange = (e: StorageEvent) => {
-    if (e.key === input_key) {
+    if (e.key === input.key) {
       internalValue = JSON.parse(e.newValue ?? "");
     }
   };
@@ -34,14 +33,14 @@ static declare global {
   );
 </script>
 
-<return=internalValue valueChange(newValue) {
-  newValue = JSON.stringify(newValue);
-  localStorage.setItem(input.key, newValue);
+<return=internalValue valueChange(newValue: T) {
+  const stringified = JSON.stringify(newValue);
+  localStorage.setItem(input.key, stringified);
   window.dispatchEvent(
     new CustomEvent("local-storage-update", {
       detail: {
         key: input.key,
-        newValue,
+        newValue: stringified,
         storageArea: localStorage,
       },
     }),

@@ -4,7 +4,7 @@ This section explains some different ways to style HTML within Marko. From simpl
 
 ## Inline Styles
 
-Marko [enhances the HTML `<style>` tag](./core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
+Marko [enhances the HTML `<style>` tag](../reference/core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
 
 By default, all styles defined in the template are **globally scoped**. As such, many Marko projects use patterns like [BEM](https://getbem.com/introduction/) to avoid name conflicts.
 
@@ -45,7 +45,7 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 
 ### Inline CSS Modules
 
-If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+If the `<style>` tag has a [Tag Variable](../reference/language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
 
 ```marko
 <style/styles>
@@ -77,7 +77,7 @@ You may still provide a custom file extension to enable to use of preprocessors.
 
 ## Auto-Discovered Styles
 
-Styling files adjacent a [custom tag are automatically discovered](./custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
+Styling files adjacent a [custom tag are automatically discovered](../reference/custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
 
 ```css
 /* style.css */
@@ -96,7 +96,7 @@ Styling files adjacent a [custom tag are automatically discovered](./custom-tag.
 
 ## Imported Styles
 
-Styles may also be [imported](./language.md#import).
+Styles may also be [imported](../reference/language.md#import).
 
 ```css
 /* fancy.css */

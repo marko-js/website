@@ -9,6 +9,7 @@ export interface Input {
 }
 
 let/mobileNav=false
+
 let/headerCollapse=false
 script --
   let lastScrollY = window.scrollY;
@@ -17,6 +18,13 @@ script --
     headerCollapse = currentScrollY > lastScrollY;
     lastScrollY = currentScrollY;
   }, { signal: $signal })
+
+static const HIGHLIGHT_COLORS = ["red", "yellow", "green", "blue", "purple"];
+let/highlightColorIndex=0
+script --
+  window.addEventListener("selectstart", () => {
+    highlightColorIndex = (highlightColorIndex + 1) % HIGHLIGHT_COLORS.length;
+  }, { signal: $signal });
 
 <!DOCTYPE html>
 html lang="en"
@@ -30,7 +38,9 @@ html lang="en"
     link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
 
-  body data-mobile-nav=mobileNav data-header-collapse=headerCollapse
+  body data-mobile-nav=mobileNav data-header-collapse=headerCollapse style={
+    "--color-selection-background": `var(--color-${HIGHLIGHT_COLORS[highlightColorIndex]}-secondary)`
+  }
     header
       a href="/"
         img.logo src=markoLogo alt="Marko Logo - Go to Homepage"
@@ -55,3 +65,13 @@ html lang="en"
         fa-icon=faBars
 
     ${input.content}
+
+static declare global {
+  namespace Marko {
+    namespace CSS {
+      interface Properties {
+        "--color-selection-background"?: string;
+      }
+    }
+  }
+}

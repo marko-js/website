@@ -17,13 +17,18 @@ export default function markodownPlugin(): PluginOption {
     name: "markodown",
     enforce: "pre",
     async buildStart() {
-      const docsPath = path.join(process.cwd(), "src", "routes", "docs");
-      const docsPages = path.join(docsPath, "_docs-pages");
+      const docsPath = path.join(process.cwd(), "docs");
+      const docsPages = path.join(
+        process.cwd(),
+        "src",
+        "routes",
+        "docs",
+        "_compiled-docs",
+      );
       await fs.mkdir(docsPages, { recursive: true });
 
       const mdFiles = glob.sync("**/*.md", {
         cwd: docsPath,
-        ignore: "_docs-pages/**",
       });
 
       await Promise.all(

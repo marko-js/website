@@ -144,3 +144,8 @@ header {
     background-color: var(--shiki-dark-bg) !important;
   }
 }
+
+::selection {
+  background-color: var(--color-selection-background);
+  color: var(--color-foreground);
+}
