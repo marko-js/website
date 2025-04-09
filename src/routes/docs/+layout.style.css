@@ -261,19 +261,15 @@ pre {
   color: var(--color-section);
 }
 
+.pages h3 {
+  color: var(--color-foreground);
+  margin: 0.75rem 0 0 0;
+  font-size: large;
+}
+
 nav ul {
   list-style-type: none;
   padding-left: 1rem;
-}
-
-nav details {
-  user-select: none;
-  margin: 0.5rem;
-}
-
-nav details > summary {
-  list-style: none;
-  font-weight: bold;
 }
 
 .table-of-contents ul {

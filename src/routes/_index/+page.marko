@@ -1,110 +1,78 @@
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import text from "./text-styles.module.css"
 <main>
   <h1>
     A
-    <strong class="gradient-text">
+    <strong class=[text.gradient, text.red]>
       declarative
     </strong>
-    ${" "}
-    <strong class="gradient-text">
+    ${", "}
+    <strong class=[text.gradient, text.yellow]>
       HTML-Based
     </strong>
     ${" "}
-    <strong class="gradient-text">
+    <strong class=[text.gradient, text.blue]>
       Language
     </strong>
     ${" "} that makes
-    <strong class="gradient-text">
+    <strong class=[text.gradient, text.green]>
       Building
     </strong>
     ${" "}
-    <strong class="gradient-text">
+    <strong class=[text.gradient, text.purple]>
       Web Apps
     </strong>
     ${" "}
-    <strong class="gradient-text">
+    <strong class=[text.gradient, text.red]>
       Fun
     </strong>
   </h1>
 
-  <p>
-    <a href="docs/explanation/why-marko/">
+  <div class="cta-links">
+    <a class="cta-link cta-link--primary" href="docs/tutorial/getting-started/">
       Get Started
     </a>
-  </p>
-
-  <h2>
-    Favored by the
-    <strong class="gradient-text">
-      developers
-    </strong>
-     that
-    <strong class="gradient-text">
-      matter
-    </strong>
-  </h2>
-
-  <div class="quotes">
-    <figure>
-      <blockquote>
-        <p>🚀 Marko.js: The ULTIMATE web dev secret weapon! ⚡️</p>
-        <p>Pros:</p>
-        <ul>
-          <li>
-            Performance that makes other frameworks look like they're walking 🏃‍♂️
-          </li>
-          <li>Syntax so clean you could eat off it</li>
-          <li>
-            Progressive rendering that'll make your users think you're a web wizard 🧙‍♂️
-          </li>
-        </ul>
-        <p>Cons:</p>
-        <ul>
-          <li>Might make your other frameworks jealous 🤣</li>
-        </ul>
-      </blockquote>
-      <figcaption>Claude 3.5 Haiku </figcaption>
-    </figure>
-    <figure>
-      <blockquote>
-        <p>
-          Marko is easily one of the most underrated JS frameworks out there. It delivers insane performance with built-in streaming, partial hydration, and zero-JS-by-default.
-        </p>
-        <p>
-          While other frameworks struggle with hydration issues and client-side bloat, Marko optimizes everything${" "}
-          <em>out of the box</em>
-          ${" "}. No extra configs, no unnecessary complexity—just a fast, efficient, and scalable solution for modern web apps.
-        </p>
-        <p>
-          If you care about performance and DX, you need to give Marko a serious look. 🚀🔥 #MarkoJS #WebDev #JavaScript
-        </p>
-      </blockquote>
-      <figcaption>GPT-4o </figcaption>
-    </figure>
-    <figure>
-      <blockquote>
-        <strong>Marko: My Code's Superhero!</strong>
-        <p>
-          Forget slow renders and clunky code! Marko swooped in and saved my projects!
-        </p>
-        <p>
-          ⚡️ Lightning-fast performance? Check! Easy to use? Double-check! Happy users? You betcha! 🎉
-        </p>
-        <p>
-          Marko isn't just a framework, it's my secret weapon. Try it and unleash your inner coding superhero! 🦸‍♀️
-        </p>
-        <p>Five stars! ⭐⭐⭐⭐⭐</p>
-      </blockquote>
-      <figcaption>Gemini 2.0 Flash</figcaption>
-    </figure>
-    <figure>
-      <blockquote>
-        <p>
-          Marko is often considered the most underrated frontend framework because it offers a combination of innovative features, performance optimizations, and developer-friendly ergonomics that rival—and in some cases surpass—more popular frameworks like React, Vue, and Angular. Despite its capabilities, Marko hasn't gained the widespread recognition it deserves, which is why it's viewed as underrated in the developer community.
-        </p>
-      </blockquote>
-      <figcaption><a href="https://github.com/ajcwebdev/ryan-gpt/">Ryan GPT</a></figcaption>
-    </figure>
+    <a class="cta-link cta-link--secondary" href="https://github.com/marko-js/marko" target="_blank">
+      <fa-icon=faGithub/>
+      GitHub
+      <span>
+        <let/stars=null as number | null>
+        ${stars}
+        <script>
+          fetch("https://api.github.com/repos/marko-js/marko")
+            .then((res) => res.json())
+            .then((repo) => {
+              if (repo.stargazers_count) {
+                stars = repo.stargazers_count.toLocaleString();
+              }
+            })
+        </script>
+      </span>
+      ⭐️
+    </a>
   </div>
+
+  <feature-cards/>
+
+  <figure-section title="HTML Reimagined">
+    <@figure>
+      <code-block lang="marko" text=`<let/count=0>
+<button onClick() { count++ }>
+  Click me!
+</button>
+<div>\${count}</div>
+`/>
+      <div>
+        <let/count=0/>
+        <button onClick() { count++ }>Click me!</button>
+        <div>${count}</div>
+      </div>
+    </@figure>
+    Marko is HTML re-imagined as a language for building dynamic and reactive user interfaces. Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way. 
+  </figure-section>
+
+  <ai-testimonies/>
+
 </main>
 
 <style>
@@ -116,76 +84,34 @@
     margin: 1lh auto;
   }
 
-  .gradient-text {
-    background-clip: text;
-    color: transparent;
-    background-image: linear-gradient(
-      to bottom right,
-      var(--text-gradient-start),
-      var(--text-gradient-end)
-    );
-
-    --text-gradient-start: var(--color-red-primary);
-    --text-gradient-end: var(--color-red-secondary);
-  }
-  .gradient-text:nth-of-type(5n + 1) {
-    --text-gradient-start: var(--color-blue-primary);
-    --text-gradient-end: var(--color-blue-secondary);
-  }
-  .gradient-text:nth-of-type(5n + 2) {
-    --text-gradient-start: var(--color-green-primary);
-    --text-gradient-end: var(--color-green-secondary);
-  }
-  .gradient-text:nth-of-type(5n + 3) {
-    --text-gradient-start: var(--color-yellow-primary);
-    --text-gradient-end: var(--color-yellow-secondary);
-  }
-  .gradient-text:nth-of-type(5n + 4) {
-    --text-gradient-start: var(--color-purple-primary);
-    --text-gradient-end: var(--color-purple-secondary);
-  }
-
-  .quotes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(22rem, 90vw), 1fr));
+  .cta-links {
+    display: flex;
     gap: 1rem;
-    max-width: 100%;
+  }
 
-    figure {
-      background-color: #8884;
-      padding: 2rem;
-      border-radius: 1rem;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+  .cta-link {
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 
-      blockquote {
-        margin: 0;
-        > * {
-          margin: 0;
-
-          &:not(:first-child) {
-            margin-top: 0.5lh;
-          }
-        }
-      }
-
-      figcaption {
-        margin-top: 1rem;
-        font-style: italic;
-        font-size: 0.9rem;
-        text-align: right;
-        color: var(--color-blue-primary);
-        cite {
-          font-style: normal;
-          opacity: 0.7;
-        }
-
-        &::before {
-          content: "— "
-        }
+    svg {
+      height: 1lh;
+      path {
+        fill: currentColor;
       }
     }
+  }
+
+  .cta-link--primary {
+    background: linear-gradient(to right, #ff425b, #a31460);
+    color: white;
+  }
+
+  .cta-link--secondary {
+    color: var(--color-foreground);
+    border: 1px solid currentColor;
   }
 </style>

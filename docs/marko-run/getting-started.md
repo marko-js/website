@@ -1,64 +1,94 @@
 # Getting Started
 
+Marko Run is a framework for building web applications with Marko. This is a _meta_-framework for Marko, similar to Next.js or Remix for React, SvelteKit for Svelte, and Nuxt for Vue.
+
+Marko Run is powered by Vite, a fast and modern build tool that provides a great developer experience. It is designed to be easy to use and flexible, allowing developers to build applications with Marko quickly and efficiently.
+
 ## Using a Template
 
-```
+Marko's CLI provides a variety of templates to get started with Marko, many of which use Marko Run.
+
+```sh
 npm init marko
 ```
 
 ## Starting from Zero
 
-```
+The smallest possible Marko Run project requires just a few files.
+
+```sh
 npm init
 npm install @marko/run
 ```
 
 ## Adding to an Existing Project
 
-```
+Marko Run can be added to an existing Marko project by installing the package.
+
+```sh
 npm install @marko/run
 ```
 
-## Getting Started / Zero Config
+## Zero Config Setup
 
-`marko-run` makes it easy to get started without little to no config. The package ships with a default Vite config and node-based adapter.
+`marko-run` enables quick project initialization with minimal configuration. The package ships with a default Vite config and node-based adapter.
 
-To get started from a template:
+Starting with a template:
 
-1. `npm init marko -- -t basic`
-2. `cd ./<PROJECT_NAME>`
-3. `npm run dev`
+1. Create a new project
 
-Or manually create a project:
+   ```sh
+   npm init marko -- -t basic
+   ```
 
-1. Install `@marko/run`
-2. Create file `src/routes/+page.marko`
-3. Run `npm exec marko-run`
+2. Navigate to project directory
 
-Finally open `http://localhost:3000` 🚀
+   ```sh
+   cd PROJECT_NAME
+   ```
 
-## CLI
+3. Start development server
 
-**`dev`** - Start a development server in watch mode
+   ```sh
+   npm run dev
+   ```
 
-```
+Manual project setup:
+
+1. Install the required package: `npm install @marko/run`
+2. Create the entry file: `src/routes/+page.marko`
+3. Start the development server: `npm exec marko-run`
+
+The application will be available at `http://localhost:3000` 🚀
+
+## CLI Commands
+
+### `marko-run dev`
+
+Starts a development server in watch mode
+
+```sh
 npm exec marko-run
 ```
 
 or (with explicit sub command)
 
-```
+```sh
 npm exec marko-run dev
 ```
 
-**`build`** - Create a production build
+### `marko-run build`
 
-```
+Creates a production build
+
+```sh
 npm exec marko-run build
 ```
 
-**`preview`** - Create a production build and start the preview server
+### `marko-run preview`
 
-```
+Creates a production build and start the preview server
+
+```sh
 npm exec marko-run preview
 ```

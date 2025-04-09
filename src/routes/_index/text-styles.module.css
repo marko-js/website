@@ -1,0 +1,29 @@
+.gradient {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--text-gradient-start),
+    var(--text-gradient-end)
+  );
+}
+.red {
+  --text-gradient-start: var(--color-red-primary);
+  --text-gradient-end: var(--color-red-secondary);
+}
+.blue {
+  --text-gradient-start: var(--color-blue-primary);
+  --text-gradient-end: var(--color-blue-secondary);
+}
+.green {
+  --text-gradient-start: var(--color-green-primary);
+  --text-gradient-end: var(--color-green-secondary);
+}
+.yellow {
+  --text-gradient-start: var(--color-yellow-primary);
+  --text-gradient-end: var(--color-yellow-secondary);
+}
+.purple {
+  --text-gradient-start: var(--color-purple-primary);
+  --text-gradient-end: var(--color-purple-secondary);
+}

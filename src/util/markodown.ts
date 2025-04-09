@@ -83,10 +83,26 @@ function markoDocs(): MarkedExtension {
     async walkTokens(token) {
       if (token.type === "code") {
         // named files begin with `/* file.name */\n`
-        const match = (token.text as string).match(/^\/\* (\w+\.\w+) \*\/\n/);
+        const match = (token.text as string).match(
+          /^\/\* ([\w\.-]+\.\w+) \*\/\n/,
+        );
+
         if (match) {
           token.text = (token.text as string).substring(match[0].length);
           token.filename = match[1];
+        }
+
+        // skip sections surrounded by `<!-- ignore --> <!-- /ignore -->`
+        let ignoreStart;
+        while (
+          (ignoreStart = (token.text as string).indexOf("<!-- ignore -->")) >= 0
+        ) {
+          token.text =
+            (token.text as string).slice(0, ignoreStart) +
+            (token.text as string).slice(
+              (token.text as string).indexOf("<!-- /ignore -->") +
+                "<!-- /ignore -->".length,
+            );
         }
       }
       if (token.type === "code" && token.lang === "marko") {

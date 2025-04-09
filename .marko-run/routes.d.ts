@@ -17,10 +17,15 @@ declare module "@marko/run" {
 			"/docs": Routes["/docs"];
 			"/docs/explanation/architecture": Routes["/docs/_compiled-docs/explanation/architecture"];
 			"/docs/explanation/components": Routes["/docs/_compiled-docs/explanation/components"];
+			"/docs/explanation/forms": Routes["/docs/_compiled-docs/explanation/forms"];
 			"/docs/explanation/hydration": Routes["/docs/_compiled-docs/explanation/hydration"];
 			"/docs/explanation/index": Routes["/docs/_compiled-docs/explanation/index"];
+			"/docs/explanation/let-vs-const": Routes["/docs/_compiled-docs/explanation/let-vs-const"];
+			"/docs/explanation/nested-reactivity": Routes["/docs/_compiled-docs/explanation/nested-reactivity"];
+			"/docs/explanation/optimizing-performance": Routes["/docs/_compiled-docs/explanation/optimizing-performance"];
 			"/docs/explanation/reactivity": Routes["/docs/_compiled-docs/explanation/reactivity"];
 			"/docs/explanation/rendering": Routes["/docs/_compiled-docs/explanation/rendering"];
+			"/docs/explanation/streaming": Routes["/docs/_compiled-docs/explanation/streaming"];
 			"/docs/explanation/structure": Routes["/docs/_compiled-docs/explanation/structure"];
 			"/docs/explanation/templating": Routes["/docs/_compiled-docs/explanation/templating"];
 			"/docs/explanation/understanding-marko": Routes["/docs/_compiled-docs/explanation/understanding-marko"];
@@ -32,6 +37,13 @@ declare module "@marko/run" {
 			"/docs/explanation/reference/native-tag": Routes["/docs/_compiled-docs/explanation/reference/native-tag"];
 			"/docs/explanation/reference/reactivity": Routes["/docs/_compiled-docs/explanation/reference/reactivity"];
 			"/docs/explanation/reference/template": Routes["/docs/_compiled-docs/explanation/reference/template"];
+			"/docs/guide/csp": Routes["/docs/_compiled-docs/guide/csp"];
+			"/docs/guide/existing-project": Routes["/docs/_compiled-docs/guide/existing-project"];
+			"/docs/guide/library-integration": Routes["/docs/_compiled-docs/guide/library-integration"];
+			"/docs/guide/low-level-apis": Routes["/docs/_compiled-docs/guide/low-level-apis"];
+			"/docs/guide/nested-reactivity": Routes["/docs/_compiled-docs/guide/nested-reactivity"];
+			"/docs/guide/nested-reactivity-2": Routes["/docs/_compiled-docs/guide/nested-reactivity-2"];
+			"/docs/guide/publishing-components": Routes["/docs/_compiled-docs/guide/publishing-components"];
 			"/docs/guide/styling": Routes["/docs/_compiled-docs/guide/styling"];
 			"/docs/guide/typescript": Routes["/docs/_compiled-docs/guide/typescript"];
 			"/docs/marko-run/file-based-routing": Routes["/docs/_compiled-docs/marko-run/file-based-routing"];
@@ -45,6 +57,7 @@ declare module "@marko/run" {
 			"/docs/reference/reactivity": Routes["/docs/_compiled-docs/reference/reactivity"];
 			"/docs/reference/template": Routes["/docs/_compiled-docs/reference/template"];
 			"/docs/reference/typescript": Routes["/docs/_compiled-docs/reference/typescript"];
+			"/docs/tutorial/getting-started": Routes["/docs/_compiled-docs/tutorial/getting-started"];
 			"/docs/llms/:file": Routes["/docs/llms/$file"];
 			"/docs/llms/reference-full%2emd": Routes["/docs/llms/reference-full%2emd"];
 			"/playground": Routes["/playground"];
@@ -99,7 +112,7 @@ declare module "../src/routes/docs/llms/reference-full%2emd+handler" {
 declare module "../src/routes/docs/+middleware" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs" | "/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/llms/:file" | "/docs/llms/reference-full%2emd"];
+    export type Route = Run.Routes["/docs" | "/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/forms" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/streaming" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/csp" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/nested-reactivity" | "/docs/guide/nested-reactivity-2" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/getting-started" | "/docs/llms/:file" | "/docs/llms/reference-full%2emd"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -140,6 +153,17 @@ declare module "../src/routes/docs/_compiled-docs/explanation/components+page.ma
   }
 }
 
+declare module "../src/routes/docs/_compiled-docs/explanation/forms+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/forms"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
 declare module "../src/routes/docs/_compiled-docs/explanation/hydration+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
@@ -162,6 +186,39 @@ declare module "../src/routes/docs/_compiled-docs/explanation/index+page.marko" 
   }
 }
 
+declare module "../src/routes/docs/_compiled-docs/explanation/let-vs-const+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/let-vs-const"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/explanation/nested-reactivity+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/nested-reactivity"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/explanation/optimizing-performance+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/optimizing-performance"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
 declare module "../src/routes/docs/_compiled-docs/explanation/reactivity+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
@@ -177,6 +234,17 @@ declare module "../src/routes/docs/_compiled-docs/explanation/rendering+page.mar
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/docs/explanation/rendering"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/explanation/streaming+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/streaming"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -298,6 +366,83 @@ declare module "../src/routes/docs/_compiled-docs/explanation/reference/template
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/docs/explanation/reference/template"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/csp+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/csp"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/existing-project+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/existing-project"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/library-integration+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/library-integration"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/low-level-apis+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/low-level-apis"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/nested-reactivity+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/nested-reactivity"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/nested-reactivity-2+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/nested-reactivity-2"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/guide/publishing-components+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/guide/publishing-components"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -448,6 +593,17 @@ declare module "../src/routes/docs/_compiled-docs/reference/typescript+page.mark
   }
 }
 
+declare module "../src/routes/docs/_compiled-docs/tutorial/getting-started+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/tutorial/getting-started"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
 declare module "../src/routes/playground/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
@@ -465,7 +621,7 @@ declare module "../src/routes/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/" | "/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/playground"];
+    export type Route = Run.Routes["/" | "/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/forms" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/streaming" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/csp" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/nested-reactivity" | "/docs/guide/nested-reactivity-2" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/getting-started" | "/playground"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -479,7 +635,7 @@ declare module "../src/routes/docs/+layout.marko" {
   }
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript"];
+    export type Route = Run.Routes["/docs/explanation/architecture" | "/docs/explanation/components" | "/docs/explanation/forms" | "/docs/explanation/hydration" | "/docs/explanation/index" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/reactivity" | "/docs/explanation/rendering" | "/docs/explanation/streaming" | "/docs/explanation/structure" | "/docs/explanation/templating" | "/docs/explanation/understanding-marko" | "/docs/explanation/why-marko" | "/docs/explanation/reference/concise-syntax" | "/docs/explanation/reference/core-tag" | "/docs/explanation/reference/custom-tag" | "/docs/explanation/reference/language" | "/docs/explanation/reference/native-tag" | "/docs/explanation/reference/reactivity" | "/docs/explanation/reference/template" | "/docs/guide/csp" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/nested-reactivity" | "/docs/guide/nested-reactivity-2" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/guide/typescript" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/getting-started"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -493,10 +649,15 @@ type Routes = {
 	"/docs": { verb: "get"; };
 	"/docs/_compiled-docs/explanation/architecture": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/architecture+meta.json"); };
 	"/docs/_compiled-docs/explanation/components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/components+meta.json"); };
+	"/docs/_compiled-docs/explanation/forms": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/forms+meta.json"); };
 	"/docs/_compiled-docs/explanation/hydration": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/hydration+meta.json"); };
 	"/docs/_compiled-docs/explanation/index": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/index+meta.json"); };
+	"/docs/_compiled-docs/explanation/let-vs-const": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/let-vs-const+meta.json"); };
+	"/docs/_compiled-docs/explanation/nested-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/nested-reactivity+meta.json"); };
+	"/docs/_compiled-docs/explanation/optimizing-performance": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/optimizing-performance+meta.json"); };
 	"/docs/_compiled-docs/explanation/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/reactivity+meta.json"); };
 	"/docs/_compiled-docs/explanation/rendering": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/rendering+meta.json"); };
+	"/docs/_compiled-docs/explanation/streaming": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+meta.json"); };
 	"/docs/_compiled-docs/explanation/structure": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/structure+meta.json"); };
 	"/docs/_compiled-docs/explanation/templating": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/templating+meta.json"); };
 	"/docs/_compiled-docs/explanation/understanding-marko": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/understanding-marko+meta.json"); };
@@ -508,6 +669,13 @@ type Routes = {
 	"/docs/_compiled-docs/explanation/reference/native-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/reference/native-tag+meta.json"); };
 	"/docs/_compiled-docs/explanation/reference/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/reference/reactivity+meta.json"); };
 	"/docs/_compiled-docs/explanation/reference/template": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/reference/template+meta.json"); };
+	"/docs/_compiled-docs/guide/csp": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/csp+meta.json"); };
+	"/docs/_compiled-docs/guide/existing-project": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/existing-project+meta.json"); };
+	"/docs/_compiled-docs/guide/library-integration": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+meta.json"); };
+	"/docs/_compiled-docs/guide/low-level-apis": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+meta.json"); };
+	"/docs/_compiled-docs/guide/nested-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/nested-reactivity+meta.json"); };
+	"/docs/_compiled-docs/guide/nested-reactivity-2": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/nested-reactivity-2+meta.json"); };
+	"/docs/_compiled-docs/guide/publishing-components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+meta.json"); };
 	"/docs/_compiled-docs/guide/styling": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/styling+meta.json"); };
 	"/docs/_compiled-docs/guide/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/typescript+meta.json"); };
 	"/docs/_compiled-docs/marko-run/file-based-routing": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+meta.json"); };
@@ -521,6 +689,7 @@ type Routes = {
 	"/docs/_compiled-docs/reference/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+meta.json"); };
 	"/docs/_compiled-docs/reference/template": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/template+meta.json"); };
 	"/docs/_compiled-docs/reference/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json"); };
+	"/docs/_compiled-docs/tutorial/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/getting-started+meta.json"); };
 	"/docs/llms/$file": { verb: "get"; };
 	"/docs/llms/reference-full%2emd": { verb: "get"; };
 	"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
