@@ -6,7 +6,9 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
   plugins: [
     markodown(),
-    marko(),
+    marko({
+      trailingSlashes: "RedirectWithout",
+    }),
     {
       ...nodePolyfills({
         include: [

@@ -8,7 +8,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@marko/babel-utils": "^6.6.3",
-    "@marko/run": "^0.6.4",
+    "@marko/run": "^0.6.6",
     "@marko/run-adapter-static": "^1.0.2",
     "@shikijs/monaco": "^3.2.2",
     "@types/semver": "^7.7.0",
@@ -39,7 +39,7 @@
     "marked-alert": "^2.1.2",
     "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^10.1.5",
+    "postcss-preset-env": "^10.1.6",
     "prettier": "^3.5.3",
     "prettier-plugin-marko": "^3.1.12",
     "vite-plugin-monaco-editor": "^1.1.0"
