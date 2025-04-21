@@ -27,12 +27,7 @@ main {
 
   box-sizing: border-box;
 
-  padding-top: 3.5rem;
-  transition: padding-top 0.25s;
-}
-
-[data-header-collapse] .sidebar {
-  padding-top: 0;
+  padding-top: calc(3.5rem + var(--header-offset));
 }
 
 @media (max-width: 50rem) {
@@ -66,14 +61,9 @@ main {
 @media (min-width: 80rem) {
   .table-of-contents {
     position: fixed;
-    inset: 4rem 0 0 70rem;
+    left: 70rem;
+    top: calc(4rem + var(--header-offset));
     overflow-y: scroll;
-
-    transition: top 0.25s;
-  }
-
-  [data-header-collapse] .table-of-contents {
-    top: 0.5rem;
   }
 
   .table-of-contents > :first-child {

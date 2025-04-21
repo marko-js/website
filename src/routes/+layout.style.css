@@ -27,7 +27,7 @@ header {
   height: 2.5rem;
   padding: 0.5rem 1rem;
   z-index: 10;
-  transition: top 0.25s;
+  top: var(--header-offset);
 
   svg {
     height: 1.25rem;
@@ -39,10 +39,6 @@ header {
   .logo {
     height: 2rem;
   }
-}
-
-[data-header-collapse] header {
-  top: -3.5rem;
 }
 
 .mobile-nav-toggle {

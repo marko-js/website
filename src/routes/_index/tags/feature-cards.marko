@@ -1,53 +1,41 @@
-static interface CardInput {
-  widget: Marko.AttrTag<Marko.Renderable>;
-  title: string;
-  content: Marko.Body;
+export interface Input {
+  card: Marko.AttrTag<{
+    image: string;
+    title: string;
+    content: Marko.Body;
+  }>;
 }
 
-<define/Card|{ widget, title, content }: CardInput|>
-  <article>
-    <${widget}/>
-    <h3>${title}</h3>
-    <p><${content}/></p>
-  </article>
-</define>
-
-<section class="feature-cards">
-  <Card title="Familiar">
-    If you know HTML, CSS, and JavaScript, you know Marko
-  </Card>
-  <Card title="Performant">
-    Streaming, partial hydration, an optimizing compiler, and a small runtime
-  </Card>
-  <Card title="Scalable">
-    Start with simple HTML templates and add powerful components as needed
-  </Card>
-  <Card title="Trusted">
-    Marko is powering high-traffic websites like ebay.com
-  </Card>
-</section>
-
-
-<style>
-  .feature-cards {
+<style/styles>
+  .cards {
     display: flex;
     flex-wrap: wrap;
     text-align: center;
-    gap: 2rem;
+    gap: 1rem;
     justify-content: space-evenly;
   }
 
-  .feature-cards > article {
+  .cards > article {
     display: flex;
     flex-direction: column;
-    max-width: 12rem;
+    max-width: 10rem;
   }
 
-  .feature-cards > article > h3 {
+  .cards > article > h3 {
     margin: 0;
   }
 
-  .feature-cards > article > p {
+  .cards > article > p {
     font-size: small;
   }
 </style>
+
+<section class=styles.cards>
+  <for|{ image, title, content }| of=input.card>
+    <article>
+      <img src=image alt="">
+      <h3>${title}</h3>
+      <p><${content}/></p>
+    </article>
+  </for>
+</section>

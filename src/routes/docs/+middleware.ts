@@ -12,12 +12,12 @@ interface GithubProfile {
 
 export default ((ctx) => {
   const route = ctx.url.pathname.substring(
-    "/docs/".length,
+    ctx.url.pathname.indexOf("docs/"),
     ctx.url.pathname.length - 1,
   );
   const contributors: Record<string, GithubProfile> = {};
   ctx.contributors = fetch(
-    `https://api.github.com/repos/marko-js/website/commits?path=src/routes/docs/${route}.md`,
+    `https://api.github.com/repos/marko-js/website/commits?path=${route}.md`,
     {
       method: "GET",
       headers: {

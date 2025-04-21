@@ -4,7 +4,7 @@ export interface Input {
 }
 
 define/Outline|input: { page: string; content: Marko.Renderable }|
-  if=$global.url.href.endsWith(input.page + "/")
+  if=$global.url.href.endsWith(input.page) || $global.url.href.endsWith(input.page + "/")
     strong
       ${input.content}
     nav.table-of-contents aria-label="On this Page"
@@ -30,7 +30,7 @@ div.sidebar
         h3 -- Guides
         ul
           li
-            Outline page="guide/existing-project" -- Existing Project
+            Outline page="guide/existing-project" -- Adding to an Existing Project
           li
             Outline page="guide/styling" -- Styling
           li

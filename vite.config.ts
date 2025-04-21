@@ -7,17 +7,20 @@ export default defineConfig({
   plugins: [
     markodown(),
     marko(),
-    nodePolyfills({
-      include: [
-        "path",
-        "events",
-        "tty",
-        "util",
-        "module",
-        "process",
-        "crypto",
-        "stream",
-      ],
-    }),
+    {
+      ...nodePolyfills({
+        include: [
+          "path",
+          "events",
+          "tty",
+          "util",
+          "module",
+          "process",
+          "crypto",
+          "stream",
+        ],
+      }),
+      apply: "serve",
+    },
   ],
 });

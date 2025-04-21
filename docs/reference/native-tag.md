@@ -252,15 +252,33 @@ All changes to this `<input>` are intercepted _and manipulated_. In this example
 
 The `<input>` tag has 3 change handlers, which are each related to an input type.
 
+The `value=` attribute may be controlled with `valueChange=`
+
 ```marko
 <let/text="">
 <input type="text" value:=text>
 <input type="text" value=text valueChange(value) { text = value.toLowerCase() }>
 ```
 
+> [!CAUTION]
+> The value of `<input>` is _always_ a string, so numbers need to be casted.
+>
+> ```marko
+> <let/number=0>
+>
+> // ❌ (INCORRECT) this will set number to a string when updated
+> <input type="number" value:=number>
+>
+> // ✅ cast the string value to a number during the change handler
+> <input type="number" value=number valueChange(value) { number = +value }>
+> ```
+
+The `checked=` attribute may be controlled with `checkedChange=`
+
 ```marko
 <let/checked=false>
 <input type="checkbox" checked:=checked>
+<input type="checkbox" checked=checked checkedChange(value) { checked = value }>
 ```
 
 The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.

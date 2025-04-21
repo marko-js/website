@@ -1,17 +1,43 @@
+import styles from "./figure-section.module.css";
+import text from "../text-styles.module.css";
+
 export interface Input {
   title: string;
   content: Marko.Body;
-  figure: Marko.AttrTag<{
-    content: Marko.Body;
-  }>;
+  cta: Marko.AttrTag<Marko.HTML.A>;
+  figure: Marko.AttrTag<Marko.HTML.Div>;
+  color: "red" | "blue" | "green" | "yellow" | "purple";
+  reverse?: boolean;
+  fullWidth?: boolean;
 }
 
-<section>
+<section style={
+  "--color-section-primary": `var(--color-${input.color}-primary)`,
+  "--color-section-secondary": `var(--color-${input.color}-secondary)`,
+} class=[styles.figureSection, input.fullWidth && styles.background, input.reverse && styles.flexReverse]>
   <article>
-    <h2>${input.title}</h2>
+    <h2 class=[text.gradient, text[input.color]]>${input.title}</h2>
     <${input.content}/>
+    <if=input.cta>
+      <a ...input.cta class=[input.cta.class, styles.cta]>
+        <${input.cta}/>
+      </a>
+    </if>
   </article>
-  <figure>
-    <${input.figure}/>
+  <figure class=!input.fullWidth && styles.background>
+    <div ...input.figure>
+      <${input.figure.content}/>
+    </div>
   </figure>
 </section>
+
+static declare global {
+  namespace Marko {
+    namespace CSS {
+      interface Properties {
+        "--color-section-primary"?: string;
+        "--color-section-secondary"?: string;
+      }
+    }
+  }
+}
