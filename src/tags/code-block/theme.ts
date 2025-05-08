@@ -4,7 +4,7 @@ export const markoDark = {
   name: "marko-dark",
   colors: {
     "editor.foreground": "#E8E9F3",
-    "editor.background": "#202034",
+    "editor.background": "#2020124",
   },
   settings: [
     {

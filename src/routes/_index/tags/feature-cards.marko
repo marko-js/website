@@ -1,6 +1,6 @@
 export interface Input {
   card: Marko.AttrTag<{
-    image: string;
+    image: Marko.AttrTag<{ content: Marko.Body }>;
     title: string;
     content: Marko.Body;
   }>;
@@ -13,6 +13,10 @@ export interface Input {
     text-align: center;
     gap: 1rem;
     justify-content: space-evenly;
+  }
+
+  .cards > .image {
+    height: 5rem;
   }
 
   .cards > article {
@@ -33,7 +37,9 @@ export interface Input {
 <section class=styles.cards>
   <for|{ image, title, content }| of=input.card>
     <article>
-      <img src=image alt="">
+      <div class=styles.image>
+        <${image}/>
+      </div>
       <h3>${title}</h3>
       <p><${content}/></p>
     </article>

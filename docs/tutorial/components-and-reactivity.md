@@ -12,7 +12,7 @@ As with many user interfaces, our first step is to gather input from the user. W
 
 ## Adding State
 
-Of course, right now we aren't keeping track of the value that this input contains. To do this, we need to introduce state. In Marko, the most common way to do this is with [tag variables](../reference/language#tag-variables). Here, we will use [Marko's `<let>` tag](../reference/core-tag#let):
+Of course, right now we aren't keeping track of the value that this input contains. To do this, we need to introduce state. In Marko, the most common way to do this is with [tag variables](../reference/language.md#tag-variables). Here, we will use [Marko's `<let>` tag](../reference/core-tag.md#let):
 
 ```marko
 <let/degF=80>
@@ -23,7 +23,7 @@ Of course, right now we aren't keeping track of the value that this input contai
 
 ## Syncing State
 
-Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag#event-handlers):
+Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
 
 ```marko
 <let/degF=80>
@@ -34,10 +34,10 @@ Now the `<input>` has an initial value, but we still aren't keeping track of it 
 <div>It's ${degF}°F</div>
 ```
 
-Aha! Now we have a [reactive variable](../reference/reactivity) that keeps track of our value for degrees (in fahrenheit). Let's convert it to celsius!
+Aha! Now we have a [reactive variable](../reference/reactivity.md) that keeps track of our value for degrees (in fahrenheit). Let's convert it to celsius!
 
 > [!NOTE]
-> For more control over the `<input>` value, we could have used Marko's [controllable](../reference/native-tag#change-handlers) pattern.
+> For more control over the `<input>` value, we could have used Marko's [controllable](../reference/native-tag.md#change-handlers) pattern.
 
 ## Adding Computed Values
 
@@ -57,7 +57,7 @@ To do this, we can use a `<const>` tag:
 
 ## Using Conditionals
 
-Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag#if--else)?
+Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
 
 ```marko
 <let/degF=80>

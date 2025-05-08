@@ -80,4 +80,4 @@ Everything we've seen so far isn't just HTML and JavaScript— it's actually val
 
 But Marko extends HTML with powerful features that make building interactive web applications easier.
 
-Next, check out the [components and reactivity tutorial](./components-and-reactivity)
+Next, check out the [components and reactivity tutorial](./components-and-reactivity.md)

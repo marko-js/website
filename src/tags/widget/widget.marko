@@ -1,0 +1,14 @@
+import { createWidgetPath, type NubOptions } from "./path-utils";
+
+export interface Input {
+  nubs: NubOptions;
+  color?: `${"red" | "yellow" | "green" | "blue" | "purple" | "gray"}-${"dark" | "light"}`
+  content?: Marko.Body;
+}
+
+<const/bodyPath=createWidgetPath(input.nubs)>
+
+<svg viewBox="-240 -240 480 480">
+  <path d=bodyPath fill=`url(#${input.color ?? "gray-light"})`/>
+  <${input.content}/>
+</svg>

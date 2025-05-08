@@ -1,0 +1,24 @@
+<id/eyeClipId>
+<widget nubs={ top: "in", left: "out", right: "out" } color="red-dark">
+  <defs>
+    <clipPath id=eyeClipId>
+      <path d="M -36 28 l 100 -46 v 250 h -200 v -250 z"/>
+    </clipPath>
+  </defs>
+  <g clip-path=`url(#${eyeClipId})`>
+    // eyes
+    <circle r=44 cx=-86 cy=8 fill="white" stroke="black" />
+    <circle r=44 cx=14 cy=8 fill="white" stroke="black" />
+    // pupils
+    <circle r=30 cx=-72 cy=4 fill="black" />
+    <circle r=30 cx=28 cy=4 fill="black" />
+  </g>
+  // eyebrows
+  <line x1=-116 y1=-32 x2=-54 y2=-2 stroke="white" stroke-width=4 stroke-linecap="round" />
+  <line x1=44 y1=-32 x2=-18 y2=-2 stroke="white" stroke-width=4 stroke-linecap="round" />
+  // moustache
+  <path
+    d="M -36 90 q 36 33 88 27 t 63 -30 q -34 4 -72 -25 t -73 -8 q -6 5 -12 0 q -35 -21 -73 8 t -72 25 q 11 24 63 30 T 104 227"
+    fill="black"
+  />
+</widget>

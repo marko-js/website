@@ -1,7 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family:
+    Ubuntu,
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -89,7 +92,7 @@ header {
   --color-purple-dark: oklch(0.463457 0.15346 294.701);
   --color-purple-light: oklch(0.756829 0.126986 332.83);
 
-  --color-background: light-dark(white, #202034);
+  --color-background: light-dark(white, #202124);
   --color-foreground: light-dark(black, white);
   --color-red-primary: light-dark(
     var(--color-red-dark),

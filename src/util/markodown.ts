@@ -121,7 +121,7 @@ function markoDocs(): MarkedExtension {
       } else if (token.type === "codespan") {
         // token.text = (token.text as string).replaceAll("${", "${");
       } else if (token.type === "link") {
-        if (/\.\/[\w-]+.md/.test(token.href)) {
+        if (/[\.\/]+[\w/-]+.md/.test(token.href)) {
           token.href = "." + token.href.replace(".md", "");
         }
       }

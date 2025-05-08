@@ -172,7 +172,7 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 ```
 
 > [!NOTE]
-> The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language#static) instead.
+> The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 
 <!--  -->
 
@@ -497,7 +497,7 @@ This tag also exposes a [tag variable](./language.md#tag-variables) which contai
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag#script) and [`<style>`](./native-tag#style) tags are enhanced to enable best practices and help developers avoid common footguns.
+The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common footguns.
 
 Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
 

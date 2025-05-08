@@ -173,7 +173,7 @@ All of these types of tags use the same syntax:
 <my-tag/>
 ```
 
-`.marko` files are [automatically discovered](./custom-tag#custom-tag-discovery) as [custom tags](./custom-tag) (no need for `import`).
+`.marko` files are [automatically discovered](./custom-tag.md#custom-tag-discovery) as [custom tags](./custom-tag.md) (no need for `import`).
 
 All tags can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags) when there is no [content](#tag-content). This means `<div/>` is valid, unlike in HTML. Additionally [`void` tags](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) like `<input>` and `<br>` can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags).
 

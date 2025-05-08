@@ -2,7 +2,7 @@
   background-clip: text;
   color: transparent;
   background-image: linear-gradient(
-    to bottom right,
+    to right,
     var(--text-gradient-start),
     var(--text-gradient-end)
   );

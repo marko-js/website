@@ -1,30 +1,22 @@
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import text from "./text-styles.module.css";
 <main>
+  <div class="banner-logo">
+    <img src="../logo.svg" alt=""> marko
+  </div>
+
   <h1>
-    A
-    <strong class=[text.gradient, text.red]>
-      declarative
-    </strong>
-    ${", "}
+    The
     <strong class=[text.gradient, text.yellow]>
-      HTML-Based
+      Markup
     </strong>
     ${" "}
-    <strong class=[text.gradient, text.blue]>
+    <strong class=[text.gradient, text.green]>
       Language
     </strong>
-    ${" "} that makes
-    <strong class=[text.gradient, text.green]>
-      Building
-    </strong>
-    ${" "}
-    <strong class=[text.gradient, text.purple]>
-      Web Apps
-    </strong>
-    ${" "}
+    ${" "} that
     <strong class=[text.gradient, text.red]>
-      Fun
+      Scales
     </strong>
   </h1>
 
@@ -57,16 +49,20 @@ import text from "./text-styles.module.css";
   </div>
 
   <feature-cards>
-    <@card image="" title="Familiar">
+    <@card title="Familiar">
+      <@image><widget-pixel/></@image>
       If you know HTML, CSS, and JavaScript, you know Marko
     </@card>
-    <@card image="" title="Performant">
+    <@card title="Performant">
+      <@image><widget-cookie/></@image>
       Streaming, partial hydration, an optimizing compiler, and a small runtime
     </@card>
-    <@card image="" title="Scalable">
+    <@card title="Scalable">
+      <@image><widget-fetch/></@image>
       Start with simple HTML templates and add powerful components as needed
     </@card>
-    <@card image="" title="Trusted">
+    <@card title="Trusted">
+      <@image><widget-doc/></@image>
       Marko is powering high-traffic websites like ebay.com
     </@card>
   </feature-cards>
@@ -171,15 +167,29 @@ import text from "./text-styles.module.css";
     margin: 1lh auto;
   }
 
-  h1,
-  h2 {
-    text-align: center;
+  .banner-logo {
+    font-size: min(18vw, 9rem);
+    height: 1em;
+    margin: 0.5lh auto;
+
+    font-weight: 500;
+    font-family: Ubuntu, monospace;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1em;
+
+
+    img {
+      height: 1em;
+    }
   }
 
   .cta-links {
     display: flex;
     gap: 1rem;
-    justify-content: center;
+    justify-content: left;
   }
 
   .cta-link {
@@ -213,6 +223,7 @@ import text from "./text-styles.module.css";
     border-radius: 1rem;
     overflow: clip;
     position: relative;
+    background-color: var(--color-background);
 
     pre {
       padding: 3rem 1rem;
