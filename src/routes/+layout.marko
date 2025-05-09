@@ -1,41 +1,74 @@
 import docsearch from "@docsearch/js";
 import "@docsearch/css";
 import markoLogo from "./logo.svg";
-import { faBars, faLaptopCode } from "@fortawesome/free-solid-svg-icons"
-
+import { faBars, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
 export interface Input {
   content: Marko.Body;
 }
+static interface LayoutMeta {
+  pageTitle?: string;
+}
+static declare global {
+  namespace Marko {
+    namespace CSS {
+      interface Properties {
+        "--color-selection-background"?: string;
+        "--header-offset"?: string;
+      }
+    }
+  }
+}
+static const HIGHLIGHT_COLORS = ["red", "yellow", "green", "blue", "purple"];
+static function hasPageTitle(
+  meta: unknown,
+): meta is LayoutMeta & { pageTitle: string } {
+  return typeof (meta as LayoutMeta).pageTitle === "string";
+}
 
 let/mobileNav=false
+let/highlightColorIndex=0
 
 script --
   let lastScrollY = window.scrollY;
   let headerOffset = 0;
   const headerHeight = header().offsetHeight;
-  window.addEventListener("scroll", () => {
-    headerOffset = Math.max(0, Math.min(headerHeight, headerOffset - lastScrollY + window.scrollY));
-    lastScrollY = window.scrollY;
-    document.body.style.setProperty("--header-offset", `-${headerOffset}px`);
-  }, { signal: $signal });
-
-static const HIGHLIGHT_COLORS = ["red", "yellow", "green", "blue", "purple"];
-let/highlightColorIndex=0
+  window.addEventListener(
+    "scroll",
+    () => {
+      headerOffset = Math.max(
+        0,
+        Math.min(headerHeight, headerOffset - lastScrollY + window.scrollY),
+      );
+      lastScrollY = window.scrollY;
+      document.body.style.setProperty("--header-offset", `-${headerOffset}px`);
+    },
+    {
+      signal: $signal,
+    },
+  );
 script --
-  window.addEventListener("selectstart", () => {
-    highlightColorIndex = (highlightColorIndex + 1) % HIGHLIGHT_COLORS.length;
-  }, { signal: $signal });
-
+  window.addEventListener(
+    "selectstart",
+    () => {
+      highlightColorIndex = (highlightColorIndex + 1) % HIGHLIGHT_COLORS.length;
+    },
+    { signal: $signal },
+  );
 <!DOCTYPE html>
 html lang="en"
   head
     meta charset="UTF-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
-    meta name="description" content="Website for the Marko language / JavaScript Framework"
+    meta name="description" content="The Marko programming language"
     title
-      if=($global.meta.pageTitle) -- ${$global.meta.pageTitle}${" | "}
+      if=hasPageTitle($global.meta) -- ${$global.meta.pageTitle} | 
       -- Marko
-    link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"
+
+    link rel="icon" sizes="32x32" href="./fav.ico"
+    // Duplicate the SVG icon with a `media` to ensure chrome swaps it on media change.
+    link rel="icon" type="image/svg+xml" href="./fav.svg?no-inline"
+    link rel="icon" type="image/svg+xml" href="./fav.svg?no-inline" media="(prefers-color-scheme:dark)"
+
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
     themed-svg-gradients
 
@@ -57,7 +90,7 @@ html lang="en"
           apiKey: "82f1b630f11e1afa4767f051af953a28",
         });
         --
-      
+
       a href="/playground/" title="playground"
         fa-icon=faLaptopCode
 
@@ -67,15 +100,3 @@ html lang="en"
         fa-icon=faBars
 
     ${input.content}
-
-
-static declare global {
-  namespace Marko {
-    namespace CSS {
-      interface Properties {
-        "--color-selection-background"?: string;
-        "--header-offset"?: string;
-      }
-    }
-  }
-}

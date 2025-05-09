@@ -14,6 +14,7 @@
     "strict": true,
     "target": "ESNext",
     "verbatimModuleSyntax": true,
+    "types": ["vite/client"],
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"
