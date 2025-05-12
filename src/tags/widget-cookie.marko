@@ -1,14 +1,35 @@
 <widget nubs={ right: "in", top: "out" } color="red-light">
+  <g transform="translate(50, -140)">
+    <path
+      d="M 0 0 l 13 -8 q -14 -30 6 -50 q 71 19 96 82 q 17 -14 28 0 q 6 9 1 16 q -4 4 -11 -2 q -4 -3 -13 0 q 26 101 0 115 q -13 6 -21 -13 q -56 -123 -99 -140"
+      fill="var(--color-foreground)"
+    />
+  </g>
+  <id/eye/>
+  <defs>
+    <g id=eye>
+      <circle r=43 fill="white"/>
+      <g transform="translate(18, 0)">
+        // heart
+        <path
+          d="M 0 -12 q 6 -10 16 -10 t 14 8 t 0 17 t -30 28 q -26 -19 -30 -28 t 0 -17 t 14 -8 t 16 10"
+          fill="black"
+        >
+          <animateTransform
+            dur="5s"
+            attributeName="transform"
+            type="scale"
+            keyTimes= "0; 0.75; 0.8; 0.85; 0.9; 0.95; 1"
+            values=   "1;   1; 0.9; 1.15; 1.05; 1.15; 1"
+            repeatCount="indefinite"
+          />
+        </path>
+      </g>
+    </g>
+  </defs>
   // eyes
-  <circle r=43 cx=-110 cy=70 fill="white" />
-  <circle r=43 cx=-10 cy=70 fill="white" />
-  // heart pupils
-  <path
-    d="M -94 58 q 6 -10 16 -10 t 14 8 t 0 17 t -30 28 q -26 -19 -30 -28 t 0 -17 t 14 -8 t 16 10"
-    fill="black"
-  />
-  <path
-    d="M 6 58 q 6 -10 16 -10 t 14 8 t 0 17 t -30 28 q -26 -19 -30 -28 t 0 -17 t 14 -8 t 16 10"
-    fill="black"
-  />
+  <g transform="translate(-60, 70)">
+    <use href=`#${eye}` transform="translate(-50, 0)"/>
+    <use href=`#${eye}` transform="translate(50, 0)"/>
+  </g>
 </widget>

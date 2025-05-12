@@ -1,25 +1,35 @@
 <id/mouthId/>
+<id/eyeId/>
 <widget nubs={ left: "out", top: "out", bottom: "in" } color="green-light">
   <defs>
     <clipPath id=mouthId>
       <ellipse cx=-60 cy=20 rx=22 ry=18/>
     </clipPath>
+    <g id=eyeId>
+      <circle r=46 fill="white"/>
+      <circle r=34 fill="black"/>
+      <g transform="translate(12, -12)">
+        // star
+        <path
+          d="M -20 -6 l 14 -1 l 6 -13 l 6 13 l 14 1 l -11 10 l 3 14 l -12 -7 l -12 7 l 3 -14 z"
+          fill="white"
+        >
+          <animateTransform
+            dur="55s"
+            attributeName="transform"
+            type="rotate"
+            from=0
+            to=360
+            repeatCount="indefinite"
+          />
+        </path>
+      </g>
+    </g>
   </defs>
-  // eyes
-  <circle cx=-114 cy=-34 r=46 fill="white" />
-  <circle cx=-6 cy=-34 r=46 fill="white" />
-  // pupils
-  <circle cx=-114 cy=-34 r=34 fill="black" />
-  <circle cx=-6 cy=-34 r=34 fill="black" />
-  // stars
-  <path
-    d="M -123 -55 l 14 -1 l 6 -13 l 6 13 l 14 1 l -11 10 l 3 14 l -12 -7 l -12 7 l 3 -14 z"
-    fill="white"
-  />
-  <path
-    d="M -15 -55 l 14 -1 l 6 -13 l 6 13 l 14 1 l -11 10 l 3 14 l -12 -7 l -12 7 l 3 -14 z"
-    fill="white"
-  />
+  <g transform="translate(-60, -42)">
+    <use href=`#${eyeId}` transform="translate(-54, 0)"/>
+    <use href=`#${eyeId}` transform="translate(54, 0)"/>
+  </g>
   // mouth
   <use href=`#${mouthId}` fill="black"/>
   <rect clip-path=`url(#${mouthId})` width=48 height=36 x=-82 y=2 />

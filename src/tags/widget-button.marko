@@ -1,26 +1,51 @@
 <widget nubs={ left: "in", bottom: "in" } color="green-dark">
   // eyes
-  <path
-    d="M 56 -10 m -93 0 a 1 1 0 0 1 86 0 z m 100 0 a 1 1 0 0 1 86 0 z"
-    fill="white"
-    stroke="black"
-  />
-  // pupils
-  <path
-    d="M 56 -10 m -82 0 a 1 1 0 0 1 66 0 z m 100 0 a 1 1 0 0 1 66 0 z"
-    fill="black"
-  />
-  // eye twinkle
-  <circle r=5 cx=15 cy=-23 fill="white" />
-  <circle r=10 cx=24 cy=-33 fill="white" />
-  <circle r=5 cx=115 cy=-23 fill="white" />
-  <circle r=10 cx=124 cy=-33 fill="white" />
+  <id/eye>
+  <defs>
+    <g id=eye>
+      <path
+        d="M -43 0 a 1 1 0 0 1 86 0 z"
+        fill="white"
+      />
+      <path
+        d="M -33 0 a 1 1 0 0 1 66 0 z"
+        fill="black"
+      />
+      <circle r=5 cx=13 cy=-13 fill="white">
+        <animate
+          attributeName="r"
+          values="6;4;6"
+          dur="4s"
+          repeatCount="indefinite"
+        />
+      </circle>
+      <circle r=10 cx=23 cy=-23 fill="white">
+        <animate
+          attributeName="r"
+          values="9;11;9"
+          dur="4s"
+          repeatCount="indefinite"
+        />
+      </circle>
+    </g>
+  </defs>
+  <g transform="translate(56, -10)">
+    <use href=`#${eye}` transform="translate(-50, 0)"/>
+    <use href=`#${eye}` transform="translate(50, 0)"/>
+  </g>
   // mouth
   <path
-    d="M 36 6 a 1 1 0 0 0 40 0"
+    transform="translate(56, 6)"
+    d="M -20 0 a 1 1 0 0 0 40 0"
     stroke="black"
     fill="none"
     stroke-width=6
     stroke-linecap="round"
+  />
+  // hair
+  <path
+    transform="translate(0, -140)"
+    d="M -81 40 q 34 -17 104 15 t 115 -4 t 10 -109 q -7 -15 -17 -20 q -5 -2 -6 2 q -9 36 -24 48 q -2 2 -3 -1 q -17 -53 -75 -68 q -9 -2 -5 5 q 6 12 0 47 q -1 2 -4 1 q -97 -35 -124 41 q -1 3 -3 0 q -8 -13 -11 -39 q -1 -7 -5 -3 q -14 15 -13 43 q 0 4 -3 3 q -15 -2 -26 9 q -6 7 0 7 t 23 18 q 2 2 0 4 q -15 14 -2 37 q 11 17 10 23 q 39 -22 68 1 q 7 6 9 -5 q 3 -18 -18 -55"
+    fill="var(--color-foreground)"
   />
 </widget>
