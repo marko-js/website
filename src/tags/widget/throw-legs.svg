@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
+  <style>#l{fill:#421a31;stroke:#421a31}@media(prefers-color-scheme:dark){#l{fill:#f5cce1;stroke:#f5cce1}}</style>
+  <g id="l" stroke-width="5" stroke-linecap="round">
+    <path d="M20 130q0 150 -10 300" fill="none"></path>
+    <path d="M10 430q3-15 26-12t23 13q0 7-36 6-13-1-13-7"></path>
+    <path d="M-20 130q0 150 10 300" fill="none"></path>
+    <path d="M-10 430q-3-15-26-12t-23 13q0 7 36 6 13-1 13-7"></path>
+  </g>
+
+  <path fill="url(#a)" d="M-130-140h84c3 0 5 3 3 6s-9 10-9 30c0 21 16 51 52 51s52-30 52-51c0-20-7-27-9-30s0-6 3-6h84a10 10 0 0 1 10 10v86c0 7 9 10 13 8s12-10 28-10c22 0 46 19 46 46s-24 46-46 46c-16 0-24-8-28-10s-13 1-13 8v86a10 10 0 0 1-10 10h-260a10 10 0 0 1-10-10V44c0-7-9-10-13-8s-12 10-28 10c-22 0-46-19-46-46s24-46 46-46c16 0 24 8 28 10s13-1 13-8v-86a10 10 0 0 1 10-10"/>
+  <defs>
+    <linearGradient id="a" gradientTransform="rotate(70)">
+      <stop offset="5%" stop-color="#d91567"/>
+      <stop offset="95%" stop-color="#cc0067"/>
+    </linearGradient>
+    <clipPath id="b">
+      <path d="M-36 28 64-18v250h-200V-18z"/>
+      <animateTransform attributeName="transform" dur="6s" keyTimes="0; 0.75; 0.8; 0.95; 1" repeatCount="indefinite" type="translate" values="0 0; 0 0; 0 10; 0 10; 0 0"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#b)">
+    <circle cx="-86" cy="8" r="44" fill="#fff"/>
+    <circle cx="14" cy="8" r="44" fill="#fff"/>
+    <circle cx="-72" cy="4" r="30"/>
+    <circle cx="28" cy="4" r="30"/>
+  </g>
+  <g transform="translate(-36 -17)">
+    <g>
+      <animateTransform attributeName="transform" dur="6s" keyTimes="0; 0.75; 0.8; 0.95; 1" repeatCount="indefinite" type="translate" values="0 0; 0 0; 0 22; 0 22; 0 0"/>
+      <g stroke="#f5cce1" stroke-linecap="round" stroke-width="4">
+        <line x1="-30" y1="-15" x2="30" y2="15" transform="translate(-46)">
+          <animateTransform attributeName="transform" dur="6s" keyTimes="0; 0.75; 0.8; 0.95; 1" repeatCount="indefinite" type="translate" values="-46; -46; -40; -40; -46"/>
+        </line>
+        <line x1="30" y1="-15" x2="-30" y2="15" transform="translate(46)">
+          <animateTransform attributeName="transform" dur="6s" keyTimes="0; 0.75; 0.8; 0.95; 1" repeatCount="indefinite" type="translate" values="46; 46; 40; 40; 46"/>
+        </line>
+      </g>
+    </g>
+  </g>
+  <path fill="#421a31" transform="translate(-36, 70)" d="M0 20q36 33 88 27t63-30q-34 4-72-25t-73-8q-6 5-12 0q-35-21-73 8t-72 25q11 24 63 30t88-27"/>
+</svg>
