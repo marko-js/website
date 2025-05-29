@@ -118,7 +118,7 @@ function markoDocs(): MarkedExtension {
         );
 
         if (match) {
-          token.text = (token.text as string).substring(match[0].length);
+          token.text = (token.text as string).slice(match[0].length);
           token.filename = match[1];
         }
 

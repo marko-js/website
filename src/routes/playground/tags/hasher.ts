@@ -25,7 +25,7 @@ export async function decompress(value: string) {
   if (!value) return "null";
   const decoded = atob(value.replace(/-/g, "+").replace(/_/g, "/"));
   if (decoded.startsWith(NEW_COMPRESSION_PREFIX)) {
-    const compressed = decoded.substring(NEW_COMPRESSION_PREFIX.length);
+    const compressed = decoded.slice(NEW_COMPRESSION_PREFIX.length);
 
     const stream = new DecompressionStream("gzip");
     const writer = stream.writable.getWriter();

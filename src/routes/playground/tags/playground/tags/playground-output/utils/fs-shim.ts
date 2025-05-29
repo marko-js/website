@@ -34,7 +34,7 @@ export function fsShim(
       const dirFiles: string[] = [];
       for (const filePath of Object.keys(files)) {
         if (filePath.startsWith(checkDir)) {
-          dirFiles.push(filePath.substring(checkDir.length));
+          dirFiles.push(filePath.slice(checkDir.length));
         }
       }
 

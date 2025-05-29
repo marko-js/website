@@ -11,9 +11,9 @@ interface GithubProfile {
 }
 
 export default ((ctx) => {
-  const route = ctx.url.pathname.substring(ctx.url.pathname.indexOf("docs/"));
+  const route = ctx.url.pathname.slice(ctx.url.pathname.indexOf("docs/"));
   const contributors: Record<string, GithubProfile> = {};
-  console.log(process.env.REPO_GITHUB_API_TOKEN?.substring(0, 3));
+  console.log(process.env.REPO_GITHUB_API_TOKEN?.slice(0, 3));
   ctx.contributors = fetch(
     `https://api.github.com/repos/marko-js/website-next/commits?path=${route}.md`,
     {

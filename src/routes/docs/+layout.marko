@@ -21,7 +21,7 @@ article#${styles.article}
               img src=contributor.photo alt=""
               -- ${contributor.username}
         li
-          a href=`https://github.com/marko-js/website-next/blob/main/docs/${$global.url.pathname.substring(
+          a href=`https://github.com/marko-js/website-next/blob/main/docs/${$global.url.pathname.slice(
               "/docs/".length,
               $global.url.pathname.length,
             )}.md`
