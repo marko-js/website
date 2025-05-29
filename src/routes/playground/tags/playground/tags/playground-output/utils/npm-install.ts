@@ -59,7 +59,7 @@ const STUBBED_PACKAGES = new Set(["caniuse-lite", "browserslist"]);
 
 export async function loadPackage(
   packageName: string,
-  versionRange = "latest",
+  versionRange = "next",
   files: Record<string, string> = {},
   seen = new Set(),
   dir = "/",

@@ -27,7 +27,7 @@ export interface Input {
 }
 
 let-search-param/markoVersion key="version"
-let/availableMarkoVersions=markoVersion ? [markoVersion] : ["latest"]
+let/availableMarkoVersions=markoVersion ? [markoVersion] : ["next"]
 let/previewType="Preview"
 
 lifecycle onMount=async () => {
@@ -35,7 +35,7 @@ lifecycle onMount=async () => {
   availableMarkoVersions = meta.allVersions
     .filter((v) => v.startsWith("5") || v.startsWith("6"))
     .toSorted((a, b) =>  -a.localeCompare(b, undefined, { numeric: true }));
-  markoVersion = getVersionFromRange(meta, markoVersion ?? "latest") ?? getVersionFromRange(meta, "latest")!;
+  markoVersion = getVersionFromRange(meta, markoVersion ?? "next") ?? getVersionFromRange(meta, "next")!;
 }
 
 div.output

@@ -1,0 +1,123 @@
+@use "app/tags/app-header/app-header.style.module.scss" as header;
+
+.menu {
+  position: sticky;
+  flex-direction: column;
+  width: 12rem;
+  top: 0;
+  height: 100dvh;
+  display: none;
+}
+
+:global(body.show-mobile-menu #site-menu) {
+  display: block;
+  position: fixed;
+  top: calc(header.$size + 2rem);
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  background-color: var(--color-background);
+  z-index: 3;
+  padding: 0 2rem;
+}
+
+.nav {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+
+  > ul {
+    padding: 2.5rem 0;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+  }
+
+  li {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a {
+    color: var(--color-foreground);
+    font-weight: 400;
+    line-height: 1.6;
+    text-decoration-line: none;
+    &:hover {
+      text-decoration-line: underline;
+    }
+
+    &[aria-current="true"] {
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--color-red-light);
+    }
+  }
+
+  strong {
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-red-light);
+  }
+}
+
+#siteNav {
+  > ul {
+    gap: 1rem;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .menu {
+    margin-top: calc(-1 * header.$size);
+  }
+
+  .nav {
+    transform-origin: top left;
+    transform: translateY(header.$size) scaleY(header.$scale);
+    will-change: transform;
+    @include header.scroll-animate(sticky);
+
+    & > ul {
+      transform-origin: top left;
+      transform: scaleY(calc(1 / header.$scale));
+      will-change: transform;
+      @include header.scroll-animate(sticky);
+    }
+  }
+
+  @keyframes sticky {
+    to {
+      transform: scaleY(1) translateY(0);
+    }
+  }
+}
+
+#controls {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  margin-top: auto;
+  background-color: var(--color-background);
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    top: -2rem;
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    background: linear-gradient(to top, var(--color-background), transparent);
+  }
+  strong {
+    color: var(--color-foreground);
+    font-weight: 700;
+  }
+}

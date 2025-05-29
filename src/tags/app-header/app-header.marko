@@ -6,11 +6,21 @@ import styles from "./app-header.style.module.scss";
 header#${styles.header}
   a#${styles.logo} title="Home" href="/"
     img src="./logo-text.svg?no-inline" alt="Marko Logo" width=240 height=48
-  a.${styles.link} href="/docs/" -- Docs
-  a.${styles.link} href="/playground/" -- Playground
-  a.${styles.link} href="https://github.com/marko-js/marko" -- GitHub
+  
+  .${styles.pageLinks}
+    a href="/docs/" -- Docs
+    a href="/playground/" -- Playground
+    a href="https://github.com/marko-js/marko" -- GitHub
+
+  let/mobileMenu=false
+  button#${styles.hamburger} onClick() {
+    document.body.classList.toggle("show-mobile-menu", !mobileMenu);
+    mobileMenu = !mobileMenu
+  } aria-pressed=mobileMenu ? "true" : "false" aria-label=`${mobileMenu ? "Hide" : "Show"} menu`
+    img src="./hamburger.svg" alt=""
+
   #${styles.docsearch}
-    button disabled
+    button disabled aria-hidden="true"
 
 script --
   docsearch({
