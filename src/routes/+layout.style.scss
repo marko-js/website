@@ -137,18 +137,7 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
-  font-family:
-    Ubuntu,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif;
+  font-family: Ubuntu, sans-serif;
   margin: 0;
 }
 
@@ -199,7 +188,7 @@ h5 {
 }
 
 pre {
-  padding: 1rem;
+  padding: 0.25rem 1rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   border-left: 4px solid var(--section-color-dim);
@@ -208,20 +197,15 @@ pre {
 }
 
 code {
-  font-family:
-    "Ubuntu Mono",
-    monaco,
-    Consolas,
-    Lucida Console,
-    monospace;
+  font-family: "Ubuntu Mono", monospace;
   line-height: 1.5;
   text-wrap: nowrap;
 
   :not(pre) > & {
     color: var(--section-color);
     background-color: var(--section-color-dim);
-    border-radius: 1rem;
-    padding: 0.2rem 1ch;
+    border-radius: 0.5lh;
+    padding: 0.2rem 0.75ch;
     line-height: 1.8;
   }
 }

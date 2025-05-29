@@ -97,17 +97,13 @@ main {
 
   ul,
   ol {
-    list-style-position: inside;
     margin-bottom: 1.3rem;
+    padding-left: 2rem;
   }
 
   li::marker {
     color: var(--section-color);
     font-size: 1.2rem;
-  }
-
-  li + li {
-    margin-top: 0.8rem;
   }
 
   pre,
