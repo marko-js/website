@@ -25,7 +25,9 @@ export default ((ctx) => {
     },
   )
     .then(async (res) => {
+      console.log(route, res.ok ? "Success!" : "Error");
       if (!res.ok) {
+        console.log(route, res.status);
         return [];
       }
       for (const contribution of await res.json()) {
@@ -36,7 +38,11 @@ export default ((ctx) => {
           url: author.html_url,
         };
       }
+      console.log(route, Object.values(contributors));
       return Object.values(contributors);
     })
-    .catch((e) => []);
+    .catch((e) => {
+      console.log(route, e);
+      return [];
+    });
 }) satisfies MarkoRun.Handler;
