@@ -13,7 +13,6 @@ interface GithubProfile {
 export default ((ctx) => {
   const route = ctx.url.pathname.slice(ctx.url.pathname.indexOf("docs/"));
   const contributors: Record<string, GithubProfile> = {};
-  console.log(process.env.REPO_GITHUB_API_TOKEN?.slice(0, 3));
   ctx.contributors = fetch(
     `https://api.github.com/repos/marko-js/website-next/commits?path=${route}.md`,
     {
@@ -25,9 +24,7 @@ export default ((ctx) => {
     },
   )
     .then(async (res) => {
-      console.log(route, res.ok ? "Success!" : "Error");
       if (!res.ok) {
-        console.log(route, res.status);
         return [];
       }
       for (const contribution of await res.json()) {
@@ -38,11 +35,9 @@ export default ((ctx) => {
           url: author.html_url,
         };
       }
-      console.log(route, Object.values(contributors));
       return Object.values(contributors);
     })
     .catch((e) => {
-      console.log(route, e);
       return [];
     });
 }) satisfies MarkoRun.Handler;
