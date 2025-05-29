@@ -17,12 +17,7 @@ body.concise-mode .code-block {
 
 .filename {
   color: var(--section-color);
-  font-family:
-    "Ubuntu Mono",
-    monaco,
-    Consolas,
-    Lucida Console,
-    monospace;
+  font-family: "Ubuntu Mono", monospace;
 
   & ~ * pre {
     margin-top: 0.5rem !important;
