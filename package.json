@@ -30,7 +30,7 @@
     "dev": "marko-run",
     "preview": "marko-run preview",
     "build": "marko-run build",
-    "deploy": "BASE_URL=/marko-js/upgrade-dashboard/ marko-run build && gh-pages --nojekyll -d dist/public"
+    "deploy": "marko-run build && gh-pages --cname next.markojs.com --nojekyll -d dist/public"
   },
   "devDependencies": {
     "@marko/type-check": "^1.3.21",
