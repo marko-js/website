@@ -21,9 +21,9 @@ article#${styles.article}
               img src=contributor.photo alt=""
               -- ${contributor.username}
         li
-          a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
+          a href=`https://github.com/marko-js/website-next/blob/main/docs/${$global.url.pathname.substring(
               "/docs/".length,
-              $global.url.pathname.length - 1,
+              $global.url.pathname.length,
             )}.md`
             div
               fa-icon=faPlus

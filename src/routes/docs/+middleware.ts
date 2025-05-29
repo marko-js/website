@@ -11,17 +11,14 @@ interface GithubProfile {
 }
 
 export default ((ctx) => {
-  const route = ctx.url.pathname.substring(
-    ctx.url.pathname.indexOf("docs/"),
-    ctx.url.pathname.length - 1,
-  );
+  const route = ctx.url.pathname.substring(ctx.url.pathname.indexOf("docs/"));
   const contributors: Record<string, GithubProfile> = {};
   ctx.contributors = fetch(
-    `https://api.github.com/repos/marko-js/website/commits?path=${route}.md`,
+    `https://api.github.com/repos/marko-js/website-next/commits?path=${route}.md`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        Authorization: `Bearer ${process.env.REPO_GITHUB_API_TOKEN}`,
         Accept: "application/vnd.github.v3+json",
       },
     },
