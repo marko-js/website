@@ -46,7 +46,7 @@ lifecycle<{
         model.setValue(file.content);
         monaco.editor.setModelLanguage(
           model,
-          file.path.substring(file.path.lastIndexOf(".") + 1),
+          file.path.slice(file.path.lastIndexOf(".") + 1),
         );
 
         this.changeHandler = this.editor!.onDidChangeModelContent(() => {
