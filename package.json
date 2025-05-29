@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    "./*": ["./src/*", "./src/*.ts"]
+    "./*": [
+      "./src/*",
+      "./src/*.ts"
+    ]
   },
   "dependencies": {
     "@docsearch/css": "^3.9.0",
@@ -30,7 +33,7 @@
     "dev": "marko-run",
     "preview": "marko-run preview",
     "build": "marko-run build",
-    "deploy": "marko-run build && gh-pages --cname next.markojs.com --nojekyll -d dist/public"
+    "deploy": "marko-run build && gh-pages --cname next.markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\""
   },
   "devDependencies": {
     "@marko/type-check": "^1.3.21",
