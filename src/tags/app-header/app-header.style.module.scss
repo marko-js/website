@@ -156,7 +156,11 @@ $pageLinksHeight: 3.5rem;
 }
 
 :global(html.show-mobile-menu) {
-  overflow-y: hidden;
+  overflow: hidden;
+
+  & > body {
+    overflow: hidden;
+  }
 }
 
 #logo {

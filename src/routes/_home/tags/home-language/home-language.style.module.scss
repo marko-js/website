@@ -132,10 +132,6 @@
 
   @media (prefers-color-scheme: dark) {
     border: 3px solid var(--color-red-dark);
-
-    :global(.code-block) {
-      border-bottom-color: color-mix(in srgb, var(--color-red-dark) 60%, transparent)
-    }
   }
 
   @media (min-width: 32rem) {
@@ -155,6 +151,14 @@
 
     @media (min-width: 32rem) {
       padding-bottom: 2rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      border-bottom-color: color-mix(
+        in srgb,
+        var(--color-red-dark) 60%,
+        transparent
+      );
     }
   }
 

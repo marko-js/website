@@ -75,9 +75,9 @@ $fixed-controls-height: 6rem;
     left: 0;
     right: 0;
     top: calc(header.$size + header.$pageLinksHeight);
-    height: calc(100dvh - header.$size - header.$pageLinksHeight - $fixed-controls-height);
-    background-color: var(--color-background);
+    bottom: $fixed-controls-height;
     padding: 1rem;
+    background-color: var(--color-background);
     transform: none !important;
     font-size: 1rem;
 
