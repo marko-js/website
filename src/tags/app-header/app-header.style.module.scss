@@ -41,6 +41,7 @@ $pageLinksHeight: 3.5rem;
   }
 
   :global(.show-mobile-menu) & {
+    visibility: visible;
     position: fixed;
     left: 0;
     right: 0;
@@ -157,6 +158,7 @@ $pageLinksHeight: 3.5rem;
 
 :global(html.show-mobile-menu) {
   overflow: hidden;
+  visibility: hidden;
 
   & > body {
     overflow: hidden;

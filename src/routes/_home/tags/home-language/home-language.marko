@@ -1,11 +1,17 @@
 import styles from "./home-language.style.module.scss";
 
-static const EXAMPLE = `// HTML + JavaScript = 💜
+static const EXAMPLE_HTML = `// HTML + JavaScript = 💜
 <let/count=0>
 <div>\${count}</div>
 <button onClick() { count++ }>
   Click Me!
 </button>
+`;
+static const EXAMPLE_CONCISE = `// HTML + JavaScript = 💜
+let/count=0
+div -- \${count}
+button onClick() { count++ }
+  -- Click Me!
 `;
 
 section.${styles.section}
@@ -17,7 +23,7 @@ section.${styles.section}
     a.${styles.cta} href="/docs/reference/language" -- Learn More
 
   figure.${styles.example}
-    app-code-block lang="marko" text=EXAMPLE
+    app-code-block lang="marko" text=EXAMPLE_HTML concise=EXAMPLE_CONCISE
     .${styles.exampleOutput}
       let/count=53
       div -- ${count}
