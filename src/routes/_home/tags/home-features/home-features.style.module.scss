@@ -20,7 +20,10 @@
   }
 }
 
-.trusted, .familiar, .performant, .scalable {
+.trusted,
+.familiar,
+.performant,
+.scalable {
   --widget-size: min(10rem, max(6rem, 21dvw));
   display: flex;
   flex-direction: column;
@@ -70,6 +73,24 @@
 .scalable {
   background-position: top center;
   background-image: url("../../../../tags/widget/pixel.svg?no-inline");
+}
+
+@media (prefers-color-scheme: dark) {
+  .trusted {
+    background-image: url("../../../../tags/widget/doc.svg?no-inline#dark");
+  }
+
+  .familiar {
+    background-image: url("../../../../tags/widget/cookie.svg?no-inline#dark");
+  }
+
+  .performant {
+    background-image: url("../../../../tags/widget/link.svg?no-inline#dark");
+  }
+
+  .scalable {
+    background-image: url("../../../../tags/widget/pixel.svg?no-inline#dark");
+  }
 }
 
 @media (min-width: 48rem) {

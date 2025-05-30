@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 480">
+<svg id="dark" xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 480">
   <path fill="url(#a)" d="M-130-140h260a10 10 0 0 1 10 10v86c0 7 9 10 13 8s12-10 28-10c22 0 46 19 46 46s-24 46-46 46c-16 0-24-8-28-10s-13 1-13 8v86a10 10 0 0 1-10 10H44c-7 0-10 9-8 13s10 12 10 28c0 22-19 46-46 46s-46-24-46-46c0-16 8-24 10-28s-1-13-8-13h-86a10 10 0 0 1-10-10v-260a10 10 0 0 1 10-10"/>
   <defs>
     <linearGradient id="a" gradientTransform="rotate(70)">

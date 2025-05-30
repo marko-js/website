@@ -2,10 +2,13 @@ client import "@docsearch/css";
 client import docsearch from "@docsearch/js";
 import footerStyles from "../app-footer/app-footer.style.module.scss";
 import styles from "./app-header.style.module.scss";
+import logoUrl from "./logo-text.svg?no-inline";
 
 header#${styles.header}
   a#${styles.logo} title="Home" href="/"
-    img src="./logo-text.svg?no-inline" alt="Marko Logo"
+    picture 
+      source srcset=`${logoUrl}#dark` media="(prefers-color-scheme:dark)"
+      img alt="Marko Logo" src=logoUrl
   
   .${styles.pageLinks}
     a href="/docs" -- Docs

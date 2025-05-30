@@ -266,7 +266,15 @@ main {
     .markdown-alert-#{$name} {
       @include section-color.set($color, true);
       &::before {
-        --widget-image: url("../../tags/widget/#{$widget}.svg");
+        --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline");
+      }
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @each $name, $widget, $color in $alert-types {
+      .markdown-alert-#{$name}::before {
+        --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline#dark");
       }
     }
   }
@@ -283,7 +291,15 @@ main {
 
     @each $name, $widget in $alert-types {
       .markdown-alert-#{$name}::before {
-        --widget-image: url("../../tags/widget/#{$widget}-legs.svg");
+        --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline");
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      @each $name, $widget, $color in $alert-types {
+        .markdown-alert-#{$name}::before {
+          --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline#dark");
+        }
       }
     }
   }

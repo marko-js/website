@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
-  <style>#l{fill:#421a31;stroke:#421a31}@media(prefers-color-scheme:dark){#l{fill:#f5cce1;stroke:#f5cce1}}</style>
-  <g id="l" stroke-width="5" stroke-linecap="round">
+<svg id="dark" xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
+  <style>:root{--f:#f5cce1}@media(prefers-color-scheme:light){#dark:not(:target){--f:#421a31}}</style>
+  <g fill="var(--f)" stroke="var(--f)" stroke-width="5" stroke-linecap="round">
     <path d="M20 130q0 150 -10 300" fill="none"></path>
     <path d="M10 430q3-15 26-12t23 13q0 7-36 6-13-1-13-7"></path>
     <path d="M-20 130q0 150 10 300" fill="none"></path>
