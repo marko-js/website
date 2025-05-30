@@ -16,9 +16,10 @@ $colors: (
 
   --color-black: #{$black};
   --color-white: #{$white};
-
-  --color-foreground: light-dark(var(--color-black), var(--color-white));
-  --color-background: light-dark(var(--color-white), var(--color-black));
+  --color-foreground: var(--color-white);
+  --color-background: var(--color-black);
+  --color-selection-foreground: var(--color-red);
+  --color-selection-background: var(--color-red-alt);
 
   @each $name, $dark, $light in $colors {
     $tint-percent: 20%;
@@ -45,34 +46,26 @@ $colors: (
         $black,
         $weight: $shade-percent
       )};
-    --color-#{$name}: light-dark(
-      var(--color-#{$name}-dark),
-      var(--color-#{$name}-light)
-    );
-    --color-#{$name}-alt: light-dark(
-      var(--color-#{$name}-light),
-      var(--color-#{$name}-dark)
-    );
-    --color-#{$name}-dim: light-dark(
-      var(--color-#{$name}-dark-tint),
-      var(--color-#{$name}-light-shade)
-    );
-    --color-#{$name}-dim-alt: light-dark(
-      var(--color-#{$name}-light-shade),
-      var(--color-#{$name}-dark-tint)
-    );
-    --color-#{$name}-alt-dim: light-dark(
-      var(--color-#{$name}-light-tint),
-      var(--color-#{$name}-dark-shade)
-    );
-    --color-#{$name}-alt-dim-alt: light-dark(
-      var(--color-#{$name}-dark-shade),
-      var(--color-#{$name}-light-tint)
-    );
+    --color-#{$name}: var(--color-#{$name}-dark);
+    --color-#{$name}-alt: var(--color-#{$name}-light);
+    --color-#{$name}-dim: var(--color-#{$name}-dark-tint);
+    --color-#{$name}-dim-alt: var(--color-#{$name}-light-shade);
+    --color-#{$name}-alt-dim: var(--color-#{$name}-light-tint);
+    --color-#{$name}-alt-dim-alt: var(--color-#{$name}-dark-shade);
   }
 
-  --color-selection-background: var(--color-red-alt);
-  --color-selection-foreground: var(--color-red);
+  @media (prefers-color-scheme: dark) {
+    --color-foreground: var(--color-white);
+    --color-background: var(--color-black);
+    @each $name, $_ in $colors {
+      --color-#{$name}: var(--color-#{$name}-light);
+      --color-#{$name}-alt: var(--color-#{$name}-dark);
+      --color-#{$name}-dim: var(--color-#{$name}-light-shade);
+      --color-#{$name}-dim-alt: var(--color-#{$name}-dark-tint);
+      --color-#{$name}-alt-dim: var(--color-#{$name}-dark-shade);
+      --color-#{$name}-alt-dim-alt: var(--color-#{$name}-light-tint);
+    }
+  }
 }
 
 * {

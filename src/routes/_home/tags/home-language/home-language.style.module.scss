@@ -132,6 +132,10 @@
 
   @media (prefers-color-scheme: dark) {
     border: 3px solid var(--color-red-dark);
+
+    :global(.code-block) {
+      border-bottom-color: color-mix(in srgb, var(--color-red-dark) 60%, transparent)
+    }
   }
 
   @media (min-width: 32rem) {
@@ -146,11 +150,7 @@
 
   :global(.code-block) {
     width: 100%;
-    border-bottom: 4px solid
-      light-dark(
-        var(--color-red-dark-tint),
-        color-mix(in srgb, var(--color-red-dark) 60%, transparent)
-      );
+    border-bottom: 4px solid var(--color-red-dark-tint);
     padding-bottom: 1rem;
 
     @media (min-width: 32rem) {
