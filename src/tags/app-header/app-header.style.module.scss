@@ -1,6 +1,7 @@
 $top: var(--stick-top);
 $size: var(--stick-size);
 $scale: var(--stick-scale);
+$pageLinksHeight: 3.5rem;
 
 :root {
   --stick-top: 0px;
@@ -40,6 +41,10 @@ $scale: var(--stick-scale);
   }
 
   :global(.show-mobile-menu) & {
+    position: fixed;
+    left: 0;
+    right: 0;
+    padding: 0 1rem;
     transform: none !important;
     background-color: var(--color-background);
   }
@@ -79,7 +84,7 @@ $scale: var(--stick-scale);
     position: absolute;
     display: flex;
     width: 100dvw;
-    height: 3.5rem;
+    height: $pageLinksHeight;
     top: $size;
     left: 50%;
     right: 50%;
@@ -144,10 +149,14 @@ $scale: var(--stick-scale);
     display: none;
 
     /* If the user expands their screen while the nav is open */
-    :global(body.show-mobile-menu) & {
+    :global(.show-mobile-menu) & {
       display: block;
     }
   }
+}
+
+:global(html.show-mobile-menu) {
+  overflow-y: hidden;
 }
 
 #logo {

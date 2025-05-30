@@ -1,5 +1,7 @@
 @use "app/tags/app-header/app-header.style.module.scss" as header;
 
+$fixed-controls-height: 6rem;
+
 .menu {
   position: sticky;
   flex-direction: column;
@@ -72,8 +74,8 @@
     display: block;
     left: 0;
     right: 0;
-    top: calc(header.$size + 3.5rem);
-    height: calc(100dvh - header.$size - 8.5rem);
+    top: calc(header.$size + header.$pageLinksHeight);
+    height: calc(100dvh - header.$size - header.$pageLinksHeight - $fixed-controls-height);
     background-color: var(--color-background);
     padding: 1rem;
     transform: none !important;
@@ -164,10 +166,12 @@
 
   :global(.show-mobile-menu) & {
     position: fixed;
-    top: calc(100dvh - 5rem);
     left: 0;
     right: 0;
-    padding: 1rem;
-    height: 5rem;
+    bottom: 0;
+    margin: 0;
+    padding: 0 1rem;
+    height: $fixed-controls-height;
+    justify-content: center;
   }
 }
