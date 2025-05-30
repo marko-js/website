@@ -111,6 +111,8 @@
   border: 6px solid var(--color-red-dim);
   align-self: center;
   width: 100%;
+  padding: 1.5rem;
+  padding-bottom: 2rem;
   &::before {
     position: absolute;
     inset: 0;
@@ -132,14 +134,35 @@
     border: 3px solid var(--color-red-dark);
   }
 
+  @media (min-width: 32rem) {
+    padding: 2.5rem;
+    padding-bottom: 3rem;
+  }
+
   @media (min-width: 64rem) {
     align-self: end;
     width: auto;
   }
 
+  :global(.code-block) {
+    width: 100%;
+    border-bottom: 4px solid
+      light-dark(
+        var(--color-red-dark-tint),
+        color-mix(in srgb, var(--color-red-dark) 60%, transparent)
+      );
+    padding-bottom: 1rem;
+
+    @media (min-width: 32rem) {
+      padding-bottom: 2rem;
+    }
+  }
+
   pre {
+    padding: 0;
+    overflow: hidden;
     background-color: transparent !important;
-    font-size: max(0.9rem, min(1.5rem, 3.5dvw));
+    font-size: max(0.8rem, min(1.5rem, 3.7dvw));
   }
 }
 
@@ -147,14 +170,10 @@
   display: flex;
   flex-direction: column;
   place-items: center;
-  padding: 1rem 1.5rem;
-  padding-bottom: 2rem;
-  border-top: 2px solid var(--color-red-dim);
-  @media (prefers-color-scheme: dark) {
-    border-top: 3px solid var(--color-red-dim);
-  }
-  @media (min-width: 48rem) {
-    padding: 1rem 3rem;
+  padding-top: 1rem;
+
+  @media (min-width: 32rem) {
+    padding-top: 2rem;
   }
 
   > div {
