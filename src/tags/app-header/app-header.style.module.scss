@@ -120,8 +120,10 @@ $pageLinksHeight: 3.5rem;
   a {
     text-decoration: none;
     &:hover {
-      text-decoration-line: underline;
-      text-decoration-thickness: 2px;
+      @media (pointer: fine) {
+        text-decoration-line: underline;
+        text-decoration-thickness: 2px;
+      }
     }
   }
 }
@@ -189,7 +191,7 @@ $pageLinksHeight: 3.5rem;
     align-items: center;
     color: var(--color-foreground);
     -webkit-tap-highlight-color: transparent;
-    @media (hover: hover) {
+    @media (pointer: fine) {
       &:not(:disabled):is(:hover, :active, :focus) {
         color: var(--color-blue-dark);
         border-color: transparent;

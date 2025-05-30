@@ -161,11 +161,13 @@ a {
   text-decoration-line: underline;
   text-underline-offset: 0.2lh;
   text-decoration-skip-ink: none;
-  &:hover {
-    text-decoration-thickness: 3px;
-  }
   &:has(code) {
     line-height: 1.8;
+  }
+  &:hover {
+    @media (pointer: fine) {
+      text-decoration-thickness: 2px;
+    }
   }
 }
 
