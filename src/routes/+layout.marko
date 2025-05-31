@@ -22,7 +22,9 @@ html lang="en"
       main
         app-menu
         ${input.content}
-    app-footer
+
+    if=showFooter($global.meta)
+      app-footer
 
     script --
       const selectionColors = ["red", "yellow", "green", "blue"];
@@ -48,4 +50,10 @@ static function hasPageTitle(
   meta: unknown,
 ): meta is { pageTitle: string } {
   return typeof (meta as any).pageTitle === "string";
+}
+
+static function showFooter(
+  meta: unknown,
+): meta is { hideFooter: boolean } {
+  return !(meta as any).hideFooter;
 }

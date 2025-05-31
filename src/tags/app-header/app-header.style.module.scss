@@ -19,7 +19,7 @@ $pageLinksHeight: 3.5rem;
   animation-range: $top calc($top + $size);
 }
 
-#header {
+:global(#header) {
   z-index: 99;
   position: relative;
   display: flex;

@@ -1,0 +1,11 @@
+:root {
+  --stick-size: 5rem;
+}
+#header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  padding: 0 var(--root-gap);
+  transform: none !important;
+  background-color: var(--color-background);
+}
