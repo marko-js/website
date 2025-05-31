@@ -32,9 +32,10 @@ $pageLinksHeight: 3.5rem;
     pointer-events: none;
     position: absolute;
     content: "";
-    left: 50%;
-    translate: -50%;
-    width: 100dvw;
+    left: 0;
+    right: 0;
+    margin-left: calc(-1 * var(--root-gap));
+    margin-right: calc(-1 * var(--root-gap));
     top: 0;
     bottom: -5%;
     background: linear-gradient(var(--color-background) 90%, transparent);
@@ -45,7 +46,7 @@ $pageLinksHeight: 3.5rem;
     position: fixed;
     left: 0;
     right: 0;
-    padding: 0 1rem;
+    padding: 0 var(--root-gap);
     transform: none !important;
     background-color: var(--color-background);
   }
@@ -84,19 +85,16 @@ $pageLinksHeight: 3.5rem;
   :global(.show-mobile-menu) & {
     position: absolute;
     display: flex;
-    width: 100dvw;
     height: $pageLinksHeight;
     top: $size;
-    left: 50%;
-    right: 50%;
-    margin-left: -50dvw;
-    margin-right: -50dvw;
+    left: 0;
+    right: 0;
+    padding: 0 var(root-gap);
     justify-content: space-around;
     align-items: center;
     font-weight: 300;
     font-size: 1.3rem;
     font-weight: 500;
-    padding: 0 1rem;
     background-image: linear-gradient(
       to bottom,
       var(--color-red-dark),

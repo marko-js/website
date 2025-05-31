@@ -10,14 +10,14 @@
   gap: 3rem;
   color: var(--color-white);
   margin-bottom: 6rem;
+  margin-left: var(--root-bleed);
+  margin-right: var(--root-bleed);
+
   @media (min-width: 48rem) {
     padding: 3rem;
   }
   @media (min-width: 64rem) {
     flex-direction: row;
-    width: calc(100% + 8rem);
-    margin-left: -4rem;
-    margin-right: -4rem;
     padding: 3rem 4rem;
   }
   @media (prefers-color-scheme: light) {

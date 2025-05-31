@@ -79,7 +79,7 @@ $fixed-controls-height: 6rem;
     right: 0;
     top: calc(header.$size + header.$pageLinksHeight);
     bottom: $fixed-controls-height;
-    padding: 1rem;
+    padding: 1rem var(--root-gap);
     background-color: var(--color-background);
     transform: none !important;
     font-size: 1rem;
@@ -173,7 +173,7 @@ $fixed-controls-height: 6rem;
     right: 0;
     bottom: 0;
     margin: 0;
-    padding: 0 1rem;
+    padding: 0 var(--root-gap);
     height: $fixed-controls-height;
     justify-content: center;
   }

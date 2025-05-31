@@ -13,7 +13,9 @@ $colors: (
 
 :root {
   color-scheme: light dark;
-
+  --root-min-gap: 1rem;
+  --root-max-width: 80rem;
+  --root-gap: calc(max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2));
   --color-black: #{$black};
   --color-white: #{$white};
   --color-foreground: var(--color-white);
@@ -137,15 +139,8 @@ body {
 #root {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding: 0 1rem;
-  max-width: 82rem;
-  min-height: 100vh;
-
-  @media (min-width: 64rem) {
-    padding: 0 5rem;
-    max-width: 90rem;
-  }
+  padding: 0 var(--root-gap);
+  min-height: 100dvh;
 }
 
 input,
