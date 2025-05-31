@@ -18,8 +18,8 @@ $colors: (
   --root-gap: calc(max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2));
   --color-black: #{$black};
   --color-white: #{$white};
-  --color-foreground: var(--color-white);
-  --color-background: var(--color-black);
+  --color-foreground: var(--color-black);
+  --color-background: var(--color-white);
   --color-selection-foreground: var(--color-red);
   --color-selection-background: var(--color-red-alt);
 
