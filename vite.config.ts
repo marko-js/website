@@ -22,7 +22,12 @@ export default defineConfig({
           "stream",
         ],
       }),
-      apply: "serve",
+      apply(_, env) {
+        return (
+          env.command === "serve" ||
+          (env.command === "build" && !env.isSsrBuild)
+        );
+      },
     },
   ],
 });
