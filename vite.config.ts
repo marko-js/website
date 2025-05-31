@@ -11,6 +11,11 @@ export default defineConfig({
     marko(),
     {
       ...nodePolyfills({
+        globals: {
+          process: true,
+          global: true,
+          Buffer: true,
+        },
         include: [
           "path",
           "events",
