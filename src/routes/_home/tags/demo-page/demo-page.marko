@@ -18,10 +18,6 @@ const/progress=(
     [styles.hydrateAll]: input.hydrateAll,
     [styles.hydratePartial]: input.hydratePartial,
   }
-    if=input.progress >= 0
-      .${styles.progress} style={
-        transform: `scaleX(${Math.min(1, input.progress * (input.buffered ? 1 : 1 / 0.9))})`,
-      }
     .${styles.header} class=[
       styles.delay1,
       { [styles.loading]: progress < 0.1 },
@@ -30,7 +26,7 @@ const/progress=(
       .${styles.logo}.${styles.delay3} -- BuyItNow
       .${styles.cart}.${styles.delay4}.${styles.hydrated} -- Cart (0)
     .${styles.product}.${styles.delay5} class={ [styles.loading]: progress < 0.14 }
-      img.${styles.image} alt="" src="./product.png" class={
+      img.${styles.image} alt="" src="./product.webp" class={
         [styles.lowRes]: progress < 0.6 || (input.buffered && input.progress < 1)
       }
       .${styles.description}.${styles.delay6}
@@ -46,13 +42,6 @@ const/progress=(
         --
         ${" "}Google has created a nice device that provides music and information by voice control. The microphone is very good and will usually pick up commands from across the room. The speakers sound surprisingly good for such a small device. I wish it had tone control though.
         --
-    .${styles.review}.${styles.delay10} class={ [styles.loading]: progress < 1 }
-      .${styles.rating}.${styles.delay11} -- ★★★★★
-      span.${styles.descriptionText}
-        strong -- Incredible sound profile!
-        --
-        ${" "}Easy setup, great sound for any room size. Adjustable bass and treble. Currently have two paired up for better whole house sound.
-        --
     .${styles.footer}.${styles.delay12} class={ [styles.loading]: progress < 0.1 }
       .${styles.delay13} -- About
       .${styles.delay14} -- Security
@@ -60,8 +49,8 @@ const/progress=(
       .${styles.delay16} -- Help
       .${styles.delay17} -- Sitemap
   if=input.buffered || input.hydrateAll
-    .${styles.pageTitle} -- ${input.title}
+    .${styles.title} -- ${input.title}
   else
-    .${styles.pageTitle}.${styles.pageTitleMarko}
+    .${styles.title}.${styles.titleMarko}
       img src="./logo.svg" alt=""
       -- ${" "}${input.title}

@@ -53,13 +53,14 @@
 
   p {
     font-size: 1.1rem;
-    line-height: 2rem;
+    line-height: 1.6;
     margin: 1rem 0;
     max-width: 40rem;
   }
 }
 
 .headingText {
+  display: inline-block;
   @media (prefers-color-scheme: dark) {
     background-clip: text;
     color: transparent;
