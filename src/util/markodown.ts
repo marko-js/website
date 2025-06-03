@@ -81,6 +81,10 @@ async function mdToMarko(source: string) {
             type: "caution",
             icon: "",
           },
+          {
+            type: "tldr",
+            icon: "",
+          },
         ],
       }),
       headingSections(headings),

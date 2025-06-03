@@ -336,7 +336,7 @@ Attributes can be terminated with a comma. This is useful in [concise mode](./co
 ```
 
 > [!CAUTION]
-> [Comma operators / sequence expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator) must be wrapped in parentheses
+> Sequence expressions with [comma operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator) must be wrapped in parentheses
 >
 > ```marko
 > <my-tag a=(console.log(foo), foo)/>
@@ -388,9 +388,6 @@ Tags prefixed with an `@` are not rendered, but instead passed alongside attribu
 
 Here, `@header` is available to `<my-layout>` as `input.header`. The `class` attribute from `@header` is in `input.header.class` and its content is in `input.header.content`.
 
-> [!NOTE]
-> Control flow tags ([`<if>`](./core-tag.md#if--else) and [`<for>`](./core-tag.md#for)) cannot contain attribute tags themselves, and instead are used for [dynamically creating attribute tags](#conditional-attribute-tags).
-
 The full [input](./language.md#input) object provided to `<my-tag>` in this example would look like:
 
 ```js
@@ -434,6 +431,9 @@ The implementation of `my-layout.marko` might look like
   </body>
 </html>
 ```
+
+> [!NOTE]
+> Control flow tags ([`<if>`](./core-tag.md#if--else) and [`<for>`](./core-tag.md#for)) cannot contain attribute tags themselves, and instead are used for [dynamically creating attribute tags](#conditional-attribute-tags).
 
 ### Nested Attribute tags
 
@@ -656,7 +656,7 @@ Tag parameters are scoped to the [tag content](#tag-content) only.
 This means you cannot access the tag parameters outside the body of the tag.
 
 > [!CAUTION]
-> [Attribute tags](#attribute-tags) cannot access the tag parameters of their parent since they are evaluated as attributes.
+> Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
 
 ## Comments
 
