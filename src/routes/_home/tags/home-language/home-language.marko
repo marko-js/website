@@ -2,16 +2,14 @@ import styles from "./home-language.style.module.scss";
 
 static const EXAMPLE_HTML = `// HTML + JavaScript = 💜
 <let/count=0>
-<div>\${count}</div>
 <button onClick() { count++ }>
-  Click Me!
+  Clicked \${count} times
 </button>
 `;
 static const EXAMPLE_CONCISE = `// HTML + JavaScript = 💜
 let/count=0
-div -- \${count}
 button onClick() { count++ }
-  -- Click Me!
+  -- Clicked \${count} times
 `;
 
 section.${styles.section}
@@ -26,6 +24,5 @@ section.${styles.section}
     app-code-block lang="marko" text=EXAMPLE_HTML concise=EXAMPLE_CONCISE
     .${styles.exampleOutput}
       let/count=53
-      div -- ${count}
-      button onClick() { count++ } -- Click Me!
+      button onClick() { count++ } -- Clicked ${count} times
 
