@@ -114,6 +114,7 @@
   animation-name: pulse-red;
   animation-iteration-count: infinite;
   animation-duration: 2s;
+  border-radius: 2em;
 }
 
 @for $i from 1 through 17 {
@@ -126,17 +127,17 @@
   .hydratePartial .hydrated,
   .hydrateAll div {
     animation: none;
-    box-shadow: 0 0 0 15px rgba(255, 50, 82, 0.7);
+    box-shadow: 0 0 0 0.5em var(--color-red-light);
   }
 }
 
 @keyframes pulse-red {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 50, 82, 0.9);
+    box-shadow: 0 0 0 0 var(--color-red-light);
   }
 
   100% {
-    box-shadow: 0 0 0px 90px rgba(255, 50, 82, 0);
+    box-shadow: 0 0 0 1rem transparent;
   }
 }
 

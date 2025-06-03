@@ -1,0 +1,31 @@
+import styles from "./home-granular.style.module.scss";
+
+let/progress=0
+script --
+  const id = setTimeout(() => (progress = (progress + 0.01) % 1.5), 20);
+  $signal.onabort = () => clearTimeout(id);
+
+section.${styles.section}
+  .${styles.content}
+    h2
+      span.${styles.headingText} -- Granular by Design
+    p
+      -- Beyond 
+      a href="https://www.patterns.dev/vanilla/islands-architecture/#:~:text=among%20them%20are-,Marko,-%3A%20Marko%20is" -- Islands
+      -- , Marko ships only what's needed, skipping hydration and stripping unused code at the sub-template level.
+    p -- Lean by default. Fast by design. Unrivaled performance on any device or network.
+    a.${styles.cta} href="/docs/explanation/optimizing-performance" -- Learn More
+
+  figure.${styles.demo}
+    demo-page [
+      label="a visual representation showing every component on a webpage re-executing in the browser with JavaScript"
+      title="full-page"
+      progress=1
+      hydrateAll
+    ]
+    demo-page [
+      label="a visual representation showing only interactive parts of a webpage resuming with JavaScript"
+      title="granular"
+      progress=1
+      hydratePartial
+    ]

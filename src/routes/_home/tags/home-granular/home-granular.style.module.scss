@@ -13,7 +13,7 @@
   border-radius: 2rem;
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  @include section-color.set("blue");
+  @include section-color.set("yellow");
 
   @media (prefers-color-scheme: light) {
     background-color: var(--section-color-dim);
@@ -28,7 +28,7 @@
   }
   @media (min-width: 64rem) {
     background-color: transparent;
-    margin-bottom: 0;
+    margin-bottom: 6rem;
     padding: 0;
     flex-direction: row;
     align-items: center;
@@ -39,8 +39,9 @@
 .content {
   display: flex;
   flex-direction: column;
+  order: 0;
+
   @media (min-width: 64rem) {
-    order: 1;
     padding: 0 calc(50% - 38rem);
   }
 
@@ -131,7 +132,7 @@
         inset: 0;
         background: var(--section-color-dim);
         border-radius: 2rem;
-        clip-path: polygon(0 0, 4rem 0, 0 4rem, 0 100%, 100% 100%, 100% 0);
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4rem), calc(100% - 4rem) 100%, 0 100%, 0 0);
       }
     }
 
@@ -139,8 +140,8 @@
       border: 3px solid transparent;
       background-origin: border-box;
       background-clip: padding-box, border-box;
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
       background-image:
         linear-gradient(var(--color-background), var(--color-background)),
         linear-gradient(
