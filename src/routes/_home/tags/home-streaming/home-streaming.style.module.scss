@@ -29,7 +29,7 @@
   @media (min-width: 64rem) {
     background-color: transparent;
     margin-bottom: 0;
-    padding: 0;
+    padding: 0 4rem;
     flex-direction: row;
     align-items: center;
     background-image: none;
@@ -39,9 +39,12 @@
 .content {
   display: flex;
   flex-direction: column;
+  margin-right: var(--root-bleed);
   @media (min-width: 64rem) {
     order: 1;
-    padding: 0 calc(50% - 38rem);
+  }
+  @media (min-width: 90rem) {
+    margin-right: 0;
   }
 
   h2 {
@@ -123,10 +126,11 @@
   }
   @media (min-width: 64rem) {
     margin-bottom: 0;
-    margin-right: 4rem;
+    margin-right: 3rem;
     padding: 5rem;
     padding-top: 6rem;
     padding-bottom: 5rem;
+    margin-left: var(--root-bleed);
     @media (prefers-color-scheme: light) {
       &::before {
         content: "";
