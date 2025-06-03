@@ -67,7 +67,10 @@ $fixed-controls-height: 6rem;
   strong {
     font-weight: 500;
     text-transform: uppercase;
-    color: var(--color-red-light);
+    color: var(--color-red);
+    background: linear-gradient(to bottom, var(--color-red), color-mix(in srgb, var(--color-red-alt), var(--color-red)));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
