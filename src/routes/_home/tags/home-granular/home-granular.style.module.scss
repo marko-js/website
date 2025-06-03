@@ -28,8 +28,8 @@
   }
   @media (min-width: 64rem) {
     background-color: transparent;
-    margin-bottom: 6rem;
-    padding: 0;
+    margin-bottom: 0;
+    padding: 0 4rem;
     flex-direction: row;
     align-items: center;
     background-image: none;
@@ -40,9 +40,10 @@
   display: flex;
   flex-direction: column;
   order: 0;
+  margin-left: var(--root-bleed);
 
-  @media (min-width: 64rem) {
-    padding: 0 calc(50% - 38rem);
+  @media (min-width: 90rem) {
+    margin-left: 0;
   }
 
   h2 {
@@ -124,10 +125,11 @@
   }
   @media (min-width: 64rem) {
     margin-bottom: 0;
-    margin-right: 4rem;
     padding: 5rem;
     padding-top: 6rem;
     padding-bottom: 5rem;
+    margin-left: 3rem;
+    margin-right: var(--root-bleed);
     @media (prefers-color-scheme: light) {
       &::before {
         content: "";
@@ -167,13 +169,13 @@
       margin-bottom: 0;
     }
     @media (min-width: 64rem) {
-      margin-left: -2rem;
-    }
-    @media (min-width: 90rem) {
-      margin-left: 0;
+      order: 1;
+      margin-right: -2rem;
     }
   }
   > :last-child {
+    z-index: 1;
+    order: 0;
     margin-left: -16rem;
     margin-right: -1.25rem;
 
@@ -190,7 +192,8 @@
       margin-left: -4rem;
     }
     @media (min-width: 64rem) {
-      margin-right: -8rem;
+      margin-left: -8rem;
+      margin-right: -4rem;
     }
   }
 }
