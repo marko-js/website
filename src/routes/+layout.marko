@@ -39,7 +39,7 @@ html lang="en"
           );
           document.body.style.setProperty(
             "--color-selection-foreground",
-            `var(--color-${color})`
+            `var(--color-${color}-dim-alt)`
           );
           highlightColorIndex = (highlightColorIndex + 1) % selectionColors.length;
         },

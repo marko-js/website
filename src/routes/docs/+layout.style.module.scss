@@ -258,7 +258,8 @@ main {
     ("caution", "throw", "red"),
     ("tip", "link", "yellow"),
     ("important", "button", "green"),
-    ("warning", "crash", "gray")
+    ("warning", "crash", "gray"),
+    ("tldr", "pixel", "yellow")
   );
 
   .markdown-alert::before {
