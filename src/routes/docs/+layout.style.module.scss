@@ -32,7 +32,7 @@ main {
   @include section-color.set("red");
 
   $i: 1;
-  @each $color in "blue", "yellow", "green" {
+  @each $color in "blue", "green", "yellow" {
     & > section:nth-of-type(4n + #{$i}) {
       @include section-color.set($color);
     }
@@ -47,9 +47,16 @@ main {
   }
 
   h1 {
-    color: var(--color-red-light);
-    margin-bottom: 1.3rem;
-    line-height: 100%;
+    color: var(--section-color);
+    background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    line-height: 120%;
+  }
+
+  h2 {
+    margin-top: 1.5em;
   }
 
   h2,
@@ -58,11 +65,35 @@ main {
   h5,
   h6 {
     color: var(--section-color);
-    margin-top: 1.5em;
-    margin-bottom: 1.3rem;
+    background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top: 1em;
+    margin-bottom: 1rem;
 
     > a {
+      color: var(--section-color);
+      
+      code {
+        background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+        &::before {
+          content: "";
+          position: absolute;
+          background-color: var(--section-color-alt-dim); 
+          top:0;
+          left:0;
+          bottom:0;
+          right:0;
+          border-radius: 1em;
+          z-index:-1;
+        }
+      }
+
       &:hover {
+        color: var(--section-color);
         text-decoration: none;
 
         &::before {
@@ -98,7 +129,7 @@ main {
   }
 
   li::marker {
-    color: var(--section-color);
+    color: var(--section-color-alt);
     font-size: 1.2rem;
   }
 
@@ -180,10 +211,11 @@ main {
     position: relative;
     margin: 2rem 0;
     border: 1px solid var(--section-color);
-    background-color: var(--color-background);
+    background-color: color-mix(in srgb, var(--section-color-dim) 20%, var(--color-background));
+    background-image: linear-gradient(to bottom left, color-mix(in srgb, var(--section-color-dim) 24%, var(--color-background)), color-mix(in srgb, var(--section-color-dim) 8%, var(--color-background)));
     padding: 1rem;
     padding-bottom: 0;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     min-height: 9rem;
     &::after {
       position: absolute;
