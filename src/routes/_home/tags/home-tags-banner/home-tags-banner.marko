@@ -1,0 +1,124 @@
+import styles from "./home-tags-banner.style.module.scss";
+static const tags: { name: string; href: string }[] = [
+  {
+    name: "return",
+    href: "/docs/reference/core-tag#return",
+  },
+  {
+    name: "button",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
+  },
+  {
+    name: "for",
+    href: "/docs/reference/core-tag#for",
+  },
+  {
+    name: "style",
+    href: "/docs/reference/core-tag#style",
+  },
+  {
+    name: "main",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
+  },
+  {
+    name: "div",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+  },
+  {
+    name: "ul",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+  },
+  {
+    name: "form",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
+  },
+  {
+    name: "span",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
+  },
+  {
+    name: "await",
+    href: "/docs/reference/core-tag#await",
+  },
+  {
+    name: "YourTag",
+    href: "/docs/reference/custom-tag",
+  },
+  {
+    name: "debug",
+    href: "/docs/reference/core-tag#debug",
+  },
+  {
+    name: "try",
+    href: "/docs/reference/core-tag#try",
+  },
+  {
+    name: "select",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
+  },
+  {
+    name: "p",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
+  },
+  {
+    name: "label",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
+  },
+  {
+    name: "log",
+    href: "/docs/reference/core-tag#log",
+  },
+  {
+    name: "let",
+    href: "/docs/reference/core-tag#let",
+  },
+  {
+    name: "table",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
+  },
+  {
+    name: "input",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
+  },
+  {
+    name: "const",
+    href: "/docs/reference/core-tag#const",
+  },
+  {
+    name: "nav",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
+  },
+  {
+    name: "img",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
+  },
+  {
+    name: "if",
+    href: "/docs/reference/core-tag#if--else",
+  },
+  {
+    name: "a",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
+  },
+  {
+    name: "textarea",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+  },
+  {
+    name: "h1",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+  },
+  {
+    name: "script",
+    href: "/docs/reference/core-tag#script",
+  },
+];
+
+section.${styles.section}
+  .${styles.content}
+    for to=1
+      for|tag| of=tags
+        a.${styles.tag} href=tag.href
+          -- <
+          span.${styles.name} -- ${tag.name}
+          -- >
