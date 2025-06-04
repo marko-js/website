@@ -40,15 +40,37 @@
   padding: 1rem;
   color: #ffffff80;
   text-decoration: none;
-  $i: 1;
-  @each $color in "blue", "green", "yellow", "red" {
-    &:nth-of-type(4n + #{$i}) span {
-      color: var(--color-#{$color}-light);
-    }
-    $i: $i + 1;
+
+  &:hover .name {
+    text-decoration: 2px underline currentColor;
   }
 }
 
 .name {
   color: var(--color-white);
+}
+
+.coreTag, .customTag {
+  composes: tag;
+  $i: 1;
+  @each $color in "blue", "green", "yellow", "red" {
+    &:nth-of-type(8n + #{$i}) span {
+      color: var(--color-#{$color}-light);
+    }
+    $i: $i + 2;
+  }
+}
+
+.htmlTag {
+  composes: tag;
+  .name {
+    color: #C999EC;
+  }
+}
+
+.deprecatedTag {
+  composes: tag;
+  .name {
+    text-decoration: underline wavy var(--color-red-light);
+  }
 }
