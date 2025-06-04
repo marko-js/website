@@ -9,11 +9,23 @@ html-script -- document.body.classList.toggle("concise-mode",localStorage.getIte
   nav#${styles.siteNav}.${styles.nav}
     ul
       li
-        strong -- Tutorials
+        strong -- Introduction
         ul
           li
-            const/page = "/docs/tutorial/getting-started"
+            const/page="/docs/introduction/getting-started"
             a href=page aria-current=ariaCurrent(page) -- Getting Started
+          li
+            const/page="/docs/introduction/welcome-to-marko"
+            a href=page aria-current=ariaCurrent(page) -- Welcome to Marko!
+          li
+            const/page="/docs/introduction/installation"
+            a href=page aria-current=ariaCurrent(page) -- Installation
+          li
+            const/page="/docs/introduction/marko-6-upgrade"
+            a href=page aria-current=ariaCurrent(page) -- Upgrade
+      li
+        strong -- Tutorials
+        ul
           li
             const/page = "/docs/tutorial/fundamentals"
             a href=page aria-current=ariaCurrent(page) -- Fundamentals
