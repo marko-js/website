@@ -1,0 +1,54 @@
+.section {
+  background-color: var(--color-black);
+  margin: 0 calc(-1 * var(--root-gap));
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: var(--color-gray-dark-shade);
+  @media (min-width: 64rem) {
+    margin: 2rem calc(-1 * var(--root-gap));
+  }
+}
+
+.content {
+  display: flex;
+  width: fit-content;
+  font-size: 1.7rem;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  will-change: transform;
+  animation: marquee 120s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation-play-state: paused;
+  }
+  @media (min-width: 64rem) {
+    font-size: 1.9rem;
+    gap: 3rem;
+    padding: 2rem 0;
+  }
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+.tag {
+  padding: 1rem;
+  color: #ffffff80;
+  text-decoration: none;
+  $i: 1;
+  @each $color in "blue", "green", "yellow", "red" {
+    &:nth-of-type(4n + #{$i}) span {
+      color: var(--color-#{$color}-light);
+    }
+    $i: $i + 1;
+  }
+}
+
+.name {
+  color: var(--color-white);
+}
