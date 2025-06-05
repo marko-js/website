@@ -10,7 +10,7 @@
   background-clip: padding-box, border-box;
   padding: 2rem;
   gap: 3rem;
-  margin-bottom: 3.4rem;
+  margin-bottom: 4.6rem;
   margin-left: var(--root-bleed);
   margin-right: var(--root-bleed);
   background-image:
@@ -142,7 +142,7 @@
   }
 
   @media (min-width: 32rem) {
-    padding: 2.5rem;
+    padding: 3rem;
   }
 
   @media (min-width: 64rem) {
@@ -169,7 +169,9 @@
   place-items: center;
   font-size: max(0.8rem, min(1.5rem, 3.7dvw));
   position: absolute;
-  bottom: -1.1rem; left:0; right:0;
+  left: 0;
+  right: 0;
+  bottom: -0.8lh;
 
   > button {
     all: revert;
