@@ -3,6 +3,9 @@ client import docsearch from "@docsearch/js";
 import footerStyles from "../app-footer/app-footer.style.module.scss";
 import styles from "./app-header.style.module.scss";
 
+let/mobileMenu=false
+script -- document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
+
 header#header
   a#${styles.logo} title="Home" href="/"
     picture 
@@ -14,13 +17,12 @@ header#header
     a href="/playground" -- Playground
     a href="https://github.com/marko-js/marko" -- GitHub
 
-  let/mobileMenu=false
-  button#${styles.hamburger} onClick() {
-    document.documentElement.classList.toggle("show-mobile-menu", !mobileMenu);
-    mobileMenu = !mobileMenu;
-  } aria-pressed=mobileMenu ? "true" : "false" aria-label=`${mobileMenu ? "Hide" : "Show"} menu`
+  button#${styles.hamburger}
+    ,onClick() { mobileMenu = !mobileMenu }
+    ,aria-pressed=mobileMenu ? "true" : "false"
+    ,aria-label=`${mobileMenu ? "Hide" : "Show"} menu`
 
-  #${styles.docsearch}
+  #${styles.docsearch} onClick() { mobileMenu = false }
     button disabled aria-hidden="true"
 
 script --
