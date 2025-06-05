@@ -181,7 +181,9 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 </style>
 ```
 
-## What's next?
+<!-- markdownlint-disable MD026 allow exclamation point -->
+
+## Your Turn!
 
 That's all we're going to build for now, but feel free to add more! Here are some ideas:
 
@@ -190,3 +192,10 @@ That's all we're going to build for now, but feel free to add more! Here are som
 - What about wind chill? Apparently there are [standard formulas](https://en.wikipedia.org/wiki/Wind_chill) if "wind velocity" is known
 - Converting between temperatures is cool, but this system _could_ be generalized. What if it converted between weights, volumes, or distances?
 - Anything else! The opportunities are limitless!
+
+## Next Steps
+
+- [Marko for Experienced Developers](./experienced-developers.md)
+- [Nested Reactivity](../explanation/nested-reactivity.md)
+- [Publishing Components](../guide/publishing-components.md)
+- [Language Reference](../reference/language.md)

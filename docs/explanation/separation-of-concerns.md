@@ -75,7 +75,7 @@ When we separate by technology instead of by concern, we create several serious 
 
 1. **Broken Encapsulation**
 
-   Components cannot be truly self-contained when their definition is spread across multiple files. Moving or reusing a modal component requires careful coordination of HTML, CSS, and JavaScript files — and it's easy to miss dependencies.
+   Components cannot be truly self-contained when their definition is spread across multiple files. Moving or reusing a modal component requires careful coordination of HTML, CSS, and JavaScript files.
 
 1. **Maintenance Overhead**
 
@@ -142,7 +142,7 @@ This approach delivers measurable improvements:
 
    Styles and behavior are naturally scoped to their component. This eliminates the global scope pollution that plagues traditional approaches.
 
-Marko doesn't prescribe where the boundaries should be — it empowers you to define appropriate separations based on your application's needs. For example, if some functionality like the phone input in this form feels like it is becoming too large:
+Marko doesn't prescribe where the boundaries should be, it empowers you to define appropriate separations based on your application's needs. For example, if some functionality like the phone input in this form feels like it is becoming too large:
 
 ```marko
 <form>
@@ -195,9 +195,9 @@ At this point, you might have some concerns. Let's address the most common ones:
 
 ### "This Violates Single Responsibility Principle"
 
-The Single Responsibility Principle states that a class should have only one reason to change. A Marko component typically _does_ have a single responsibility — it implements one piece of user-facing functionality. The fact that it includes HTML, CSS, and JavaScript doesn't violate SRP any more than a class having both data and methods violates it.
+The Single Responsibility Principle states that a class should have only one reason to change. A Marko component typically _does_ have a single responsibility, which is that it implements one piece of user-facing functionality. The fact that it includes HTML, CSS, and JavaScript doesn't violate SRP any more than a class having both data and methods violates it.
 
-Consider: a modal component has one responsibility — being a modal. All the HTML structure, CSS styling, and JavaScript behavior serve that single purpose. Splitting these across files doesn't create better separation; it fragments the implementation of a single concern.
+A modal component has one responsibility— being a modal. All the HTML structure, CSS styling, and JavaScript behavior serve that single purpose. Splitting these across files doesn't create better separation; it fragments the implementation of a single concern.
 
 ### "What About Reusability?"
 
@@ -220,12 +220,12 @@ Marko approach:
 
 ### "Large Components Are Unwieldy"
 
-This is a valid concern, but the solution isn't to separate by technology — it's to break large components into smaller, more focused components. This is exactly the kind of logical separation that Marko encourages.
+This is a valid concern, but the solution isn't to separate by technology. It's to break large components into smaller, more focused components. This is exactly the kind of logical separation that Marko encourages.
 
 If your component is getting too large, extract logical sub-components:
 
 ```marko
-<!-- Instead of one giant user-profile.marko, break it down -->
+<!-- Instead of one giant user-profile.marko, break it down into multiple components -->
 <user-avatar user=input.user/>
 <user-details user=input.user/>
 <user-actions user=input.user/>
@@ -268,3 +268,8 @@ Marko's approach isn't about abandoning separation of concerns, it's about apply
 The result is code that's easier to understand, modify, and maintain. Components become true units of functionality rather than fragmented pieces scattered across multiple files. This approach respects the principle that **related things should be close together**, while still maintaining clear separations where they actually matter.
 
 The question isn't whether to separate concerns, but **which concerns to separate** and **where to draw the boundaries**. Marko's Tags API gives you the flexibility to make those decisions based on your application's actual needs, not on outdated assumptions about web technology separation.
+
+## Next Steps
+
+- [Nested Reactivity](./nested-reactivity.md)
+- [Optimizing Performance](./optimizing-performance.md)
