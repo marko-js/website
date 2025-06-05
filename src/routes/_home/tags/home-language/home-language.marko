@@ -47,17 +47,21 @@ section class=styles.section
           let timeout = setTimeout(
             () => {
               cursorVisible = true;
-              timeout = setTimeout(() => {
-                inc().classList.add(styles.active);
-                timeout = setTimeout(() => {
-                  inc().classList.remove(styles.active);
-                  count++;
-                }, 100);
-              }, 300);
+              timeout = setTimeout(
+                () => {
+                  inc().classList.add(styles.active);
+                  timeout = setTimeout(() => {
+                    inc().classList.remove(styles.active);
+                    count++;
+                  }, 100);
+                },
+                200 + 200 * Math.random(),
+              );
             },
             Math.random() > 0.66
               ? 0
-              : (setTimeout(() => (cursorVisible = false), 700), 3000),
+              : (setTimeout(() => (cursorVisible = false), 700),
+                2500 + 2500 * Math.random()),
           );
           $signal.onabort = () => {
             clearTimeout(timeout);
