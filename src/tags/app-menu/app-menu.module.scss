@@ -21,6 +21,10 @@ $fixed-controls-height: 6rem;
     visibility: visible;
     z-index: 2;
   }
+
+  .nav {
+    scrollbar-width: thin;
+  }
 }
 
 .nav {

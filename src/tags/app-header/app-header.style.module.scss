@@ -54,12 +54,9 @@ $pageLinksHeight: 3.5rem;
     left: 0;
     right: 0;
     padding: 0 var(--root-gap);
+    margin: 0;
     transform: none !important;
     background-color: var(--color-background);
-  }
-
-  @media (min-width: 48rem) and (min-height: 38rem) {
-    gap: 4rem;
   }
 
   @supports (animation-timeline: scroll()) {
@@ -118,11 +115,13 @@ $pageLinksHeight: 3.5rem;
   }
 
   @media (min-width: 48rem) and (min-height: 38rem) {
+    gap: 2rem;
     display: flex;
-    gap: 4rem;
+    margin-right: 2rem;
   }
 
   a {
+    padding: 1rem;
     text-decoration: none;
     &:hover {
       @media (pointer: fine) {
@@ -183,6 +182,12 @@ $pageLinksHeight: 3.5rem;
   flex-shrink: 1;
   @media (min-width: 64rem) and (min-height: 38rem) {
     width: 12.75rem;
+  }
+
+  :global(.show-mobile-menu) & {
+    // This thing doesn't actually scroll but we preserve the scrollbar width
+    overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 
   button {
