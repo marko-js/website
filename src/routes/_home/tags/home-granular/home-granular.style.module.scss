@@ -151,8 +151,9 @@
         linear-gradient(var(--color-background), var(--color-background)),
         linear-gradient(
           to right,
+          var(--section-color-alt),
           var(--section-color),
-          var(--section-color-alt)
+          transparent
         );
     }
   }
