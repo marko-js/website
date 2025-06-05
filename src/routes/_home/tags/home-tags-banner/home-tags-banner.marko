@@ -162,10 +162,11 @@ static const tags: { class: string, name: string; href: string }[] = [
 ];
 
 section.${styles.section}
-  .${styles.content}
-    for to=1
-      for|tag| of=tags
-        a.${tag.class} href=tag.href
-          -- <
-          span.${styles.name} -- ${tag.name}
-          -- >
+  .${styles.accelerator}
+    .${styles.marquee}
+      for to=1
+        for|tag| of=tags
+          a.${tag.class} href=tag.href
+            -- <
+            span.${styles.name} -- ${tag.name}
+            -- >
