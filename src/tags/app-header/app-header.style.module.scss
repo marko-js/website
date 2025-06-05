@@ -27,6 +27,8 @@ $pageLinksHeight: 3.5rem;
   align-items: center;
   font-weight: 500;
   background-color: var(--color-background);
+  margin: 0 calc(-1 * var(--root-gap));
+  padding: 0 var(--root-gap);
   --section-color: var(--color-foreground);
   &::before {
     content: "";
@@ -36,9 +38,7 @@ $pageLinksHeight: 3.5rem;
     right: 0;
     bottom: -2rem;
     height: 2rem;
-    margin-left: calc(-1 * var(--root-gap));
-    margin-right: calc(-1 * var(--root-gap));
-    background: linear-gradient(to bottom, var(--color-background), transparent);
+    background: linear-gradient(to bottom, var(--color-background) 70%, transparent);
   }
 
   :global(.show-mobile-menu) & {
