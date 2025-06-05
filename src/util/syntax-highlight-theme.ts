@@ -3,15 +3,15 @@ import type { ThemeInput } from "shiki";
 export const markoDark = {
   name: "marko-dark",
   colors: {
-    "editor.foreground": "#E8E9F3",
-    "editor.background": "#202124",
+    "editor.foreground": "#FFF",
+    "editor.background": "transparent",
   },
   settings: [
     {
       scope: "editor.foreground",
       settings: {
-        foreground: "#E8E9F3",
-        background: "#1E1E2F",
+        foreground: "#FFF",
+        background: "transparent",
       },
     },
     {
@@ -254,18 +254,18 @@ export const markoDark = {
 export const markoLight = {
   name: "marko-light",
   colors: {
-    "editor.foreground": "#2A2A3F",
-    "editor.background": "#FFFFFF",
+    "editor.foreground": "#202124",
+    "editor.background": "transparent",
     "editor.lineHighlightBorder": "#f3f3f7",
     "editor.selectionBackground": "#D2E2FF",
-    "editorCursor.foreground": "#2A2A3F",
+    "editorCursor.foreground": "#202124",
   },
   settings: [
     {
       scope: "editor.foreground",
       settings: {
-        foreground: "#2A2A3F",
-        background: "#FFFFFF",
+        foreground: "#202124",
+        background: "transparent",
       },
     },
     {
@@ -300,7 +300,7 @@ export const markoLight = {
       name: "Variable",
       scope: "variable",
       settings: {
-        foreground: "#2A2A3F",
+        foreground: "#202124",
       },
     },
     {
@@ -314,7 +314,7 @@ export const markoLight = {
       name: "Assignment",
       scope: "keyword.operator.assignment",
       settings: {
-        foreground: "#2A2A3F",
+        foreground: "#202124",
       },
     },
     {
