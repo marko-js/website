@@ -29,107 +29,108 @@ If you prefer to create your own application structure, you can set up your proj
 
 1. **Create your project directory**
 
-    Create an empty directory with your project's name and navigate into it:
+   Create an empty directory with your project's name and navigate into it:
 
-    ```bash
-    mkdir my-marko-application
-    cd my-marko-application
-    ```
+   ```bash
+   mkdir my-marko-application
+   cd my-marko-application
+   ```
 
-    Once inside the directory, initialize your `package.json` file, which is used to manage your project's dependencies:
+   Once inside the directory, initialize your `package.json` file, which is used to manage your project's dependencies:
 
-    ```bash
-    npm init --yes
-    ```
+   ```bash
+   npm init --yes
+   ```
 
 1. **Install Marko**
 
-    Lets install the dependencies required for Marko.
+   Lets install the dependencies required for Marko.
 
-    First, install `marko` 6 as your dependency.
+   First, install `marko` 6 as your dependency.
 
-    ```bash
-    npm install marko@next
-    ```
+   ```bash
+   npm install marko@next
+   ```
 
-    Next, install Vite and the Marko plugin as development dependencies using the npm `-D` flag:
+   Next, install Vite and the Marko plugin as development dependencies using the npm `-D` flag:
 
-    ```bash
-    npm install -D vite @marko/vite
-    ```
+   ```bash
+   npm install -D vite @marko/vite
+   ```
 
 1. **Create the `vite.config.ts` file**
 
-    Create `vite.config.ts` file to export the [Vite configuration](https://vite.dev/config/) and add the `marko()` plugin to the `plugins` list.
+   Create `vite.config.ts` file to export the [Vite configuration](https://vite.dev/config/) and add the `marko()` plugin to the `plugins` list.
 
-    ```typescript
-    import { defineConfig } from "vite";
-    import marko from "@marko/vite";
+   ```typescript
+   import { defineConfig } from "vite";
+   import marko from "@marko/vite";
 
-    export default defineConfig({
-      plugins: [marko()],
-    });
-    ```
+   export default defineConfig({
+     plugins: [marko()],
+   });
+   ```
 
 1. **Create your first Marko page**
 
-    In your text editor, create a `src/routes/index.marko` file. This will be your first Marko page of the project. Copy and paste the following content into the new file:
+   In your text editor, create a `src/routes/index.marko` file. This will be your first Marko page of the project. Copy and paste the following content into the new file:
 
-    ```marko
-    <html lang="en">
-        <body>
-            <h1>Hello Marko!</h1>
-        </body>
-    </html>
-    ```
+   ```marko
+   <html lang="en">
+       <body>
+           <h1>Hello Marko!</h1>
+       </body>
+   </html>
+   ```
 
 1. **Add a server**
 
-    By default, the `marko()` plugin requires the use of [Vite Server Side Rendering (SSR) mode](https://vite.dev/guide/ssr.html#server-side-rendering-ssr) (this can be disabled with the Marko plugin's `linked` option). Therefore, you need to create a server file to start your application. This guide will use [`express`](https://expressjs.com/).
+   By default, the `marko()` plugin requires the use of [Vite Server Side Rendering (SSR) mode](https://vite.dev/guide/ssr.html#server-side-rendering-ssr) (this can be disabled with the Marko plugin's `linked` option). Therefore, you need to create a server file to start your application. This guide will use [`express`](https://expressjs.com/).
 
-    First, install `express`:
+   First, install `express`:
 
-    ```bash
-    npm install express
-    ```
+   ```bash
+   npm install express
+   ```
 
-    Now, create the server logic inside an `index.js` file. This code sets up an Express server and integrates with Vite for handling server-side rendering of a Marko template. For simplicity, this setup is intended for development environments only. For more examples, refer to the [Marko JS examples repository](https://github.com/marko-js/examples/tree/master/examples).
+   Now, create the server logic inside an `index.js` file. This code sets up an Express server and integrates with Vite for handling server-side rendering of a Marko template. For simplicity, this setup is intended for development environments only. For more examples, refer to the [Marko JS examples repository](https://github.com/marko-js/examples/tree/master/examples).
 
-    ```javascript
-    import express from "express";
-    import { createServer } from "vite";
+   ```javascript
+   import express from "express";
+   import { createServer } from "vite";
 
-    const app = express();
+   const app = express();
 
-    const vite = await createServer({
-      server: {
-        middlewareMode: true,
-      },
-      appType: "custom",
-    });
+   const vite = await createServer({
+     server: {
+       middlewareMode: true,
+     },
+     appType: "custom",
+   });
 
-    app.use(vite.middlewares);
+   app.use(vite.middlewares);
 
-    app.get("/", async (req, res) => {
-      const template = (await vite.ssrLoadModule("./src/routes/index.marko?marko-server-entry"))
-        .default;
-      const result = template.render();
-      res.header("Content-Type", "text/html");
-      result.pipe(res);
-    });
+   app.get("/", async (req, res) => {
+     const template = (
+       await vite.ssrLoadModule("./src/routes/index.marko?marko-server-entry")
+     ).default;
+     const result = template.render();
+     res.header("Content-Type", "text/html");
+     result.pipe(res);
+   });
 
-    app.listen(3000)
-    ```
+   app.listen(3000);
+   ```
 
-    Note that `?marko-server-entry` is used to indicate the server code's entry point to the Vite plugin.
+   Note that `?marko-server-entry` is used to indicate the server code's entry point to the Vite plugin.
 
 1. **Start the application**
 
-    You can now start the application using the command below and access http://localhost:3000 to see the preview of your code while you build your app!
+   You can now start the application using the command below and access http://localhost:3000 to see the preview of your code while you build your app!
 
-    ```bash
-    node index.js
-    ```
+   ```bash
+   node index.js
+   ```
 
 ## Set up TypeScript
 

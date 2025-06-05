@@ -1,5 +1,8 @@
 # HTML Streaming
 
+> [!TLDR]
+> HTML streaming sends content to browsers incrementally as it's generated, rather than waiting for the complete page. This improves both perceived and real performance by showing content faster, enabling earlier asset downloads, and reducing server memory usage. Marko has supported streaming since 2014 and provides `<await>` and `<try>` tags for declarative async rendering with built-in error handling and loading states.
+
 Marko provides a powerful, yet simple, declarative approach to HTML streaming via `<await>` and `<try>` to improve perceived and real performance of your pages.
 
 Streaming is the process of transmitting data incrementally as it’s generated. On the web, **HTML streaming** means sending HTML to the browser chunk-by-chunk, as soon as it's ready, rather than waiting until the entire document is completed.
