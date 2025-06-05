@@ -53,7 +53,12 @@ static function setupStickyScroll() {
     () => {
       const y = window.scrollY;
       const up = y < prevY;
-      if (prevY === (prevY = y) || prevUp === (prevUp = up)) return;
+      if (prevY === (prevY = y)) return;
+      if (y > 0) {
+        if (prevUp === (prevUp = up)) return;
+      } else {
+        stickTop = 0;
+      }
 
       const stickSize = header.offsetHeight;
       const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - footer.offsetHeight);
@@ -61,6 +66,7 @@ static function setupStickyScroll() {
         ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
         : Math.min(stickMax, stickTop, y);
       html.style.setProperty("--stick-top", `${stickTop}px`);
+      html.classList.toggle("scrolled", stickTop > 0);
     },
     { passive: true },
   );

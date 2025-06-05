@@ -9,7 +9,16 @@
   }
 }
 
-.content {
+.accelerator {
+  transform: translateX(0);
+  transition: transform 0.3s ease-out;
+
+  &:hover {
+    transform: translateX(-10px);
+  }
+}
+
+.marquee {
   display: flex;
   width: fit-content;
   font-size: 1.7rem;
