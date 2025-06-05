@@ -1,5 +1,4 @@
 import styles from "./home-language.style.module.scss";
-
 static const EXAMPLE_HTML = `// HTML + JavaScript = 💜
 <let/count=0>
 <button onClick() { count++ }>
@@ -12,17 +11,66 @@ button onClick() { count++ }
   -- Clicked \${count} times
 `;
 
-section.${styles.section}
-  .${styles.content}
+section class=styles.section
+  div class=styles.content
     h2
-      span.${styles.headingText} -- HTML Re&#8209;imagined
-    p -- Marko is HTML re&#8209;imagined as a language for building dynamic and reactive user interfaces.
-    p -- Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
-    a.${styles.cta} href="/docs/reference/language" -- Learn More
+      span class=styles.headingText -- HTML Re&#8209;imagined
+    p
+      --
+      Marko is HTML re&#8209;imagined as a language for building dynamic and reactive user interfaces.
+      --
+    p
+      --
+      Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
+      --
+    a href="/docs/reference/language" class=styles.cta -- Learn More
 
-  figure.${styles.example}
+  figure class=styles.example
     app-code-block lang="marko" text=EXAMPLE_HTML concise=EXAMPLE_CONCISE
-    .${styles.exampleOutput}
-      let/count=53
-      button onClick() { count++ } -- Clicked ${count} times
+    div class=styles.exampleOutput
+      let/count=0
+      button/inc onClick() {
+        count++;
+      }
+        -- Clicked ${count} times
 
+      let/autoclick=true
+      if=autoclick
+        let/cursorVisible=false
+        img [
+          src="./pointinghand.svg"
+          class=[styles.cursor, cursorVisible && styles.visible]
+        ]
+        html-comment
+        script
+          --
+          let timeout = setTimeout(
+            () => {
+              cursorVisible = true;
+              timeout = setTimeout(() => {
+                inc().classList.add(styles.active);
+                timeout = setTimeout(() => {
+                  inc().classList.remove(styles.active);
+                  count++;
+                }, 100);
+              }, 300);
+            },
+            Math.random() > 0.66
+              ? 0
+              : (setTimeout(() => (cursorVisible = false), 700), 3000),
+          );
+          $signal.onabort = () => {
+            clearTimeout(timeout);
+            inc().classList.remove(styles.active);
+          };
+          --
+      script
+        --
+        inc().addEventListener("click", () => {
+          autoclick = false;
+        });
+        const isReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+        const update = () => (autoclick = !isReducedMotion.matches);
+        isReducedMotion.addEventListener("change", update);
+        update();
+        --

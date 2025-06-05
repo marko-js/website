@@ -171,6 +171,8 @@
   flex-direction: column;
   place-items: center;
   font-size: max(0.8rem, min(1.5rem, 3.7dvw));
+  margin-bottom: -4.25rem;
+  position: relative;
 
   > button {
     all: revert;
@@ -178,5 +180,26 @@
     padding: 0.5rem;
     width: 100%;
     max-width: 10rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &:active, &.active {
+      transform: translateY(2px) scale(0.99);
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .cursor {
+    position: absolute;
+    top:10px;
+    left:50%;
+    height:40px;
+    transform: translate(30px, 30px);
+    opacity: 0;
+    transition: transform 0.2s ease-in, opacity 0.1s 0.1s ease-in;
+    &.visible {
+      transform: translate(0, 0);
+      opacity: 1;
+      transition: transform 0.2s ease-out, opacity 0.1s ease-out;
+    }
   }
 }
