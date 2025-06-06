@@ -36,6 +36,8 @@
     "deploy": "marko-run build && gh-pages --cname next.markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\""
   },
   "devDependencies": {
+    "@fontsource/ubuntu": "^5.2.5",
+    "@fontsource/ubuntu-mono": "^5.2.5",
     "@marko/type-check": "^1.3.21",
     "@types/node": "^22.15.19",
     "autoprefixer": "^10.4.21",

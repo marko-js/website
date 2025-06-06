@@ -5,16 +5,13 @@ html lang="en"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
     meta name="description" content="The Marko programming language"
     title
-      if=hasPageTitle($global.meta) -- ${$global.meta.pageTitle} | 
+      if=typeof ($global.meta as any).pageTitle === "string"
+        -- ${($global.meta as any).pageTitle} | 
       -- Marko
 
     link rel="icon" sizes="32x32" href="/fav.png"
     link rel="icon" type="image/svg+xml" href="/fav.svg"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
-    link rel="preconnect" href="https://fonts.googleapis.com"
-    link rel="preconnect" href="https://fonts.gstatic.com" crossorigin
-    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
-    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap"
 
   body
     #root
@@ -23,7 +20,7 @@ html lang="en"
         app-menu
         ${input.content}
 
-    if=showFooter($global.meta)
+    if=!($global.meta as any).hideFooter
       app-footer
 
     script --
@@ -46,14 +43,3 @@ html lang="en"
         { signal: $signal },
       );
 
-static function hasPageTitle(
-  meta: unknown,
-): meta is { pageTitle: string } {
-  return typeof (meta as any).pageTitle === "string";
-}
-
-static function showFooter(
-  meta: unknown,
-): meta is { hideFooter: boolean } {
-  return !(meta as any).hideFooter;
-}
