@@ -27,7 +27,7 @@ header#header
 
 script --
   docsearch({
-    container: `#${styles.docsearch}`,
+    container: document.getElementById(styles.docsearch)!,
     indexName: "markojs",
     placeholder: "",
     appId: "GB0QQV5RQM",
