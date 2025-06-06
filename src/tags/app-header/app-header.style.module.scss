@@ -1,29 +1,12 @@
-$top: var(--stick-top);
-$size: var(--stick-size);
-$scale: var(--stick-scale);
-$pageLinksHeight: 3.5rem;
+@use "app/styles/sticky" as sticky;
 
-:root {
-  --stick-top: 0px;
-  --stick-size: calc(36px + 4rem);
-  --stick-scale: calc(1 - tan(atan2(#{$size}, 1px)) / tan(atan2(100dvh, 1px)));
-
-  @media (min-width: 48rem) and (min-height: 38rem) {
-    --stick-size: calc(48px + 4rem);
-  }
-}
-
-@mixin scroll-animate($name) {
-  animation: $name linear both;
-  animation-timeline: scroll(root);
-  animation-range: $top calc($top + $size);
-}
+@include sticky.init;
 
 :global(#header) {
   z-index: 99;
   position: relative;
   display: flex;
-  height: $size;
+  height: sticky.$size;
   align-items: center;
   font-weight: 500;
   background-color: var(--color-background);
@@ -59,13 +42,13 @@ $pageLinksHeight: 3.5rem;
     background-color: var(--color-background);
   }
 
-  @supports (animation-timeline: scroll()) {
+  @include sticky.supported {
     position: sticky;
     top: 0;
     transform: translateY(0);
     will-change: transform;
-    @include scroll-animate(sticky);
-    @keyframes sticky {
+    @include sticky.animate(hide);
+    @keyframes hide {
       to {
         transform: translateY(-100%);
       }
@@ -89,8 +72,8 @@ $pageLinksHeight: 3.5rem;
   :global(.show-mobile-menu) & {
     position: absolute;
     display: flex;
-    height: $pageLinksHeight;
-    top: $size;
+    height: sticky.$pageLinksHeight;
+    top: sticky.$size;
     left: 0;
     right: 0;
     padding: 0 var(root-gap);

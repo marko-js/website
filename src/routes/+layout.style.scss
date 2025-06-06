@@ -1,73 +1,10 @@
-@use "sass:color" as color;
-@use "app/tags/app-header/app-header.style.module.scss" as header;
-
-$black: #202124;
-$white: #ffffff;
-$colors: (
-  ("red", #cc0067, #ff5467),
-  ("yellow", #fc5c00, #ffd100),
-  ("green", #00b068, #7ced64),
-  ("blue", #0073d8, #00cffb),
-  ("gray", #6e6e6e, #cccccc)
-);
+@use "app/styles/colors" as colors;
+@include colors.init;
 
 :root {
-  color-scheme: light dark;
   --root-min-gap: 1rem;
   --root-max-width: 80rem;
   --root-gap: calc(max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2));
-  --color-black: #{$black};
-  --color-white: #{$white};
-  --color-foreground: var(--color-black);
-  --color-background: var(--color-white);
-  --color-selection-foreground: var(--color-red);
-  --color-selection-background: var(--color-red-alt);
-
-  @each $name, $dark, $light in $colors {
-    $tint-percent: 20%;
-    $shade-percent: 20%;
-    --color-#{$name}-dark: #{$dark};
-    --color-#{$name}-light: #{$light};
-    --color-#{$name}-dark-tint: #{color.mix(
-        $dark,
-        $white,
-        $weight: $tint-percent
-      )};
-    --color-#{$name}-dark-shade: #{color.mix(
-        $dark,
-        $black,
-        $weight: $shade-percent
-      )};
-    --color-#{$name}-light-tint: #{color.mix(
-        $light,
-        $white,
-        $weight: $tint-percent
-      )};
-    --color-#{$name}-light-shade: #{color.mix(
-        $light,
-        $black,
-        $weight: $shade-percent
-      )};
-    --color-#{$name}: var(--color-#{$name}-dark);
-    --color-#{$name}-alt: var(--color-#{$name}-light);
-    --color-#{$name}-dim: var(--color-#{$name}-dark-tint);
-    --color-#{$name}-dim-alt: var(--color-#{$name}-light-shade);
-    --color-#{$name}-alt-dim: var(--color-#{$name}-light-tint);
-    --color-#{$name}-alt-dim-alt: var(--color-#{$name}-dark-shade);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    --color-foreground: var(--color-white);
-    --color-background: var(--color-black);
-    @each $name, $_ in $colors {
-      --color-#{$name}: var(--color-#{$name}-light);
-      --color-#{$name}-alt: var(--color-#{$name}-dark);
-      --color-#{$name}-dim: var(--color-#{$name}-light-shade);
-      --color-#{$name}-dim-alt: var(--color-#{$name}-dark-tint);
-      --color-#{$name}-alt-dim: var(--color-#{$name}-dark-shade);
-      --color-#{$name}-alt-dim-alt: var(--color-#{$name}-light-tint);
-    }
-  }
 }
 
 * {

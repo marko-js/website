@@ -1,4 +1,4 @@
-@use "app/styles/section-color.scss" as section-color;
+@use "app/styles/colors" as colors;
 
 .section {
   display: flex;
@@ -13,7 +13,7 @@
   border-radius: 2rem;
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  @include section-color.set("blue");
+  @include colors.section("blue");
 
   @media (prefers-color-scheme: light) {
     background-color: var(--section-color-dim);

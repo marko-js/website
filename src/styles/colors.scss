@@ -1,0 +1,99 @@
+@use "sass:list" as list;
+@use "sass:color" as color;
+
+$black: #202124;
+$white: #ffffff;
+$colors: (
+  ("red", #cc0067, #ff5467),
+  ("green", #00b068, #7ced64),
+  ("blue", #0073d8, #00cffb),
+  ("yellow", #fc5c00, #ffd100),
+  ("gray", #6e6e6e, #cccccc)
+);
+
+@mixin init {
+  :root {
+    color-scheme: light dark;
+    --color-black: #{$black};
+    --color-white: #{$white};
+    --color-foreground: var(--color-black);
+    --color-background: var(--color-white);
+    --color-selection-foreground: var(--color-red);
+    --color-selection-background: var(--color-red-alt);
+
+    @each $name, $dark, $light in $colors {
+      $tint-percent: 20%;
+      $shade-percent: 20%;
+      --color-#{$name}-dark: #{$dark};
+      --color-#{$name}-light: #{$light};
+      --color-#{$name}-dark-tint: #{color.mix(
+          $dark,
+          $white,
+          $weight: $tint-percent
+        )};
+      --color-#{$name}-dark-shade: #{color.mix(
+          $dark,
+          $black,
+          $weight: $shade-percent
+        )};
+      --color-#{$name}-light-tint: #{color.mix(
+          $light,
+          $white,
+          $weight: $tint-percent
+        )};
+      --color-#{$name}-light-shade: #{color.mix(
+          $light,
+          $black,
+          $weight: $shade-percent
+        )};
+      --color-#{$name}: var(--color-#{$name}-dark);
+      --color-#{$name}-alt: var(--color-#{$name}-light);
+      --color-#{$name}-dim: var(--color-#{$name}-dark-tint);
+      --color-#{$name}-dim-alt: var(--color-#{$name}-light-shade);
+      --color-#{$name}-alt-dim: var(--color-#{$name}-light-tint);
+      --color-#{$name}-alt-dim-alt: var(--color-#{$name}-dark-shade);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --color-foreground: var(--color-white);
+      --color-background: var(--color-black);
+      @each $name, $_ in $colors {
+        --color-#{$name}: var(--color-#{$name}-light);
+        --color-#{$name}-alt: var(--color-#{$name}-dark);
+        --color-#{$name}-dim: var(--color-#{$name}-light-shade);
+        --color-#{$name}-dim-alt: var(--color-#{$name}-dark-tint);
+        --color-#{$name}-alt-dim: var(--color-#{$name}-dark-shade);
+        --color-#{$name}-alt-dim-alt: var(--color-#{$name}-light-tint);
+      }
+    }
+  }
+}
+
+@mixin section($color, $dark: false) {
+  --section-color-dark: var(--color-#{$color}-dark);
+  --section-color-light: var(--color-#{$color}-light);
+
+  @if $dark and $color != "blue" and $color != "gray" {
+    --section-color: var(--color-#{$color}-dark);
+    --section-color-alt: var(--color-#{$color}-light);
+
+    --section-color-dim: var(--color-#{$color}-dark-tint);
+    --section-color-dim-alt: var(--color-#{$color}-dark-shade);
+    --section-color-alt-dim: var(--color-#{$color}-light-tint);
+    --section-color-alt-dim-alt: var(--color-#{$color}-light-shade);
+
+    @media (prefers-color-scheme: dark) {
+      --section-color-dim: var(--color-#{$color}-dark-shade);
+      --section-color-dim-alt: var(--color-#{$color}-dark-tint);
+      --section-color-alt-dim: var(--color-#{$color}-light-shade);
+      --section-color-alt-dim-alt: var(--color-#{$color}-light-tint);
+    }
+  } @else {
+    --section-color: var(--color-#{$color});
+    --section-color-alt: var(--color-#{$color}-alt);
+    --section-color-dim: var(--color-#{$color}-dim);
+    --section-color-dim-alt: var(--color-#{$color}-dim-alt);
+    --section-color-alt-dim: var(--color-#{$color}-alt-dim);
+    --section-color-alt-dim-alt: var(--color-#{$color}-alt-dim-alt);
+  }
+}
