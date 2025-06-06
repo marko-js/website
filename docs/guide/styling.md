@@ -128,7 +128,7 @@ import "./fancy.css";
 
 ```marko
 /* index.marko */
-import styles from "./something.module.css";
+import * as styles from "./something.module.css";
 <div class=styles.fancy/>
 ```
 
