@@ -4,5 +4,7 @@ dist
 .DS_Store
 .vscode
 .env
+*.scss.d.ts
+*.css.d.ts
 
 **/_compiled-docs

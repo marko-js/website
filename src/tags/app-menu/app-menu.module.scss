@@ -1,4 +1,4 @@
-@use "app/tags/app-header/app-header.style.module.scss" as header;
+@use "app/styles/sticky" as sticky;
 
 $fixed-controls-height: 6rem;
 
@@ -84,7 +84,7 @@ $fixed-controls-height: 6rem;
     display: block;
     left: 0;
     right: 0;
-    top: calc(header.$size + header.$pageLinksHeight);
+    top: calc(sticky.$size + sticky.$pageLinksHeight);
     bottom: $fixed-controls-height;
     padding: 1rem var(--root-gap);
     background-color: var(--color-background);
@@ -125,26 +125,26 @@ $fixed-controls-height: 6rem;
   }
 }
 
-@supports (animation-timeline: scroll()) {
+@include sticky.supported {
   .menu {
-    margin-top: calc(-1 * header.$size);
+    margin-top: calc(-1 * sticky.$size);
   }
 
   .nav {
     transform-origin: top left;
-    transform: translateY(header.$size) scaleY(header.$scale);
+    transform: translateY(sticky.$size) scaleY(sticky.$scale);
     will-change: transform;
-    @include header.scroll-animate(sticky);
+    @include sticky.animate(scale-nav);
 
     & > ul {
       transform-origin: top left;
-      transform: scaleY(calc(1 / header.$scale));
+      transform: scaleY(calc(1 / sticky.$scale));
       will-change: transform;
-      @include header.scroll-animate(sticky);
+      @include sticky.animate(scale-nav);
     }
   }
 
-  @keyframes sticky {
+  @keyframes scale-nav {
     to {
       transform: scaleY(1) translateY(0);
     }

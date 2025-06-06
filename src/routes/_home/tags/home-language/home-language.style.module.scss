@@ -1,4 +1,4 @@
-@use "app/styles/section-color.scss" as section-color;
+@use "app/styles/colors" as colors;
 
 .section {
   display: flex;
@@ -16,7 +16,7 @@
   background-image:
     linear-gradient(var(--color-background), var(--color-background)),
     linear-gradient(0, var(--section-color), var(--section-color-alt));
-  @include section-color.set("red");
+  @include colors.section("red");
 
   @media (min-width: 48rem) {
     padding: 3rem;

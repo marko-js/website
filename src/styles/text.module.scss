@@ -1,25 +1,25 @@
-@use "app/routes/+layout.style.scss" as layout;
+@use "app/styles/colors" as colors;
 
-@each $color, $_dark, $_light in layout.$colors {
-  .#{$color} {
-    color: var(--color-#{$color});
+@each $name, $_ in colors.$colors {
+  .#{$name} {
+    color: var(--color-#{$name});
   }
-  .#{$color}Alt {
-    color: var(--color-#{$color}-alt);
+  .#{$name}Alt {
+    color: var(--color-#{$name}-alt);
   }
-  .#{$color}Light {
-    color: var(--color-#{$color}-light);
+  .#{$name}Light {
+    color: var(--color-#{$name}-light);
   }
-  .#{$color}Dark {
-    color: var(--color-#{$color}-dark);
+  .#{$name}Dark {
+    color: var(--color-#{$name}-dark);
   }
-  .#{$color}Gradient {
+  .#{$name}Gradient {
     background-clip: text;
     color: transparent;
     background-image: linear-gradient(
       to right,
-      var(--color-#{$color}-dark),
-      var(--color-#{$color}-light)
+      var(--color-#{$name}-dark),
+      var(--color-#{$name}-light)
     );
   }
 }
