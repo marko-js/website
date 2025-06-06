@@ -1,4 +1,4 @@
-import styles from "./home-language.style.module.scss";
+import * as styles from "./home-language.style.module.scss";
 static const EXAMPLE_HTML = `// HTML + JavaScript = 💜
 <let/count=0>
 <button onClick() { count++ }>
@@ -38,7 +38,7 @@ section class=styles.section
       if=autoclick
         let/cursorVisible=false
         img [
-          src="./pointinghand.svg"
+          src="./pointinghand.svg?no-inline"
           class=[styles.cursor, cursorVisible && styles.visible]
         ]
         html-comment

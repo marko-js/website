@@ -1,7 +1,5 @@
-client import "@docsearch/css";
-client import docsearch from "@docsearch/js";
-import footerStyles from "../app-footer/app-footer.style.module.scss";
-import styles from "./app-header.style.module.scss";
+import * as footerStyles from "../app-footer/app-footer.style.module.scss";
+import * as styles from "./app-header.style.module.scss";
 
 let/mobileMenu=false
 script -- document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
@@ -26,21 +24,29 @@ header#header
     button disabled aria-hidden="true"
 
 script --
-  docsearch({
-    container: document.getElementById(styles.docsearch)!,
-    indexName: "markojs",
-    placeholder: "",
-    appId: "GB0QQV5RQM",
-    apiKey: "82f1b630f11e1afa4767f051af953a28",
+  onLoad(async () => {
+    if ("ScrollTimeline" in window) {
+      setupStickyScroll();
+    }
+
+    const docsearch = (await import("./docsearch")).default;
+    docsearch({
+      container: document.getElementById(styles.docsearch)!,
+      indexName: "markojs",
+      placeholder: "",
+      appId: "GB0QQV5RQM",
+      apiKey: "82f1b630f11e1afa4767f051af953a28",
+    });
   });
 
-  if ("ScrollTimeline" in window) {
-    if (document.readyState === "interactive") {
-      setupStickyScroll();
-    } else {
-      document.addEventListener("DOMContentLoaded", setupStickyScroll);
-    }
+
+static function onLoad(cb: () => void) {
+  if (document.readyState === "interactive") {
+    cb();
+  } else {
+    document.addEventListener("DOMContentLoaded", cb);
   }
+}
 
 static function setupStickyScroll() {
   const vp = visualViewport!;
