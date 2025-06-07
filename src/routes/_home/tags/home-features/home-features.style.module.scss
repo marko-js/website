@@ -31,13 +31,17 @@
     font-size: 2rem;
     font-weight: 400;
     margin: 0.5rem 0;
+    font-size: max(1.5rem, min(2rem, 7dvw));
   }
 
   p {
-    text-wrap: pretty;
+    text-wrap: balance;
     font-size: max(0.75rem, min(1rem, 3.5dvw));
     max-width: 28ch;
     line-height: 1.5;
+    @media (min-width: 64rem) {
+      text-wrap: pretty;
+    }
   }
 }
 
