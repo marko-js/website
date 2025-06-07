@@ -114,33 +114,29 @@
 }
 
 .example {
-  display: block;
+  display: flex;
   position: relative;
   border-radius: 2rem;
-  background-color: var(--color-foreground);
+  background-color: var(--color-black);
   margin-bottom: -6.5rem;
   align-self: flex-end;
   width: 100%;
   padding: 2rem 1.5rem;
-  gap: 2rem;
   max-width: 30rem;
   &::before {
     position: absolute;
     inset: 0;
     z-index: -1;
-    transform-origin: bottom;
-    transform: scale(0.9, 1);
+    transform-origin: center;
+    transform: scale(1, 0.9);
     content: "";
     background-color: var(--section-color-dim-alt);
     filter: blur(50px);
     opacity: 0.4;
-
-    @media (prefers-color-scheme: dark) {
-      transform-origin: center;
-      transform: scale(1, 0.9);
-    }
   }
-
+  @media (prefers-color-scheme: dark) {
+   border: 3px solid var(--section-color-dark);
+  }
   @media (min-width: 32rem) {
     padding: 3rem;
   }
@@ -181,7 +177,8 @@
     max-width: 10rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    &:active, &.active {
+    &:active,
+    &.active {
       transform: translateY(2px) scale(0.99);
       box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
     }
@@ -189,17 +186,21 @@
 
   .cursor {
     position: absolute;
-    top:10px;
-    left:50%;
-    height:35px;
+    top: 10px;
+    left: 50%;
+    height: 35px;
     transform: translate(30px, 30px);
     opacity: 0;
-    transition: transform 0.2s ease-in, opacity 0.1s 0.1s ease-in;
+    transition:
+      transform 0.2s ease-in,
+      opacity 0.1s 0.1s ease-in;
     pointer-events: none;
     &.visible {
       transform: translate(0, 0);
       opacity: 1;
-      transition: transform 0.2s ease-out, opacity 0.1s ease-out;
+      transition:
+        transform 0.2s ease-out,
+        opacity 0.1s ease-out;
     }
   }
 }
