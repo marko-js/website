@@ -3,6 +3,7 @@ server import { markoDark, markoLight } from "app/util/syntax-highlight-theme"
 export interface Input {
   lang: string;
   text: string;
+  theme?: "light" | "dark" | "reverse";
   concise?: string;
   filename?: string;
 }
@@ -13,6 +14,7 @@ server const highlighter = await createHighlighter({
 
 const/highlightedText=highlighter.codeToHtml(input.text, {
   lang: input.lang,
+  defaultColor: false,
   themes: {
     light: "marko-light",
     dark: "marko-dark"
@@ -22,13 +24,14 @@ const/highlightedText=highlighter.codeToHtml(input.text, {
 const/highlightedConcise=input.concise &&
   highlighter.codeToHtml(input.concise, {
     lang: input.lang,
+    defaultColor: false,
     themes: {
       light: "marko-light",
       dark: "marko-dark"
     }
   })
 
-.code-block
+.code-block.${input.theme && `code-block--${input.theme}`}
   if=input.filename
     .filename -- ${input.filename}
   if=input.concise

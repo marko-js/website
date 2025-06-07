@@ -116,12 +116,11 @@
   display: block;
   position: relative;
   border-radius: 2rem;
-  background-color: var(--color-background);
+  background-color: var(--color-foreground);
   margin-bottom: -6.5rem;
-  border: 3px solid var(--color-gray-light);
   align-self: flex-end;
   width: 100%;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   gap: 2rem;
   max-width: 30rem;
   &::before {
