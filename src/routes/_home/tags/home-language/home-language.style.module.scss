@@ -10,7 +10,7 @@
   background-clip: padding-box, border-box;
   padding: 2rem;
   gap: 3rem;
-  margin-bottom: 4.6rem;
+  margin-bottom: 5.4rem;
   margin-left: var(--root-bleed);
   margin-right: var(--root-bleed);
   background-image:
@@ -20,6 +20,7 @@
 
   @media (min-width: 48rem) {
     padding: 3rem;
+    margin-bottom: 4.6rem;
   }
   @media (min-width: 64rem) {
     flex-direction: row;
