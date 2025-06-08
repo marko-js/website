@@ -181,6 +181,8 @@
     margin: 0;
     border-radius: 1.25rem;
     align-items: center;
+    background-color: transparent;
+    border: none;
     color: var(--color-foreground);
     -webkit-tap-highlight-color: transparent;
     @media (pointer: fine) {
