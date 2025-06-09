@@ -201,7 +201,7 @@ main {
     border: none;
     font-size: max(0.8rem, min(4dvw, 1.5rem));
     background-color: var(--section-color-dim);
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     padding: 1.5rem;
     width: 100%;
     max-width: 100% !important;
@@ -211,7 +211,6 @@ main {
     position: relative;
     margin: 2rem 0;
     border: 1px solid var(--section-color);
-    background-color: color-mix(in srgb, var(--section-color-dim) 20%, var(--color-background));
     background-image: linear-gradient(to bottom left, color-mix(in srgb, var(--section-color-dim) 24%, var(--color-background)), color-mix(in srgb, var(--section-color-dim) 8%, var(--color-background)));
     padding: 1rem;
     padding-bottom: 0;

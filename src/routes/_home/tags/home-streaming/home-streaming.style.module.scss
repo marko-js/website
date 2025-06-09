@@ -39,7 +39,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  margin-right: var(--root-bleed);
+  max-width: 35rem;
   @media (min-width: 64rem) {
     order: 1;
   }
@@ -126,8 +126,8 @@
   }
   @media (min-width: 64rem) {
     margin-bottom: 0;
-    margin-right: 3rem;
-    padding: 5rem;
+    margin-right: 3.75rem;
+    padding: 4rem;
     padding-top: 6rem;
     padding-bottom: 5rem;
     margin-left: var(--root-bleed);
@@ -141,7 +141,6 @@
         clip-path: polygon(0 0, 4rem 0, 0 4rem, 0 100%, 100% 100%, 100% 0);
       }
     }
-
     @media (prefers-color-scheme: dark) {
       border: 3px solid transparent;
       background-origin: border-box;
@@ -157,6 +156,10 @@
           var(--section-color)
         );
     }
+  }
+  @media (min-width: 90rem) {
+    padding-left: 5rem;
+    padding-right: 5rem;
   }
 
   > :first-child {

@@ -40,7 +40,7 @@
   display: flex;
   flex-direction: column;
   order: 0;
-  margin-left: var(--root-bleed);
+  max-width: 35rem;
 
   @media (min-width: 90rem) {
     margin-left: 0;
@@ -125,10 +125,10 @@
   }
   @media (min-width: 64rem) {
     margin-bottom: 0;
-    padding: 5rem;
+    padding: 4rem;
     padding-top: 6rem;
     padding-bottom: 5rem;
-    margin-left: 3rem;
+    margin-left: 3.75rem;
     margin-right: var(--root-bleed);
     @media (prefers-color-scheme: light) {
       &::before {
@@ -140,7 +140,6 @@
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4rem), calc(100% - 4rem) 100%, 0 100%, 0 0);
       }
     }
-
     @media (prefers-color-scheme: dark) {
       border: 3px solid transparent;
       background-origin: border-box;
@@ -156,6 +155,10 @@
           transparent
         );
     }
+  }
+  @media (min-width: 90rem) {
+    padding-left: 5rem;
+    padding-right: 5rem;
   }
 
   > :first-child {
