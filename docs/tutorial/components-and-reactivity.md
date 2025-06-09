@@ -143,7 +143,7 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 ```
 
 ```marko
-/* gauge.marko */
+/* tags/gauge.marko */
 <div class="gauge">
   <div class="needle" style={"--rotation": `${input.temperature * 180 / 100}deg`}/>
 </div>
@@ -180,6 +180,9 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
   }
 </style>
 ```
+
+> [!NOTE]
+> Make sure your `<gauge>` component file is in a `tags/` directory! Marko [auto-discovers](../reference/custom-tag.md#custom-tag-discovery) custom tags based on directory structure.
 
 <!-- markdownlint-disable MD026 allow exclamation point -->
 
