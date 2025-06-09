@@ -11,26 +11,29 @@ Marko's key features include:
 - Zero-JS-by-default with sub-component partial hydration
 
 ## Full Documentation
-- [Reference Documentation](https://markojs.com/docs/llms/reference-full.md): Official documentation site for Marko
+- [Reference Documentation](/docs/reference-full.md): Official documentation site for Marko
 
-## Core Documentation
+## Reference Documentation
 
-- [Why Choose Marko](https://markojs.com/docs/llms/why-marko.md): Performance benefits, developer experience, and core principles
-- [Language Reference](https://markojs.com/docs/llms/language.md): Complete language syntax and features documentation
-- [Core Tags](https://markojs.com/docs/llms/core-tag.md): Built-in Marko tags and their functionality
-- [Native Tags](https://markojs.com/docs/llms/native-tag.md): How HTML tags work in Marko
-- [Custom Tags](https://markojs.com/docs/llms/custom-tag.md): Creating and using custom components
-- [Reactivity](https://markojs.com/docs/llms/reactivity.md): Understanding Marko's reactive system
-- [TypeScript Support](https://markojs.com/docs/llms/typescript.md): Using TypeScript with Marko
-- [Template API](https://markojs.com/docs/llms/template.md): API reference for Marko templates
+- [Why Choose Marko](/docs/explanation/why-marko.md): Performance benefits, developer experience, and core principles
+- [Language Reference](/docs/reference/language.md): Complete language syntax and features documentation
+- [Core Tags](/docs/reference/core-tag.md): Built-in Marko tags and their functionality
+- [Native Tags](/docs/reference/native-tag.md): How HTML tags work in Marko
+- [Custom Tags](/docs/reference/custom-tag.md): Creating and using custom components
+- [Reactivity](/docs/reference/reactivity.md): Understanding Marko's reactive system
+- [TypeScript Support](/docs/reference/typescript.md): Using TypeScript with Marko
+- [Template API](/docs/reference/template.md): API reference for Marko templates
+- [Concise Syntax](/docs/reference/concise-syntax.md): Alternative compact syntax for Marko templates
+- [TypeScript](/docs/reference/typescript.md): Detailed TypeScript setup and configuration
 
 ## Guides
 
-- [Getting Started](https://markojs.com/docs/llms/run/getting-started.md): Quick start guide for new projects
-- [Styling](https://markojs.com/docs/llms/styling.md): Guide to styling in Marko applications
-- [File-based Routing](https://markojs.com/docs/llms/run/file-based-routing.md): How routing works in Marko applications
-- [Concise Syntax](https://markojs.com/docs/llms/concise-syntax.md): Alternative compact syntax for Marko templates
+- [Getting Started](/docs/introduction/getting-started.md): Quick start guide for new projects
+- [Styling](/docs/guide/styling.md): Guide to styling in Marko applications
+- [File-based Routing](/docs/marko-run/file-based-routing.md): How routing works in Marko applications
 
-## Optional
+## Marko Run
 
-- [TypeScript Configuration](https://markojs.com/docs/llms/run/typescript.md): Detailed TypeScript setup and configuration
+- [Getting Started](/docs/run/getting-started.md): Quick start guide for Marko Run
+- [File-based Routing](/docs/run/file-based-routing.md): How routing works in Marko Run
+- [Concise Syntax](/docs/run/typescript.md): Using TypeScript with Marko Run
