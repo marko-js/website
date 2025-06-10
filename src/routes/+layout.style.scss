@@ -10,7 +10,9 @@
 :root {
   --root-min-gap: 1rem;
   --root-max-width: 80rem;
-  --root-gap: calc(max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2));
+  --root-gap: calc(
+    max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2)
+  );
 }
 
 * {
@@ -69,6 +71,10 @@ p {
 ::selection {
   background-color: var(--color-selection-background);
   color: var(--color-selection-foreground);
+}
+
+html {
+  scrollbar-color: var(--color-gray-dim) var(--color-background);
 }
 
 body {
