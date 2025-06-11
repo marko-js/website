@@ -62,7 +62,7 @@
 }
 
 .headingText {
-  display: inline-block;
+  display: inline-flex;
   color: var(--section-color-dark);
   @media (prefers-color-scheme: dark) {
     color: var(--color-foreground);
@@ -79,7 +79,7 @@
 }
 
 .cta {
-  display: inline-block;
+  display: inline-flex;
   margin-top: 1.5rem;
   border-radius: 2rem;
   padding: 1rem 4rem;
