@@ -104,7 +104,7 @@ main {
       &::before {
         @media (min-width: 48rem) {
           position: absolute;
-          display: inline-block;
+          display: inline-flex;
           content: "#";
           text-wrap: nowrap;
           padding-right: 0.5rem;

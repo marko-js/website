@@ -26,10 +26,13 @@ html lang="en"
     script --
       const selectionColors = ["red", "yellow", "green", "blue"];
       let highlightColorIndex = 0;
+      let prevRef: undefined | WeakRef<EventTarget>;
       window.addEventListener(
         "selectstart",
-        () => {
+        ({ target }) => {
+          if (!target || prevRef?.deref() === target) return;
           const color = selectionColors[highlightColorIndex];
+          prevRef = new WeakRef(target);
           document.body.style.setProperty(
             "--color-selection-background",
             `var(--color-${color}-alt)`
@@ -42,4 +45,3 @@ html lang="en"
         },
         { signal: $signal },
       );
-
