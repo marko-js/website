@@ -19,7 +19,6 @@
     background-color: var(--section-color-dim);
   }
   @media (prefers-color-scheme: dark) {
-    border-right: none;
     background-image:
       linear-gradient(var(--color-background), var(--color-background)),
       linear-gradient(to right, var(--section-color), var(--section-color-alt));
