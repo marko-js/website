@@ -137,6 +137,9 @@
     margin-right: var(--root-bleed);
     @media (prefers-color-scheme: light) {
       &::before {
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
         content: "";
         position: absolute;
         inset: 0;

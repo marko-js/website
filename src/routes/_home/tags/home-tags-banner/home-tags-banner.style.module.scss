@@ -3,7 +3,11 @@
   margin: 2rem calc(-1 * var(--root-gap));
   overflow: hidden;
   white-space: nowrap;
-  background-color: var(--color-gray-dark-shade);
+  background-color: color-mix(
+    in srgb,
+    var(--color-green-dark),
+    var(--color-black) 95%
+  );
   @media (min-width: 64rem) {
     margin: 6rem calc(-1 * var(--root-gap));
   }
@@ -63,7 +67,8 @@
   color: var(--color-white);
 }
 
-.coreTag, .customTag {
+.coreTag,
+.customTag {
   composes: tag;
   $i: 1;
   @each $color in "blue", "green", "yellow", "red" {
@@ -77,7 +82,7 @@
 .htmlTag {
   composes: tag;
   .name {
-    color: #C999EC;
+    color: #c999ec;
   }
 }
 
