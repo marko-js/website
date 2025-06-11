@@ -54,7 +54,7 @@
   }
 
   h2 {
-    font-size: max(2.8rem, min(3.2rem, 8dvw));
+    font-size: max(2.8rem, min(3.3rem, 8dvw));
     font-weight: 500;
     margin-bottom: 1.25rem;
   }
@@ -139,12 +139,14 @@
     margin-bottom: 5rem;
   }
   @media (min-width: 64rem) {
+    max-width: 40rem;
     flex-direction: column;
     margin-bottom: 0;
     flex: 1;
     align-items: flex-end;
     padding: 4rem;
     margin-right: 3rem;
+    margin-left: var(--root-bleed);
     @media (prefers-color-scheme: light) {
       &::before {
         z-index: -1;
@@ -153,9 +155,8 @@
         content: "";
         position: absolute;
         inset: 0;
-        margin-left: var(--root-bleed);
-        border-radius: 2rem;
         background: var(--section-color-dim);
+        border-radius: 2rem;
         clip-path: polygon(0 0, 4rem 0, 0 4rem, 0 100%, 100% 100%, 100% 0);
       }
     }
@@ -198,7 +199,6 @@
   }
   @media (min-width: 64rem) {
     margin-right: 3.5rem;
-    margin-left: var(--root-bleed);
   }
   @media (min-width: 80rem) {
     margin-right: 8rem;
