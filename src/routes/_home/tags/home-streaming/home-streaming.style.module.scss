@@ -9,8 +9,8 @@
   margin-left: var(--root-bleed);
   margin-right: var(--root-bleed);
   padding: 2rem;
-  border: 3px solid transparent;
   border-radius: 2rem;
+  border: 3px solid transparent;
   background-origin: border-box;
   background-clip: padding-box, border-box;
   @include colors.section("blue");
@@ -27,12 +27,13 @@
     padding: 3rem;
   }
   @media (min-width: 64rem) {
+    border: none;
+    background-image: none;
     background-color: transparent;
     margin-bottom: 0;
     padding: 0 4rem;
     flex-direction: row;
     align-items: center;
-    background-image: none;
   }
 }
 
@@ -118,6 +119,9 @@
   font-size: min(0.55rem, max(0.3rem, 1.4dvw));
   align-items: center;
   border-radius: 2rem;
+  border: 3px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   @media (min-width: 40rem) {
     padding: 0 2rem;
   }
@@ -142,9 +146,7 @@
       }
     }
     @media (prefers-color-scheme: dark) {
-      border: 3px solid transparent;
-      background-origin: border-box;
-      background-clip: padding-box, border-box;
+      border-left: none;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       background-image:

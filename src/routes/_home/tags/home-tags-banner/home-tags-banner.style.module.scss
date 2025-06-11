@@ -50,6 +50,10 @@
   color: #ffffff80;
   text-decoration: none;
 
+  :global(.concise-mode) & {
+    color: transparent;
+  }
+
   &:hover .name {
     text-decoration: 2px underline currentColor;
   }
