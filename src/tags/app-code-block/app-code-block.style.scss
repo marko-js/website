@@ -34,10 +34,10 @@ body.concise-mode .code-block {
   z-index: 1;
   bottom: 100%;
   left: 0;
-  padding: 0.75rem;
+  padding: 0.5em 0.75em;
   border-radius: 0.5rem;
   color: var(--color-white) !important;
-  font-size: 1rem;
+  font-size: 0.8em;
   background-color: var(--color-black);
   box-shadow:
     0 0 15px -8px var(--section-color-dim),
@@ -57,7 +57,7 @@ body.concise-mode .code-block {
   }
 
   & * {
-    font-size: 1rem !important;
+    font-size: 1em !important;
   }
 }
 
@@ -69,7 +69,7 @@ body.concise-mode .code-block {
   border-radius: 0.5rem;
   color: var(--color-white) !important;
   background-color: var(--color-black);
-  font-size: 1rem;
+  font-size: 0.8em;
   box-shadow:
     0 0 15px -8px var(--section-color-dim),
     0 0 15px -8px var(--section-color-dim-alt);
@@ -91,7 +91,7 @@ body.concise-mode .code-block {
   }
   &-menu {
     list-style: none;
-    height: 11.5rem;
+    height: 11.5em;
     overflow: scroll;
     border-radius: 0.5rem;
     scrollbar-color: auto;
@@ -99,7 +99,7 @@ body.concise-mode .code-block {
     & > li {
       display: flex;
       width: 100%;
-      padding: 0.5rem 0.75rem;
+      padding: 0.5em 0.75em;
       &:hover {
         background-color: #FFFFFF20;
       }
@@ -107,9 +107,9 @@ body.concise-mode .code-block {
         content: "";
         display: inline-flex;
         align-self: center;
-        height: 1rem;
-        width: 1rem;
-        margin-right: 0.5rem;
+        height: 1em;
+        width: 1em;
+        margin-right: 0.5em;
         mask-image: url("./symbol-method.svg?no-inline");
         mask-size: 100% 100%;
         background-color: #c999ec;
@@ -122,7 +122,7 @@ body.concise-mode .code-block {
   }
 
   & * {
-    font-size: 1rem !important;
+    font-size: 1em !important;
   }
 }
 
