@@ -98,6 +98,7 @@ main {
 
         &::before {
           color: var(--section-color);
+          -webkit-text-fill-color: var(--section-color);
         }
       }
 
@@ -109,6 +110,7 @@ main {
           text-wrap: nowrap;
           padding-right: 0.5rem;
           color: var(--section-color-dim);
+          -webkit-text-fill-color: var(--section-color-dim);
           scale: 0.75;
           top: 50%;
           left: 0;
