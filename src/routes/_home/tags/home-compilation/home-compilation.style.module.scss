@@ -331,9 +331,6 @@
       margin-top: -1rem;
     }
   }
-  @media (min-width: 80rem) {
-    translate: 2rem 0;
-  }
 }
 
 .browser {
@@ -350,9 +347,6 @@
     @media (prefers-color-scheme: dark) {
       margin-bottom: -1rem;
     }
-  }
-  @media (min-width: 80rem) {
-    translate: 2rem 0;
   }
 }
 

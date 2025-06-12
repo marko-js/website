@@ -1,0 +1,87 @@
+import * as styles from "./home-tooling.style.module.scss";
+server const EXAMPLE_HTML = `<div/$el>
+  Hop in, we've got tags
+</div>
+
+<script>
+  $el().
+</script>`;
+
+server const EXAMPLE_CONCISE = `div/$el -- Hop in, we've got tags
+script -- $el().
+`;
+
+section.${styles.section}
+  .${styles.content}
+    h2
+      span.${styles.headingText} -- Types & Tooling
+    p
+      -- Marko has built-in 
+      a href="/docs/reference/typescript" -- TypeScript support
+      -- , with strong type inference that works across templates and components. Editors get full language features like autocompletion, jump-to-definition, syntax highlighting, and clean formatting.
+    p -- Build confidently. Catch errors early. Write better code, faster.
+    a.${styles.cta} href="/docs/reference/typescript" -- Learn More
+
+  figure.${styles.demo} role="img" aria-label="An example showing intellisense information displayed while viewing a Marko file in a text editor."
+    .${styles.example}
+      .${styles.menuBar}
+        .${styles.menuBarRed}
+        .${styles.menuBarYellow}
+        .${styles.menuBarGreen}
+      app-code-block,
+        ,theme="dark"
+        ,lang="marko"
+        ,text=EXAMPLE_HTML
+        ,concise=EXAMPLE_CONCISE
+        ,cursor={
+          test: /\$el\(\)\./g,
+          content(h) {
+            return h("ul", { class: "code-cursor-menu" }, [
+              h("li", "addEventListener"),
+              h("li", "animate"),
+              h("li", "append"),
+              h("li", "appendChild"),
+              h("li", "focus"),
+              h("li", "getAnimations"),
+              h("li", "getAttribute"),
+              h("li", "insertBefore"),
+              h("li", "remove"),
+              h("li", "removeChild"),
+              h("li", "removeEventListener"),
+            ]);
+          }
+        }
+        ,popovers=[
+          {
+            test: /\$el/g,
+            content: (_, code) => code("typescript", "const $el: () => HTMLDivElement"),
+          },
+          {
+            test: /(?<!\/)div\b/g,
+            content: h => [
+              "Built in HTML ",
+              h(
+                "a",
+                {
+                  href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
+                },
+                "<div>",
+              ),
+              " tag.",
+            ],
+          },
+          {
+            test: /(?<!\/)script\b/g,
+            content: h => [
+              "Built in core ",
+              h(
+                "a",
+                {
+                  href: "/docs/reference/core-tag#script",
+                },
+                "<script>",
+              ),
+              " tag.",
+            ],
+          },
+        ]
