@@ -92,7 +92,7 @@ body.concise-mode .code-block {
   &-menu {
     list-style: none;
     height: 11.5em;
-    overflow: scroll;
+    overflow-y: scroll;
     border-radius: 0.5rem;
     scrollbar-color: auto;
 
