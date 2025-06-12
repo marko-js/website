@@ -1,34 +1,142 @@
-server import { createHighlighter } from "shiki";
+server import type { Element, Parent } from "hast";
+server import { h, type Child } from "hastscript";
+server import { createHighlighter, type ShikiTransformer } from "shiki";
 server import { markoDark, markoLight } from "app/util/syntax-highlight-theme"
+
+static declare module "hast" {
+  interface Data {
+    append?: Child;
+  }
+}
+
 export interface Input {
   lang: string;
   text: string;
-  theme?: "light" | "dark" | "reverse";
   concise?: string;
   filename?: string;
+  theme?: "light" | "dark" | "reverse";
+  cursor?: {
+    test: RegExp,
+    content: (
+      html: typeof h,
+      code: typeof codeToContent
+    ) => Child
+  },
+  popovers?: {
+    test: RegExp,
+    content: (
+      html: typeof h,
+      code: typeof codeToContent
+    ) => Child
+  }[];
 }
 server const highlighter = await createHighlighter({
   langs: ["marko", "html", "css", "js", "ts", "json", "fs", "sh"],
   themes: [markoDark, markoLight],
 });
+server const customTransform: ShikiTransformer = {
+  preprocess(code, options) {
+    const cursor = options.meta?.cursor as Input["cursor"];
+    const popovers = options.meta?.popovers as Input["popovers"];
+    if (!(cursor || popovers)) return;
+
+    const decorations = options.decorations ||= [];
+    if (cursor) {
+      for (const match of code.matchAll(cursor.test)) {
+        const content = cursor.content(h, codeToContent);
+        decorations.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          properties: { class: "code-cursor-container" },
+          transform(el) {
+            appendChild(el, h("span", { class: "code-cursor" }, content));
+          }
+        });
+        break;
+      }
+    }
+
+    if (popovers) {
+      for (const popover of popovers) {
+        const content = popover.content(h, codeToContent);
+        for (const match of code.matchAll(popover.test)) {
+          decorations.push({
+            start: match.index,
+            end: match.index + match[0].length,
+            properties: { class: "code-popover-container" },
+            transform(el) {
+              appendChild(el, h("span", { class: "code-popover" }, content));
+            }
+          });
+        }
+      }
+    }
+  },
+  root(el) {
+    const cursor = this.options.meta?.cursor as Input["cursor"];
+    const popovers = this.options.meta?.popovers as Input["popovers"];
+    if (!(cursor || popovers)) return;
+    finalizeNode(el);
+  }
+}
+server function finalizeNode(node: Parent) {
+  if (node.data?.append) {
+    node.children = node.children.concat(
+      node.data.append as typeof node.children
+    );
+  }
+  for (const child of node.children) {
+    if (child.type === "element") {
+      finalizeNode(child);
+    }
+  }
+}
+server function codeToContent(lang: string, code: string) {
+  return highlighter.codeToHast(code, {
+    lang,
+    defaultColor: false,
+    themes: {
+      light: "marko-dark",
+      dark: "marko-dark"
+    }
+  }).children as Child;
+}
+server function appendChild(el: Element, child: Child) {
+  el.data ??= {};
+  if (el.data.append) {
+    el.data.append = [].concat(el.data.append as any, child as any);
+  } else {
+    el.data.append = child;
+  }
+}
 
 const/highlightedText=highlighter.codeToHtml(input.text, {
   lang: input.lang,
   defaultColor: false,
+  transformers: [customTransform],
   themes: {
     light: "marko-light",
     dark: "marko-dark"
-  }
+  },
+  meta: {
+    cursor: input.cursor,
+    popovers: input.popovers
+  },
 })
 
 const/highlightedConcise=input.concise &&
   highlighter.codeToHtml(input.concise, {
     lang: input.lang,
     defaultColor: false,
+    transformers: [customTransform],
     themes: {
       light: "marko-light",
       dark: "marko-dark"
-    }
+    },
+    meta: {
+      cursor: input.cursor,
+      popovers: input.popovers
+    },
   })
 
 .code-block.${input.theme && `code-block--${input.theme}`}
