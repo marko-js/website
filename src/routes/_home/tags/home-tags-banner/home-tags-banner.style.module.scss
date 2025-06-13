@@ -19,7 +19,7 @@
   transition: transform 0.3s ease-out;
 
   &:hover {
-    transform: translateX(-10px);
+    transform: translateX(-3px);
   }
 }
 
@@ -30,7 +30,7 @@
   gap: 1rem;
   padding: 1.5rem 0;
   will-change: transform;
-  animation: marquee 120s linear infinite;
+  animation: marquee 300s linear infinite;
   @keyframes marquee {
     to {
       transform: translateX(-50%);
