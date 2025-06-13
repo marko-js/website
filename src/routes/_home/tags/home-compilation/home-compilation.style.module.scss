@@ -138,6 +138,10 @@
     flex-direction: row;
     margin-bottom: 5rem;
   }
+  @media (min-width: 58rem) {
+    align-self: flex-end;
+    margin-top: -6rem;
+  }
   @media (min-width: 64rem) {
     max-width: 40rem;
     flex-direction: column;

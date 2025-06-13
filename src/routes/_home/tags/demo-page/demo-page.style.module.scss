@@ -1,6 +1,7 @@
 .wrapper {
   display: block;
   width: 40em;
+  min-width: 40em;
   position: relative;
   pointer-events: none;
   user-select: none;
