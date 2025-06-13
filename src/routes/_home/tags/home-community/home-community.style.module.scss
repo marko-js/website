@@ -1,43 +1,94 @@
+@use "app/styles/colors" as colors;
+
 .section {
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  line-height: 1.6;
+
+  h2 {
+    font-size: max(2.8rem, min(3.3rem, 8dvw));
+    margin-bottom: 1rem;
+  }
 }
 
 .cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-around;
+  display: grid;
+  align-self: center;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 2.5rem;
+  gap: 1.5rem;
+  text-align: center;
+  justify-items: center;
+  max-width: fit-content;
+  @media (min-width: 64rem) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-.card {
+.stackoverflow, .discord, .twitter, .github {
   display: flex;
+  max-width: 14rem;
   flex-direction: column;
   align-items: center;
-  width: 11rem;
   gap: 1rem;
-}
-.cards a {
-  color: var(--color-section);
-}
-.card:hover .logo {
-  animation: bounce 0.5s;
+
+  &:hover .logo {
+    animation: bounce 0.5s;
+    @keyframes bounce {
+      0% {
+        transform: translateY(0);
+      }
+      10% {
+        transform: translateY(0) scale(1.1, 0.9);
+      }
+      30% {
+        transform: translateY(-20px) scale(0.95, 1.05);
+      }
+      40% {
+        transform: translateY(0) scale(1.05, 0.95);
+      }
+      50% {
+        transform: translateY(-10px) scale(0.98, 1.02);
+      }
+      70% {
+        transform: translateY(0) scale(1.02, 0.98);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  span a {
+    display: inline-flex;
+    color: var(--section-color);
+    background-color: var(--section-color-alt-dim);
+    border-radius: 2.5rem;
+    padding: 0.2rem 0.75ch;
+    text-decoration-line: none;
+    margin: 0.05lh 0;
+
+    &:hover {
+      text-decoration-line: underline;
+    }
+  }
 }
 
 .stackoverflow {
-  composes: card;
-  --color-section: #F47F24;
+  @include colors.section("blue");
 }
+
 .discord {
-  composes: card;
-  --color-section: #5865F2;
+  @include colors.section("yellow");
 }
+
 .twitter {
-  composes: card;
-  --color-section: var(--color-foreground);
+  @include colors.section("red");
 }
+
 .github {
-  composes: card;
-  --color-section: var(--color-foreground);
+  @include colors.section("green");
 }
 
 .logo {
@@ -46,32 +97,12 @@
   align-items: center;
   height: 4rem;
   width: 4rem;
+
+  svg {
+    height: 100%;
+  }
 }
 
 .logo path {
-  fill: var(--color-section);
-}
-
-@keyframes bounce {
-  0% {
-    transform: translateY(0);
-  }
-  10% {
-    transform: translateY(0) scale(1.1, 0.9);
-  }
-  30% {
-    transform: translateY(-20px) scale(0.95, 1.05);
-  }
-  40% {
-    transform: translateY(0) scale(1.05, 0.95);
-  }
-  50% {
-    transform: translateY(-10px) scale(0.98, 1.02);
-  }
-  70% {
-    transform: translateY(0) scale(1.02, 0.98);
-  }
-  100% {
-    transform: translateY(0);
-  }
+  fill: var(--color-foreground);
 }

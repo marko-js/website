@@ -1,4 +1,5 @@
 .section {
+  color: var(--color-white);
   background-color: var(--color-black);
   margin: 0 calc(-1 * var(--root-gap));
   overflow: hidden;
@@ -80,17 +81,17 @@
 }
 
 .githubStars {
-  counter-reset: stars var(--stars);
+  counter-reset: stars calc(var(--stars) / 1000);
   font-variant-numeric: tabular-nums;
   &::before {
-    content: "" counter(stars) " ";
+    content: "" counter(stars) "k ";
   }
 }
 
 .npmDownloads {
-  counter-reset: downloads var(--downloads);
+  counter-reset: downloads calc(var(--downloads) / 1000);
   font-variant-numeric: tabular-nums;
   &::before {
-    content: " " counter(downloads);
+    content: " " counter(downloads) "k";
   }
 }
