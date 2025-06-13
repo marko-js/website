@@ -42,7 +42,6 @@
   flex-direction: column;
   order: 0;
   max-width: 35rem;
-
   @media (min-width: 90rem) {
     margin-left: 0;
   }
@@ -113,7 +112,7 @@
 .demo {
   position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: -30em;
   font-size: min(0.55rem, max(0.3rem, 1.4dvw));
   align-items: center;
@@ -121,13 +120,12 @@
   border: 3px solid transparent;
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  @media (min-width: 40rem) {
-    padding: 0 2rem;
-  }
-  @media (min-width: 48rem) {
-    justify-content: center;
+  @media (min-width: 61rem) {
+    margin-top: -6rem;
+    justify-content: flex-end;
   }
   @media (min-width: 64rem) {
+    margin-top: 0;
     margin-bottom: 0;
     padding: 4rem;
     padding-top: 6rem;
@@ -170,9 +168,6 @@
     filter: brightness(95%) grayscale(60%);
     font-size: 0.65em;
     margin-left: -1.25rem;
-    @media (min-width: 40rem) {
-      margin-left: 1rem;
-    }
     @media (min-width: 48rem) {
       font-size: 0.8em;
       margin-bottom: 0;
@@ -185,7 +180,7 @@
   > :last-child {
     z-index: 1;
     order: 0;
-    margin-left: -16rem;
+    margin-left: -4rem;
     margin-right: -1.25rem;
 
     > :first-child {
@@ -194,15 +189,8 @@
         0 15px 60px -30px var(--section-color-dim-alt);
     }
 
-    @media (min-width: 40rem) {
-      margin-right: 1rem;
-    }
-    @media (min-width: 48rem) {
-      margin-left: -4rem;
-    }
     @media (min-width: 64rem) {
       margin-left: -8rem;
-      margin-right: -4rem;
     }
   }
 }

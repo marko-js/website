@@ -119,7 +119,7 @@
   border-radius: 2rem;
   background-color: var(--color-black);
   margin-bottom: -6.5rem;
-  align-self: flex-end;
+  align-self: center;
   width: 100%;
   padding: 2rem 1.5rem;
   max-width: 30rem;
@@ -141,8 +141,14 @@
     padding: 3rem;
   }
 
+  @media (min-width: 54rem) {
+    align-self: flex-end;
+    margin-top: -6rem;
+  }
+
   @media (min-width: 64rem) {
-    align-self: end;
+    margin-top: 0;
+    align-self: flex-end;
     width: auto;
   }
 
