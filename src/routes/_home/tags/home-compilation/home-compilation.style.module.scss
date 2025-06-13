@@ -31,15 +31,16 @@
     padding: 3rem;
   }
   @media (min-width: 64rem) {
-    margin-bottom: 2rem;
     border: none;
     background-image: none;
     background-color: transparent;
     padding: 0 4rem;
     flex-direction: row;
     align-items: center;
-
+    margin-top: 2rem;
+    margin-bottom: 2rem;
     @media (prefers-color-scheme: dark) {
+      margin-top: 0;
       margin-bottom: 0;
     }
   }
