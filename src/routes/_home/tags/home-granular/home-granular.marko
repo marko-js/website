@@ -1,4 +1,15 @@
 import * as styles from "./home-granular.style.module.scss";
+import productImg from "./product.webp";
+static const product = {
+  name: "iPhone 16 Pro",
+  price: "999",
+  image: productImg,
+  description: "Vibrant Joy-Con colors, in pristine condition! Stunning display and smooth gameplay, perfect for Super Mario Party Jamboree and more.",
+  review: {
+    title: "Awesome Phone, Awesome Photos!",
+    description: "Just upgraded to the iPhone 16 Pro from my old iPhone 12, and it’s like a whole new world! The Desert Titanium color looks super cool."
+  }
+}
 
 let/progress=0
 script --
@@ -20,12 +31,14 @@ section.${styles.section}
     demo-page [
       label="a visual representation showing every component on a webpage re-executing in the browser with JavaScript"
       title="full-page"
+      product=product
       progress=1
       hydrateAll
     ]
     demo-page [
       label="a visual representation showing only interactive parts of a webpage resuming with JavaScript"
       title="granular"
+      product=product
       progress=1
       hydratePartial
     ]

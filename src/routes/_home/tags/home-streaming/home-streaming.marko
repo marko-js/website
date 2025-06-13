@@ -1,5 +1,15 @@
 import * as styles from "./home-streaming.style.module.scss";
-
+import productImg from "./product.webp";
+static const product = {
+  name: "Nintendo Switch 2",
+  price: "449.99",
+  image: productImg,
+  description: "Vibrant Joy-Con colors, in pristine condition! Stunning display and smooth gameplay, perfect for Super Mario Party Jamboree and more.",
+  review: {
+    title: "Super Fun, Super Colorful!",
+    description: "Wow, the screen is so bright and games like Super Mario Party Jamboree look amazing! The neon Joy-Cons are awesome and make it feel fresh."
+  }
+}
 let/progress=0
 script --
   const id = setTimeout(() => (progress = (progress + 0.01) % 1.5), 20);
@@ -17,11 +27,13 @@ section.${styles.section}
     demo-page [
       label="a blank white screen for 1 second, followed by a generic e-commerce page loaded all at once"
       title="buffered"
+      product=product
       progress=progress
       buffered
     ]
     demo-page [
       label="a generic e-commerce page rendered progressively while the buffered example shows a white screen"
       title="streamed"
+      product=product
       progress=progress
     ]
