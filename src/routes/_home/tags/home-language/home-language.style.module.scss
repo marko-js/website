@@ -117,12 +117,20 @@
   display: flex;
   position: relative;
   border-radius: 2rem;
-  background-color: var(--color-black);
   margin-bottom: -6.5rem;
   align-self: center;
   width: 100%;
   padding: 2rem 1.5rem;
   max-width: 30rem;
+  border: 2px solid transparent;
+  background-color: color-mix(
+    in srgb,
+    var(--color-black),
+    var(--section-color-dark) 15%
+  );
+  @media (prefers-color-scheme: dark) {
+    border-color: var(--section-color-dim);
+  }
   &::before {
     position: absolute;
     inset: 0;
@@ -133,9 +141,6 @@
     background-color: var(--section-color-dim-alt);
     filter: blur(50px);
     opacity: 0.4;
-  }
-  @media (prefers-color-scheme: dark) {
-   border: 3px solid var(--section-color-dark);
   }
   @media (min-width: 32rem) {
     padding: 3rem;

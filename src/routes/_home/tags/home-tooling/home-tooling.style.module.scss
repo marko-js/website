@@ -7,18 +7,18 @@
   gap: 3rem;
   margin-left: var(--root-bleed);
   margin-right: var(--root-bleed);
-  margin-bottom: calc(min(0.625rem, max(0.3rem, 1.5dvw)) * 26);
+  margin-bottom: calc(min(0.7rem, max(0.3rem, 1.7dvw)) * 26);
   padding: 2rem;
   border-radius: 2rem;
   border: 3px solid transparent;
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
   @include colors.section("red");
 
   @media (prefers-color-scheme: light) {
     background-color: var(--section-color-dim);
   }
   @media (prefers-color-scheme: dark) {
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
     background-image:
       linear-gradient(var(--color-background), var(--color-background)),
       linear-gradient(to right, var(--section-color), var(--section-color-alt));
@@ -119,7 +119,6 @@
   font-size: min(0.55rem, max(0.3rem, 1.4dvw));
   align-items: center;
   border-radius: 2rem;
-  border: 3px solid transparent;
   background-origin: border-box;
   background-clip: padding-box, border-box;
   @media (min-width: 40rem) {
@@ -167,6 +166,7 @@
       }
     }
     @media (prefers-color-scheme: dark) {
+      border: 3px solid transparent;
       border-right: none;
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
@@ -188,7 +188,6 @@
   position: relative;
   border-radius: 1rem;
   width: 100%;
-  max-width: calc-size(fit-content, size + 6rem);
   min-width: fit-content;
   padding: 1rem;
   padding-top: 4rem;
@@ -209,6 +208,10 @@
   }
   @media (prefers-color-scheme: dark) {
     border: 2px solid var(--section-color-dim);
+  }
+
+  @media (min-width: 40rem) {
+    max-width: calc-size(fit-content, size + 6rem);
   }
 
   @media (min-width: 64rem) {
@@ -239,12 +242,17 @@
   justify-content: flex-start;
   top: 0;
   left: 0;
+  right: 0;
   gap: 0.5rem;
   padding-left: 0.5rem;
-  width: 100%;
   height: 2.5rem;
   border-radius: 1rem 1rem 0 0;
   background-image: linear-gradient(to bottom, #f6f6f6 0, #ddd);
+  @media (prefers-color-scheme: dark) {
+    top: -2px;
+    left: -2px;
+    right: -2px;
+  }
 }
 
 .menuBarRed,
