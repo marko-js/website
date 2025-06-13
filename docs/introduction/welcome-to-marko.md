@@ -1,6 +1,6 @@
 # Why Marko?
 
-Marko is a language designed to make it easier to write performant and "correct" websites. This document outlines the core principles and features that make Marko a unique and compelling choice for building a website.
+Marko is a language designed to make it easier to write performant and "correct" websites. It offers a unique and compelling approach to web development, built upon core principles and features that set it apart.
 
 ## What's Missing from Vanilla HTML, CSS, and JavaScript?
 
