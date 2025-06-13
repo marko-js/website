@@ -57,19 +57,6 @@
   &:hover {
     border-bottom-color: currentColor;
   }
-  &:after {
-    position: absolute;
-    content: "";
-    color: var(--color-gray-alt);
-    height: 3lh;
-    width: 2px;
-    background-color: var(--color-gray-alt);
-    right: -1.5rem;
-    @media (min-width: 64rem) {
-      right: -2.5rem;
-    }
-  }
-
   svg {
     display: inline-block;
     height: 1.5lh;
