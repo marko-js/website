@@ -1,4 +1,4 @@
-# Why Marko?
+# Welcome to Marko!
 
 Marko is a language designed to make it easier to write performant and "correct" websites. It offers a unique and compelling approach to web development, built upon core principles and features that set it apart.
 
