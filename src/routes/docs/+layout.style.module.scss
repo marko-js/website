@@ -48,11 +48,15 @@ main {
 
   h1 {
     color: var(--section-color);
-    background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+    background: linear-gradient(
+      to bottom,
+      var(--section-color),
+      color-mix(in srgb, var(--section-color-alt), var(--section-color))
+    );
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
-    line-height: 120%;
+    line-height: 1.2em;
   }
 
   h2 {
@@ -65,7 +69,11 @@ main {
   h5,
   h6 {
     color: var(--section-color);
-    background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+    background: linear-gradient(
+      to bottom,
+      var(--section-color),
+      color-mix(in srgb, var(--section-color-alt), var(--section-color))
+    );
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-top: 1em;
@@ -75,7 +83,11 @@ main {
       color: var(--section-color);
 
       code {
-        background: linear-gradient(to bottom, var(--section-color), color-mix(in srgb, var(--section-color-alt), var(--section-color)));
+        background: linear-gradient(
+          to bottom,
+          var(--section-color),
+          color-mix(in srgb, var(--section-color-alt), var(--section-color))
+        );
         background-clip: text;
         -webkit-text-fill-color: transparent;
         position: relative;
@@ -83,12 +95,9 @@ main {
           content: "";
           position: absolute;
           background-color: var(--section-color-alt-dim);
-          top:0;
-          left:0;
-          bottom:0;
-          right:0;
+          inset: 0;
           border-radius: 1em;
-          z-index:-1;
+          z-index: -1;
         }
       }
 
@@ -213,7 +222,11 @@ main {
     position: relative;
     margin: 2rem 0;
     border: 1px solid var(--section-color);
-    background-image: linear-gradient(to bottom left, color-mix(in srgb, var(--section-color-dim) 24%, var(--color-background)), color-mix(in srgb, var(--section-color-dim) 8%, var(--color-background)));
+    background-image: linear-gradient(
+      to bottom left,
+      color-mix(in srgb, var(--section-color-dim) 24%, var(--color-background)),
+      color-mix(in srgb, var(--section-color-dim) 8%, var(--color-background))
+    );
     padding: 1rem;
     padding-bottom: 0;
     border-radius: 0.5rem;
@@ -350,7 +363,7 @@ main {
         border: 1px solid;
         border-radius: 1rem;
         text-decoration: none;
-        transition: box-shadow .3s cubic-bezier(.4,0,.2,1);
+        transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       a:hover {

@@ -1,12 +1,15 @@
+@use "app/styles/colors" as colors;
+
 .section {
-  color: var(--color-white);
+  @include colors.section("blue");
+
   background-color: var(--color-black);
   margin: 0 calc(-1 * var(--root-gap));
   overflow: hidden;
   white-space: nowrap;
   background-color: color-mix(
     in srgb,
-    var(--color-blue-dark),
+    var(--section-color-dark),
     var(--color-black) 95%
   );
 }
@@ -53,6 +56,7 @@
   margin: 0 1rem;
   align-items: center;
   text-decoration: none;
+  color: var(--color-white);
   border-bottom: 2px solid transparent;
   &:hover {
     border-bottom-color: currentColor;

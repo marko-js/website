@@ -1,11 +1,15 @@
+@use "app/styles/colors" as colors;
+
 .section {
+  @include colors.section("green");
+
   background-color: var(--color-black);
   margin: 0 calc(-1 * var(--root-gap));
   overflow: hidden;
   white-space: nowrap;
   background-color: color-mix(
     in srgb,
-    var(--color-green-dark),
+    var(--section-color-dark),
     var(--color-black) 95%
   );
 }
