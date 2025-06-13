@@ -121,6 +121,7 @@
   background-origin: border-box;
   background-clip: padding-box, border-box;
   @media (min-width: 61rem) {
+    align-self: flex-end;
     margin-top: -6rem;
     justify-content: flex-end;
   }
