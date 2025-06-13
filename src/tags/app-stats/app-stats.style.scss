@@ -1,0 +1,11 @@
+@property --stars {
+  syntax: '<integer>';
+  initial-value: 13000;
+  inherits: true;
+}
+
+@property --downloads {
+  syntax: '<integer>';
+  initial-value: 10000;
+  inherits: true;
+}

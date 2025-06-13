@@ -1,0 +1,93 @@
+.section {
+  background-color: var(--color-black);
+  margin: 0 calc(-1 * var(--root-gap));
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: color-mix(
+    in srgb,
+    var(--color-blue-dark),
+    var(--color-black) 95%
+  );
+}
+
+.accelerator {
+  transform: translateX(0);
+  transition: transform 0.3s ease-out;
+
+  &:hover {
+    transform: translateX(-10px);
+  }
+}
+
+.marquee {
+  display: flex;
+  width: fit-content;
+  font-size: 1.7rem;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  will-change: transform;
+  animation: marquee 120s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation-play-state: paused;
+  }
+  @media (min-width: 64rem) {
+    font-size: 1.9rem;
+    gap: 3rem;
+    padding: 2rem 0;
+  }
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  margin: 0 1rem;
+  align-items: center;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  &:hover {
+    border-bottom-color: currentColor;
+  }
+  &:after {
+    position: absolute;
+    content: "";
+    right: -2.5rem;
+    color: var(--color-gray-alt);
+    height: 3lh;
+    width: 2px;
+    background-color: var(--color-gray-alt);
+  }
+
+  svg {
+    display: inline-block;
+    height: 1.5lh;
+    margin: 0 1ch;
+    path {
+      fill: currentColor;
+    }
+  }
+}
+
+.githubStars {
+  counter-reset: stars var(--stars);
+  font-variant-numeric: tabular-nums;
+  &::before {
+    content: "" counter(stars) " ";
+  }
+}
+
+.npmDownloads {
+  counter-reset: downloads var(--downloads);
+  font-variant-numeric: tabular-nums;
+  &::before {
+    content: " " counter(downloads);
+  }
+}
