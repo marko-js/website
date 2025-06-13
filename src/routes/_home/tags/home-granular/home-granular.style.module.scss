@@ -11,14 +11,14 @@
   padding: 2rem;
   border-radius: 2rem;
   border: 3px solid transparent;
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
   @include colors.section("yellow");
 
   @media (prefers-color-scheme: light) {
     background-color: var(--section-color-dim);
   }
   @media (prefers-color-scheme: dark) {
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
     background-image:
       linear-gradient(var(--color-background), var(--color-background)),
       linear-gradient(to right, var(--section-color), var(--section-color-alt));
@@ -117,7 +117,6 @@
   font-size: min(0.55rem, max(0.3rem, 1.4dvw));
   align-items: center;
   border-radius: 2rem;
-  border: 3px solid transparent;
   background-origin: border-box;
   background-clip: padding-box, border-box;
   @media (min-width: 61rem) {
@@ -146,6 +145,7 @@
       }
     }
     @media (prefers-color-scheme: dark) {
+      border: 3px solid transparent;
       border-right: none;
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;

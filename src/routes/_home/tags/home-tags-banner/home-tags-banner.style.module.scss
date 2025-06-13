@@ -1,6 +1,6 @@
 .section {
   background-color: var(--color-black);
-  margin: 2rem calc(-1 * var(--root-gap));
+  margin: 0 calc(-1 * var(--root-gap));
   overflow: hidden;
   white-space: nowrap;
   background-color: color-mix(
@@ -8,9 +8,6 @@
     var(--color-green-dark),
     var(--color-black) 95%
   );
-  @media (min-width: 64rem) {
-    margin: 6rem calc(-1 * var(--root-gap));
-  }
 }
 
 .accelerator {
