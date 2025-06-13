@@ -1,0 +1,18 @@
+import { faGithub, faNpm } from "@fortawesome/free-brands-svg-icons";
+import * as styles from "./home-stats-banner.style.module.scss";
+
+section.${styles.section}
+  .${styles.accelerator}
+    .${styles.marquee}
+      for to=4
+        a.${styles.link} href="https://github.com/marko-js/marko"
+          span.${styles.githubStars}
+          fa-icon=faGithub
+          span -- devs&nbsp;&nbsp;
+          strong -- love
+          span -- &nbsp;&nbsp;marko
+
+        a.${styles.link} href="https://www.npmjs.com/package/marko"
+          span.${styles.npmDownloads}
+          fa-icon=faNpm
+          span -- installs / month

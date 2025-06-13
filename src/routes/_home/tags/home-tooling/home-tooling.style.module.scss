@@ -11,7 +11,7 @@
   padding: 2rem;
   border-radius: 2rem;
   border: 3px solid transparent;
-  @include colors.section("red");
+  @include colors.section("blue");
 
   @media (prefers-color-scheme: light) {
     background-color: var(--section-color-dim);

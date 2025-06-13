@@ -19,11 +19,5 @@ nav.${styles.ctaNav}
     href="https://github.com/marko-js/marko"
     target="_blank"
   ]
-    script --
-      document.getElementById(styles.stars)!.style.setProperty("--stars", (
-        await (
-          await fetch("https://api.github.com/repos/marko-js/marko")
-        ).json()
-      ).stargazers_count);
     fa-icon=faGithub
-    span#${styles.stars} -- GitHub
+    span.${styles.stars} -- GitHub
