@@ -67,8 +67,8 @@ p {
 }
 
 ::selection {
-  background-color: var(--color-selection-background);
-  color: var(--color-selection-foreground);
+  color: var(--section-color-dim-alt, var(--color-red-dim-alt));
+  background-color: var(--section-color-alt, var(--color-red-alt));
 }
 
 body {

@@ -18,8 +18,6 @@ $colors: (
     --color-white: #{$white};
     --color-foreground: var(--color-black);
     --color-background: var(--color-white);
-    --color-selection-foreground: var(--color-red);
-    --color-selection-background: var(--color-red-alt);
 
     @each $name, $dark, $light in $colors {
       $tint-percent: 20%;
