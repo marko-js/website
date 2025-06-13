@@ -59,11 +59,14 @@
   &:after {
     position: absolute;
     content: "";
-    right: -2.5rem;
     color: var(--color-gray-alt);
     height: 3lh;
     width: 2px;
     background-color: var(--color-gray-alt);
+    right: -1.5rem;
+    @media (min-width: 64rem) {
+      right: -2.5rem;
+    }
   }
 
   svg {
