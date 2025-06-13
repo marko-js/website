@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    "./*": [
-      "./src/*",
-      "./src/*.ts"
-    ]
+    "./*": {
+      "types": "./src/*.d.ts",
+      "default": [
+        "./src/*",
+        "./src/*.ts"
+      ]
+    }
   },
   "dependencies": {
     "@docsearch/css": "^3.9.0",
