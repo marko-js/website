@@ -6,7 +6,7 @@
   }
 }
 
-body.concise-mode .code-block {
+html.concise-mode .code-block {
   .html {
     display: none;
   }
@@ -91,15 +91,17 @@ body.concise-mode .code-block {
   }
   &-menu {
     list-style: none;
-    height: 11.5em;
+    height: 11.25em;
     overflow-y: scroll;
     border-radius: 0.5rem;
     scrollbar-color: auto;
+    scrollbar-width: none;
 
     & > li {
       display: flex;
       width: 100%;
       padding: 0.5em 0.75em;
+      padding-right: 4em;
       &:hover {
         background-color: #FFFFFF20;
       }

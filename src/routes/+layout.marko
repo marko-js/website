@@ -33,11 +33,11 @@ html lang="en"
           if (!target || prevRef?.deref() === target) return;
           const color = selectionColors[highlightColorIndex];
           prevRef = new WeakRef(target);
-          document.body.style.setProperty(
+          document.documentElement.style.setProperty(
             "--color-selection-background",
             `var(--color-${color}-alt)`
           );
-          document.body.style.setProperty(
+          document.documentElement.style.setProperty(
             "--color-selection-foreground",
             `var(--color-${color}-dim-alt)`
           );
