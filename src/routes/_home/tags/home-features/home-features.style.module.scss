@@ -37,7 +37,6 @@
     text-wrap: balance;
     font-size: max(0.75rem, min(1rem, 3.5dvw));
     max-width: 28ch;
-    line-height: 1.5;
     @media (min-width: 64rem) {
       text-wrap: pretty;
     }
