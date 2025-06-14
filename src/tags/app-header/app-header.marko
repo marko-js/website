@@ -69,7 +69,7 @@ static function setupStickyScroll() {
       }
 
       const stickSize = header.offsetHeight;
-      const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - footer.offsetHeight);
+      const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - (footer.offsetHeight * 2));
       stickTop = up
         ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
         : Math.min(stickMax, stickTop, y);
