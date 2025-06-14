@@ -12,33 +12,37 @@ client import * as monaco from "monaco-editor-core";
 
 let/files:=input.files
 let/selected=(input.tabIndex || 0) valueChange=input.tabIndexChange
-
 let/file=(files.at(selected) as PlaygroundFile) valueChange(newValue) {
   files = files.toSpliced(selected, 1, newValue);
 }
-
-tabs [
-  files:=files
-  selected:=selected
-]
-div.editor/container
-
 let-match-media/darkMode="(prefers-color-scheme: dark)"
+const/theme=`marko-${darkMode ? "dark" : "light"}`
+
+tabs files:=files selected:=selected
+.editor/$editor
+
 lifecycle<{
   editor?: monaco.editor.IStandaloneCodeEditor;
   changeHandler?: monaco.IDisposable;
   updatedInternally?: boolean;
 }> onMount() {
-    this.editor = monaco.editor.create(container(), {
-      theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "marko-dark" : "marko-light",
+    this.editor = monaco.editor.create($editor(), {
+      theme,
       automaticLayout: true,
       tabSize: 2,
+      lineHeight: 22,
+      fontSize: 14,
+      lineNumbersMinChars: 3,
+      minimap: { enabled: false },
+      padding: { top: 14, bottom: 14 },
+      renderWhitespace: "boundary",
+      scrollBeyondLastLine: false,
     });
   } onUpdate() {
     if (this.updatedInternally) {
       this.updatedInternally = false;
     } else {
-      monaco.editor.setTheme(darkMode ? "marko-dark" : "marko-light");
+      monaco.editor.setTheme(theme);
       if (file) {
         this.changeHandler?.dispose();
 
@@ -60,9 +64,7 @@ lifecycle<{
     this.editor?.dispose();
   }
 
-style
-  --
+style --
   .editor {
     height: 100%;
   }
-  --

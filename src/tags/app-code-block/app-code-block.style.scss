@@ -39,9 +39,10 @@ html.concise-mode .code-block {
   color: var(--color-white) !important;
   font-size: 0.8em;
   background-color: var(--color-black);
-  box-shadow:
-    0 0 15px -8px var(--section-color-dim),
-    0 0 15px -8px var(--section-color-dim-alt);
+  border: 1px solid var(--section-color-dim-alt);
+  @media (prefers-color-scheme: dark) {
+    border-color: var(--section-color-dim);
+  }
   &::before {
     content: "";
     position: absolute;
@@ -70,9 +71,10 @@ html.concise-mode .code-block {
   color: var(--color-white) !important;
   background-color: var(--color-black);
   font-size: 0.8em;
-  box-shadow:
-    0 0 15px -8px var(--section-color-dim),
-    0 0 15px -8px var(--section-color-dim-alt);
+  border: 1px solid var(--section-color-dim-alt);
+  @media (prefers-color-scheme: dark) {
+    border-color: var(--section-color-dim);
+  }
   &-container {
     position: relative;
     display: inline-flex;
@@ -92,10 +94,8 @@ html.concise-mode .code-block {
   &-menu {
     list-style: none;
     height: 11.25em;
-    overflow-y: scroll;
+    overflow-y: hidden;
     border-radius: 0.5rem;
-    scrollbar-color: auto;
-    scrollbar-width: none;
 
     & > li {
       display: flex;

@@ -3,15 +3,16 @@ import type { ThemeInput } from "shiki";
 export const markoDark = {
   name: "marko-dark",
   colors: {
+    "focusBorder": "#00000000",
     "editor.foreground": "#FFF",
-    "editor.background": "transparent",
+    "editor.background": "#00000000",
   },
   settings: [
     {
       scope: "editor.foreground",
       settings: {
         foreground: "#FFF",
-        background: "transparent",
+        background: "#00000000",
       },
     },
     {
@@ -254,8 +255,9 @@ export const markoDark = {
 export const markoLight = {
   name: "marko-light",
   colors: {
+    "focusBorder": "#00000000",
     "editor.foreground": "#202124",
-    "editor.background": "transparent",
+    "editor.background": "#00000000",
     "editor.lineHighlightBorder": "#f3f3f7",
     "editor.selectionBackground": "#D2E2FF",
     "editorCursor.foreground": "#202124",
@@ -265,7 +267,7 @@ export const markoLight = {
       scope: "editor.foreground",
       settings: {
         foreground: "#202124",
-        background: "transparent",
+        background: "#00000000",
       },
     },
     {
