@@ -44,10 +44,9 @@ div.output
       for|option| in=previewTypes
         option -- ${option}
     div
-      -- marko@
       select value:=markoVersion
         for|version| of=availableMarkoVersions by(version) { return version } 
-          option -- ${version}
+          option value=version -- marko@${version}
   if=markoVersion
     if=previewTypes[previewType].output === "ast"
       render-ast=input.files selected=input.selected markoVersion=markoVersion
@@ -65,6 +64,8 @@ style --
     height: 100%;
 
     .output-header {
+      padding: 0 0.5rem;
+      margin-bottom: 1rem;
       display: flex;
       justify-content: space-between;
     }

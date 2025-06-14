@@ -1,0 +1,25 @@
+select {
+  appearance: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 2.5rem;
+  border: 1px solid transparent;
+  color: var(--color-foreground);
+  background-color: var(--section-color-alt-dim, var(--color-blue-alt-dim));
+  background-image: url("./chevron.svg?no-inline");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 0.8rem 0.5rem;
+  @media (prefers-color-scheme: dark) {
+    background-image: url("./chevron.svg?no-inline#dark");
+  }
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--section-color-alt, var(--color-blue-alt));
+}
+
+select:hover {
+  border-color: var(--section-color, var(--color-blue));
+}
