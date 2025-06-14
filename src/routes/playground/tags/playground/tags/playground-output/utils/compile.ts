@@ -1,4 +1,4 @@
-import type { PlaygroundFile } from "../../../playground.marko";
+import path from "path";
 import {
   initialize,
   build,
@@ -7,11 +7,11 @@ import {
   type BuildResult,
 } from "esbuild-wasm";
 import wasmURL from "esbuild-wasm/esbuild.wasm?url";
+import type { PlaygroundFile } from "../../../playground.marko";
 import { loadPackage } from "./npm-install";
 import { resetFileSystem } from "./esbuild-fs";
-import path from "path";
-import "./node-polyfills";
 import { fsShim } from "./fs-shim";
+import "./node-polyfills";
 
 const cachedMarkoPackages = {} as Record<
   string,
