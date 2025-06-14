@@ -23,10 +23,15 @@ section class=styles.section
       --
       Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
       --
-    a href="/docs/reference/language" class=styles.cta -- Learn More
+    a href="/docs/introduction/welcome-to-marko" class=styles.cta -- Learn More
 
   figure class=styles.example
-    app-code-block theme="dark" lang="marko" text=EXAMPLE_HTML concise=EXAMPLE_CONCISE
+    app-code-block [
+      theme="dark"
+      lang="marko"
+      text=EXAMPLE_HTML
+      concise=EXAMPLE_CONCISE
+    ]
     div class=styles.exampleOutput
       let/count=0
       button/inc onClick() {

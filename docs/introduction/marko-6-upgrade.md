@@ -1,3 +1,0 @@
-# Upgrading to Marko 6
-
-Coming soon...
