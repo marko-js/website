@@ -292,6 +292,15 @@ The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) a
 
 Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#select), which is also controllable with a `Change` handler.
 
+```marko
+<let/selected="en">
+<select value:=selected>
+  <option value="en">English</option>
+  <option value="pt-br">Portuguese (Brazil)</option>
+  <option value="it">Italian</option>
+</select>
+```
+
 #### `<textarea>` (`valueChange=`)
 
 The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#textarea).
