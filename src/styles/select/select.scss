@@ -1,14 +1,15 @@
 select {
   appearance: none;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
+  padding-right: 1.8rem;
   border-radius: 2.5rem;
   border: 1px solid transparent;
   color: var(--color-foreground);
   background-color: var(--section-color-alt-dim, var(--color-blue-alt-dim));
   background-image: url("./chevron.svg?no-inline");
   background-repeat: no-repeat;
-  background-position: right 0.8rem center;
+  background-position: right 0.5rem center;
   background-size: 0.8rem 0.5rem;
   @media (prefers-color-scheme: dark) {
     background-image: url("./chevron.svg?no-inline#dark");
