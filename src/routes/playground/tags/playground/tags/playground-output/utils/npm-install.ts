@@ -27,7 +27,7 @@ export async function getPackageMetadata(packageName: string) {
   if (!pendingMeta) {
     packageCache.set(
       packageName,
-      (pendingMeta = fetch(`https://registry.npmjs.org/${packageName}`)
+      (pendingMeta = fetchCached(`https://registry.npmjs.org/${packageName}`)
         .then((r) => r.json())
         .then((rawMeta) => {
           const versions: PackageMeta["versions"] = new Map();
@@ -103,7 +103,7 @@ export async function loadPackage(
 }
 
 async function readTarballFiles(tarballURL: string, packageName: string) {
-  const tarball = await fetch(tarballURL);
+  const tarball = await fetchCached(tarballURL);
   const files: Record<string, string> = {};
   const extractor = extract();
 
@@ -135,4 +135,44 @@ async function readTarballFiles(tarballURL: string, packageName: string) {
     extractor.on("finish", resolve).on("error", reject),
   );
   return files;
+}
+
+let db: IDBDatabase | undefined;
+let loadDB: Promise<void> | undefined;
+async function fetchCached(url: string) {
+  if (!loadDB) {
+    await (loadDB = new Promise<void>((resolve) => {
+      const open = indexedDB.open("NPM_CACHE", 1);
+      open.onupgradeneeded = () => open.result.createObjectStore("data");
+      open.onerror = () => resolve();
+      open.onsuccess = () => {
+        db = open.result;
+        resolve();
+      };
+    }));
+  }
+
+  if (!db) return fetch(url);
+
+  try {
+    const get = db.transaction("data", "readonly").objectStore("data").get(url);
+    const cached = await new Promise<Blob | void>((resolve) => {
+      get.onsuccess = () => resolve(get.result as Blob | undefined);
+      get.onerror = () => resolve();
+    });
+    if (cached) {
+      return new Response(cached);
+    }
+  } catch {
+  }
+
+  const res = await fetch(url);
+  res
+    .clone()
+    .blob()
+    .then((blob) => {
+      db!.transaction("data", "readwrite").objectStore("data").put(blob, url);
+    })
+    .catch(() => {});
+  return res;
 }
