@@ -13,6 +13,8 @@ html lang="en"
     link rel="icon" type="image/svg+xml" href="/fav.svg"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
 
+    prefetch-links
+
   body
     #root
       app-header
@@ -22,36 +24,3 @@ html lang="en"
 
     if=!($global.meta as any).hideFooter
       app-footer
-
-static function isAnchorEvent(e: Event): e is Event & { target: HTMLAnchorElement } {
-  return (e.target as HTMLElement)?.tagName === "A";
-}
-
-static const prefetchedUrls = new Set<string>();
-
-static function prefetch(e: Event) {
-  if (isAnchorEvent(e)) {
-    if (prefetchedUrls.has(e.target.href)) {
-      // already prefetched, ignore
-    } else if (
-      !e.target.download &&
-      e.target.href &&
-      !(e.target.rel && e.target.rel !== "external") &&
-      (!e.target.target || e.target.target === "_self") &&
-      e.target.origin === window.location.origin &&
-      e.target.pathname !== window.location.pathname
-    ) {
-      prefetchedUrls.add(e.target.href);
-      const link = document.createElement("link");
-      link.rel = "prefetch";
-      link.href = e.target.href;
-      link.onload = link.onerror = () => link.remove();
-      document.head.appendChild(link);
-    }
-  }
-}
-
-script --
-  document.addEventListener("mouseover", prefetch, { signal: $signal, capture: true });
-  document.addEventListener("touchstart", prefetch, { signal: $signal, capture: true });
-  document.addEventListener("focus", prefetch, { signal: $signal, capture: true });
