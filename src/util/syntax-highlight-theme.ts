@@ -274,14 +274,14 @@ export const markoLight = {
       name: "Comment",
       scope: "comment",
       settings: {
-        foreground: "#787890",
+        foreground: "#73738C",
       },
     },
     {
       name: "String",
       scope: "string",
       settings: {
-        foreground: "#B5960F",
+        foreground: "#8A720A",
       },
     },
     {
@@ -332,7 +332,7 @@ export const markoLight = {
       scope: "storage.type",
       settings: {
         fontStyle: "italic",
-        foreground: "#0F8BD9",
+        foreground: "#0D7BBF",
       },
     },
     {
@@ -340,7 +340,7 @@ export const markoLight = {
       scope: "entity.name.class",
       settings: {
         fontStyle: "underline",
-        foreground: "#4D8C1F",
+        foreground: "#46821C",
       },
     },
     {
@@ -348,7 +348,7 @@ export const markoLight = {
       scope: "entity.other.inherited-class",
       settings: {
         fontStyle: "italic underline",
-        foreground: "#4D8C1F",
+        foreground: "#46821C",
       },
     },
     {
@@ -356,7 +356,7 @@ export const markoLight = {
       scope: "entity.name.function",
       settings: {
         fontStyle: "",
-        foreground: "#1F8C4D",
+        foreground: "#1D8649",
       },
     },
     {
@@ -364,7 +364,7 @@ export const markoLight = {
       scope: "variable.parameter",
       settings: {
         fontStyle: "italic",
-        foreground: "#CF6C20",
+        foreground: "#B05C1C",
       },
     },
     {
@@ -380,7 +380,7 @@ export const markoLight = {
       scope: "entity.other.attribute-name",
       settings: {
         fontStyle: "",
-        foreground: "#4D8C1F",
+        foreground: "#46821C",
       },
     },
     {
@@ -388,7 +388,7 @@ export const markoLight = {
       scope: "support.function",
       settings: {
         fontStyle: "",
-        foreground: "#0F8BD9",
+        foreground: "#0D7BBF",
       },
     },
     {
@@ -396,7 +396,7 @@ export const markoLight = {
       scope: "support.constant",
       settings: {
         fontStyle: "",
-        foreground: "#0F8BD9",
+        foreground: "#0D7BBF",
       },
     },
     {
@@ -404,7 +404,7 @@ export const markoLight = {
       scope: "support.type, support.class",
       settings: {
         fontStyle: "italic",
-        foreground: "#0F8BD9",
+        foreground: "#0D7BBF",
       },
     },
     {
@@ -435,7 +435,7 @@ export const markoLight = {
       name: "JSON String",
       scope: "meta.structure.dictionary.json string.quoted.double.json",
       settings: {
-        foreground: "#CFCFC2",
+        foreground: "#4A4A4A",
       },
     },
     {
@@ -449,7 +449,7 @@ export const markoLight = {
       name: "diff.header",
       scope: "meta.diff, meta.diff.header",
       settings: {
-        foreground: "#787890",
+        foreground: "#73738C",
       },
     },
     {
@@ -463,14 +463,14 @@ export const markoLight = {
       name: "diff.inserted",
       scope: "markup.inserted",
       settings: {
-        foreground: "#4D8C1F",
+        foreground: "#46821C",
       },
     },
     {
       name: "diff.changed",
       scope: "markup.changed",
       settings: {
-        foreground: "#B5960F",
+        foreground: "#8A720A",
       },
     },
     {
@@ -482,7 +482,7 @@ export const markoLight = {
     {
       scope: "entity.name.filename",
       settings: {
-        foreground: "#B5960F",
+        foreground: "#8A720A",
       },
     },
     {
@@ -494,7 +494,7 @@ export const markoLight = {
     {
       scope: "punctuation.definition.template-expression",
       settings: {
-        foreground: "#0F8BD9",
+        foreground: "#0D7BBF",
       },
     },
   ],
