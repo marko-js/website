@@ -26,27 +26,32 @@ html lang="en"
 static function isAnchorEvent(e: Event): e is Event & { target: HTMLAnchorElement } {
   return (e.target as HTMLElement)?.tagName === "A";
 }
+
 static const prefetchedUrls = new Set<string>();
 
 static function prefetch(e: Event) {
   if (isAnchorEvent(e)) {
     if (prefetchedUrls.has(e.target.href)) {
       // already prefetched, ignore
-    } else if (new URL(e.target.href, window.location.href).origin === window.location.origin) {
+    } else if (
+      !e.target.download &&
+      e.target.href &&
+      !(e.target.rel && e.target.rel !== "external") &&
+      (!e.target.target || e.target.target === "_self") &&
+      e.target.origin === window.location.origin &&
+      e.target.pathname !== window.location.pathname
+    ) {
       prefetchedUrls.add(e.target.href);
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
+      const link = document.createElement("link");
+      link.rel = "prefetch";
       link.href = e.target.href;
+      link.onload = link.onerror = () => link.remove();
       document.head.appendChild(link);
     }
   }
 }
 
 script --
-  document.addEventListener("mouseover", prefetch, { signal: $signal });
-  document.addEventListener("touchstart", prefetch, { signal: $signal });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      prefetch(e);
-    }
-  }, { signal: $signal });
+  document.addEventListener("mouseover", prefetch, { signal: $signal, capture: true });
+  document.addEventListener("touchstart", prefetch, { signal: $signal, capture: true });
+  document.addEventListener("focus", prefetch, { signal: $signal, capture: true });
