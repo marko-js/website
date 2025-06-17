@@ -22,3 +22,32 @@ html lang="en"
 
     if=!($global.meta as any).hideFooter
       app-footer
+
+static function isAnchorEvent(e: Event): e is Event & { target: HTMLAnchorElement } {
+  return (e.target as HTMLElement)?.tagName === "A";
+}
+
+static const prefetchedLinks = new WeakSet<HTMLAnchorElement>();
+
+static function prefetch(e: Event) {
+  if (isAnchorEvent(e) && new URL(e.target.href, window.location.href).origin === window.location.origin) {
+    if (prefetchedLinks.has(e.target)) {
+      return;
+    }
+    
+    prefetchedLinks.add(e.target);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = e.target.href;
+    document.head.appendChild(link);
+  }
+}
+
+script --
+  document.addEventListener("mouseover", prefetch, { signal: $signal });
+  document.addEventListener("touchstart", prefetch, { signal: $signal });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      prefetch(e);
+    }
+  }, { signal: $signal });
