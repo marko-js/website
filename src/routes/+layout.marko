@@ -26,20 +26,19 @@ html lang="en"
 static function isAnchorEvent(e: Event): e is Event & { target: HTMLAnchorElement } {
   return (e.target as HTMLElement)?.tagName === "A";
 }
-
-static const prefetchedLinks = new WeakSet<HTMLAnchorElement>();
+static const prefetchedUrls = new Set<string>();
 
 static function prefetch(e: Event) {
-  if (isAnchorEvent(e) && new URL(e.target.href, window.location.href).origin === window.location.origin) {
-    if (prefetchedLinks.has(e.target)) {
-      return;
+  if (isAnchorEvent(e)) {
+    if (prefetchedUrls.has(e.target.href)) {
+      // already prefetched, ignore
+    } else if (new URL(e.target.href, window.location.href).origin === window.location.origin) {
+      prefetchedUrls.add(e.target.href);
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = e.target.href;
+      document.head.appendChild(link);
     }
-    
-    prefetchedLinks.add(e.target);
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = e.target.href;
-    document.head.appendChild(link);
   }
 }
 
