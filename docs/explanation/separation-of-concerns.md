@@ -269,7 +269,7 @@ The result is code that's easier to understand, modify, and maintain. Components
 
 The question isn't whether to separate concerns, but **which concerns to separate** and **where to draw the boundaries**. Marko's Tags API gives you the flexibility to make those decisions based on your application's actual needs, not on outdated assumptions about web technology separation.
 
-## Next Steps
+## Further Reading
 
 - [Nested Reactivity](./nested-reactivity.md)
 - [Optimizing Performance](./optimizing-performance.md)

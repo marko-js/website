@@ -22,6 +22,10 @@ Marko's component model promotes reusability and modularity, simplifying the con
 
 ```marko
 /* hello.marko */
+export interface Input {
+  name: string;
+}
+
 <h1>Hello, ${input.name}</h1>
 ```
 
