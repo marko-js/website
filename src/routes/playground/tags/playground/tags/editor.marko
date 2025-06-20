@@ -28,13 +28,14 @@ lifecycle<{
 }> onMount() {
     this.editor = monaco.editor.create($editor(), {
       theme,
+      value: file?.content,
       automaticLayout: true,
       tabSize: 2,
       lineHeight: 22,
       fontSize: 14,
       lineNumbersMinChars: 3,
       minimap: { enabled: false },
-      padding: { top: 14, bottom: 14 },
+      padding: { top: 16, bottom: 16 },
       renderWhitespace: "boundary",
       scrollBeyondLastLine: false,
     });
@@ -54,14 +55,14 @@ lifecycle<{
         );
 
         this.changeHandler = this.editor!.onDidChangeModelContent(() => {
-          file = { ...file, content: this.editor?.getValue() || "" };
+          file = { ...file, content: this.editor!.getValue() || "" };
           this.updatedInternally = true;
         });
       }
     }
   } onDestroy() {
-    this.editor?.getModel()?.dispose();
-    this.editor?.dispose();
+    this.editor!.getModel()?.dispose();
+    this.editor!.dispose();
   }
 
 style --

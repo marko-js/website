@@ -1,4 +1,3 @@
-import path from "path";
 import {
   initialize,
   build,
@@ -9,10 +8,29 @@ import {
 import wasmURL from "esbuild-wasm/esbuild.wasm?url";
 import type { PlaygroundFile } from "../../../playground.marko";
 import { loadPackage } from "./npm-install";
-import { resetFileSystem } from "./esbuild-fs";
-import { fsShim } from "./fs-shim";
-import "./node-polyfills";
 
+import path from "path";
+import util from "util";
+import assert from "assert";
+import fs, { resetFileSystem } from "./fs-shim";
+
+declare let __node_shims__: Record<string, unknown>;
+(globalThis as any).__node_shims__ = {
+  fs,
+  path,
+  util,
+  assert,
+};
+(globalThis as any).process = {
+  browser: true,
+  env: {
+    NODE_ENV: "production",
+  },
+  cwd() {
+    return "/";
+  },
+};
+const externalShims = Object.keys(__node_shims__);
 const cachedMarkoPackages = {} as Record<
   string,
   Promise<{
@@ -57,19 +75,21 @@ async function getMarkoPackages(version: string) {
             platform: "browser",
             write: false,
             mainFields: ["main:npm", "main"],
-            external: [
-              "path",
-              "fs",
-              "assert",
-              "crypto",
-              "util",
-              "module",
-              "tty",
-            ],
+            define: {
+              global: "globalThis",
+              "process.browser": "true",
+              "process.env.BUNDLE": '"1"',
+              "process.env.NODE_ENV": '"production"',
+              "process.env.BABEL_TYPES_8_BREAKING": "undefined",
+            },
+            external: externalShims,
             banner: {
               js: `
-                const require = (module) => globalThis.nodePolyfills[module];
                 const __dirname = "/";
+                const require = id => {
+                  if (__node_shims__[id]) return __node_shims__[id];
+                  throw new Error("Unable to resolve module: " + id);
+                };
               `,
             },
           })
@@ -113,62 +133,62 @@ export async function compile(
     bundle?: boolean;
     signal?: AbortSignal;
   } = {},
-) {
-  const { compiler, translator, runtimeFiles } =
-    await getMarkoPackages(version);
-
-  if (options.signal?.aborted) {
-    return {
-      errors: [{ text: "Build Aborted" }],
-    } as BuildResult;
-  }
-  const prefix = version.startsWith("5") ? "components" : "tags";
-
-  const fsMap: Record<string, string> = Object.fromEntries(
-    files.map(({ path, content }) => [`/${prefix}/` + path, content]),
-  );
-  const fs = fsShim(fsMap);
-
-  compiler.taglib.clearCaches();
-
-  compiler.configure({
-    output: options.output || "dom",
-    resolveVirtualDependency(from, dep) {
-      fsMap[path.join(from, "..", dep.virtualPath)] = dep.code;
-      return dep.virtualPath;
-    },
-    cache: new Map(),
-    translator,
-    stripTypes: true,
-  });
-
-  let buildOptions: BuildOptions;
-  if (options.bundle) {
-    buildOptions = {
-      bundle: true,
-      stdin: {
-        contents: `
-          import index from "/${prefix}/index.marko";
-          if (index.mount) {
-            index.mount({}, document.body);
-          } else {
-            index.renderSync({}).appendTo(document.body);
-          }
-        `,
-        loader: "js",
-        resolveDir: "/",
-      },
-    };
-  } else {
-    buildOptions = {
-      bundle: false,
-      entryPoints: {
-        [entryPoint]: `/${prefix}/` + entryPoint,
-      },
-    };
-  }
-
+): Promise<BuildResult> {
   try {
+    const { compiler, translator, runtimeFiles } =
+      await getMarkoPackages(version);
+
+    if (options.signal?.aborted) {
+      return {
+        errors: [{ text: "Build Aborted" }],
+      } as BuildResult;
+    }
+    const prefix = version.startsWith("5") ? "components" : "tags";
+
+    const fsMap: Record<string, string> = Object.fromEntries(
+      files.map(({ path, content }) => [`/${prefix}/` + path, content]),
+    );
+
+    compiler.taglib.clearCaches();
+    resetFileSystem(fsMap);
+
+    compiler.configure({
+      output: options.output || "dom",
+      resolveVirtualDependency(from, dep) {
+        fsMap[path.join(from, "..", dep.virtualPath)] = dep.code;
+        return dep.virtualPath;
+      },
+      cache: new Map(),
+      translator,
+      stripTypes: true,
+    });
+
+    let buildOptions: BuildOptions;
+    if (options.bundle) {
+      buildOptions = {
+        bundle: true,
+        stdin: {
+          contents: `
+            import index from "/${prefix}/index.marko";
+            if (index.mount) {
+              index.mount({}, document.body);
+            } else {
+              index.renderSync({}).appendTo(document.body);
+            }
+          `,
+          loader: "js",
+          resolveDir: "/",
+        },
+      };
+    } else {
+      buildOptions = {
+        bundle: false,
+        entryPoints: {
+          [entryPoint]: `/${prefix}/` + entryPoint,
+        },
+      };
+    }
+
     return await build({
       ...buildOptions,
 
@@ -204,6 +224,7 @@ export async function compile(
                   resolveDir: path.dirname(args.path),
                 };
               } catch (e) {
+                console.error(e);
                 if (isCompileError(e)) {
                   return {
                     errors: [
@@ -218,6 +239,7 @@ export async function compile(
                     errors: [
                       {
                         text: (e as any).toString(),
+                        detail: (e as any).stack,
                       },
                     ],
                   };
@@ -256,7 +278,18 @@ export async function compile(
       ],
     });
   } catch (e) {
-    return e as BuildResult;
+    if ((e as BuildResult).errors) {
+      return e as BuildResult;
+    }
+
+    return {
+      errors: [
+        {
+          text: (e as Error).message,
+          detail: (e as Error).stack,
+        },
+      ],
+    } as BuildResult;
   }
 }
 
@@ -271,9 +304,9 @@ export async function compileAst(
   const fsMap: Record<string, string> = Object.fromEntries(
     files.map(({ path, content }) => [`/${prefix}/` + path, content]),
   );
-  const fs = fsShim(fsMap);
 
   compiler.taglib.clearCaches();
+  resetFileSystem(fsMap);
 
   try {
     return compiler.compileFileSync(`/${prefix}/` + entryPoint, {

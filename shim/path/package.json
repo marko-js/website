@@ -1,0 +1,9 @@
+{
+  "name": "path",
+  "exports": {
+    ".": {
+      "browser": "../../node_modules/path-browserify/index.js",
+      "default": "./node.js"
+    }
+  }
+}

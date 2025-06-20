@@ -1,0 +1,9 @@
+{
+  "name": "assert",
+  "exports": {
+    ".": {
+      "browser": "./browser.js",
+      "default": "./node.js"
+    }
+  }
+}

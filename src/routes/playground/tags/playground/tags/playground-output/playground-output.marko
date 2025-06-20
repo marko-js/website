@@ -38,42 +38,75 @@ lifecycle onMount=async () => {
   markoVersion = getVersionFromRange(meta, markoVersion ?? "next") ?? getVersionFromRange(meta, "next")!;
 }
 
-div.output
-  div.output-header
+.output
+  .output-header
     select value:=previewType
       for|option| in=previewTypes
         option -- ${option}
-    div
-      select value:=markoVersion
-        for|version| of=availableMarkoVersions by(version) { return version } 
-          option value=version -- marko@${version}
-  if=markoVersion
-    if=previewTypes[previewType].output === "ast"
-      render-ast=input.files selected=input.selected markoVersion=markoVersion
-    else if=input.files.length
-      render-files=input.files
-        ,markoVersion=markoVersion
-        ,selected=input.selected
-        ,render=previewTypes[previewType].render
-        ,output=previewTypes[previewType].output
+    select value:=markoVersion
+      for|version| of=availableMarkoVersions by(version) { return version } 
+        option value=version -- marko@${version}
+  .output-content
+    if=markoVersion
+      if=previewTypes[previewType].output === "ast"
+        render-ast=input.files selected=input.selected markoVersion=markoVersion
+      else if=input.files.length
+        render-files=input.files
+          ,markoVersion=markoVersion
+          ,selected=input.selected
+          ,render=previewTypes[previewType].render
+          ,output=previewTypes[previewType].output
 
 style --
   .output {
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
 
-    .output-header {
-      display: flex;
-      justify-content: flex-start;
+  .output-header {
+    display: flex;
+    justify-content: flex-start;
+    background-color: var(--color-gray-dim);
+    overflow-x: auto;
+    scrollbar-width: thin;
+
+    select {
+      font-size: 1rem;
+      border-radius: 0;
       background-color: var(--color-gray-dim);
-      overflow-x: auto;
-      scrollbar-width: thin;
+    }
+  }
 
-      select {
-        font-size: 1rem;
-        border-radius: 0;
-        background-color: var(--color-gray-dim);
+  .output-content {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
+
+    iframe {
+      flex: 1;
+      border: none;
+    }
+  }
+
+  .output-content > .shiki {
+    flex: 1;
+    counter-reset: line-number;
+    padding: 1rem;
+
+    .line {
+      position: relative;
+      counter-increment: line-number;
+      &::before {
+        display: inline-flex;
+        content: counter(line-number);
+        padding-right: 1.625rem;
+        width: 3ch;
+        justify-content: right;
+        color: #858585;
+        user-select: none;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
       }
     }
   }

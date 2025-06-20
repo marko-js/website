@@ -20,33 +20,21 @@ lifecycle onMount() {
   }, 500);
 }
 
-script=async () => {
+script --
   const timeout = setTimeout(() => {
     showLoadingMessage = true;
-  }, 500)
+  }, 500);
   compiled = await compileAst(files, input.markoVersion, files[input.selected].path)
   clearTimeout(timeout);
   showLoadingMessage = false;
-}
 
 if=showLoadingMessage -- Installing Packages...
-else if=compiled && "error" in compiled
-  pre.codeOutput -- ${compiled.error}
-else if=compiled
-  const/highlighted=highlighter.codeToHtml(JSON.stringify(compiled.ast, null, 2), {
-    lang: "json",
-    defaultColor: false,
-    themes: {
-      light: "marko-light",
-      dark: "marko-dark"
-    }
-  })
-  pre.codeOutput -- $!{highlighted}
-
-style
-  --
-  pre.codeOutput {
-    overflow-y: scroll;
-    margin: 0 0.5rem;
+else if=compiled && "error" in compiled -- ${compiled.error}
+else if=compiled -- $!{highlighter.codeToHtml(JSON.stringify(compiled.ast, null, 2), {
+  lang: "json",
+  defaultColor: false,
+  themes: {
+    light: "marko-light",
+    dark: "marko-dark"
   }
-  --
+})}

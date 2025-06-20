@@ -10,20 +10,20 @@ client import { compile } from "../utils/compile";
 client import { highlighter } from "../../init-shiki-monaco";
 client const decoder = new TextDecoder();
 
-<let-debounce/files=input.value/>
+let-debounce/files=input.value
 
-<let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)/>
-<let/showLoadingMessage=false/>
+let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)
+let/showLoadingMessage=false
 
-<lifecycle onMount() {
+lifecycle onMount() {
   setTimeout(() => {
     if (compiled === null) {
       showLoadingMessage = true;
     }
   }, 500);
-}/>
+}
 
-<script>
+script --
   const timeout = setTimeout(() => {
     showLoadingMessage = true;
   }, 500);
@@ -39,27 +39,22 @@ client const decoder = new TextDecoder();
   );
   clearTimeout(timeout);
   showLoadingMessage = false;
-</script>
 
-<if=showLoadingMessage>
-  Installing Packages...
-</if>
-<else if=compiled>
-  <if=(compiled.errors.length)>
-    <for|error| of=compiled.errors>
-      <pre class="codeOutput">${error.text}</pre>
-    </for>
-  </if>
-  <else if=(compiled.outputFiles?.length)>
-    <const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)/>
-    <const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)/>
-    <if=input.render>
-      <let/error=null as null | { message: string; stack?: string }/>
-      <if=error>
-        <pre class="codeOutput">${error.message}: ${error.stack}</pre>
-      </if>
-      <else>
-        <iframe
+if=showLoadingMessage -- Installing Packages...
+else if=compiled
+  if=compiled.errors.length
+    for|error| of=compiled.errors
+      p -- ${error.text}
+  else if=compiled.outputFiles?.length
+    const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)
+    const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)
+    if=input.render
+      let/error=null as null | { message: string; stack?: string }
+      if=error
+        p -- ${error.message}
+        p -- ${error.stack}
+      else
+        iframe [
           title="code output"
           srcdoc=`
           <body>
@@ -78,11 +73,9 @@ client const decoder = new TextDecoder();
             <script type="module">${scriptContent}</script>
             <style>${styleContent ?? ""}</style>
           </body>`
-        />
-        <script>
-          if (scriptContent || styleContent) error = null;
-        </script>
-        <script>
+        ]
+        script -- if (scriptContent || styleContent) error = null;
+        script --
           window.addEventListener(
             "message",
             (e) => {
@@ -94,30 +87,11 @@ client const decoder = new TextDecoder();
               signal: $signal,
             },
           );
-        </script>
-      </else>
-    </if>
-    <else>
-      <const/highlighted=highlighter.codeToHtml(scriptContent, {
-        lang: "js",
-        defaultColor: false,
-        themes: {
-          light: "marko-light",
-          dark: "marko-dark",
-        },
-      })/>
-      <pre class="codeOutput">$!{highlighted}</pre>
-    </else>
-  </else>
-</else>
-
-<style>
-  pre.codeOutput {
-    overflow-y: scroll;
-    margin: 0 0.5rem;
-  }
-  iframe {
-    height: 100%;
-    border: none;
-  }
-</style>
+    else -- $!{highlighter.codeToHtml(scriptContent, {
+      lang: "js",
+      defaultColor: false,
+      themes: {
+        light: "marko-light",
+        dark: "marko-dark",
+      },
+    })}
