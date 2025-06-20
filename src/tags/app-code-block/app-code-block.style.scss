@@ -127,19 +127,3 @@ html.concise-mode .code-block {
     font-size: 1em !important;
   }
 }
-
-.shiki,
-.shiki span {
-  color: var(--shiki-light);
-  .code-block--reverse &,
-  .code-block--dark & {
-    color: var(--shiki-dark);
-  }
-  @media (prefers-color-scheme: dark) {
-    color: var(--shiki-dark);
-    .code-block--reverse &,
-    .code-block--light & {
-      color: var(--shiki-light);
-    }
-  }
-}

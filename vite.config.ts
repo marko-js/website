@@ -2,10 +2,20 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
 import markodown from "./src/util/markodown";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { patchCssModules } from "vite-css-modules";
 
 export default defineConfig({
+  environments: {
+    client: {
+      define: {
+        global: "globalThis",
+        "process.browser": true,
+        "process.env.BUNDLE": true,
+        "process.env.BABEL_TYPES_8_BREAKING": false,
+        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+      },
+    },
+  },
   plugins: [
     patchCssModules({
       exportMode: "named",
@@ -13,31 +23,6 @@ export default defineConfig({
     }),
     markodown(),
     marko(),
-    {
-      ...nodePolyfills({
-        globals: {
-          process: true,
-          global: true,
-          Buffer: true,
-        },
-        include: [
-          "path",
-          "events",
-          "tty",
-          "util",
-          "module",
-          "process",
-          "crypto",
-          "stream",
-        ],
-      }),
-      apply(_, env) {
-        return (
-          env.command === "serve" ||
-          (env.command === "build" && !env.isSsrBuild)
-        );
-      },
-    },
   ],
   css: {
     modules: {
