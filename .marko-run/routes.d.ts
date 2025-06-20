@@ -12,6 +12,8 @@ declare module "@marko/run" {
 		routes: {
 			"/": { verb: "get"; };
 			"/docs": { verb: "get"; };
+			"/docs/explanation/controllable-components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/controllable-components+meta.json"); };
+			"/docs/explanation/controllable-components-vibe": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/controllable-components-vibe+meta.json"); };
 			"/docs/explanation/forms": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/forms+meta.json"); };
 			"/docs/explanation/let-vs-const": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/let-vs-const+meta.json"); };
 			"/docs/explanation/nested-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/nested-reactivity+meta.json"); };
@@ -78,7 +80,7 @@ declare module "../src/routes/docs/_llms/reference-full%2emd+handler" {
 declare module "../src/routes/docs/+middleware" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/docs/reference-full.md"];
+    export type Route = Run.Routes["/docs" | "/docs/explanation/controllable-components" | "/docs/explanation/controllable-components-vibe" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/docs/reference-full.md"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -90,6 +92,28 @@ declare module "../src/routes/_home/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/explanation/controllable-components+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/controllable-components"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/docs/_compiled-docs/explanation/controllable-components-vibe+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/docs/explanation/controllable-components-vibe"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -497,7 +521,7 @@ declare module "../src/routes/+layout.marko" {
   export interface Input extends Run.LayoutInput<typeof import("../src/routes/+layout.marko")> {}
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/playground"];
+    export type Route = Run.Routes["/" | "/docs/explanation/controllable-components" | "/docs/explanation/controllable-components-vibe" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/playground"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -509,7 +533,7 @@ declare module "../src/routes/docs/+layout.marko" {
   export interface Input extends Run.LayoutInput<typeof import("../src/routes/docs/+layout.marko")> {}
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started"];
+    export type Route = Run.Routes["/docs/explanation/controllable-components" | "/docs/explanation/controllable-components-vibe" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/marko-6-upgrade" | "/docs/introduction/welcome-to-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */

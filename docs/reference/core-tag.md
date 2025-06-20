@@ -104,6 +104,10 @@ In this template, `count` is incremented when the button is clicked. Since `coun
 > The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
 >
 > ```marko
+> export interface Input {
+>   initialCount: number;
+> }
+>
 > <let/count=input.initialCount>
 > <p>Count: ${count}</p>
 > <p>Input Count: ${input.initialCount}</p>
@@ -130,6 +134,11 @@ A more common use case is creating state that can be optionally controlled by a 
 
 ```marko
 /* counter.marko */
+export interface Input {
+  count: number;
+  countChange?: (count: number) => void;
+}
+
 <let/count:=input.count>
 
 <button onClick() { count++ }>
@@ -180,6 +189,11 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 > The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
 > ```marko
+> /* const.marko */
+> export interface Input<T> {
+>   value: T;
+> }
+>
 > <return=input.value>
 > ```
 
@@ -210,6 +224,10 @@ If a `valueChange=` attribute is provided, it is called whenever the tag variabl
 
 ```marko
 /* uppercase.marko */
+export interface Input {
+  value: string;
+}
+
 <let/value = input.value.toUpperCase()>
 
 <return=value valueChange(newValue) {
@@ -220,7 +238,7 @@ If a `valueChange=` attribute is provided, it is called whenever the tag variabl
 In the above example, the exposed tag variable is initialized to an UPPERCASE version of `input.value` and when new values are assigned it will first UPPERCASE the value before storing it in state.
 
 ```marko
-<uppercase/value = ""/>
+<uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
 <div>${value}</div> // value is always uppercased
 ```
@@ -335,6 +353,8 @@ The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<de
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
 >
 > ```marko
+> /* define.marko */
+> export type Input<T> = T;
 > <return=input>
 > ```
 
@@ -398,7 +418,7 @@ The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/doc
 The log is re-executed each time its tag variable updates.
 
 ```marko
-<let/count = 0>
+<let/count=0>
 <log=`Current count: ${count}`>
 <button onClick() { count++ }>Log</button>
 ```
@@ -410,6 +430,10 @@ This logs `Current count: 0` on both server and client and again whenever `count
 The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) within the template that will be executed once the tag renders.
 
 ```marko
+export interface Input {
+  stuff: any;
+}
+
 <const/{ stuff } = input>
 
 <debug/> // Can be useful to inspect render-scoped variables with a debugger.
@@ -418,6 +442,11 @@ The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org
 If a `value=` attribute is included, the debugger will be executed whenever it changes.
 
 ```marko
+export interface Input {
+  firstName: string;
+  lastName: string;
+}
+
 <debug=[input.firstName, input.lastName]>
 ```
 

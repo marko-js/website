@@ -28,7 +28,7 @@ import MyTag from "./my-tag.marko"
 or when using the [`<define>` tag](./core-tag.md#define)
 
 ```marko
-<define/MyTag|input| foo=1>
+<define/MyTag|input: { name: string }| foo=1>
   <span>Hello ${input.name}</span>
 </>
 

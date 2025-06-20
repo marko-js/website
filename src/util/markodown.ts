@@ -10,8 +10,6 @@ import * as compiler from "@marko/compiler";
 import { glob } from "glob";
 import type { HeadingList } from "../types";
 
-markoPrettier.setCompiler(compiler, {});
-
 export default function markodownPlugin(): PluginOption {
   return {
     name: "markodown",
@@ -106,6 +104,8 @@ declare module "marked" {
     interface Code {
       html?: string;
       concise?: string;
+      htmlTS?: string;
+      conciseTS?: string;
       filename?: string;
     }
   }
@@ -140,18 +140,43 @@ function markoDocs(): MarkedExtension {
         }
       }
       if (token.type === "code" && token.lang === "marko") {
-        [token.html, token.concise] = await Promise.all([
-          prettier.format(token.text, {
+        const releaseLock = await acquireMutexLock();
+
+        markoPrettier.setCompiler(compiler, {
+          stripTypes: true,
+        });
+        token.html = (
+          await prettier.format(token.text, {
             parser: "marko",
             plugins: [markoPrettier],
             markoSyntax: "html",
-          }),
-          prettier.format(token.text, {
+          })
+        ).trim();
+        token.concise = (
+          await prettier.format(token.text, {
             parser: "marko",
             plugins: [markoPrettier],
             markoSyntax: "concise",
-          }),
-        ]);
+          })
+        ).trim();
+
+        markoPrettier.setCompiler(compiler, {});
+        token.htmlTS = (
+          await prettier.format(token.text, {
+            parser: "marko",
+            plugins: [markoPrettier],
+            markoSyntax: "html",
+          })
+        ).trim();
+        token.conciseTS = (
+          await prettier.format(token.text, {
+            parser: "marko",
+            plugins: [markoPrettier],
+            markoSyntax: "concise",
+          })
+        ).trim();
+
+        releaseLock();
       } else if (token.type === "codespan") {
         // token.text = (token.text as string).replaceAll("${", "${");
       } else if (token.type === "link") {
@@ -159,13 +184,13 @@ function markoDocs(): MarkedExtension {
       }
     },
     renderer: {
-      code({ lang, text, concise, html, filename }) {
+      code({ lang, text, html, concise, htmlTS, conciseTS, filename }) {
         let out = `<app-code-block lang="${lang}"`;
         if (filename) {
           out += ` filename="${filename}"`;
         }
         if (lang === "marko") {
-          out += ` text=${JSON.stringify(html)} concise=${JSON.stringify(concise)}`;
+          out += ` text=${JSON.stringify(html)} markoAlts=[${JSON.stringify(concise)},${JSON.stringify(htmlTS)},${JSON.stringify(conciseTS)}]`;
         } else {
           out += ` text=${JSON.stringify(text)}`;
         }
@@ -265,4 +290,13 @@ function headingSections(headings: HeadingList): MarkedExtension {
       },
     ],
   };
+}
+
+let lock: Promise<void> | undefined;
+async function acquireMutexLock() {
+  const currLock = lock;
+  let resolve!: () => void;
+  lock = new Promise((_) => (resolve = _));
+  await currLock;
+  return resolve;
 }
