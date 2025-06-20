@@ -12,7 +12,7 @@ static declare module "hast" {
 export interface Input {
   lang: string;
   text: string;
-  concise?: string;
+  markoAlts?: [concise: string, htmlTS: string, conciseTS: string]
   filename?: string;
   theme?: "light" | "dark" | "reverse";
   cursor?: {
@@ -110,22 +110,8 @@ server function appendChild(el: Element, child: Child) {
   }
 }
 
-const/highlightedText=highlighter.codeToHtml(input.text, {
-  lang: input.lang,
-  defaultColor: false,
-  transformers: [customTransform],
-  themes: {
-    light: "marko-light",
-    dark: "marko-dark"
-  },
-  meta: {
-    cursor: input.cursor,
-    popovers: input.popovers
-  },
-})
-
-const/highlightedConcise=input.concise &&
-  highlighter.codeToHtml(input.concise, {
+<const/highlight(text: string) {
+  return highlighter.codeToHtml(text, {
     lang: input.lang,
     defaultColor: false,
     transformers: [customTransform],
@@ -138,12 +124,16 @@ const/highlightedConcise=input.concise &&
       popovers: input.popovers
     },
   })
+}/>
 
 .code-block.${input.theme && `code-block--${input.theme}`}
   if=input.filename
     .filename -- ${input.filename}
-  if=input.concise
-    .html -- $!{highlightedText}
-    .concise -- $!{highlightedConcise}
+  if=input.markoAlts
+    const/[concise, htmlTS, conciseTS]=input.markoAlts
+    .html -- $!{highlight(input.text)}
+    .concise -- $!{highlight(concise)}
+    .html-ts -- $!{highlight(htmlTS)}
+    .concise-ts -- $!{highlight(conciseTS)}
   else
-    -- $!{highlightedText}
+    -- $!{highlight(input.text)}

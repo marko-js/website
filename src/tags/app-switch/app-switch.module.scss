@@ -4,11 +4,8 @@
     display: none;
   }
 
-  > input:checked + .off {
-    display: none;
-  }
-  > input:not(:checked) + .off + .on {
-    display: none;
+  > input:checked + svg {
+    transform: scaleX(-1);
   }
 
   svg {
@@ -24,4 +21,9 @@
   user-select: none;
   display: inline-flex;
   gap: 0.5rem;
+
+  &:has(input:checked) > :first-child,
+  &:has(input:not(:checked)) > :last-child {
+    opacity: 0.5;
+  }
 }

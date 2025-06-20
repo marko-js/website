@@ -3,6 +3,10 @@ let-local-storage/conciseMode=false key="concise-mode"
 script -- document.documentElement.classList.toggle("concise-mode", conciseMode);
 html-script -- document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');
 
+let-local-storage/tsMode=false key="ts-mode"
+script -- document.documentElement.classList.toggle("ts-mode", tsMode);
+html-script -- document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');
+
 #site-menu.${styles.menu}
   const/ariaCurrent = (page: string) => $global.url.pathname === page && "true";
   nav#${styles.siteNav}.${styles.nav}
@@ -65,6 +69,9 @@ html-script -- document.documentElement.classList.toggle("concise-mode",localSto
             const/page = "/docs/explanation/forms"
             a href=page aria-current=ariaCurrent(page) -- Working With Forms
           li
+            const/page = "/docs/explanation/controllable-components"
+            a href=page aria-current=ariaCurrent(page) -- Controllable Components
+          li
             const/page = "/docs/explanation/nested-reactivity"
             a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
           li
@@ -102,5 +109,6 @@ html-script -- document.documentElement.classList.toggle("concise-mode",localSto
             a href=page aria-current=ariaCurrent(page) -- TypeScript
   #${styles.controls}
     id/modeId
-    strong id=modeId -- Syntax Mode
+    strong id=modeId -- Settings
     app-switch aria-labelledby=modeId checked:=conciseMode off="HTML" on="Concise"
+    app-switch aria-labelledby=modeId checked:=tsMode off="JS" on="TS"

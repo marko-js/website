@@ -34,6 +34,11 @@ These files provide a **layout component**, which will wrap all nested layouts a
 Layouts are like any other Marko component, with no extra constraints. Each layout receives the request, path params, URL, and route metadata as input, as well as a `content` which refers to the nested page that is being rendered.
 
 ```marko
+/* +layout.marko */
+export interface Input {
+  content: Marko.Body;
+}
+
 <main>
   <h1>My Products</h1>
 
@@ -59,7 +64,8 @@ Typically, these will be `.js` or `.ts` files depending on your project. Like pa
     - The `next` argument will call the page for `GET` requests where applicable or return a `204` response.
   - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined the `next` argument with be automatically called and used as the response.
 
-    ```js
+    ```ts
+    /* +handler.ts */
     export function POST(context, next) {
       const { request, params, url, meta } = context;
       return new Response("Successfully updated", { status: 200 });
@@ -91,6 +97,7 @@ These files are like layouts, but for handlers. Middleware files are called befo
   - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined the `next` argument with be automatically called and used as the response.
 
     ```ts
+    /* +middleware.ts */
     export default async function (context, next) {
       const requestName = `${context.request.method} ${context.url.href}`;
       let success = true;

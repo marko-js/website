@@ -1,16 +1,17 @@
 .code-block {
   position: relative;
 
-  .concise {
+  .html,
+  .concise,
+  .html-ts,
+  .concise-ts {
     display: none;
   }
-}
 
-html.concise-mode .code-block {
-  .html {
-    display: none;
-  }
-  .concise {
+  html:not(.concise-mode):not(.ts-mode) & .html,
+  html.concise-mode:not(.ts-mode) & .concise,
+  html:not(.concise-mode).ts-mode & .html-ts,
+  html.concise-mode.ts-mode & .concise-ts {
     display: block;
   }
 }
@@ -103,7 +104,7 @@ html.concise-mode .code-block {
       padding: 0.5em 0.75em;
       padding-right: 3em;
       &:hover {
-        background-color: #FFFFFF20;
+        background-color: #ffffff20;
       }
       &::before {
         content: "";
@@ -119,7 +120,7 @@ html.concise-mode .code-block {
     }
 
     &:not(:hover) > li:nth-of-type(2) {
-      background-color: #FFFFFF20;
+      background-color: #ffffff20;
     }
   }
 

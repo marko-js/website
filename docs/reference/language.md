@@ -96,7 +96,7 @@ JavaScript [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Re
 
 ```marko
 export function getAnswer() {
-  return 42
+  return 42;
 }
 
 <div>${getAnswer()}</div>
@@ -107,8 +107,10 @@ export function getAnswer() {
 Statements prefixed with `static` allow running JavaScript expressions in module scope. The statements will run when the template loaded on the server and in the browser.
 
 ```marko
-static const answer = 41
-static function getAnswer() { return answer + 1 }
+static const answer = 41;
+static function getAnswer() {
+  return answer + 1;
+}
 
 <div data-answer=getAnswer()></div>
 ```
@@ -245,14 +247,18 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
 > [!NOTE]
-> The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression.
+> The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
+>
+> ```marko
+> <my-tag ...{ property }/>
+> ```
 
 ### Shorthand Methods
 
 [Method definitions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions) allow for a concise way to pass functions as attributes, such as event handlers.
 
 ```marko
-<button onClick(ev) { console.log(ev.target) }>Click Me</button>
+<button onClick(e) { console.log(e.target) }>Click Me</button>
 ```
 
 ### Shorthand Change Handlers (Two-Way Binding)
@@ -353,6 +359,10 @@ Markup within a tag is made available as the `content` property of its [`input`]
 The implementation of `<my-tag>` above can write out the content by passing its `input.content` to a [dynamic tag](#dynamic-tags):
 
 ```marko
+export interface Input {
+  content: Marko.Body;
+}
+
 <div>
   <${input.content}/>
 </div>
@@ -364,13 +374,17 @@ Dynamic text content can be `${interpolated}` in the tag content.
 This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
 
 ```marko
+export interface Input {
+  name: string;
+}
+
 <div>
   Hello ${input.name}
 </div>
 ```
 
 > [!NOTE]
-> The interpolated value is automatically escaped to avoid XSS.
+> The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
 
 ## Attribute Tags
 
@@ -405,6 +419,15 @@ The full [input](./language.md#input) object provided to `<my-tag>` in this exam
 The implementation of `my-layout.marko` might look like
 
 ```marko
+export interface Input {
+  title: string;
+  header: Marko.AttrTag<{
+    class: string;
+    content: Marko.Body;
+  }>;
+  content: Marko.Body;
+}
+
 <!doctype html>
 <html>
   <head>
@@ -495,6 +518,14 @@ This example uses two `<@item>` tags, but `<my-menu>` receives only a single `it
 The other `<@item>` tags are reached through the iterator. The most common way to do so is with a [for tag](./core-tag.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
 
 ```marko
+/* my-menu.marko */
+export interface Input {
+  item?: Marko.AttrTag<{
+    value: string;
+    content: Marko.Body;
+  }>;
+}
+
 <for|item| of=input.item>
   Value: ${item.value}
   <${item.content}/>
@@ -505,6 +536,10 @@ The other `<@item>` tags are reached through the iterator. The most common way t
 > If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
 >
 > ```marko
+> export interface Input {
+>   item?: Marko.AttrTag<{}>;
+> }
+>
 > <const/items=[...input.item || []]>
 >
 > <div>${items.length}</div>
@@ -591,6 +626,10 @@ While rendering [content](#tag-content), child may pass information _back_ to it
 
 ```marko
 /* child.marko */
+export interface Input {
+  content: Marko.Body<[{ number: number }]>;
+}
+
 <div>
   <${input.content} number=1337 />
 </div>
@@ -625,6 +664,10 @@ The `|parameters|` are enclosed in pipes after a tag name, and act functionally 
 Multiple [tag parameters](#tag-parameters) may be provided to the content by using the Tag Arguments syntax, which uses the JavaScript `(...args)` syntax after the tag name.
 
 ```marko
+export interface Input {
+  content: Marko.Body<[number, number, number]>;
+}
+
 <${input.content}(1, 2, 3)/>
 ```
 
@@ -684,6 +727,10 @@ With a dynamic tag the closing tag should be `</>`, or if there is no [content](
 When the value of the dynamic tag name is a string,
 
 ```marko
+export interface Input {
+  headingSize: 1 | 2 | 3 | 4 | 5 | 6;
+}
+
 // Dynamically output a native tag.
 <${"h" + input.headingSize}>Hello!</>
 ```
@@ -698,7 +745,7 @@ import MyTagB from "<my-tag-b>"
 ```
 
 > [!CAUTION]
-> When rendering a custom tag, you must have a reference to it, the following is _not_ equivalent to the above example. In this case, Marko will output a native HTML element (as if you called `document.createElement("my-tag-a")`).
+> Strings will _always_ render native tags. When rendering a custom tag, you must have a reference to it. The following is _not_ equivalent to the above example, since Marko would output a native HTML element (as if you called `document.createElement("my-tag-a")`).
 >
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
@@ -710,10 +757,10 @@ import MyTagB from "<my-tag-b>"
 > If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.
 >
 > ```marko
-> <define/Message>
+> <define/message>
 >   Hello World
 > </define>
-> <${Message}/>
+> <${message}/>
 > ```
 >
 > Although in this case you should prefer a [PascalCase](#pascalcase-variables) `<Message>` tag instead.
@@ -723,6 +770,10 @@ import MyTagB from "<my-tag-b>"
 When a dynamic tag name is [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) it will output the tag's [content](#tag-content) only. This is useful for conditional parenting and fallback content.
 
 ```marko
+export interface Input {
+  href: string;
+}
+
 // Only wrap the text with an anchor when we have an `input.href`.
 <${input.href && "a"} href=input.href>Hello World</>
 ```
