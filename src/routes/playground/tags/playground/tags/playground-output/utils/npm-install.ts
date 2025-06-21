@@ -137,42 +137,30 @@ async function readTarballFiles(tarballURL: string, packageName: string) {
   return files;
 }
 
-let db: IDBDatabase | undefined;
-let loadDB: Promise<void> | undefined;
+let cache: Cache | undefined;
+let openCache =
+  typeof caches !== "object"
+    ? undefined
+    : caches
+        .open("npm")
+        .then((_) => {
+          cache = _;
+        })
+        .finally(() => {
+          openCache = undefined;
+        });
 async function fetchCached(url: string) {
-  if (!loadDB) {
-    await (loadDB = new Promise<void>((resolve) => {
-      const open = indexedDB.open("NPM_CACHE", 1);
-      open.onupgradeneeded = () => open.result.createObjectStore("data");
-      open.onerror = () => resolve();
-      open.onsuccess = () => {
-        db = open.result;
-        resolve();
-      };
-    }));
+  if (openCache) await openCache;
+
+  const cached = cache && (await cache.match(url));
+  if (cached) {
+    return cached;
   }
 
-  if (!db) return fetch(url);
-
-  try {
-    const get = db.transaction("data", "readonly").objectStore("data").get(url);
-    const cached = await new Promise<Blob | void>((resolve) => {
-      get.onsuccess = () => resolve(get.result as Blob | undefined);
-      get.onerror = () => resolve();
-    });
-    if (cached) {
-      return new Response(cached);
-    }
-  } catch {
+  const res = await fetch(url, { cache: "force-cache" });
+  if (cache) {
+    cache.put(url, res.clone());
   }
 
-  const res = await fetch(url);
-  res
-    .clone()
-    .blob()
-    .then((blob) => {
-      db!.transaction("data", "readwrite").objectStore("data").put(blob, url);
-    })
-    .catch(() => {});
   return res;
 }
