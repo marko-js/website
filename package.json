@@ -19,12 +19,13 @@
     "@marko/run": "^0.7.4",
     "@marko/run-adapter-static": "^2.0.0",
     "@shikijs/monaco": "^3.7.0",
+    "@shikijs/langs-precompiled": "^3.7.0",
     "@types/semver": "^7.7.0",
     "@types/tar-stream": "^3.1.4",
     "esbuild-wasm": "^0.25.5",
     "lz-string": "^1.5.0",
-    "marko": "^6.0.30",
-    "monaco-editor-core": "^0.52.2",
+    "marko": "^6.0.31",
+    "monaco-editor": "^0.52.2",
     "semver": "^7.7.2",
     "shiki": "^3.7.0",
     "tar-stream": "^3.1.7"
@@ -59,7 +60,6 @@
     "sass-embedded": "^1.89.2",
     "util": "./shim/util",
     "vite-bundle-analyzer": "^0.22.3",
-    "vite-css-modules": "^1.8.8",
-    "vite-plugin-monaco-editor": "^1.1.0"
+    "vite-css-modules": "^1.8.8"
   }
 }
