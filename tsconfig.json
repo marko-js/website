@@ -1,6 +1,7 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
+    "rootDir": "src",
     "allowSyntheticDefaultImports": true,
     "lib": ["dom", "ESNext"],
     "module": "ESNext",
@@ -14,11 +15,6 @@
     "strict": true,
     "target": "ESNext",
     "verbatimModuleSyntax": true,
-    "types": ["vite/client"],
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules"
-      }
-    ]
+    "types": ["vite/client"]
   }
 }
