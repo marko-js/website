@@ -91,6 +91,9 @@ main {
         background-clip: text;
         -webkit-text-fill-color: transparent;
         position: relative;
+        padding-left: 0.75ch;
+        padding-right: 0.75ch;
+
         &::before {
           content: "";
           position: absolute;
@@ -98,6 +101,9 @@ main {
           inset: 0;
           border-radius: 1em;
           z-index: -1;
+        }
+        &::after {
+          content: "";
         }
       }
 
