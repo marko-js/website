@@ -2,7 +2,7 @@
   "name": "path",
   "exports": {
     ".": {
-      "browser": "../../node_modules/path-browserify/index.js",
+      "browser": "./browser.js",
       "default": "./node.js"
     }
   }
