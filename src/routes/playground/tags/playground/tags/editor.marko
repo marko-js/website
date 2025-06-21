@@ -7,8 +7,7 @@ export interface Input {
   tabIndexChange?: (tabIndex: number) => void;
 }
 
-client import "./init-shiki-monaco"
-client import * as monaco from "monaco-editor-core";
+client import monaco from "./init-shiki-monaco"
 
 let/files:=input.files
 let/selected=(input.tabIndex || 0) valueChange=input.tabIndexChange

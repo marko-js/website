@@ -1,23 +1,20 @@
-import { shikiToMonaco } from "@shikijs/monaco";
-import * as monaco from "monaco-editor-core";
-import { createHighlighterCore } from "shiki/core";
-import { createOnigurumaEngine } from "shiki/engine/oniguruma";
+import 'monaco-editor/esm/vs/editor/browser/coreCommands';
+import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding';
+import 'monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-import markoLang from "@shikijs/langs/marko";
-import javascriptLang from "@shikijs/langs/javascript";
-import typescriptLang from "@shikijs/langs/typescript";
-import htmlLang from "@shikijs/langs/html";
-import cssLang from "@shikijs/langs/css";
-import jsonLang from "@shikijs/langs/json";
+import { shikiToMonaco } from "@shikijs/monaco";
+import { createHighlighterCore } from "shiki/core";
+import { createJavaScriptRawEngine } from "shiki/engine/javascript";
+
+import markoLang from "@shikijs/langs-precompiled/marko";
+import javascriptLang from "@shikijs/langs-precompiled/javascript";
+import typescriptLang from "@shikijs/langs-precompiled/typescript";
+import htmlLang from "@shikijs/langs-precompiled/html";
+import cssLang from "@shikijs/langs-precompiled/css";
+import jsonLang from "@shikijs/langs-precompiled/json";
 
 import { markoDark, markoLight } from "app/util/syntax-highlight-theme";
-
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-(globalThis as any).MonacoEnvironment = {
-  async getWorker() {
-    return new EditorWorker();
-  }
-};
 
 const langs = [
   ...new Set(
@@ -35,10 +32,12 @@ const langs = [
 export const highlighter = await createHighlighterCore({
   langs,
   themes: [markoDark, markoLight],
-  engine: createOnigurumaEngine(import("shiki/wasm")),
+  engine: createJavaScriptRawEngine(),
 });
 for (const lang of langs) {
   monaco.languages.register({ id: lang.name });
 }
 
 shikiToMonaco(highlighter, monaco);
+
+export default monaco;
