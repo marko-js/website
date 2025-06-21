@@ -11,7 +11,9 @@
 :root {
   --root-min-gap: 1rem;
   --root-max-width: 80rem;
-  --root-gap: calc(max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2));
+  --root-gap: calc(
+    max(var(--root-min-gap), (100dvw - var(--root-max-width)) / 2)
+  );
 }
 
 * {
@@ -141,8 +143,13 @@ code {
     color: var(--section-color);
     background-color: var(--section-color-alt-dim);
     border-radius: 0.5lh;
-    padding: 0.2rem 0.75ch;
+    padding: 0.2rem 0;
     line-height: 1.8;
+
+    &::before,
+    &::after {
+      content: "\00a0";
+    }
   }
 }
 
