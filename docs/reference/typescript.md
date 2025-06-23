@@ -8,7 +8,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
 
 - **For sites and web apps**, [a `tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root is the only requirement:
 
-  ```fs
+  ```
   src/
   package.json
   tsconfig.json
