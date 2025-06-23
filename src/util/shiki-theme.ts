@@ -1,6 +1,6 @@
 import type { ThemeInput } from "shiki";
 
-export const markoDark = {
+export const dark = {
   name: "marko-dark",
   colors: {
     "focusBorder": "#00000000",
@@ -252,7 +252,7 @@ export const markoDark = {
   ],
 } satisfies ThemeInput;
 
-export const markoLight = {
+export const light = {
   name: "marko-light",
   colors: {
     "focusBorder": "#00000000",

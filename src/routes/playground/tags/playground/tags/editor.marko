@@ -1,3 +1,4 @@
+client import monaco from "app/util/monaco"
 import type { PlaygroundFile } from "../playground.marko";
 
 export interface Input {
@@ -6,8 +7,6 @@ export interface Input {
   tabIndex?: number;
   tabIndexChange?: (tabIndex: number) => void;
 }
-
-client import monaco from "./init-shiki-monaco"
 
 let/files:=input.files
 let/selected=(input.tabIndex || 0) valueChange=input.tabIndexChange

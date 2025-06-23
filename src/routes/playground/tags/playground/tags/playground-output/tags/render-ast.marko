@@ -1,11 +1,12 @@
+client import highlighter from "app/util/shiki";
 import type { PlaygroundFile } from "../../../playground.marko";
+client import { compileAst } from "../utils/compile";
+
 export interface Input {
   value: PlaygroundFile[];
   markoVersion: string;
   selected: number;
 }
-client import { compileAst } from "../utils/compile";
-client import { highlighter } from "../../init-shiki-monaco";
 
 const/files=input.value
 
