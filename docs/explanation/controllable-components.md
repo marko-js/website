@@ -2,10 +2,10 @@
 
 > [!TLDR]
 >
-> - Components can be controlled or uncontrolled
->   - **Controlled** components are driven by `input`
->   - **Uncontrolled** are driven by internal state
-> - Marko provides first-class patterns for **controllable** components, which can be both controlled _and_ uncontrolled
+> - **Controlled** components are driven by `input` props
+> - **Uncontrolled** components are driven by internal state
+> - **Controllable** components can be both controlled _and_ uncontrolled
+> - Marko provides first-class patterns for building controllable components
 
 In component-based frameworks, developers must know where the _source of truth_ is for state. Typically, a decision is made at the component level about whether it should be [**controlled** or **uncontrolled**](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components).
 
