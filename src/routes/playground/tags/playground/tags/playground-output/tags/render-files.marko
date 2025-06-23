@@ -1,4 +1,7 @@
+client import highlighter from "app/util/shiki";
 import type { PlaygroundFile } from "../../../playground.marko";
+client import { compile } from "../utils/compile";
+
 export interface Input {
   value: PlaygroundFile[];
   markoVersion: string;
@@ -6,8 +9,7 @@ export interface Input {
   render?: boolean;
   output?: "dom" | "html" | "hydrate";
 }
-client import { compile } from "../utils/compile";
-client import { highlighter } from "../../init-shiki-monaco";
+
 client const decoder = new TextDecoder();
 
 let-debounce/files=input.value

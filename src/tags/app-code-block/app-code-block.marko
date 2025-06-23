@@ -1,7 +1,7 @@
 server import type { Element, Parent } from "hast";
 server import { h, type Child } from "hastscript";
-server import { createHighlighter, type ShikiTransformer } from "shiki";
-server import { markoDark, markoLight } from "app/util/syntax-highlight-theme"
+server import type { ShikiTransformer } from "shiki";
+server import highlighter from "app/util/shiki";
 
 static declare module "hast" {
   interface Data {
@@ -30,10 +30,6 @@ export interface Input {
     ) => Child
   }[];
 }
-server const highlighter = await createHighlighter({
-  langs: ["marko", "html", "css", "js", "ts", "json", "fs", "sh"],
-  themes: [markoDark, markoLight],
-});
 server const customTransform: ShikiTransformer = {
   preprocess(code, options) {
     const cursor = options.meta?.cursor as Input["cursor"];
@@ -110,7 +106,7 @@ server function appendChild(el: Element, child: Child) {
   }
 }
 
-<const/highlight(text: string) {
+const/highlight(text: string) {
   return highlighter.codeToHtml(text, {
     lang: input.lang,
     defaultColor: false,
@@ -124,7 +120,7 @@ server function appendChild(el: Element, child: Child) {
       popovers: input.popovers
     },
   })
-}/>
+}
 
 .code-block.${input.theme && `code-block--${input.theme}`}
   if=input.filename
