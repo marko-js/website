@@ -55,7 +55,7 @@ If Marko did not resolve a [local variable tag name](#local-variable-custom-tags
 
 Let's take a look at an example directory structure to understand this better:
 
-```fs
+```
 tags/
     app-header.marko
     app-footer.marko
@@ -113,7 +113,7 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
 
-```fs
+```
 foo.marko
 foo.style.css
 foo.marko-tag.json
@@ -123,7 +123,7 @@ Here, the `<foo>` tag has associated styles and metadata.
 
 When the file is named `index.marko` the prefix is optional.
 
-```fs
+```
 tags/
   bar/
     index.marko
@@ -137,7 +137,7 @@ Here, the `<bar>` tag has an associated `style.css` and the `<baz>` tag has an a
 
 For `style` files any extension may be used allowing for CSS preprocessors.
 
-```fs
+```
 tags/
   less/
     index.marko
