@@ -370,8 +370,7 @@ export interface Input {
 
 ### Dynamic Text
 
-Dynamic text content can be `${interpolated}` in the tag content.
-This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
+Dynamic text content can be `${interpolated}` in the tag content. This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
 
 ```marko
 export interface Input {

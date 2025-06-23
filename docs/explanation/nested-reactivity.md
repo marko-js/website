@@ -1,7 +1,7 @@
 # Nested Reactivity
 
 > [!TLDR]
-> This guide covers three approaches for managing nested state in Marko applications using a To-Do List example: keeping state local when possible (simplest), hoisting state to a global object with manual updates, and using libraries like immer for complex state trees. Each method increases in complexity, so choose the least complex option that meets your needs.
+> Three approaches are explored for managing nested state
 
 It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.
 

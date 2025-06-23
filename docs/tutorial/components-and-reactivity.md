@@ -1,5 +1,9 @@
 # Components and Reactivity
 
+> [!TLDR]
+>
+> We build a simple example which introduces tag variables, conditionals, and components
+
 In this tutorial, we're going to build an app for converting temperature between fahrenheit and celsius.
 
 ## Introducing a Tag
