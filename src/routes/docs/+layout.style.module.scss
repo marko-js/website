@@ -78,6 +78,8 @@ main {
     -webkit-text-fill-color: transparent;
     margin-top: 1em;
     margin-bottom: 1rem;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
 
     > a {
       color: var(--section-color);
@@ -158,6 +160,40 @@ main {
   hr {
     border: 1px solid var(--section-color-dim);
     margin: 3rem 0;
+  }
+
+  table {
+    margin: 2rem 0;
+    border-collapse: collapse;
+    border: 1px solid var(--section-color);
+    border-radius: 1rem;
+    overflow: hidden;
+    display: block;
+
+    thead {
+      border-bottom: 1px solid var(--section-color);
+    }
+
+    th {
+      font-weight: 500;
+    }
+
+    thead, tr:nth-child(even) {
+      background-image: linear-gradient(
+        to bottom left,
+        color-mix(
+          in srgb,
+          var(--section-color-dim) 24%,
+          var(--color-background)
+        ),
+        color-mix(in srgb, var(--section-color-dim) 8%, var(--color-background))
+      );
+    }
+
+    th,
+    td {
+      padding: 1rem 1.25rem;
+    }
   }
 }
 
