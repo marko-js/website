@@ -2,6 +2,7 @@ server import type { Element, Parent } from "hast";
 server import { h, type Child } from "hastscript";
 server import type { ShikiTransformer } from "shiki";
 server import highlighter from "app/util/shiki";
+server import { toClass, getCSS } from "./shiki-to-class";
 
 static declare module "hast" {
   interface Data {
@@ -110,7 +111,7 @@ const/highlight(text: string) {
   return highlighter.codeToHtml(text, {
     lang: input.lang,
     defaultColor: false,
-    transformers: [customTransform],
+    transformers: [customTransform, toClass($global)],
     themes: {
       light: "marko-light",
       dark: "marko-dark"
@@ -133,3 +134,7 @@ const/highlight(text: string) {
     .concise-ts -- $!{highlight(conciseTS)}
   else
     -- $!{highlight(input.text)}
+
+const/css=getCSS($global);
+if=css
+  html-style -- ${css}
