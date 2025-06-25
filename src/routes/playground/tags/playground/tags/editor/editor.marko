@@ -81,6 +81,20 @@ style --
       font-feature-settings: "tnum";
       font-variant-numeric: tabular-nums;
     }
+    .cm-tooltip {
+      border: none;
+      color: var(--color-background);
+      background-color: var(--color-blue-alt-dim-alt);
+      border-radius: 2px;
+      overflow: hidden;
+
+      ul li {
+        padding: 0.5rem;
+        &[aria-selected] {
+          background-color: var(--color-blue-dark);
+        }
+      }
+    }
     .cm-foldMarker {
       display: block;
       rotate: 0deg;
