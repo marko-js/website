@@ -54,7 +54,7 @@ export const dark = {
       name: "Variable",
       scope: "variable",
       settings: {
-        foreground: "#ffffff",
+        foreground: "#FFFFFF",
       },
     },
     {
