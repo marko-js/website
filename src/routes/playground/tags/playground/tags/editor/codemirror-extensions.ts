@@ -7,6 +7,8 @@ import {
   highlightActiveLineGutter,
   keymap,
   ViewPlugin,
+  highlightWhitespace,
+  lineNumbers,
 } from "@codemirror/view";
 import {
   Compartment,
@@ -27,6 +29,7 @@ import {
   completeAnyWord,
   completionKeymap,
 } from "@codemirror/autocomplete";
+import { foldGutter, foldService } from "@codemirror/language";
 import highlighter from "app/util/shiki";
 
 const langConfig = new Compartment();
@@ -55,12 +58,23 @@ export function update(view: EditorView, content: string, lang: string) {
 export default [
   history(),
   drawSelection(),
+  highlightWhitespace(),
   highlightActiveLine(),
   highlightSelectionMatches(),
   highlightActiveLineGutter(),
   autocompletion({ override: [completeAnyWord] }),
   EditorState.allowMultipleSelections.of(true),
   langConfig.of(shiki()),
+  lineNumbers(),
+  foldGutter({
+    markerDOM(open) {
+      const span = document.createElement("span");
+      span.className = "cm-foldMarker" + (open ? " cm-foldMarkerOpen" : "");
+      span.textContent = "›";
+      return span;
+    }
+  }),
+  foldOnIndent(),
   keymap.of([
     { key: "Tab", run: acceptCompletion },
     indentWithTab,
@@ -70,6 +84,38 @@ export default [
     ...completionKeymap,
   ]),
 ];
+
+function foldOnIndent() {
+  return foldService.of(({ doc }, pos) => {
+    const start = doc.lineAt(pos);
+    const startIndent = getIndentation(start.text);
+    let end = start.number;
+    let indented = false;
+
+    for (let i = start.number + 1; i <= doc.lines; i++) {
+      const text = doc.line(i).text;
+      if (/^\s*$/.test(text)) {
+        end = i;
+      } else if (getIndentation(text) > startIndent) {
+        end = i;
+        indented = true;
+      } else {
+        break;
+      }
+    }
+
+    if (indented) {
+      return { from: start.to, to: doc.line(end).to };
+    }
+
+    return null;
+  });
+}
+
+function getIndentation(line: string): number {
+  const match = line.match(/^\s*/);
+  return match ? match[0].length : 0;
+}
 
 function shiki(lang?: string) {
   const plugin = ViewPlugin.fromClass(
