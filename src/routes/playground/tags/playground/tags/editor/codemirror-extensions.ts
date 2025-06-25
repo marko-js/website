@@ -26,6 +26,7 @@ import {
 import {
   acceptCompletion,
   autocompletion,
+  closeBrackets,
   completeAnyWord,
   completionKeymap,
 } from "@codemirror/autocomplete";
@@ -55,6 +56,11 @@ export function update(view: EditorView, content: string, lang: string) {
   }
 }
 
+const baseLanguageData = [{
+  commentTokens: { line: "//", block: { open: "/*", close: "*/" } },
+  closeBrackets: { brackets: ["(", "[", "{", '"', "'", "`"] },
+}];
+
 export default [
   history(),
   drawSelection(),
@@ -64,7 +70,9 @@ export default [
   highlightActiveLineGutter(),
   autocompletion({ override: [completeAnyWord] }),
   EditorState.allowMultipleSelections.of(true),
+  EditorState.languageData.of(() => baseLanguageData),
   langConfig.of(shiki()),
+  closeBrackets(),
   lineNumbers(),
   foldGutter({
     markerDOM(open) {
