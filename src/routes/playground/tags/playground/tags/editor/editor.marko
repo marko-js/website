@@ -68,23 +68,33 @@ style --
     .cm-cursor {
       border-left: 2px solid var(--color-foreground);
     }
+    .cm-gutters {
+      background-color: var(--color-background);
+      border-right: none;
+      padding-right: 0.25rem;
+      padding-left: 0.5rem;
+      font-family: "Ubuntu Mono", monospace;
+    }
+    .cm-gutterElement {
+      color: #858585;
+      user-select: none;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+    .cm-foldMarker {
+      display: block;
+      rotate: 0deg;
+    }
+    .cm-foldMarkerOpen {
+      rotate: 90deg;
+    }
+    .cm-activeLineGutter {
+      background-color: transparent;
+    }
+    .cm-highlightSpace {
+      background-image: radial-gradient(circle at 50% 55%, var(--color-blue-dim-alt) 5%, transparent 5%);
+    }
     &.cm-focused .cm-selectionBackground, ::selection {
       background-color: unset !important;
-    }
-    .cm-line {
-      position: relative;
-      counter-increment: line-number;
-      padding: 0.1rem 0.25rem;
-      &::before {
-        display: inline-flex;
-        content: counter(line-number);
-        padding-right: 1.625rem;
-        width: 3ch;
-        justify-content: right;
-        color: #858585;
-        user-select: none;
-        font-feature-settings: "tnum";
-        font-variant-numeric: tabular-nums;
-      }
     }
   }
