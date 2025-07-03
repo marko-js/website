@@ -1,4 +1,5 @@
 @use "app/styles/sticky" as sticky;
+@use "app/styles/colors" as colors;
 
 $fixed-controls-height: 6rem;
 
@@ -36,6 +37,17 @@ $fixed-controls-height: 6rem;
 
   > ul {
     padding: 2.5rem 0;
+    :global(#page-menu) & > li {
+      @include colors.section("yellow");
+
+      $i: 1;
+      @each $color in "red", "blue", "green" {
+        &:nth-of-type(4n + #{$i}) {
+          @include colors.section($color);
+        }
+        $i: $i + 1;
+      }
+    }
   }
 
   ul {
@@ -55,6 +67,8 @@ $fixed-controls-height: 6rem;
     font-weight: 400;
     line-height: 1.6;
     text-decoration-line: none;
+    text-decoration-color: currentColor;
+    transition: color 0.5s ease;
 
     &:hover {
       @media (pointer: fine) {
@@ -66,13 +80,21 @@ $fixed-controls-height: 6rem;
       padding-left: 0.5rem;
       border-left: 2px solid var(--color-red-light);
     }
+
+    :global(#page-menu) &[aria-current="step"] {
+      color: var(--section-color);
+    }
   }
 
   strong {
     font-weight: 500;
     text-transform: uppercase;
     color: var(--color-red);
-    background: linear-gradient(to bottom, var(--color-red), color-mix(in srgb, var(--color-red-alt), var(--color-red)));
+    background: linear-gradient(
+      to bottom,
+      var(--color-red),
+      color-mix(in srgb, var(--color-red-alt), var(--color-red))
+    );
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }

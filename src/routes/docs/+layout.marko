@@ -32,15 +32,36 @@ article#${styles.article}
 define/TocTree|input: { headings: HeadingList }|
   for|heading| of=input.headings
     li
-      a href=`#${heading.id}` -- ${heading.title}
-    if=heading.children.length
-      ul
-        TocTree headings=heading.children
+      let/current=false
+      script --
+        const element = document.getElementById(heading.id);
+        if (element) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  current = true;
+                } else {
+                  current = false;
+                }
+              });
+            },
+            {
+              rootMargin: "-20% 0px -20% 0px",
+            },
+          );
+          observer.observe(element);
+          $signal.onabort = () => observer.disconnect();
+        }
+      a href=`#${heading.id}` aria-current=current && "step" -- ${heading.title}
+      if=(heading.children.length)
+        ul
+          TocTree headings=heading.children
 
 id/tocLabelId
-#page-menu.${menuStyles.menu}
-  nav#${styles.pageNav}.${menuStyles.nav} aria-labelledby=tocLabelId
+div#page-menu class=menuStyles.menu
+  nav aria-labelledby=tocLabelId class=menuStyles.nav id=styles.pageNav
     ul
       li
-        strong#${tocLabelId} -- On this Page
-      TocTree headings=($global.meta as any).headings
+        strong id=tocLabelId -- On this Page
+      TocTree headings=(($global.meta as any).headings)
