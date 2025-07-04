@@ -26,12 +26,15 @@ section class=styles.section
     a href="/docs/introduction/welcome-to-marko" class=styles.cta -- Learn More
 
   figure class=styles.example
-    app-code-block [
-      theme="dark"
-      lang="marko"
-      text=EXAMPLE_HTML
-      concise=EXAMPLE_CONCISE
-    ]
+    app-code-block
+      ,theme="dark"
+      ,lang="marko"
+      ,text=EXAMPLE_HTML
+      ,markoAlts=[
+        EXAMPLE_CONCISE,
+        EXAMPLE_HTML,
+        EXAMPLE_CONCISE
+      ]
     div class=styles.exampleOutput
       let/count=0
       button/inc onClick() {
