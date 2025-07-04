@@ -1,48 +1,62 @@
-import { resetFileSystem as resetEsbuildFileSystem } from "./esbuild-fs";
-
 let files: Record<string, string> = {};
+export function getFiles() {
+  return files;
+}
 export function resetFileSystem(newFiles: Record<string, string>) {
   files = newFiles;
-  resetEsbuildFileSystem(files);
 }
 
 export default {
-  statSync(filePath: string) {
-    if (!(filePath in files)) {
-      const checkDir = filePath.endsWith("/") ? filePath : filePath + "/";
-      if (!Object.keys(files).some((f) => f.startsWith(checkDir)))
-        throw new Error();
-      return { mtime: 1, isFile: () => false, isDirectory: () => true };
+  statSync(entry: string) {
+    if (!(entry in files)) {
+      const dir = toDirname(entry);
+      for (const file in files) {
+        if (file.startsWith(dir)) {
+          return new Stat(false);
+        }
+      }
+
+      throw new Error();
     }
-    return { mtime: 1, isFile: () => true, isDirectory: () => false };
+    return new Stat(true);
   },
-  readFileSync(filePath: string) {
-    if (!(filePath in files)) throw new Error();
-    return files[filePath];
-  },
-  readFile(
-    filePath: string,
-    _encoding: string,
-    cb: (err: any, src: string) => void,
-  ) {
-    try {
-      cb(null, this.readFileSync(filePath));
-    } catch (e) {
-      cb(e, "");
-    }
+  readFileSync(file: string) {
+    if (!(file in files)) throw new Error();
+    return files[file];
   },
   readdirSync(dirname: string) {
-    const checkDir = dirname.endsWith("/") ? dirname : dirname + "/";
-    const dirFiles: string[] = [];
-    for (const filePath of Object.keys(files)) {
-      if (filePath.startsWith(checkDir)) {
-        dirFiles.push(filePath.slice(checkDir.length));
+    const dir = toDirname(dirname);
+    const entries: string[] = [];
+    for (const file in files) {
+      if (file.startsWith(dir)) {
+        entries.push(file.slice(dir.length));
       }
     }
 
-    return dirFiles as any;
+    return entries;
   },
 } as any as Pick<
   typeof import("fs"),
   "statSync" | "readFileSync" | "readdirSync" | "readFile"
 >;
+
+function toDirname(filePath: string) {
+  return filePath.endsWith("/") ? filePath : filePath + "/";
+}
+
+class Stat {
+  #isFile: boolean;
+  mtime = 1;
+  constructor(
+    isFile: boolean,
+  ) {
+    this.#isFile = isFile;
+  }
+
+  isFile() {
+    return this.#isFile;
+  }
+  isDirectory() {
+    return !this.#isFile;
+  }
+}
