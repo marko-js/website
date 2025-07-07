@@ -21,10 +21,13 @@ tabs files:=files selected:=selected
 
 lifecycle<{ editor?: EditorView, change?: boolean, set(v: string): void }>,
   ,set(content) {
-    this.change = true;
-    file = { ...file, content };
+    this.change = content !== file.content;
+    if (this.change) {
+      file = { ...file, content };
+    }
   }
   ,onMount() {
+    this.change = false;
     this.editor = new EditorView({
       doc: file?.content,
       parent: $editor(),

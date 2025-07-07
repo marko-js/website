@@ -8,12 +8,21 @@ export default defineConfig({
   environments: {
     client: {
       define: {
+        __dirname: "'/'",
         global: "globalThis",
         "process.browser": true,
         "process.env.BUNDLE": true,
         "process.env.BABEL_TYPES_8_BREAKING": false,
         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
       },
+    },
+  },
+  optimizeDeps: {
+    exclude: ['@rollup/browser'],
+  },
+  resolve: {
+    alias: {
+      "@rollup/browser": "@rollup/browser/dist/es/rollup.browser.js"
     },
   },
   plugins: [

@@ -1,5 +1,4 @@
 import type { PlaygroundFile } from "../../playground.marko";
-import { getPackageMetadata, getVersionFromRange } from "./utils/npm-install"
 
 static const previewTypes: Record<string, {
   render?: boolean;
@@ -26,36 +25,21 @@ export interface Input {
   selected: number;
 }
 
-let-search-param/markoVersion key="version"
-let/availableMarkoVersions=markoVersion ? [markoVersion] : ["next"]
 let/previewType="Preview"
-
-lifecycle onMount=async () => {
-  const meta = await getPackageMetadata("marko");
-  availableMarkoVersions = meta.allVersions
-    .filter((v) => v.startsWith("5") || v.startsWith("6"))
-    .toSorted((a, b) =>  -a.localeCompare(b, undefined, { numeric: true }));
-  markoVersion = getVersionFromRange(meta, markoVersion ?? "next") ?? getVersionFromRange(meta, "next")!;
-}
 
 .output
   .output-header
     select value:=previewType
       for|option| in=previewTypes
         option -- ${option}
-    select value:=markoVersion
-      for|version| of=availableMarkoVersions by(version) { return version } 
-        option value=version -- marko@${version}
   .output-content
-    if=markoVersion
-      if=previewTypes[previewType].output === "ast"
-        render-ast=input.files selected=input.selected markoVersion=markoVersion
-      else if=input.files.length
-        render-files=input.files
-          ,markoVersion=markoVersion
-          ,selected=input.selected
-          ,render=previewTypes[previewType].render
-          ,output=previewTypes[previewType].output
+    if=previewTypes[previewType].output === "ast"
+      render-ast=input.files selected=input.selected
+    else if=input.files.length
+      render-files=input.files
+        ,selected=input.selected
+        ,render=previewTypes[previewType].render
+        ,output=previewTypes[previewType].output
 
 style --
   .output {
@@ -79,6 +63,7 @@ style --
   }
 
   .output-content {
+    position: relative;
     display: flex;
     flex: 1;
     overflow-y: auto;

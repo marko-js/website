@@ -1,99 +1,91 @@
-client import highlighter from "app/util/shiki";
 import type { PlaygroundFile } from "../../../playground.marko";
-client import { compile } from "../utils/compile";
-
+client import WritableDOMStream from "writable-dom";
+client import { compile } from "../utils/compiler";
 export interface Input {
   value: PlaygroundFile[];
-  markoVersion: string;
   selected: number;
   render?: boolean;
   output?: "dom" | "html" | "hydrate";
 }
 
-client const decoder = new TextDecoder();
+client let worker: Worker | undefined;
 
+let/error=null as unknown
 let-debounce/files=input.value
 
-let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)
-let/showLoadingMessage=false
+if=error
+  pre.error -- ${error}
 
-lifecycle onMount() {
-  setTimeout(() => {
-    if (compiled === null) {
-      showLoadingMessage = true;
-    }
-  }, 500);
-}
+iframe/$frame title="code output"
+
+style --
+  pre.error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  pre.error + iframe {
+    visibility: hidden;
+  }
 
 script --
-  const timeout = setTimeout(() => {
-    showLoadingMessage = true;
-  }, 500);
-  compiled = await compile(
-    files,
-    input.markoVersion,
-    files[input.selected].path,
-    {
-      output: input.output,
-      bundle: input.render,
-      signal: $signal,
-    },
-  );
-  clearTimeout(timeout);
-  showLoadingMessage = false;
+  const signal = $signal;
+  const signalOpt = { signal };
+  try {
+    const compiled = await compile(files);
 
-if=showLoadingMessage -- Installing Packages...
-else if=compiled
-  if=compiled.errors.length
-    for|error| of=compiled.errors
-      p -- ${error.text}
-  else if=compiled.outputFiles?.length
-    const/scriptContent=decoder.decode(compiled.outputFiles[0].contents)
-    const/styleContent=decoder.decode(compiled.outputFiles[1]?.contents)
-    if=input.render
-      let/error=null as null | { message: string; stack?: string }
-      if=error
-        p -- ${error.message}
-        p -- ${error.stack}
-      else
-        iframe [
-          title="code output"
-          srcdoc=`
-          <body>
-            <script>
-              window.onerror = function (message, source, lineno, colno, error) {
-                window.parent.postMessage(
-                  {
-                    type: "iframe-error",
-                    error: { message, source, lineno, colno, stack: error?.stack },
-                  },
-                  "*",
-                );
-                return true;
-              };
-            </script>
-            <script type="module">${scriptContent}</script>
-            <style>${styleContent ?? ""}</style>
-          </body>`
-        ]
-        script -- if (scriptContent || styleContent) error = null;
-        script --
-          window.addEventListener(
-            "message",
-            (e) => {
-              if (e.data.type === "iframe-error") {
-                error = e.data.error;
-              }
-            },
-            {
-              signal: $signal,
-            },
-          );
-    else -- $!{highlighter.codeToHtml(scriptContent, {
-      lang: "js",
-      defaultColor: false,
-      themes: {
-        light: "marko-light",
-        dark: "marko-dark",
-      },
-    })}
+    if (signal.aborted) return;
+
+    const [stream, body] = await Promise.all([
+      new Promise<ReadableStream<Uint8Array<ArrayBufferLike>>>((resolve, reject) => {
+        worker?.terminate();
+        worker = new Worker(compiled.server.js!, { type: "module" });
+        worker.addEventListener("error", reject, signalOpt);
+        worker.addEventListener("message", ({ data }) => {
+          if (data && data instanceof ReadableStream) {
+            resolve(data);
+          }
+        }, signalOpt);
+      }),
+      new Promise<HTMLBodyElement>((resolve, reject) => {
+        const frame = $frame();
+        frame.addEventListener("error", reject, signalOpt);
+        frame.addEventListener("load", () => {
+          const win = frame.contentWindow!;
+          win.addEventListener("error", handleError, signalOpt);
+          win.addEventListener("unhandledrejection", handleError, signalOpt);
+          resolve(frame.contentDocument!.body as HTMLBodyElement);
+          function handleError(ev: ErrorEvent | PromiseRejectionEvent) {
+            if (!ev.defaultPrevented) {
+              let err = "error" in ev ? ev.error : ev.reason || ev;
+              if ("detail" in err) err = err.detail;
+              error = err;
+              console.error(err);
+              ev.preventDefault();
+            }
+            return true;
+          }
+        }, signalOpt);
+        frame.srcdoc = (
+          (compiled.client.css ? `<link rel=stylesheet href="${compiled.client.css}">` : "") +
+          (compiled.client.js ? `<script type="module" async src="${compiled.client.js}"></script>` : "") +
+          "<body></body>"
+        );
+      })
+    ]);
+
+    if (signal.aborted) return;
+
+    await stream
+      .pipeThrough(new TextDecoderStream(), signalOpt)
+      .pipeTo(new WritableDOMStream(body), signalOpt);
+    error = null;
+  } catch (err) {
+    if (!signal.aborted) {
+      error = err;
+      console.error(err);
+    }
+  }

@@ -1,9 +1,17 @@
 let files: Record<string, string> = {};
+const changeHandlers = new Set<() => void>();
+export function onChange(handler: () => void) {
+  changeHandlers.add(handler);
+  return () => changeHandlers.delete(handler);
+}
 export function getFiles() {
   return files;
 }
 export function resetFileSystem(newFiles: Record<string, string>) {
   files = newFiles;
+  for (const handler of changeHandlers) {
+    handler();
+  }
 }
 
 export default {
