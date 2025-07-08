@@ -11,15 +11,21 @@ import { markoPlugin } from "./marko-plugin";
 import { minifyScriptPlugin } from "./minify-script-plugin";
 
 import { resetFileSystem } from "./fs";
+import { toSizes } from "../sizes";
 
 export interface BuildResult {
   client: {
-    js?: string;
-    css?: string;
+    js?: BuildAsset;
+    css?: BuildAsset;
   };
   server: {
-    js?: string;
+    js?: BuildAsset;
   };
+}
+
+export interface BuildAsset {
+  url: string;
+  sizes: Awaited<ReturnType<typeof toSizes>>;
 }
 
 export async function compile(files: PlaygroundFile[]): Promise<BuildResult> {
@@ -62,7 +68,7 @@ async function bundle({ optimize, browser, code }: BundleOptions) {
       plugins: [
         mainPlugin({ browser, code }),
         markoPlugin({ optimize, output: browser ? "dom" : "html" }),
-        cssPlugin({ browser }),
+        cssPlugin({ optimize, browser }),
         optimize && minifyScriptPlugin(),
       ],
     })
@@ -74,20 +80,40 @@ async function bundle({ optimize, browser, code }: BundleOptions) {
     inlineDynamicImports: true,
   });
 
-  let js = getAssetCode(output, jsFile);
-  if (js !== undefined) {
-    js += getSourceMapComment(jsFile, getAssetCode(output, jsFile + ".map"));
+
+  const jsCode = getAssetCode(output, jsFile);
+  const jsCodeSize = jsCode ? toSizes(jsCode) : undefined;
+  let js: BuildAsset | undefined;
+
+  const cssCode = browser ? getAssetCode(output, cssFile) : undefined;
+  const cssCodeSize = cssCode ? toSizes(cssCode) : undefined;
+  let css: BuildAsset | undefined;
+
+  if (jsCode) {
+    js = {
+      url: toAssetURL(
+        jsFile,
+        "application/javascript",
+        jsCode +
+          getSourceMapComment(jsFile, getAssetCode(output, jsFile + ".map")),
+      ),
+      sizes: await jsCodeSize!,
+    };
   }
 
-  let css = browser ? getAssetCode(output, cssFile) : undefined;
-  if (css !== undefined) {
-    css += getSourceMapComment(cssFile, getAssetCode(output, cssFile + ".map"));
+  if (cssCode) {
+    css = {
+      url: toAssetURL(
+        cssFile,
+        "text/css",
+        cssCode +
+          getSourceMapComment(cssFile, getAssetCode(output, cssFile + ".map")),
+      ),
+      sizes: await cssCodeSize!,
+    };
   }
 
-  return {
-    js: js && toAssetURL(jsFile, "application/javascript", js),
-    css: css && toAssetURL(cssFile, "text/css", css),
-  };
+  return { js, css };
 }
 
 function getAssetCode(chunks: (OutputChunk | OutputAsset)[], name: string) {

@@ -18,11 +18,11 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['@rollup/browser'],
+    exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
   resolve: {
     alias: {
-      "@rollup/browser": "@rollup/browser/dist/es/rollup.browser.js"
+      "@rollup/browser": "@rollup/browser/dist/es/rollup.browser.js",
     },
   },
   plugins: [
