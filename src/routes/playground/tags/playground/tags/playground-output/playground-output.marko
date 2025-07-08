@@ -2,7 +2,7 @@ import type { PlaygroundFile } from "../../playground.marko";
 
 static const previewTypes: Record<string, {
   render?: boolean;
-  output: "dom" | "html" | "hydrate" | "ast";
+  output: "dom" | "html" | "hydrate";
 }> = {
   "Preview": {
     output: "dom",
@@ -16,9 +16,6 @@ static const previewTypes: Record<string, {
     output: "dom",
     render: false,
   },
-  "AST": {
-    output: "ast",
-  }
 };
 export interface Input {
   files: PlaygroundFile[];
@@ -33,13 +30,8 @@ let/previewType="Preview"
       for|option| in=previewTypes
         option -- ${option}
   .output-content
-    if=previewTypes[previewType].output === "ast"
-      render-ast=input.files selected=input.selected
-    else if=input.files.length
-      render-files=input.files
-        ,selected=input.selected
-        ,render=previewTypes[previewType].render
-        ,output=previewTypes[previewType].output
+    if=input.files.length
+      render-files=input.files selected=input.selected
 
 style --
   .output {

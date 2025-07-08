@@ -1,24 +1,54 @@
 import type { PlaygroundFile } from "../../../playground.marko";
+client import prettyBytes from "pretty-bytes";
 client import WritableDOMStream from "writable-dom";
 client import { compile } from "../utils/compiler";
+import { toGzipSize } from "../utils/gzip-size";
 export interface Input {
   value: PlaygroundFile[];
   selected: number;
-  render?: boolean;
-  output?: "dom" | "html" | "hydrate";
+}
+static interface Stats {
+  markupSize: number;
+  scriptSize?: number;
+  styleSize?: number;
 }
 
 client let worker: Worker | undefined;
 
 let/error=null as unknown
+let/stats=null as null | Stats
 let-debounce/files=input.value
 
 if=error
   pre.error -- ${error}
 
+if=stats
+  .stats
+    if=stats.scriptSize
+      .stat
+        -- js:
+        strong -- ${prettyBytes(stats.scriptSize, { space: false })}
+    if=stats.styleSize
+      .stat
+        -- css:
+        strong -- ${prettyBytes(stats.styleSize, { space: false })}
+    .stat
+      -- html:
+      strong -- ${prettyBytes(stats.markupSize, { space: false })}
 iframe/$frame title="code output"
 
 style --
+  .stats {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--color-gray-dim);
+    padding: 0.5rem;
+    border-top-left-radius: 0.5rem;
+    font-family: "Ubuntu Mono", monospace;
+    display: flex;
+    gap: 1rem;
+  }
   pre.error {
     position: absolute;
     top: 0;
@@ -35,14 +65,16 @@ script --
   const signal = $signal;
   const signalOpt = { signal };
   try {
-    const compiled = await compile(files);
+    const { client, server } = await compile(files);
 
     if (signal.aborted) return;
 
-    const [stream, body] = await Promise.all([
+    const pendingClientScriptSize = client.js ? toGzipSize(client.js) : undefined;
+    const pendingClientStyleSize = client.css ? toGzipSize(client.css) : undefined;
+    const [htmlStream, body] = await Promise.all([
       new Promise<ReadableStream<Uint8Array<ArrayBufferLike>>>((resolve, reject) => {
         worker?.terminate();
-        worker = new Worker(compiled.server.js!, { type: "module" });
+        worker = new Worker(server.js!, { type: "module" });
         worker.addEventListener("error", reject, signalOpt);
         worker.addEventListener("message", ({ data }) => {
           if (data && data instanceof ReadableStream) {
@@ -70,18 +102,27 @@ script --
           }
         }, signalOpt);
         frame.srcdoc = (
-          (compiled.client.css ? `<link rel=stylesheet href="${compiled.client.css}">` : "") +
-          (compiled.client.js ? `<script type="module" async src="${compiled.client.js}"></script>` : "") +
-          "<body></body>"
+          (client.css ? `<link rel=stylesheet href="${client.css}">` : "") +
+          (client.js ? `<script type="module" async src="${client.js}"></script>` : "")
         );
       })
     ]);
 
     if (signal.aborted) return;
-
-    await stream
-      .pipeThrough(new TextDecoderStream(), signalOpt)
-      .pipeTo(new WritableDOMStream(body), signalOpt);
+    const [htmlStreamA, htmlStreamB] = htmlStream.tee();
+    const [scriptSize, styleSize, markupSize] = await Promise.all([
+      pendingClientScriptSize,
+      pendingClientStyleSize,
+      toGzipSize(htmlStreamA),
+      htmlStreamB
+        .pipeThrough(new TextDecoderStream(), signalOpt)
+        .pipeTo(new WritableDOMStream(body), signalOpt)
+    ]);
+    stats = {
+      markupSize,
+      scriptSize,
+      styleSize
+    };
     error = null;
   } catch (err) {
     if (!signal.aborted) {
