@@ -1,7 +1,7 @@
-import { update, type WorkspaceFile } from "<workspace>";
-import { toUnits } from "../../../../workspace/utils/sizes";
+import { update, type File } from "app/util/workspace";
+import { toUnits } from "app/util/sizes";
 export interface Input {
-  value: WorkspaceFile[];
+  value: File[];
   selected: number
 }
 
@@ -58,4 +58,4 @@ style --
     visibility: hidden;
   }
 
-script -- update($signal, $frame(), files, { optimize: true });
+script -- update($signal, $frame(), files, true);

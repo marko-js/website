@@ -1,10 +1,10 @@
 client import { EditorView } from "@codemirror/view"
-import type { WorkspaceFile } from "<workspace>";
+import type { File } from "app/util/workspace";
 client import extensions, { update } from "./codemirror-extensions";
 
 export interface Input {
-  files: WorkspaceFile[];
-  filesChange?: (files: WorkspaceFile[]) => void;
+  files: File[];
+  filesChange?: (files: File[]) => void;
   tabIndex?: number;
   tabIndexChange?: (tabIndex: number) => void;
 }

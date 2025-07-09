@@ -1,7 +1,7 @@
 import type { Plugin, RollupFsModule } from "@rollup/browser";
 
 import { resolveSync, type ResolveOptions } from "resolve-sync";
-import type { Workspace } from ".";
+import type { Workspace } from "../workspace";
 
 export interface MainPluginOptions {
   ws: Workspace;

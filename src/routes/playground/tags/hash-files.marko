@@ -1,11 +1,11 @@
-import type { WorkspaceFile } from "<workspace>";
-client import { compress, decompress } from "./hasher";
+import type { File } from "app/util/workspace";
+client import { compress, decompress } from "app/util/hasher";
 
 export interface Input {
-  value: WorkspaceFile[];
+  value: File[];
 }
 
-let/value=([] as WorkspaceFile[])
+let/value=([] as File[])
 lifecycle
   ,onMount() {
     decompress(window.location.hash.slice(1)).then((decompressed) => {

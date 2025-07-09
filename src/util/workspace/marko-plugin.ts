@@ -7,8 +7,8 @@ import runtimeHTML from "marko/html?raw";
 import runtimeDebugDOM from "marko/debug/dom?raw";
 import runtimeDebugHTML from "marko/debug/html?raw";
 
-import { FileSystem } from "../fs";
-import type { Workspace } from ".";
+import { FileSystem } from "./fs";
+import type { Workspace } from "../workspace";
 
 const seenFs = new WeakSet<FileSystem>();
 const compileCache = new Map();

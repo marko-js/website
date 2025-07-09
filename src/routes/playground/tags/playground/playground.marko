@@ -1,8 +1,8 @@
-import type { WorkspaceFile } from "../../utils/workspace";
+import type { File } from "app/util/workspace";
 
 export interface Input {
-  files: WorkspaceFile[];
-  filesChange?: (files: WorkspaceFile[]) => void;
+  files: File[];
+  filesChange?: (files: File[]) => void;
 }
 
 let/tabIndex=0

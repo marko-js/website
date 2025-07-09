@@ -1,18 +1,15 @@
 import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
 import WritableDOMStream from "writable-dom";
 
-import { toAssetURL } from "../asset-url";
-import { getSourceMapComment } from "../sourcemap-comment";
+import { cssPlugin } from "./workspace/css-plugin";
+import { mainPlugin } from "./workspace/main-plugin";
+import { markoPlugin } from "./workspace/marko-plugin";
+import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 
-import { cssPlugin } from "./css-plugin";
-import { mainPlugin } from "./main-plugin";
-import { markoPlugin } from "./marko-plugin";
-import { minifyScriptPlugin } from "./minify-script-plugin";
+import { toSizes, type Size } from "./sizes";
+import { FileSystem } from "./workspace/fs";
 
-import { FileSystem } from "../fs";
-import { toSizes, type Size } from "../sizes";
-
-export interface WorkspaceFile {
+export interface File {
   path: string;
   content: string;
 }
@@ -53,7 +50,7 @@ export function subscribe(
 export async function update(
   signal: AbortSignal,
   frame: HTMLIFrameElement,
-  files: WorkspaceFile[],
+  files: File[],
   optimize: boolean,
 ) {
   const fs = new FileSystem({});
@@ -248,4 +245,46 @@ function getAssetCode(chunks: (OutputChunk | OutputAsset)[], name: string) {
       }
     }
   }
+}
+
+export function getSourceMapComment(filename: string, map: any) {
+  if (!map) return "";
+  if (typeof map === "object") map = JSON.stringify(map);
+  switch (/\.[^.]+$/.exec(filename)?.[0]) {
+    case ".js":
+      return (
+        "\n//# sourceURL=" +
+        encodeURI(filename) +
+        (map
+          ? "\n//# sourceMappingURL=" +
+            toDataURI("application/json", map)
+          : "")
+      );
+    case ".css":
+      return (
+        "\n/*# sourceURL=" +
+        encodeURI(filename) +
+        "*/" +
+        (map
+          ? "\n/*# sourceMappingURL=" +
+            toDataURI("application/json", map) +
+            "*/"
+          : "")
+      );
+  }
+
+  throw new Error("Cannot create a sourcemap for " + filename);
+}
+
+const assetUrls = new Map<string, string>();
+function toAssetURL(id: string, type: string, code: string) {
+  let url = assetUrls.get(id);
+  if (url) URL.revokeObjectURL(url);
+  url = URL.createObjectURL(new Blob([code], { type }));
+  assetUrls.set(id, url);
+  return url;
+}
+
+function toDataURI(type: string, code: string) {
+  return `data:${type};charset=utf-8;base64,${btoa(code)}`;
 }

@@ -1,10 +1,10 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import type { WorkspaceFile } from "<workspace>";
+import type { File } from "app/util/workspace";
 import * as styles from "./tabs.module.css"
 
 export interface Input {
-  files: WorkspaceFile[];
-  filesChange: (files: WorkspaceFile[]) => void;
+  files: File[];
+  filesChange: (files: File[]) => void;
   selected: number;
   selectedChange?: (newSelected: number) => void;
 }
