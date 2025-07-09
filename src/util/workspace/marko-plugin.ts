@@ -9,6 +9,15 @@ import runtimeDebugHTML from "marko/debug/html?raw";
 
 import type { Workspace } from "../workspace";
 
+declare module "../workspace" {
+  interface Workspace {
+    markoCompiled?: {
+      dom?: Record<string, { code: string; map: any; }>;
+      html?: Record<string, { code: string; map: any; }>;
+    }
+  }
+}
+
 const cache = new Map();
 const seenWS = new WeakSet<Workspace>();
 const runtimeModules: Record<string, string> = {
@@ -34,6 +43,12 @@ export interface MarkoPluginOptions {
   browser: boolean;
 }
 export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
+  if (!seenWS.has(ws)) {
+    seenWS.add(ws);
+    cache.clear();
+    compiler.taglib.clearCaches();
+  }
+
   const { fs, optimize } = ws;
   const output = browser ? "dom" : "html";
   const markoFiles = Object.keys(fs.files).filter(isMarkoFile);
@@ -56,32 +71,18 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
     },
   };
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
-  const compiled: Record<
-    string,
-    {
-      code: string;
-      map: any;
-    }
-  > = {};
-
-  if (!seenWS.has(ws)) {
-    seenWS.add(ws);
-    cache.clear();
-    compiler.taglib.clearCaches();
+  const compiled = (ws.markoCompiled ??= {})[output] ??= {};
+  for (const file of markoFiles) {
+    const { code, map } = compiler.compileSync(
+      fs.files[file],
+      file,
+      baseConfig,
+    );
+    compiled[file] = { code, map };
   }
 
   return {
     name: "marko",
-    buildStart() {
-      for (const file of markoFiles) {
-        const { code, map } = compiler.compileSync(
-          fs.files[file],
-          file,
-          baseConfig,
-        );
-        compiled[file] = { code, map };
-      }
-    },
     resolveId(id) {
       if (id in runtimeModules) {
         return id;

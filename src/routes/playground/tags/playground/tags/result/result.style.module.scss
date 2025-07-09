@@ -114,6 +114,11 @@
   gap: 1rem;
 }
 
+.compiled {
+  display: flex;
+  flex: 1;
+}
+
 .hide {
-  visibility: hidden;
+  display: none;
 }
