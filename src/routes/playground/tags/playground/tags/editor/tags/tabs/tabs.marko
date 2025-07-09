@@ -77,15 +77,14 @@ let/selected:=input.selected
   button.${styles.add}
     ,aria-label="Add file"
     ,onClick() {
-      const defaultName = tabs.some((tab) => tab.path === "Tag.marko")
-        ? `Tag${tabs.length}`
-        : "Tag";
-      let requestedName =
-        prompt("What filename (extension optional)?", defaultName) ||
-        defaultName;
-      if (!requestedName.includes(".")) {
-        requestedName += ".marko";
+      let filename = prompt(
+        "What filename (extension optional)?",
+        tabs.some((tab) => tab.path === "Tag.marko") ? `Tag${tabs.length}` : "Tag"
+      );
+
+      if (filename) {
+        if (!filename.includes(".")) filename += ".marko";
+        tabs = [...tabs, { path: filename, content: "" }];
       }
-      tabs = tabs.concat({ path: requestedName, content: "" });
     }
     fa-icon=faPlus
