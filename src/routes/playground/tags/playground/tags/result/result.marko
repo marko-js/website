@@ -1,40 +1,56 @@
-import type { File } from "app/util/workspace";
+client import { update, type File } from "app/util/workspace";
 import * as styles from "./result.style.module.scss";
+import { bytesToUnits } from "app/util/sizes";
 
 export interface Input {
   files: File[];
   selected: number;
 }
 
-static const previewTypes: Record<string, {
-  render?: boolean;
-  output: "dom" | "html" | "hydrate";
-}> = {
-  "Preview": {
-    output: "dom",
-    render: true,
-  },
-  "Compiled (HTML)": {
-    output: "html",
-    render: false,
-  },
-  "Compiled (DOM)": {
-    output: "dom",
-    render: false,
-  },
-};
+static const outputTypes = {
+  preview: "Preview",
+  compiledServer: "Compiled (HTML)",
+  compiledClient: "Compiled (DOM)"
+} as const
 
-let/previewType="Preview"
-workspace/{ errors }
+define/Stat|{ name, value }: { name: string, value: number | undefined }|
+  if=value
+    const/formatted = bytesToUnits(value)
+    div
+      strong -- ${formatted.value}
+      small -- ${formatted.unit}
+      -- /${name}
+
+let/outputType=Object.keys(outputTypes)[0]
+workspace/{ stats, errors }
+let-debounce/files=input.files
+let-search-param/debugParam key="debug"
+let/debug=!!debugParam valueChange(debug) {
+  debugParam = debug ? "1" : null;
+}
 
 .${styles.result}
   .${styles.controls}
-    select value:=previewType
-      for|option| in=previewTypes
-        option -- ${option}
+    .${styles.control}
+      select value:=outputType
+        for|value, name| in=outputTypes
+          option value=value -- ${name}
+    .${styles.control}
+      label.${styles.checkbox}
+        -- Debug
+        input type="checkbox" checked:=debug
+
   .${styles.output}
     if=errors
       .${styles.error} -- ${errors.join("\n")}
-    if=input.files.length
-      if=previewType === "Preview"
-        preview-output=input.files selected=input.selected
+
+    iframe/$frame title="code output"
+
+    if=files.length
+      script -- update($signal, $frame(), files, !debug);
+
+    if=stats
+      .${styles.stats}
+        Stat=stats.script?.gzip name="js"
+        Stat=stats.style?.gzip name="css"
+        Stat=stats.markup?.gzip name="html"

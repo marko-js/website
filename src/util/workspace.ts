@@ -6,7 +6,7 @@ import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 
-import { toSizes, type Size } from "./sizes";
+import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
 
 export interface File {
@@ -21,9 +21,9 @@ export interface Workspace {
   stats:
     | undefined
     | {
-        markup: undefined | Size;
-        script: undefined | Size;
-        style: undefined | Size;
+        markup: undefined | Sizes;
+        script: undefined | Sizes;
+        style: undefined | Sizes;
       };
 }
 
@@ -190,10 +190,10 @@ export async function update(
       const htmlStream = msg?.data;
       if (signal.aborted || !(htmlStream instanceof ReadableStream)) return;
 
-      const codeSize = code ? toSizes(code) : undefined;
-      const cssCodeSize = cssCode ? toSizes(cssCode) : undefined;
+      const codeSize = code ? toByteSizes(code) : undefined;
+      const cssCodeSize = cssCode ? toByteSizes(cssCode) : undefined;
       const [htmlStreamA, htmlStreamB] = htmlStream.tee();
-      const markupSize = toSizes(htmlStreamA);
+      const markupSize = toByteSizes(htmlStreamA);
       void htmlStreamB
         .pipeThrough(new TextDecoderStream(), { signal })
         .pipeTo(new WritableDOMStream(frame.contentDocument!.body), { signal });

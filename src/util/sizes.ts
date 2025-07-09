@@ -1,10 +1,10 @@
 import prettyBytes from "pretty-bytes";
 
-export interface Size {
+export interface Sizes {
   size: number,
   gzip: number
 }
-export async function toSizes(data: string | ReadableStream<Uint8Array>): Promise<Size> {
+export async function toByteSizes(data: string | ReadableStream<Uint8Array>): Promise<Sizes> {
   if (typeof data === "string") {
     const blob = new Blob([data]);
     return {
@@ -35,7 +35,7 @@ async function streamToByteLength(data: ReadableStream<Uint8Array>) {
   return size;
 }
 
-export function toUnits(size: number) {
+export function bytesToUnits(size: number) {
   const pretty = prettyBytes(size);
   const unitIndex = pretty.indexOf(" ");
   return {
