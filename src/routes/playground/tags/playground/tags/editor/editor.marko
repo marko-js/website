@@ -1,6 +1,7 @@
 client import { EditorView } from "@codemirror/view"
 import type { File } from "app/util/workspace";
 client import extensions, { update } from "./codemirror-extensions";
+import * as styles from "./editor.styles.module.scss";
 
 export interface Input {
   files: File[];
@@ -16,7 +17,7 @@ let/file=files[selected] valueChange(newValue) {
 }
 
 tabs files:=files selected:=selected
-.editor.shiki/$editor
+.${styles.editor}/$editor
 
 lifecycle<{ editor?: EditorView, change?: boolean, set(v: string): void }>,
   ,set(content) {
@@ -55,62 +56,3 @@ lifecycle<{ editor?: EditorView, change?: boolean, set(v: string): void }>,
     this.editor!.destroy();
   }
 
-style --
-  .editor, .cm-editor {
-    height: 100%;
-  }
-  .cm-editor.cm-editor {
-    font-size: 1rem;
-    font-family: "Ubuntu Mono", monospace;
-    padding: 1rem 0rem;
-    counter-reset: line-number;
-    .cm-activeLine {
-      background-color: color-mix(in srgb, var(--color-blue-alt-dim), transparent);
-    }
-    .cm-cursor {
-      border-left: 2px solid var(--color-foreground);
-    }
-    .cm-gutters {
-      background-color: var(--color-background);
-      border-right: none;
-      padding-right: 0.25rem;
-      padding-left: 0.5rem;
-      font-family: "Ubuntu Mono", monospace;
-    }
-    .cm-gutterElement {
-      color: #858585;
-      user-select: none;
-      font-feature-settings: "tnum";
-      font-variant-numeric: tabular-nums;
-    }
-    .cm-tooltip {
-      border: none;
-      color: var(--color-background);
-      background-color: var(--color-blue-alt-dim-alt);
-      border-radius: 2px;
-      overflow: hidden;
-
-      ul li {
-        padding: 0.5rem;
-        &[aria-selected] {
-          background-color: var(--color-blue-dark);
-        }
-      }
-    }
-    .cm-foldMarker {
-      display: block;
-      rotate: 0deg;
-    }
-    .cm-foldMarkerOpen {
-      rotate: 90deg;
-    }
-    .cm-activeLineGutter {
-      background-color: transparent;
-    }
-    .cm-highlightSpace {
-      background-image: radial-gradient(circle at 50% 55%, var(--color-blue-dim-alt) 5%, transparent 5%);
-    }
-    &.cm-focused .cm-selectionBackground, ::selection {
-      background-color: unset !important;
-    }
-  }
