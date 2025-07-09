@@ -7,11 +7,10 @@ import runtimeHTML from "marko/html?raw";
 import runtimeDebugDOM from "marko/debug/dom?raw";
 import runtimeDebugHTML from "marko/debug/html?raw";
 
-import { FileSystem } from "./fs";
 import type { Workspace } from "../workspace";
 
-const seenFs = new WeakSet<FileSystem>();
-const compileCache = new Map();
+const cache = new Map();
+const seenWS = new WeakSet<Workspace>();
 const runtimeModules: Record<string, string> = {
   "marko/dom": runtimeDOM,
   "marko/html": runtimeHTML,
@@ -34,19 +33,17 @@ export interface MarkoPluginOptions {
   ws: Workspace;
   browser: boolean;
 }
-export function markoPlugin({
-  ws: { fs, optimize },
-  browser,
-}: MarkoPluginOptions): Plugin {
+export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
+  const { fs, optimize } = ws;
   const output = browser ? "dom" : "html";
   const markoFiles = Object.keys(fs.files).filter(isMarkoFile);
   const baseConfig: compiler.Config = {
+    cache,
     output,
     optimize,
     translator,
     stripTypes: true,
     sourceMaps: true,
-    cache: compileCache,
     fileSystem: fs as any,
     optimizeKnownTemplates: markoFiles,
     resolveVirtualDependency(from, { virtualPath, code, map }) {
@@ -67,9 +64,9 @@ export function markoPlugin({
     }
   > = {};
 
-  if (!seenFs.has(fs)) {
-    seenFs.add(fs);
-    compileCache.clear();
+  if (!seenWS.has(ws)) {
+    seenWS.add(ws);
+    cache.clear();
     compiler.taglib.clearCaches();
   }
 
