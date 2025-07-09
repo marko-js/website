@@ -64,28 +64,6 @@
     flex: 1;
     border: none;
   }
-
-  > :global(.shiki) {
-    flex: 1;
-    counter-reset: line-number;
-    padding: 1rem 0.25rem;
-
-    :global(.line) {
-      position: relative;
-      counter-increment: line-number;
-      &::before {
-        display: inline-flex;
-        content: counter(line-number);
-        padding-right: 1.625rem;
-        width: 3ch;
-        justify-content: right;
-        color: #858585;
-        user-select: none;
-        font-feature-settings: "tnum";
-        font-variant-numeric: tabular-nums;
-      }
-    }
-  }
 }
 
 .error {
@@ -117,6 +95,28 @@
 .compiled {
   display: flex;
   flex: 1;
+
+  > :global(.shiki) {
+    flex: 1;
+    counter-reset: line-number;
+    padding: 1rem;
+
+    :global(.line) {
+      position: relative;
+      counter-increment: line-number;
+      &::before {
+        display: inline-flex;
+        content: counter(line-number);
+        padding-right: 1.625rem;
+        width: 3ch;
+        justify-content: right;
+        color: #858585;
+        user-select: none;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
 }
 
 .hide {

@@ -1,6 +1,9 @@
+import type { CodeToHastOptions } from "shiki";
 client import highlighter from "app/util/shiki";
 client import { update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
+import { styleToClass } from "app/util/style-to-class";
+
 import * as styles from "./result.style.module.scss";
 
 export interface Input {
@@ -12,24 +15,50 @@ static const outputTypes = {
   preview: "Preview",
   html: "Compiled (HTML)",
   dom: "Compiled (DOM)"
-} as const
+} as const;
 
-static const compiledHighlightOpts = {
+static const compiledHighlightOpts: CodeToHastOptions = {
   lang: "js",
   defaultColor: false,
   themes: {
     light: "marko-light",
     dark: "marko-dark",
   },
-}
+  transformers: [{
+    pre(t) {
+      const className = styleToClass(t.properties.style);
+      if (className) {
+        t.properties.style = undefined;
+        this.addClassToHast(t, className);
+      }
+    },
+    tokens(lines) {
+      for (const line of lines) {
+        for (const token of line) {
+          const className = styleToClass(token.htmlStyle);
+          if (className) {
+            token.htmlStyle = undefined;
+            token.htmlAttrs ||= {};
+            if (token.htmlAttrs.class) {
+              token.htmlAttrs.class += " " + className;
+            } else {
+              token.htmlAttrs.class = className;
+            }
+          }
+        }
+      }
+    },
+  }]
+} as const
 
 define/Stat|{ name, value }: { name: string, value: number | undefined }|
   if=value
     const/formatted = bytesToUnits(value)
     div
+      -- ${name}(
       strong -- ${formatted.value}
       small -- ${formatted.unit}
-      -- /${name}
+      -- )
 
 const/selectedFile=input.files[input.selected]?.path as string | undefined
 let/outputType=Object.keys(outputTypes)[0]
