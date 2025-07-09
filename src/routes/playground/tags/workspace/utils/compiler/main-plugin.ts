@@ -1,9 +1,10 @@
 import type { Plugin, RollupFsModule } from "@rollup/browser";
 
-import fs, { getFiles } from "./fs";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
+import type { Workspace } from ".";
 
 export interface MainPluginOptions {
+  ws: Workspace;
   code: string;
   browser: boolean;
 }
@@ -11,7 +12,38 @@ export interface MainPluginOptions {
 const mainId = "\0main";
 const excludeId = "\0exclude";
 
-export function mainPlugin({ code, browser }: MainPluginOptions): Plugin {
+export function mainPlugin({ ws: { fs }, code, browser }: MainPluginOptions): Plugin {
+  const rollupFS: RollupFsModule = {
+    appendFile: unsupported,
+    copyFile: unsupported,
+    lstat: unsupported,
+    mkdir: unsupported,
+    mkdtemp: unsupported,
+    async readFile(path) {
+      return fs.readFileSync(path) as any;
+    },
+    async readdir(path) {
+      return fs.readdirSync(path) as any;
+    },
+    realpath: unsupported,
+    rename: unsupported,
+    rmdir: unsupported,
+    async stat(path) {
+      return fs.statSync(path) as any;
+    },
+    unlink: unsupported,
+    writeFile: unsupported,
+  };
+
+  const resolveFs: ResolveOptions["fs"] = {
+    isFile(file: string) {
+      return file in fs.files;
+    },
+    readPkg(file: string) {
+      return JSON.parse(fs.files[file] || "");
+    },
+  };
+
   return {
     name: "main",
     options(inputOptions) {
@@ -41,7 +73,7 @@ export function mainPlugin({ code, browser }: MainPluginOptions): Plugin {
       if (resolved === false) {
         return excludeId;
       }
-      
+
       if (resolved) {
         return resolved + (suffix || "");
       }
@@ -56,10 +88,9 @@ export function mainPlugin({ code, browser }: MainPluginOptions): Plugin {
         id = id.slice(0, -suffix.length);
       }
 
-      const files = getFiles();
-      const content = files[id];
+      const content = fs.files[id];
       if (content !== undefined) {
-        const sourceMap = files[id + ".map"];
+        const sourceMap = fs.files[id + ".map"];
         if (sourceMap) {
           return {
             code: content,
@@ -73,39 +104,6 @@ export function mainPlugin({ code, browser }: MainPluginOptions): Plugin {
   };
 }
 
-const rollupFS: RollupFsModule = {
-  appendFile: unsupported("appendFile"),
-  copyFile: unsupported("copyFile"),
-  lstat: unsupported("lstat"),
-  mkdir: unsupported("mkdir"),
-  mkdtemp: unsupported("mkdtemp"),
-  async readFile(path, opts) {
-    return fs.readFileSync(path, opts as any) as any;
-  },
-  async readdir(path, opts) {
-    return fs.readdirSync(path, opts as any) as any;
-  },
-  realpath: unsupported("realpath"),
-  rename: unsupported("rename"),
-  rmdir: unsupported("rmdir"),
-  async stat(path) {
-    return fs.statSync(path);
-  },
-  unlink: unsupported("unlink"),
-  writeFile: unsupported("writeFile"),
-};
-
-const resolveFs = {
-  isFile(file: string) {
-    return file in getFiles();
-  },
-  readPkg(file: string) {
-    return JSON.parse(getFiles()[file] || "");
-  },
-} satisfies ResolveOptions["fs"];
-
-function unsupported(name: string) {
-  return (..._: any[]): any => {
-    throw new Error(`fs.${name} is unsupported`);
-  };
+function unsupported(..._: any[]): any {
+  throw new Error(`fs api is unsupported`);
 }

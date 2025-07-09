@@ -1,10 +1,8 @@
-export interface PlaygroundFile {
-  path: string;
-  content: string;
-}
+import type { WorkspaceFile } from "../../utils/workspace";
+
 export interface Input {
-  files: PlaygroundFile[];
-  filesChange?: (files: PlaygroundFile[]) => void;
+  files: WorkspaceFile[];
+  filesChange?: (files: WorkspaceFile[]) => void;
 }
 
 let/tabIndex=0

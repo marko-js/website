@@ -10,12 +10,14 @@ export function minifyScriptPlugin(): Plugin {
   };
   return {
     name: "minify-script",
-    async renderChunk(code) {
-      const min = await minify(code, terserOpts);
-      return {
-        code: min.code || "",
-        map: min.map as any,
-      };
+    async renderChunk(code, _chunk, opts) {
+      if (opts.compact) {
+        const min = await minify(code, terserOpts);
+        return {
+          code: min.code || "",
+          map: min.map as any,
+        };
+      }
     },
   };
 }

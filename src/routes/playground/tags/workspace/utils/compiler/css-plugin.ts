@@ -2,13 +2,12 @@ import init, { transform } from "lightningcss-wasm";
 import type { Plugin } from "@rollup/browser";
 import { ConcatSourceMap } from "./concat-sourcemaps";
 export interface CSSPluginOptions {
-  optimize: boolean;
   browser: boolean;
 }
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-export function cssPlugin({ browser, optimize }: CSSPluginOptions): Plugin {
+export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
   if (browser) {
     return {
       name: "css",
@@ -45,7 +44,7 @@ export function cssPlugin({ browser, optimize }: CSSPluginOptions): Plugin {
           };
         }
       },
-      async renderChunk(_code, chunk) {
+      async renderChunk(_code, chunk, opts) {
         if (!chunk.isEntry || !chunk.facadeModuleId) return;
         const entryMod = this.getModuleInfo(chunk.facadeModuleId);
         const fileName = chunk.fileName.replace(/\.[^.]+$/, "") + ".css";
@@ -72,7 +71,7 @@ export function cssPlugin({ browser, optimize }: CSSPluginOptions): Plugin {
         if (code) {
           let map: string | void = cssBundle.sourceMap.toString();
 
-          if (optimize) {
+          if (opts.compact) {
             await initOnce();
             const min = transform({
               filename: fileName,
@@ -130,7 +129,7 @@ export function cssPlugin({ browser, optimize }: CSSPluginOptions): Plugin {
 
 let initPromise: Promise<unknown> | undefined;
 function initOnce() {
-  return initPromise ??= init();
+  return (initPromise ??= init());
 }
 
 function toCamelCase(str: string): string {

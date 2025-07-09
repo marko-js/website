@@ -1,51 +1,38 @@
-import type { PlaygroundFile } from "../../../playground.marko";
-client import prettyBytes from "pretty-bytes";
-client import WritableDOMStream from "writable-dom";
-client import { compile } from "../utils/compiler";
-import { toSizes } from "../utils/sizes";
+import { update, type WorkspaceFile } from "<workspace>";
+import { toUnits } from "../../../../workspace/utils/sizes";
 export interface Input {
-  value: PlaygroundFile[];
-  selected: number;
-}
-static interface Stats {
-  markup: {
-    size: number,
-    gzip: number
-  };
-  script?: {
-    size: number,
-    gzip: number
-  };
-  style?: {
-    size: number,
-    gzip: number
-  };
+  value: WorkspaceFile[];
+  selected: number
 }
 
-client let worker: Worker | undefined;
-
-let/error=null as unknown
-let/stats=null as null | Stats
 let-debounce/files=input.value
+workspace/{ stats, errors }
 
-if=error
-  pre.error -- ${error}
+if=errors
+  pre.error -- ${errors.join("\n")}
 
 iframe/$frame title="code output"
 
 if=stats
   .stats
     if=stats.script
+      const/{ value, unit } = toUnits(stats.script.gzip)
       .stat
-        -- js:
-        strong -- ${prettyBytes(stats.script.gzip, { space: false })}
+        strong -- ${value}
+        small -- ${unit}
+        -- /js
     if=stats.style
+      const/{ value, unit } = toUnits(stats.style.gzip)
       .stat
-        -- css:
-        strong -- ${prettyBytes(stats.style.gzip, { space: false })}
-    .stat
-      -- html:
-      strong -- ${prettyBytes(stats.markup.gzip, { space: false })}
+        strong -- ${value}
+        small -- ${unit}
+        -- /css
+    if=stats.markup
+      const/{ value, unit } = toUnits(stats.markup.gzip)
+      .stat
+        strong -- ${value}
+        small -- ${unit}
+        -- /html
 
 style --
   .stats {
@@ -71,68 +58,4 @@ style --
     visibility: hidden;
   }
 
-script --
-  const signal = $signal;
-  const signalOpt = { signal };
-  try {
-    const { client, server } = await compile(files);
-
-    if (signal.aborted) return;
-
-    const [htmlStream, body] = await Promise.all([
-      new Promise<ReadableStream<Uint8Array<ArrayBufferLike>>>((resolve, reject) => {
-        worker?.terminate();
-        worker = new Worker(server.js!.url, { type: "module" });
-        worker.addEventListener("error", reject, signalOpt);
-        worker.addEventListener("message", ({ data }) => {
-          if (data && data instanceof ReadableStream) {
-            resolve(data);
-          }
-        }, signalOpt);
-      }),
-      new Promise<HTMLBodyElement>((resolve, reject) => {
-        const frame = $frame();
-        frame.addEventListener("error", reject, signalOpt);
-        frame.addEventListener("load", () => {
-          const win = frame.contentWindow!;
-          win.addEventListener("error", handleError, signalOpt);
-          win.addEventListener("unhandledrejection", handleError, signalOpt);
-          resolve(frame.contentDocument!.body as HTMLBodyElement);
-          function handleError(ev: ErrorEvent | PromiseRejectionEvent) {
-            if (!ev.defaultPrevented) {
-              let err = "error" in ev ? ev.error : ev.reason || ev;
-              if ("detail" in err) err = err.detail;
-              error = err;
-              console.error(err);
-              ev.preventDefault();
-            }
-            return true;
-          }
-        }, signalOpt);
-        frame.srcdoc = (
-          (client.css ? `<link rel=stylesheet href="${client.css.url}">` : "") +
-          (client.js ? `<script type="module" async src="${client.js.url}"></script>` : "")
-        );
-      })
-    ]);
-
-    if (signal.aborted) return;
-    const [htmlStreamA, htmlStreamB] = htmlStream.tee();
-    const [markupSize] = await Promise.all([
-      toSizes(htmlStreamA),
-      htmlStreamB
-        .pipeThrough(new TextDecoderStream(), signalOpt)
-        .pipeTo(new WritableDOMStream(body), signalOpt)
-    ]);
-    stats = {
-      markup: markupSize,
-      script: client.js?.sizes,
-      style: client.css?.sizes
-    };
-    error = null;
-  } catch (err) {
-    if (!signal.aborted) {
-      error = err;
-      console.error(err);
-    }
-  }
+script -- update($signal, $frame(), files, { optimize: true });

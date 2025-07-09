@@ -1,0 +1,6 @@
+client import { subscribe, type Workspace } from "./utils/compiler";
+client export { update, type Workspace, type WorkspaceFile } from "./utils/compiler";
+
+let/workspace=({} as Partial<Workspace>)
+return=workspace
+script -- subscribe(v => workspace = v, $signal);

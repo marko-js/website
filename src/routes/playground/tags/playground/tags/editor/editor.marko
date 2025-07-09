@@ -1,18 +1,17 @@
 client import { EditorView } from "@codemirror/view"
-import type { PlaygroundFile } from "../../playground.marko";
-
+import type { WorkspaceFile } from "<workspace>";
 client import extensions, { update } from "./codemirror-extensions";
 
 export interface Input {
-  files: PlaygroundFile[];
-  filesChange?: (files: PlaygroundFile[]) => void;
+  files: WorkspaceFile[];
+  filesChange?: (files: WorkspaceFile[]) => void;
   tabIndex?: number;
   tabIndexChange?: (tabIndex: number) => void;
 }
 
 let/files:=input.files
 let/selected=(input.tabIndex || 0) valueChange=input.tabIndexChange
-let/file=(files.at(selected) as PlaygroundFile) valueChange(newValue) {
+let/file=files[selected] valueChange(newValue) {
   files = files.toSpliced(selected, 1, newValue);
 }
 

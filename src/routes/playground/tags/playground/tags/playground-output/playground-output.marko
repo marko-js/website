@@ -1,4 +1,9 @@
-import type { PlaygroundFile } from "../../playground.marko";
+import type { WorkspaceFile } from "<workspace>";
+
+export interface Input {
+  files: WorkspaceFile[];
+  selected: number;
+}
 
 static const previewTypes: Record<string, {
   render?: boolean;
@@ -17,10 +22,6 @@ static const previewTypes: Record<string, {
     render: false,
   },
 };
-export interface Input {
-  files: PlaygroundFile[];
-  selected: number;
-}
 
 let/previewType="Preview"
 
