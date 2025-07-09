@@ -44,7 +44,7 @@ let/debug=!!debugParam valueChange(debug) {
     if=errors
       .${styles.error} -- ${errors.join("\n")}
 
-    iframe/$frame title="code output"
+    iframe/$frame title="code output" class={ [styles.hide]: outputType !== "preview" }
 
     if=files.length
       script -- update($signal, $frame(), files, !debug);
