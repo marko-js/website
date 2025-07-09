@@ -39,6 +39,7 @@ export function markoPlugin({
   browser,
 }: MarkoPluginOptions): Plugin {
   const output = browser ? "dom" : "html";
+  const markoFiles = Object.keys(fs.files).filter(isMarkoFile);
   const baseConfig: compiler.Config = {
     output,
     optimize,
@@ -47,6 +48,7 @@ export function markoPlugin({
     sourceMaps: true,
     cache: compileCache,
     fileSystem: fs as any,
+    optimizeKnownTemplates: markoFiles,
     resolveVirtualDependency(from, { virtualPath, code, map }) {
       const resolved = path.join(from, "..", virtualPath);
       fs.files[resolved] = code;
@@ -74,15 +76,13 @@ export function markoPlugin({
   return {
     name: "marko",
     buildStart() {
-      for (const file in fs.files) {
-        if (file.endsWith(".marko")) {
-          const { code, map } = compiler.compileSync(
-            fs.files[file],
-            file,
-            baseConfig,
-          );
-          compiled[file] = { code, map };
-        }
+      for (const file of markoFiles) {
+        const { code, map } = compiler.compileSync(
+          fs.files[file],
+          file,
+          baseConfig,
+        );
+        compiled[file] = { code, map };
       }
     },
     resolveId(id) {
@@ -99,7 +99,7 @@ export function markoPlugin({
         id = id.slice(0, -suffix.length);
       }
 
-      if (id.endsWith(".marko")) {
+      if (isMarkoFile(id)) {
         if (suffix === "?hydrate") {
           const compiled = compiler.compileSync(code, id, hydrateConfig);
           return {
@@ -112,4 +112,8 @@ export function markoPlugin({
       }
     },
   };
+}
+
+function isMarkoFile(file: string) {
+  return file.endsWith(".marko");
 }

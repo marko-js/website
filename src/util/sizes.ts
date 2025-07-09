@@ -1,10 +1,10 @@
-import prettyBytes from "pretty-bytes";
-
 export interface Sizes {
-  size: number,
-  gzip: number
+  size: number;
+  gzip: number;
 }
-export async function toByteSizes(data: string | ReadableStream<Uint8Array>): Promise<Sizes> {
+export async function toByteSizes(
+  data: string | ReadableStream<Uint8Array>,
+): Promise<Sizes> {
   if (typeof data === "string") {
     const blob = new Blob([data]);
     return {
@@ -36,10 +36,25 @@ async function streamToByteLength(data: ReadableStream<Uint8Array>) {
 }
 
 export function bytesToUnits(size: number) {
-  const pretty = prettyBytes(size);
-  const unitIndex = pretty.indexOf(" ");
+  const kb = size / 1024;
+  if (kb < 10) {
+    return { value: size.toString(), unit: "b" };
+  }
+
+  if (kb < 100) {
+    return {
+      value: Number.isInteger(kb) ? kb.toString() : kb.toFixed(1),
+      unit: "kb",
+    };
+  }
+
+  const mb = kb / 1024;
+  if (mb < 10) {
+    return { value: Math.round(kb).toString(), unit: "kb" };
+  }
+
   return {
-    value: pretty.slice(0, unitIndex),
-    unit: pretty.slice(unitIndex + 1),
+    value: Number.isInteger(mb) ? mb.toString() : mb.toFixed(2),
+    unit: "mb",
   };
 }
