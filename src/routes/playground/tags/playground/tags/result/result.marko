@@ -25,6 +25,7 @@ static const previewTypes: Record<string, {
 };
 
 let/previewType="Preview"
+workspace/{ errors }
 
 .${styles.result}
   .${styles.controls}
@@ -32,6 +33,8 @@ let/previewType="Preview"
       for|option| in=previewTypes
         option -- ${option}
   .${styles.output}
+    if=errors
+      .${styles.error} -- ${errors.join("\n")}
     if=input.files.length
       if=previewType === "Preview"
         preview-output=input.files selected=input.selected

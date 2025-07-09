@@ -1,5 +1,5 @@
 client import { update, type File } from "app/util/workspace";
-import { toUnits } from "app/util/sizes";
+import { toUnits, type Size } from "app/util/sizes";
 import * as styles from "./preview-output.style.module.scss";
 
 export interface Input {
@@ -7,33 +7,22 @@ export interface Input {
   selected: number
 }
 
+define/Stat|{ name, value }: { name: string, value: Size | undefined }|
+  if=value
+    const/formatted = toUnits(value.gzip)
+    div
+      strong -- ${formatted.value}
+      small -- ${formatted.unit}
+      -- /${name}
+
+workspace/{ stats }
 let-debounce/files=input.value
-workspace/{ stats, errors }
-
-if=errors
-  .${styles.error} -- ${errors.join("\n")}
-
 iframe/$frame title="code output"
 
 if=stats
   .${styles.stats}
-    if=stats.script
-      const/{ value, unit } = toUnits(stats.script.gzip)
-      div
-        strong -- ${value}
-        small -- ${unit}
-        -- /js
-    if=stats.style
-      const/{ value, unit } = toUnits(stats.style.gzip)
-      div
-        strong -- ${value}
-        small -- ${unit}
-        -- /css
-    if=stats.markup
-      const/{ value, unit } = toUnits(stats.markup.gzip)
-      div
-        strong -- ${value}
-        small -- ${unit}
-        -- /html
+    Stat name="js" value=stats.script
+    Stat name="css" value=stats.style
+    Stat name="html" value=stats.markup
 
 script -- update($signal, $frame(), files, true);
