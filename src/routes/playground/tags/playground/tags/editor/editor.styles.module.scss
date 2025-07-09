@@ -17,6 +17,9 @@
         transparent
       );
     }
+    .cm-scroller {
+      font-family: inherit;
+    }
     .cm-cursor {
       border-left: 2px solid var(--color-foreground);
     }
@@ -56,13 +59,6 @@
     }
     .cm-activeLineGutter {
       background-color: transparent;
-    }
-    .cm-highlightSpace {
-      background-image: radial-gradient(
-        circle at 50% 55%,
-        var(--color-blue-dim-alt) 5%,
-        transparent 5%
-      );
     }
     &.cm-focused .cm-selectionBackground,
     ::selection {

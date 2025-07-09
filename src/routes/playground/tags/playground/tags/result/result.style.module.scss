@@ -99,7 +99,9 @@
   > :global(.shiki) {
     flex: 1;
     counter-reset: line-number;
-    padding: 1rem;
+    padding: 1rem 0;
+    padding-right: 0.25rem;
+    padding-left: 0.5rem;
 
     :global(.line) {
       position: relative;
