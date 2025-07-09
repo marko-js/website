@@ -1,5 +1,7 @@
 client import { update, type File } from "app/util/workspace";
 import { toUnits } from "app/util/sizes";
+import * as styles from "./preview-output.style.module.scss";
+
 export interface Input {
   value: File[];
   selected: number
@@ -9,53 +11,29 @@ let-debounce/files=input.value
 workspace/{ stats, errors }
 
 if=errors
-  pre.error -- ${errors.join("\n")}
+  .${styles.error} -- ${errors.join("\n")}
 
 iframe/$frame title="code output"
 
 if=stats
-  .stats
+  .${styles.stats}
     if=stats.script
       const/{ value, unit } = toUnits(stats.script.gzip)
-      .stat
+      div
         strong -- ${value}
         small -- ${unit}
         -- /js
     if=stats.style
       const/{ value, unit } = toUnits(stats.style.gzip)
-      .stat
+      div
         strong -- ${value}
         small -- ${unit}
         -- /css
     if=stats.markup
       const/{ value, unit } = toUnits(stats.markup.gzip)
-      .stat
+      div
         strong -- ${value}
         small -- ${unit}
         -- /html
-
-style --
-  .stats {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background-color: var(--color-gray-dim);
-    padding: 0.5rem;
-    border-top-left-radius: 0.5rem;
-    font-family: "Ubuntu Mono", monospace;
-    display: flex;
-    gap: 1rem;
-  }
-  pre.error {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-  }
-
-  pre.error + iframe {
-    visibility: hidden;
-  }
 
 script -- update($signal, $frame(), files, true);

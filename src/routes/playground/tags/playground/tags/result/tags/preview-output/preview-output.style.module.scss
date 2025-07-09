@@ -1,0 +1,24 @@
+.stats {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-gray-dim);
+  padding: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  font-family: "Ubuntu Mono", monospace;
+  display: flex;
+  gap: 1rem;
+}
+.error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  white-space: pre;
+  padding: 1rem;
+
+  & + iframe {
+    visibility: hidden;
+  }
+}

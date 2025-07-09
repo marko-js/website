@@ -33,4 +33,5 @@ let/previewType="Preview"
         option -- ${option}
   .${styles.output}
     if=input.files.length
-      render-files=input.files selected=input.selected
+      if=previewType === "Preview"
+        preview-output=input.files selected=input.selected
