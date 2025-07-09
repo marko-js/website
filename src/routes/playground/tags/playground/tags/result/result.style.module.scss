@@ -1,0 +1,53 @@
+.result {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-start;
+  background-color: var(--color-gray-dim);
+  overflow-x: auto;
+  scrollbar-width: thin;
+
+  select {
+    font-size: 1rem;
+    border-radius: 0;
+    background-color: var(--color-gray-dim);
+  }
+}
+
+.output {
+  position: relative;
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+
+  iframe {
+    flex: 1;
+    border: none;
+  }
+
+  > :global(.shiki) {
+    flex: 1;
+    counter-reset: line-number;
+    padding: 1rem 0.25rem;
+
+    :global(.line) {
+      position: relative;
+      counter-increment: line-number;
+      &::before {
+        display: inline-flex;
+        content: counter(line-number);
+        padding-right: 1.625rem;
+        width: 3ch;
+        justify-content: right;
+        color: #858585;
+        user-select: none;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+}

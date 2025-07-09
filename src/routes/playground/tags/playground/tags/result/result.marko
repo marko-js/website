@@ -1,4 +1,5 @@
 import type { File } from "app/util/workspace";
+import * as styles from "./result.style.module.scss";
 
 export interface Input {
   files: File[];
@@ -25,66 +26,11 @@ static const previewTypes: Record<string, {
 
 let/previewType="Preview"
 
-.output
-  .output-header
+.${styles.result}
+  .${styles.controls}
     select value:=previewType
       for|option| in=previewTypes
         option -- ${option}
-  .output-content
+  .${styles.output}
     if=input.files.length
       render-files=input.files selected=input.selected
-
-style --
-  .output {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .output-header {
-    display: flex;
-    justify-content: flex-start;
-    background-color: var(--color-gray-dim);
-    overflow-x: auto;
-    scrollbar-width: thin;
-
-    select {
-      font-size: 1rem;
-      border-radius: 0;
-      background-color: var(--color-gray-dim);
-    }
-  }
-
-  .output-content {
-    position: relative;
-    display: flex;
-    flex: 1;
-    overflow-y: auto;
-
-    iframe {
-      flex: 1;
-      border: none;
-    }
-  }
-
-  .output-content > .shiki {
-    flex: 1;
-    counter-reset: line-number;
-    padding: 1rem 0.25rem;
-
-    .line {
-      position: relative;
-      counter-increment: line-number;
-      &::before {
-        display: inline-flex;
-        content: counter(line-number);
-        padding-right: 1.625rem;
-        width: 3ch;
-        justify-content: right;
-        color: #858585;
-        user-select: none;
-        font-feature-settings: "tnum";
-        font-variant-numeric: tabular-nums;
-      }
-    }
-  }
