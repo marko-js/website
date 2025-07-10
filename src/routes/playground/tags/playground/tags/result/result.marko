@@ -51,19 +51,24 @@ static const compiledHighlightOpts: CodeToHastOptions = {
   }]
 } as const
 
-define/Stat|{ name, value }: { name: string, value: number | undefined }|
-  if=value
-    const/formatted = bytesToUnits(value)
+define/Stat|{ name, size }: { name: string, size: number | undefined }|
+  if=size
+    const/{ value, unit } = bytesToUnits(size)
     div
-      -- ${name}(
-      strong -- ${formatted.value}
-      small -- ${formatted.unit}
-      -- )
+      -- ${name} = 
+      strong -- ${value}
+      small -- ${unit}
 
 const/selectedFile=input.files[input.selected]?.path as string | undefined
 let/outputType=Object.keys(outputTypes)[0]
 workspace/{ stats, errors, markoCompiled }
 let-debounce/files=input.files
+const/compiled = (
+  selectedFile && (outputType === "dom" || outputType === "html")
+    ? markoCompiled?.[outputType]?.[`/tags/${selectedFile}`]
+    : undefined
+)
+const/compiledCode = compiled?.code;
 let-search-param/debugParam key="debug"
 let/debug=!!debugParam valueChange(debug) {
   debugParam = debug ? "1" : null;
@@ -85,16 +90,14 @@ let/debug=!!debugParam valueChange(debug) {
       .${styles.error} -- ${errors.join("\n")}
 
     iframe/$frame title="code output" class={ [styles.hide]: outputType !== "preview" }
-    const/compiled = selectedFile && outputType !== "preview" ? markoCompiled?.[outputType as keyof typeof markoCompiled]?.[`/tags/${selectedFile}`] : undefined
-    const/compiledCode = compiled?.code;
     if=compiledCode
-      .${styles.compiled} -- $!{highlighter.codeToHtml(compiledCode, compiledHighlightOpts)}
+      #${styles.compiled} -- $!{highlighter.codeToHtml(compiledCode, compiledHighlightOpts)}
 
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
     if=stats
       .${styles.stats}
-        Stat=stats.script?.gzip name="js"
-        Stat=stats.style?.gzip name="css"
-        Stat=stats.markup?.gzip name="html"
+        Stat name="js" size=stats.script?.gzip
+        Stat name="css" size=stats.style?.gzip
+        Stat name="html" size=stats.markup?.gzip

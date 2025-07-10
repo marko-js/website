@@ -7,7 +7,6 @@ import {
   highlightActiveLineGutter,
   keymap,
   ViewPlugin,
-  highlightWhitespace,
   lineNumbers,
 } from "@codemirror/view";
 import {
@@ -65,7 +64,6 @@ const baseLanguageData = [{
 export default [
   history(),
   drawSelection(),
-  highlightWhitespace(),
   highlightActiveLine(),
   highlightSelectionMatches(),
   highlightActiveLineGutter(),

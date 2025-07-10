@@ -36,25 +36,24 @@ async function streamToByteLength(data: ReadableStream<Uint8Array>) {
 }
 
 export function bytesToUnits(size: number) {
-  const kb = size / 1024;
-  if (kb < 10) {
-    return { value: size.toString(), unit: "b" };
-  }
+  let value = size;
+  let unit = "B";
 
-  if (kb < 100) {
-    return {
-      value: Number.isInteger(kb) ? kb.toString() : kb.toFixed(1),
-      unit: "kb",
-    };
-  }
-
-  const mb = kb / 1024;
-  if (mb < 10) {
-    return { value: Math.round(kb).toString(), unit: "kb" };
+  if (size >= 1048576) {
+    value = size / 1048576;
+    unit = "MB";
+  } else if (size >= 1024) {
+    value = size / 1024;
+    unit = "KB";
   }
 
   return {
-    value: Number.isInteger(mb) ? mb.toString() : mb.toFixed(2),
-    unit: "mb",
+    value: (value < 10
+      ? Math.round(value * 100) / 100
+      : value < 100
+        ? Math.round(value * 10) / 10
+        : Math.round(value)
+    ).toString(),
+    unit,
   };
 }

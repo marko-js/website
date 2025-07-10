@@ -17,7 +17,7 @@ let/file=files[selected] valueChange(newValue) {
 }
 
 tabs files:=files selected:=selected
-.${styles.editor}/$editor
+#${styles.editor}.shiki/$editor
 
 lifecycle<{ editor?: EditorView, change?: boolean, set(v: string): void }>
   ,set(content) {
