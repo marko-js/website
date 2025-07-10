@@ -1,0 +1,122 @@
+.result {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-start;
+  background-color: var(--color-gray-dim);
+  overflow-x: auto;
+  scrollbar-width: thin;
+
+  select {
+    font-size: 1rem;
+    border-radius: 0;
+    background-color: var(--color-gray-dim);
+  }
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid var(--color-gray-alt-dim);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  &:focus-within {
+    outline: none;
+    border-color: var(--section-color-alt, var(--color-blue-alt));
+  }
+
+  &:hover {
+    border-color: var(--section-color, var(--color-blue));
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  input {
+    accent-color: var(--color-blue);
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    cursor: pointer;
+  }
+}
+
+.output {
+  position: relative;
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+
+  iframe {
+    flex: 1;
+    border: none;
+  }
+}
+
+.error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  white-space: pre;
+  padding: 1rem;
+}
+
+.stats {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-gray-dim);
+  padding: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  font-family: "Ubuntu Mono", monospace;
+  display: flex;
+  gap: 1rem;
+}
+
+#compiled {
+  display: flex;
+  flex: 1;
+
+  > :global(.shiki) {
+    flex: 1;
+    counter-reset: line-number;
+    padding: 1rem 0;
+    padding-right: 0.25rem;
+    padding-left: 0.5rem;
+
+    :global(.line) {
+      position: relative;
+      counter-increment: line-number;
+      &::before {
+        display: inline-flex;
+        content: counter(line-number);
+        padding-right: 1.625rem;
+        width: 3ch;
+        justify-content: right;
+        color: #858585;
+        user-select: none;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+}
+
+.hide {
+  display: none;
+}

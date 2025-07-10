@@ -7,7 +7,6 @@ import {
   highlightActiveLineGutter,
   keymap,
   ViewPlugin,
-  highlightWhitespace,
   lineNumbers,
 } from "@codemirror/view";
 import {
@@ -32,6 +31,7 @@ import {
 } from "@codemirror/autocomplete";
 import { foldGutter, foldService } from "@codemirror/language";
 import highlighter from "app/util/shiki";
+import { styleToClass } from "./style-to-class";
 
 const langConfig = new Compartment();
 export function update(view: EditorView, content: string, lang: string) {
@@ -64,7 +64,6 @@ const baseLanguageData = [{
 export default [
   history(),
   drawSelection(),
-  highlightWhitespace(),
   highlightActiveLine(),
   highlightSelectionMatches(),
   highlightActiveLineGutter(),
@@ -128,25 +127,17 @@ function getIndentation(line: string): number {
 function shiki(lang?: string) {
   const plugin = ViewPlugin.fromClass(
     class {
-      declare styleEl: HTMLStyleElement;
       declare decorations: RangeSet<Decoration>;
       static lang = lang;
-      classNames = new Map<string, string>();
 
       constructor(view: EditorView) {
-        this.styleEl = document.createElement("style");
         this.decorations = this.buildDecorations(view);
-        view.dom.parentElement!.insertBefore(this.styleEl, view.dom);
       }
 
       update(update: ViewUpdate) {
         if (update.docChanged) {
           this.decorations = this.buildDecorations(update.view);
         }
-      }
-
-      destroy() {
-        this.styleEl.remove();
       }
 
       buildDecorations(view: EditorView) {
@@ -163,7 +154,7 @@ function shiki(lang?: string) {
 
         for (const line of tokens) {
           for (const token of line) {
-            const className = this.getClass(token.htmlStyle);
+            const className = styleToClass(token.htmlStyle);
             if (className) {
               builder.add(
                 token.offset,
@@ -176,19 +167,6 @@ function shiki(lang?: string) {
 
         return builder.finish();
       }
-
-      getClass(value: unknown) {
-        const style = styleToStr(value);
-        if (style) {
-          let className = this.classNames.get(style);
-          if (!className) {
-            className = `s_${this.classNames.size.toString(36)}`;
-            this.classNames.set(style, className);
-            this.styleEl.textContent += `.${className}{${style}}`;
-          }
-          return className;
-        }
-      }
     },
     {
       decorations: (v) => v.decorations,
@@ -197,35 +175,4 @@ function shiki(lang?: string) {
 
   (plugin as any).lang = lang;
   return plugin;
-}
-
-function styleToStr(value: unknown) {
-  if (value) {
-    if (typeof value === "object") {
-      let style = "";
-      let sep = "";
-
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          const str = styleToStr(item);
-          if (str) {
-            style += sep + styleToStr(item);
-            sep = ";";
-          }
-        }
-      } else {
-        for (const key in value) {
-          const str = styleToStr((value as Record<string, string>)[key]);
-          if (str) {
-            style += sep + key + ":" + str;
-            sep = ";";
-          }
-        }
-      }
-
-      return style;
-    } else {
-      return "" + value;
-    }
-  }
 }

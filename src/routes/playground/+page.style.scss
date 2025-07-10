@@ -5,7 +5,8 @@
   position: fixed;
   left: 0;
   right: 0;
-  padding: 0 var(--root-gap);
+  margin: 0 0;
+  padding: 0 1rem;
   transform: none !important;
   background-color: var(--color-background);
 }

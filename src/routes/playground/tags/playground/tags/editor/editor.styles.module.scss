@@ -1,0 +1,67 @@
+#editor {
+  height: 100%;
+}
+
+:global {
+  .cm-editor.cm-editor {
+    height: 100%;
+    font-size: 1rem;
+    font-family: "Ubuntu Mono", monospace;
+    padding: 1rem 0rem;
+    counter-reset: line-number;
+    .cm-activeLine {
+      background-color: color-mix(
+        in srgb,
+        var(--color-blue-alt-dim),
+        transparent
+      );
+    }
+    .cm-scroller {
+      font-family: inherit;
+    }
+    .cm-cursor {
+      border-left: 2px solid var(--color-foreground);
+    }
+    .cm-gutters {
+      background-color: var(--color-background);
+      border-right: none;
+      padding-right: 0.25rem;
+      padding-left: 0.5rem;
+      font-family: "Ubuntu Mono", monospace;
+    }
+    .cm-gutterElement {
+      color: #858585;
+      user-select: none;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+    .cm-tooltip {
+      border: none;
+      color: var(--color-background);
+      background-color: var(--color-blue-alt-dim-alt);
+      border-radius: 2px;
+      overflow: hidden;
+  
+      ul li {
+        padding: 0.5rem;
+        &[aria-selected] {
+          background-color: var(--color-blue-dark);
+        }
+      }
+    }
+    .cm-foldMarker {
+      display: block;
+      rotate: 0deg;
+    }
+    .cm-foldMarkerOpen {
+      rotate: 90deg;
+    }
+    .cm-activeLineGutter {
+      background-color: transparent;
+    }
+    &.cm-focused .cm-selectionBackground,
+    ::selection {
+      background-color: unset !important;
+    }
+  }
+}

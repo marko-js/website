@@ -1,23 +1,14 @@
-export interface PlaygroundFile {
-  path: string;
-  content: string;
-}
+import type { File } from "app/util/workspace";
+
 export interface Input {
-  files: PlaygroundFile[];
-  filesChange?: (files: PlaygroundFile[]) => void;
+  files: File[];
+  filesChange?: (files: File[]) => void;
 }
 
-let/tabIndex=0
+let/tab=0
 
 split-panes
   @first
-    editor files:=input.files tabIndex:=tabIndex
+    editor files:=input.files tab:=tab
   @second
-    playground-output files=input.files selected=tabIndex
-
-style --
-  iframe.result {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
+    result files=input.files selected=tab

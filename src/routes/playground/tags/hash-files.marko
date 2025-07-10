@@ -1,22 +1,21 @@
-import type { PlaygroundFile } from "<playground>";
-client import { compress, decompress } from "./hasher";
+import type { File } from "app/util/workspace";
+client import { compress, decompress } from "app/util/hasher";
+
 export interface Input {
-  value: PlaygroundFile[];
+  value: File[];
 }
 
-<let/value=[] as PlaygroundFile[]/>
-<lifecycle
-  onMount() {
-    decompress(window.location.hash.slice(1))
-      .then((decompressed) => {
-        value = JSON.parse(decompressed) || input.value;
-      });
+let/value=([] as File[])
+lifecycle
+  ,onMount() {
+    decompress(window.location.hash.slice(1)).then((decompressed) => {
+      value = JSON.parse(decompressed) || input.value;
+    });
   }
-  onUpdate() {
+  ,onUpdate() {
     compress(JSON.stringify(value)).then((compressed) => {
       window.location.hash = compressed;
     });
   }
-/>
 
-<return:=value/>
+return:=value

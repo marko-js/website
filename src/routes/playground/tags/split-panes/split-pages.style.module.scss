@@ -1,0 +1,40 @@
+.panes {
+  display: flex;
+  position: fixed;
+  inset: var(--stick-size) 0 0 0;
+
+  > * {
+    flex-basis: 0;
+  }
+}
+
+.panes > div {
+  overflow: hidden;
+}
+
+.divider {
+  all: unset;
+  cursor: col-resize;
+  touch-action: none;
+  min-height: 1rem;
+  min-width: 1rem;
+  background-color: var(--color-foreground);
+  opacity: 0.2;
+  box-shadow: inset 0 0 0.2rem var(--color-background);
+  &:hover {
+    opacity: 0.4;
+  }
+  @media (pointer: fine) {
+    min-height: 0.5rem;
+    min-width: 0.5rem;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .panes {
+    flex-direction: column;
+  }
+  .divider {
+    cursor: row-resize;
+  }
+}

@@ -1,0 +1,109 @@
+import type { CodeToHastOptions } from "shiki";
+client import highlighter from "app/util/shiki";
+client import { update, type File } from "app/util/workspace";
+import { bytesToUnits } from "app/util/sizes";
+import { styleToClass } from "app/util/style-to-class";
+
+import * as styles from "./result.style.module.scss";
+
+export interface Input {
+  files: File[];
+  selected: number;
+}
+
+static const outputTypes = {
+  preview: "Preview",
+  html: "Compiled (HTML)",
+  dom: "Compiled (DOM)"
+} as const;
+
+static const compiledHighlightOpts: CodeToHastOptions = {
+  lang: "js",
+  defaultColor: false,
+  themes: {
+    light: "marko-light",
+    dark: "marko-dark",
+  },
+  transformers: [{
+    pre(t) {
+      const className = styleToClass(t.properties.style);
+      if (className) {
+        t.properties.style = undefined;
+        this.addClassToHast(t, className);
+      }
+    },
+    tokens(lines) {
+      for (const line of lines) {
+        for (const token of line) {
+          const className = styleToClass(token.htmlStyle);
+          if (className) {
+            token.htmlStyle = undefined;
+            token.htmlAttrs ||= {};
+            if (token.htmlAttrs.class) {
+              token.htmlAttrs.class += " " + className;
+            } else {
+              token.htmlAttrs.class = className;
+            }
+          }
+        }
+      }
+    },
+  }]
+} as const
+
+define/Stat|{ name, size }: { name: string, size: number | undefined }|
+  if=size
+    const/{ value, unit } = bytesToUnits(size)
+    div
+      -- ${name} = 
+      strong -- ${value}
+      small -- ${unit}
+
+const/selectedFile=input.files[input.selected]?.path as string | undefined
+let/outputType=Object.keys(outputTypes)[0]
+workspace/{ stats, buildErrors, runtimeErrors, markoCompiled }
+let-debounce/files=input.files
+const/compiled = (
+  selectedFile && (outputType === "dom" || outputType === "html")
+    ? markoCompiled?.[outputType]?.[`/tags/${selectedFile}`]
+    : undefined
+)
+const/compiledCode = compiled?.code;
+let-search-param/debugParam key="debug"
+let/debug=!!debugParam valueChange(debug) {
+  debugParam = debug ? "1" : null;
+}
+
+.${styles.result}
+  .${styles.controls}
+    .${styles.control}
+      select value:=outputType
+        for|value, name| in=outputTypes
+          option value=value -- ${name}
+    .${styles.control}
+      label.${styles.checkbox}
+        -- Debug
+        input type="checkbox" checked:=debug
+
+  .${styles.output}
+    if=buildErrors
+      .${styles.error}
+        p -- ${buildErrors.join("\n")}
+        p -- Check the devtools console for more information.
+    else if=compiledCode
+      #${styles.compiled} -- $!{highlighter.codeToHtml(compiledCode, compiledHighlightOpts)}
+    else if=runtimeErrors
+      .${styles.error}
+        p -- ${runtimeErrors.join("\n")}
+        p -- Check the devtools console for more information.
+
+    iframe/$frame title="code output" class={ [styles.hide]: !!(buildErrors || runtimeErrors || compiledCode) }
+
+    if=files.length
+      script -- update($signal, $frame(), files, !debug);
+
+    if=stats
+      .${styles.stats}
+        Stat name="js" size=stats.script?.gzip
+        Stat name="css" size=stats.style?.gzip
+        Stat name="html" size=stats.markup?.gzip

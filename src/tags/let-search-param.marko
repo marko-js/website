@@ -3,9 +3,13 @@ export interface Input {
 }
 <let/internalValue=$global.url.searchParams.get(input.key)/>
 
-<return=internalValue valueChange(newValue: string) {
+<return=internalValue valueChange(newValue: string | null) {
   const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set(input.key, newValue);
+  if (newValue == null) {
+    newUrl.searchParams.delete(input.key);
+  } else {
+    newUrl.searchParams.set(input.key, newValue);
+  }
   history.replaceState(null, "", newUrl.toString())
   internalValue = newValue;
 }/>

@@ -1,0 +1,90 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import type { File } from "app/util/workspace";
+import * as styles from "./tabs.style.module.scss";
+export interface Input {
+  files: File[];
+  filesChange: (files: File[]) => void;
+  selected: number;
+  selectedChange?: (newSelected: number) => void;
+}
+
+let/tabs:=input.files
+let/selected:=input.selected
+
+.${styles.tabs}
+  .${styles.files}
+    for|tab, i| of=tabs
+      const/isSelected=selected === i
+      const/isEditable=i !== 0
+      let/editing=false valueChange=(isEditable ? undefined : () => {})
+
+      .${styles.tab}
+        ,aria-selected=isSelected && "true"
+        ,tabindex=0
+        ,role="button"
+        ,onClick() {
+          if (isSelected) {
+            editing = true;
+          } else {
+            selected = i;
+          }
+        }
+        ,onKeyPress(e, el) {
+          if (e.target === el && (e.key === " " || e.key === "Enter")) {
+            if (isSelected) {
+              editing = true;
+            } else {
+              selected = i;
+            }
+          }
+        }
+        if=editing
+          let/length=(tab.path.length)
+          input/$input
+            ,value=tab.path
+            ,size=length
+            ,onInput() {
+              length = $input().value.length;
+            }
+            ,onBlur() {
+              tabs = tabs.toSpliced(i, 1, { ...tab, path: $input().value });
+              editing = false;
+            }
+            ,onKeyPress(e) {
+              if (e.key === "Enter") {
+                $input().blur();
+                editing = false;
+              } else if (e.key === "Escape") {
+                editing = false;
+              }
+            }
+          script --
+            $input().focus();
+            $input().setSelectionRange(0, $input().value.lastIndexOf("."));
+        else
+          -- ${tab.path}
+
+        if=isEditable
+          button.${styles.close}
+            ,aria-label="close"
+            ,onClick(e) {
+              e.stopPropagation();
+              selected = 0;
+              tabs = tabs.toSpliced(i, 1);
+            }
+            -- ×
+
+  button.${styles.add}
+    ,aria-label="Add file"
+    ,onClick() {
+      let filename = prompt(
+        "What filename (extension optional)?",
+        tabs.some((tab) => tab.path === "Tag.marko") ? `Tag${tabs.length}` : "Tag"
+      );
+
+      if (filename) {
+        if (!filename.includes(".")) filename += ".marko";
+        tabs = [...tabs, { path: filename, content: "" }];
+      }
+    }
+    fa-icon=faPlus
