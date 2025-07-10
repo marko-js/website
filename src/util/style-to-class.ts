@@ -1,22 +1,36 @@
 const classNames = new Map<string, string>();
 let styleEl: HTMLStyleElement | undefined;
+let styleText = "";
+let applying = false;
 
 export function styleToClass(value: unknown) {
   const style = normalizeStyle(value);
   if (style) {
     let className = classNames.get(style);
     if (!className) {
-      if (!styleEl) {
-        styleEl = document.createElement("style");
-        document.head.appendChild(styleEl);
-      }
 
       className = `s_${classNames.size.toString(36)}`;
       classNames.set(style, className);
-      styleEl.textContent += `.${className}{${style}}`;
+      styleText += `.${className}{${style}}`;
+
+      if (!applying) {
+        applying = true;
+        requestAnimationFrame(applyStyles);
+      }
     }
 
     return className;
+  }
+}
+
+function applyStyles() {
+  applying = false;
+  if (styleEl) {
+    styleEl.textContent = styleText;
+  } else {
+    styleEl = document.createElement("style");
+    styleEl.textContent = styleText
+    document.head.appendChild(styleEl);
   }
 }
 

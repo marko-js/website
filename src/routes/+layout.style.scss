@@ -162,6 +162,7 @@ main {
 
 .shiki,
 .shiki span {
+  -webkit-text-size-adjust: 100%;
   color: var(--shiki-light);
   .code-block--reverse &,
   .code-block--dark & {

@@ -75,7 +75,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: false,
-            code: `import tag from "${rootDir}index.marko";self.onmessage=async()=>{for await(const chunk of tag.render())self.postMessage(chunk);self.postMessage(0)}`,
+            code: `import t from "${rootDir}index.marko";onmessage=async()=>{for await(const c of t.render())postMessage(c);postMessage(0)}`,
           }),
           markoPlugin({
             ws,
@@ -179,15 +179,16 @@ export async function update(
               );
               server.postMessage(1);
             },
-          }).pipeThrough(new TextEncoderStream(), { signal });
+          });
 
           const [htmlStreamA, htmlStreamB] = htmlStream.tee();
-          const markupSize = toByteSizes(htmlStreamA);
-          void htmlStreamB
-            .pipeThrough(new TextDecoderStream(), { signal })
-            .pipeTo(new WritableDOMStream(frame.contentDocument!.body), {
-              signal,
-            });
+          const markupSize = toByteSizes(
+            htmlStreamA.pipeThrough(new TextEncoderStream(), { signal }),
+          );
+          void htmlStreamB.pipeTo(
+            new WritableDOMStream(frame.contentDocument!.body),
+            { signal },
+          );
 
           ws.stats = {
             markup: await markupSize,
