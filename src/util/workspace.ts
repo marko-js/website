@@ -16,7 +16,8 @@ export interface File {
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
-  errors: undefined | [Error, ...Error[]];
+  buildErrors: undefined | [Error, ...Error[]];
+  runtimeErrors: undefined | [Error, ...Error[]];
   server: Worker | undefined;
   stats:
     | undefined
@@ -57,7 +58,8 @@ export async function update(
   const ws: Workspace = (workspace = {
     fs,
     optimize,
-    errors: undefined,
+    buildErrors: undefined,
+    runtimeErrors: undefined,
     stats: undefined,
     server: undefined,
   });
@@ -114,7 +116,7 @@ export async function update(
           type: "module",
         },
       );
-      ws.server.addEventListener("error", onError, { signal });
+      ws.server.addEventListener("error", onRuntimeError, { signal });
     })();
     const browserBuild = (async function buildClient() {
       const file = "client.js";
@@ -176,8 +178,8 @@ export async function update(
       });
 
       const win = frame.contentWindow!;
-      win.addEventListener("error", onError, { signal });
-      win.addEventListener("unhandledrejection", onError, { signal });
+      win.addEventListener("error", onRuntimeError, { signal });
+      win.addEventListener("unhandledrejection", onRuntimeError, { signal });
       await serverBuild;
 
       const msg = await new Promise<MessageEvent | void>((resolve, reject) => {
@@ -208,21 +210,20 @@ export async function update(
     await serverBuild;
     await browserBuild;
   } catch (err) {
-    addError(err);
+    console.error(err);
+    ws.buildErrors = ws.buildErrors ? [...ws.buildErrors, err as any] : [err as any];
+    emit();
   }
 
-  function onError(ev: ErrorEvent | PromiseRejectionEvent) {
+  function onRuntimeError(ev: ErrorEvent | PromiseRejectionEvent) {
     if (!ev.defaultPrevented) {
       let err = "error" in ev ? ev.error : ev.reason || ev;
       if ("detail" in err) err = err.detail;
-      addError(err);
+      console.error(err);
+      ws.runtimeErrors = ws.runtimeErrors ? [...ws.runtimeErrors, err] : [err];
+      emit();
+      ev.preventDefault();
     }
-  }
-
-  function addError(err: any) {
-    console.error(err);
-    ws.errors = ws.errors ? [...ws.errors, err] : [err];
-    emit();
   }
 
   function emit() {

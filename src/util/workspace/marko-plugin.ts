@@ -19,7 +19,7 @@ declare module "../workspace" {
 }
 
 const cache = new Map();
-const seenWS = new WeakSet<Workspace>();
+const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
 const runtimeModules: Record<string, string> = {
   "marko/dom": runtimeDOM,
   "marko/html": runtimeHTML,
@@ -43,15 +43,21 @@ export interface MarkoPluginOptions {
   browser: boolean;
 }
 export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
-  if (!seenWS.has(ws)) {
-    seenWS.add(ws);
+  const { fs, optimize } = ws;
+  let optimizeKnownTemplates = knownTemplatesForWS.get(ws);
+  if (!optimizeKnownTemplates) {
     cache.clear();
     compiler.taglib.clearCaches();
+    optimizeKnownTemplates = [];
+    for (const file in fs.files) {
+      if (isMarkoFile(file)) {
+        optimizeKnownTemplates.push(file);
+      }
+    }
+    knownTemplatesForWS.set(ws, optimizeKnownTemplates);
   }
 
-  const { fs, optimize } = ws;
   const output = browser ? "dom" : "html";
-  const markoFiles = Object.keys(fs.files).filter(isMarkoFile);
   const baseConfig: compiler.Config = {
     cache,
     output,
@@ -60,7 +66,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
     stripTypes: true,
     sourceMaps: true,
     fileSystem: fs as any,
-    optimizeKnownTemplates: markoFiles,
+    optimizeKnownTemplates,
     resolveVirtualDependency(from, { virtualPath, code, map }) {
       const resolved = path.join(from, "..", virtualPath);
       fs.files[resolved] = code;
@@ -72,7 +78,8 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   };
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
   const compiled = (ws.markoCompiled ??= {})[output] ??= {};
-  for (const file of markoFiles) {
+
+  for (const file of optimizeKnownTemplates) {
     const { code, map } = compiler.compileSync(
       fs.files[file],
       file,
