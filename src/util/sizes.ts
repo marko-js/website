@@ -1,3 +1,5 @@
+import { streamToIterable } from "./stream-to-iterable";
+
 export interface Sizes {
   size: number;
   gzip: number;
@@ -28,7 +30,7 @@ function streamToGzipByteLength(data: ReadableStream<Uint8Array>) {
 
 async function streamToByteLength(data: ReadableStream<Uint8Array>) {
   let size = 0;
-  for await (const chunk of data) {
+  for await (const chunk of streamToIterable(data)) {
     size += chunk.byteLength;
   }
 

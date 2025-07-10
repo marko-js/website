@@ -1,4 +1,5 @@
 import lzString from "lz-string";
+import { streamToIterable } from "./stream-to-iterable";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -11,7 +12,7 @@ export async function compress(value: string) {
   writer.close();
 
   let result = NEW_COMPRESSION_PREFIX;
-  for await (const chunk of stream.readable) {
+  for await (const chunk of streamToIterable(stream.readable)) {
     result += String.fromCharCode(...chunk);
   }
 
@@ -37,7 +38,7 @@ export async function decompress(value: string) {
     writer.close();
 
     let result = "";
-    for await (const chunk of stream.readable) {
+    for await (const chunk of streamToIterable(stream.readable)) {
       result += decoder.decode(chunk);
     }
 

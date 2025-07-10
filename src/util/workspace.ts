@@ -75,7 +75,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: false,
-            code: `import tag from "${rootDir}index.marko";self.onmessage=()=>{const stream = tag.render().toReadable();self.postMessage(stream,[stream])}`,
+            code: `import tag from "${rootDir}index.marko";self.onmessage=async()=>{for await(const chunk of tag.render())self.postMessage(chunk);self.postMessage(0)}`,
           }),
           markoPlugin({
             ws,
@@ -148,81 +148,104 @@ export async function update(
 
       const code = getAssetCode(output, file);
       const cssCode = getAssetCode(output, cssFile);
-
-      await new Promise((resolve, reject) => {
-        frame.addEventListener("load", resolve, { signal });
-        frame.addEventListener("error", reject, { signal });
-        frame.srcdoc =
-          (cssCode
-            ? `<link rel=stylesheet href="${toAssetURL(
-                cssFile,
-                "text/css",
-                cssCode +
-                  getSourceMapComment(
-                    cssFile,
-                    getAssetCode(output, `${cssFile}.map`),
-                  ),
-              )}">`
-            : "") +
-          (code
-            ? `<script type=module async src="${toAssetURL(
-                file,
-                "application/javascript",
-                code +
-                  getSourceMapComment(
-                    file,
-                    getAssetCode(output, `${file}.map`),
-                  ),
-              )}"></script>`
-            : "");
-      });
-
-      const win = frame.contentWindow!;
-      win.addEventListener("error", onRuntimeError, { signal });
-      win.addEventListener("unhandledrejection", onRuntimeError, { signal });
-      await serverBuild;
-
-      const msg = await new Promise<MessageEvent | void>((resolve, reject) => {
-        if (!ws.server || signal.aborted) return resolve();
-        ws.server.onmessage = resolve;
-        ws.server.onerror = reject;
-        ws.server.postMessage(1);
-      });
-
-      const htmlStream = msg?.data;
-      if (signal.aborted || !(htmlStream instanceof ReadableStream)) return;
-
       const codeSize = code ? toByteSizes(code) : undefined;
       const cssCodeSize = cssCode ? toByteSizes(cssCode) : undefined;
-      const [htmlStreamA, htmlStreamB] = htmlStream.tee();
-      const markupSize = toByteSizes(htmlStreamA);
-      void htmlStreamB
-        .pipeThrough(new TextDecoderStream(), { signal })
-        .pipeTo(new WritableDOMStream(frame.contentDocument!.body), { signal });
 
-      ws.stats = {
-        markup: await markupSize,
-        script: await codeSize,
-        style: await cssCodeSize,
-      };
-      emit();
+      frame.addEventListener("error", onRuntimeError, { signal });
+      frame.addEventListener(
+        "load",
+        async () => {
+          const win = frame.contentWindow!;
+          win.addEventListener("error", onRuntimeError, { signal });
+          win.addEventListener("unhandledrejection", onRuntimeError, {
+            signal,
+          });
+          await serverBuild;
+          const { server } = ws;
+          if (!server || signal.aborted) return;
+
+          const htmlStream = new ReadableStream({
+            start(c) {
+              server.addEventListener(
+                "message",
+                (ev) => {
+                  if (ev.data) {
+                    c.enqueue(ev.data);
+                  } else {
+                    c.close();
+                  }
+                },
+                { signal },
+              );
+              server.postMessage(1);
+            },
+          }).pipeThrough(new TextEncoderStream(), { signal });
+
+          const [htmlStreamA, htmlStreamB] = htmlStream.tee();
+          const markupSize = toByteSizes(htmlStreamA);
+          void htmlStreamB
+            .pipeThrough(new TextDecoderStream(), { signal })
+            .pipeTo(new WritableDOMStream(frame.contentDocument!.body), {
+              signal,
+            });
+
+          ws.stats = {
+            markup: await markupSize,
+            script: await codeSize,
+            style: await cssCodeSize,
+          };
+          emit();
+        },
+        { signal },
+      );
+      frame.srcdoc =
+        (cssCode
+          ? `<link rel=stylesheet href="${toAssetURL(
+              cssFile,
+              "text/css",
+              cssCode +
+                getSourceMapComment(
+                  cssFile,
+                  getAssetCode(output, `${cssFile}.map`),
+                ),
+            )}">`
+          : "") +
+        (code
+          ? `<script type=module async src="${toAssetURL(
+              file,
+              "application/javascript",
+              code +
+                getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+            )}"></script>`
+          : "");
     })();
-    await serverBuild;
-    await browserBuild;
+
+    await Promise.all([serverBuild, browserBuild]);
   } catch (err) {
     console.error(err);
-    ws.buildErrors = ws.buildErrors ? [...ws.buildErrors, err as any] : [err as any];
+    ws.buildErrors = ws.buildErrors
+      ? [...ws.buildErrors, err as any]
+      : [err as any];
     emit();
   }
 
   function onRuntimeError(ev: ErrorEvent | PromiseRejectionEvent) {
     if (!ev.defaultPrevented) {
-      let err = "error" in ev ? ev.error : ev.reason || ev;
-      if ("detail" in err) err = err.detail;
-      console.error(err);
+      let err = "error" in ev ? ev.error : ev.reason;
+      if (!err && isErrorEvent(ev)) {
+        err = new Error(
+          `${ev.message}\n${ev.filename}:${ev.lineno},${ev.colno}`,
+        );
+      } else if (err) {
+        if ("detail" in err) {
+          err = err.detail;
+        }
+      } else {
+        err = new Error("Unknown error");
+      }
+
       ws.runtimeErrors = ws.runtimeErrors ? [...ws.runtimeErrors, err] : [err];
       emit();
-      ev.preventDefault();
     }
   }
 
@@ -234,6 +257,12 @@ export async function update(
       }
     }
   }
+}
+
+function isErrorEvent(
+  ev: ErrorEvent | PromiseRejectionEvent,
+): ev is ErrorEvent {
+  return ev.type === "error";
 }
 
 function getAssetCode(chunks: (OutputChunk | OutputAsset)[], name: string) {
@@ -257,8 +286,7 @@ export function getSourceMapComment(filename: string, map: any) {
         "\n//# sourceURL=" +
         encodeURI(filename) +
         (map
-          ? "\n//# sourceMappingURL=" +
-            toDataURI("application/json", map)
+          ? "\n//# sourceMappingURL=" + toDataURI("application/json", map)
           : "")
       );
     case ".css":
