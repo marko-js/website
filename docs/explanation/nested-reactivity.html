@@ -1,12 +1,16 @@
-<!DOCTYPE html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=description content="The Marko programming language"><title>Nested Reactivity | Marko</title><link rel=icon sizes=32x32 href=/fav.png><link rel=icon type=image/svg+xml href=/fav.svg><link rel=preconnect href=https://GB0QQV5RQM-dsn.algolia.net crossorigin><script async type="module" crossorigin src="/assets/route.marko-TCtsXxHJ.js"></script><link rel="modulepreload" crossorigin href="/assets/_Cs-ygCF3.js"><link rel="modulepreload" crossorigin href="/assets/_7vCJ0Iam.js"><link rel="modulepreload" crossorigin href="/assets/_CkhL-cSO.js"><link rel="stylesheet" crossorigin href="/assets/_layout-B5TYXGYB.css"><link rel="stylesheet" crossorigin href="/assets/_layout-f1eYYdhm.css"><link rel="stylesheet" crossorigin href="/assets/app-code-block-CgfQ_1Pn.css"></head><body><div id=root><header id=header><a title=Home href="/" id=_cz><picture><source srcset=/logo.svg#dark media=(prefers-color-scheme:dark)><img alt="Marko Logo" src=/logo.svg></picture></a><div class=_cx><a href=/docs>Docs</a><a href=/playground>Playground</a><a href=https://github.com/marko-js/marko>GitHub</a></div><button aria-pressed=false aria-label="Show menu" id=_cy></button><!--M_*6 2--><div id=_cA><button disabled aria-hidden=true></button></div><!--M_*6 3--></header><main><script>document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');</script><script>document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');</script><div class=_cW id=site-menu><nav class=_cX id=_cY><ul><li><strong>Introduction</strong><ul><li><a href=/docs/introduction/getting-started>Getting Started</a></li><li><a href=/docs/introduction/welcome-to-marko>Welcome to Marko!</a></li><li><a href=/docs/introduction/installation>Installation</a></li></ul></li><li><strong>Tutorials</strong><ul><li><a href=/docs/tutorial/fundamentals>Fundamentals</a></li><li><a href=/docs/tutorial/app-from-scratch>App from Scratch</a></li><li><a href=/docs/tutorial/components-and-reactivity>Components and Reactivity</a></li><li><a href=/docs/tutorial/experienced-developers>Experienced Developers</a></li></ul></li><li><strong>Guides</strong><ul><li><a href=/docs/guide/existing-project>Existing Project</a></li><li><a href=/docs/guide/styling>Styling</a></li><li><a href=/docs/guide/low-level-apis>Low-Level APIs</a></li><li><a href=/docs/guide/publishing-components>Publishing Components</a></li><li><a href=/docs/guide/library-integration>Library Integration</a></li><li><a href=/docs/guide/csp>Content-Security Policy</a></li></ul></li><li><strong>Explanation</strong><ul><li><a href=/docs/explanation/streaming>Streaming</a></li><li><a href=/docs/explanation/forms>Working With Forms</a></li><li><a href=/docs/explanation/controllable-components>Controllable Components</a></li><li><a href=/docs/explanation/nested-reactivity aria-current=true>Nested Reactivity</a></li><li><a href=/docs/explanation/optimizing-performance>Optimizing Performance</a></li><li><a href=/docs/explanation/separation-of-concerns>Separation of Concerns</a></li></ul></li><li><strong>Reference</strong><ul><li><a href=/docs/reference/language>Language</a></li><li><a href=/docs/reference/custom-tag>Custom Tags</a></li><li><a href=/docs/reference/reactivity>Reactivity</a></li><li><a href=/docs/reference/core-tag>Core Tags</a></li><li><a href=/docs/reference/native-tag>Native Tags</a></li><li><a href=/docs/reference/concise-syntax>Concise Syntax</a></li><li><a href=/docs/reference/template>Template API</a></li><li><a href=/docs/reference/typescript>TypeScript</a></li></ul></li></ul></nav><div id=_c0><strong id=sM_1>Settings</strong><label class=_n><span>HTML<!--M_*12 1--></span><span class=_m><input type=checkbox aria-labelledby=sM_1><!--M_*12 3--><svg viewBox="0 0 576 512"><path d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"></path></svg><!--M_*13 0--></span><span>Concise<!--M_*12 5--></span></label><label class=_n><span>JS<!--M_*15 1--></span><span class=_m><input type=checkbox aria-labelledby=sM_1><!--M_*15 3--><svg viewBox="0 0 576 512"><path d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"></path></svg><!--M_*16 0--></span><span>TS<!--M_*15 5--></span></label></div></div><article id=_c2><h1 id=nested-reactivity>Nested Reactivity</h1><div class="markdown-alert markdown-alert-tldr"><p class=markdown-alert-title>Tldr</p><p>Three approaches are explored for managing nested state</p></div><p>It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.</p><p>Each method in this guide is more complex and has more overhead than those before it. Generally, you should use the <em>least</em> complex method that still addresses the needs of your application.</p><section id=core-example-to-do-list><h2><a href=#core-example-to-do-list>Core Example: To-Do List</a></h2><p>Each example in this guide will build on the following client-side To-Do list application.</p><div class=code-block><div class=html><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
+<!DOCTYPE html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=description content="The Marko programming language"><title>Nested Reactivity | Marko</title><link rel=icon sizes=32x32 href=/fav.png><link rel=icon type=image/svg+xml href=/fav.svg><link rel=preconnect href=https://GB0QQV5RQM-dsn.algolia.net crossorigin><script async type="module" crossorigin src="/assets/route.marko-TCtsXxHJ.js"></script><link rel="modulepreload" crossorigin href="/assets/_Cs-ygCF3.js"><link rel="modulepreload" crossorigin href="/assets/_7vCJ0Iam.js"><link rel="modulepreload" crossorigin href="/assets/_CkhL-cSO.js"><link rel="stylesheet" crossorigin href="/assets/_layout-B5TYXGYB.css"><link rel="stylesheet" crossorigin href="/assets/_layout-f1eYYdhm.css"><link rel="stylesheet" crossorigin href="/assets/app-code-block-CgfQ_1Pn.css"></head><body><div id=root><header id=header><a title=Home href="/" id=_cz><picture><source srcset=/logo.svg#dark media=(prefers-color-scheme:dark)><img alt="Marko Logo" src=/logo.svg></picture></a><div class=_cx><a href=/docs>Docs</a><a href=/playground>Playground</a><a href=https://github.com/marko-js/marko>GitHub</a></div><button aria-pressed=false aria-label="Show menu" id=_cy></button><!--M_*6 2--><div id=_cA><button disabled aria-hidden=true></button></div><!--M_*6 3--></header><main><script>
+  document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');
+</script><script>
+  document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');
+</script><div class=_cW id=site-menu><nav class=_cX id=_cY><ul><li><strong>Introduction</strong><ul><li><a href=/docs/introduction/getting-started>Getting Started</a></li><li><a href=/docs/introduction/welcome-to-marko>Welcome to Marko!</a></li><li><a href=/docs/introduction/installation>Installation</a></li></ul></li><li><strong>Tutorials</strong><ul><li><a href=/docs/tutorial/fundamentals>Fundamentals</a></li><li><a href=/docs/tutorial/app-from-scratch>App from Scratch</a></li><li><a href=/docs/tutorial/components-and-reactivity>Components and Reactivity</a></li><li><a href=/docs/tutorial/experienced-developers>Experienced Developers</a></li></ul></li><li><strong>Guides</strong><ul><li><a href=/docs/guide/existing-project>Existing Project</a></li><li><a href=/docs/guide/styling>Styling</a></li><li><a href=/docs/guide/low-level-apis>Low-Level APIs</a></li><li><a href=/docs/guide/publishing-components>Publishing Components</a></li><li><a href=/docs/guide/library-integration>Library Integration</a></li><li><a href=/docs/guide/csp>Content-Security Policy</a></li></ul></li><li><strong>Explanation</strong><ul><li><a href=/docs/explanation/streaming>Streaming</a></li><li><a href=/docs/explanation/forms>Working With Forms</a></li><li><a href=/docs/explanation/controllable-components>Controllable Components</a></li><li><a href=/docs/explanation/nested-reactivity aria-current=true>Nested Reactivity</a></li><li><a href=/docs/explanation/optimizing-performance>Optimizing Performance</a></li><li><a href=/docs/explanation/separation-of-concerns>Separation of Concerns</a></li></ul></li><li><strong>Reference</strong><ul><li><a href=/docs/reference/language>Language</a></li><li><a href=/docs/reference/custom-tag>Custom Tags</a></li><li><a href=/docs/reference/reactivity>Reactivity</a></li><li><a href=/docs/reference/core-tag>Core Tags</a></li><li><a href=/docs/reference/native-tag>Native Tags</a></li><li><a href=/docs/reference/concise-syntax>Concise Syntax</a></li><li><a href=/docs/reference/template>Template API</a></li><li><a href=/docs/reference/typescript>TypeScript</a></li></ul></li></ul></nav><div id=_c0><strong id=sM_1>Settings</strong><label class=_n><span>HTML<!--M_*12 1--></span><span class=_m><input type=checkbox aria-labelledby=sM_1><!--M_*12 3--><svg viewBox="0 0 576 512"><path d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"></path></svg><!--M_*13 0--></span><span>Concise<!--M_*12 5--></span></label><label class=_n><span>JS<!--M_*15 1--></span><span class=_m><input type=checkbox aria-labelledby=sM_1><!--M_*15 3--><svg viewBox="0 0 576 512"><path d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"></path></svg><!--M_*16 0--></span><span>TS<!--M_*15 5--></span></label></div></div><article id=_c2><h1 id=nested-reactivity>Nested Reactivity</h1><div class="markdown-alert markdown-alert-tldr"><p class=markdown-alert-title>Tldr</p><p>Three approaches are explored for managing nested state</p></div><p>It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.</p><p>Each method in this guide is more complex and has more overhead than those before it. Generally, you should use the <em>least</em> complex method that still addresses the needs of your application.</p><section id=core-example-to-do-list><h2><a href=#core-example-to-do-list>Core Example: To-Do List</a></h2><p>Each example in this guide will build on the following client-side To-Do list application.</p><div class=code-block><div class=html><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -15,15 +19,14 @@
 <span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;/</span><span class="s_1">for</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">&#x3C;/</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"></span>
-<span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">form</span><span class="s_8"> onSubmit</span><span class="s_0">(</span><span class="s_2">e</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">  e</span><span class="s_0">.</span><span class="s_9">preventDefault</span><span class="s_0">();</span></span>
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">concat</span><span class="s_0">({</span></span>
@@ -46,12 +49,11 @@
 <span class="line"><span class="s_1">      id</span><span class="s_0">/</span><span class="s_2">checkboxId</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span>
 <span class="line"></span>
 <span class="line"><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span></span>
@@ -66,12 +68,12 @@
 <span class="line"><span class="s_5">  button</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"submit"</span><span class="s_0"> --</span><span class="s_4"> Add</span></span></code></pre></div><div class=html-ts><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -80,15 +82,14 @@
 <span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;/</span><span class="s_1">for</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">&#x3C;/</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"></span>
-<span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">form</span><span class="s_8"> onSubmit</span><span class="s_0">(</span><span class="s_2">e</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">  e</span><span class="s_0">.</span><span class="s_9">preventDefault</span><span class="s_0">();</span></span>
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">concat</span><span class="s_0">({</span></span>
@@ -111,12 +112,11 @@
 <span class="line"><span class="s_1">      id</span><span class="s_0">/</span><span class="s_2">checkboxId</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span>
 <span class="line"></span>
 <span class="line"><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">nextId=</span><span class="s_3">2</span></span>
@@ -131,13 +131,13 @@
 <span class="line"><span class="s_5">  button</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"submit"</span><span class="s_0"> --</span><span class="s_4"> Add</span></span></code></pre></div></div><style>.s_0{--shiki-light:#202124;--shiki-dark:#FFF}.s_1{--shiki-light:#0D7BBF;--shiki-dark:#66D9EF}.s_2{--shiki-light:#202124;--shiki-dark:#FFFFFF}.s_3{--shiki-light:#7C4DFF;--shiki-dark:#AE81FF}.s_4{--shiki-light:#8A720A;--shiki-dark:#FFF066}.s_5{--shiki-light:#D91880;--shiki-dark:#FF4185}.s_6{--shiki-light:#B05C1C;--shiki-light-font-style:italic;--shiki-dark:#FFB86C;--shiki-dark-font-style:italic}.s_7{--shiki-light:#46821C;--shiki-dark:#A6E22E}.s_8{--shiki-light:#0D7BBF;--shiki-light-font-style:italic;--shiki-dark:#66D9EF;--shiki-dark-font-style:italic}.s_9{--shiki-light:#1D8649;--shiki-dark:#7FFF00}.s_a{--shiki-light:#202124;--shiki-dark:#FFF;--shiki-light-bg:#00000000;--shiki-dark-bg:#00000000}.s_b{--shiki-light:#202124;--shiki-dark:#F8F8F0}</style></section><section id=case-1-local-state><h2><a href=#case-1-local-state>Case 1: Local State</a></h2><p>The first rule of nested reactivity is that you should try to avoid nested reactivity. Generally, <strong>state should be managed as close to its uses as possible</strong>. Before jumping right into hoisting state into a global object, <em>please</em> consider whether it actually makes sense to do so.</p><p>In most cases, it makes more sense to create local state than to add a value to some global store. For example, maybe we want to disable deleting items that haven&#39;t yet been completed. For this, we need to hoist state out of the input.</p><div class=code-block><div class=html><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -147,8 +147,7 @@
 <span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
@@ -165,23 +164,22 @@
 <span class="line"><span class="s_1">      let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,disabled=!done</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span></code></pre></div><div class=html-ts><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -191,8 +189,7 @@
 <span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
@@ -209,25 +206,24 @@
 <span class="line"><span class="s_1">      let</span><span class="s_0">/</span><span class="s_2">done=</span><span class="s_3">false</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,disabled=!done</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span></code></pre></div></div><p>Notice that for this feature, there is <em>no need</em> to modify the <code>todos</code> object at the top level. State can stay local, so nested reactivity on that object is unnecessary.</p></section><section id=case-2-simple-hoisted-state><h2><a href=#case-2-simple-hoisted-state>Case 2: Simple Hoisted State</a></h2><p>Sometimes, it <em>does</em> make sense to hoist state up to a global object. Suppose we want to add a feature where clicking a button shows the first item in the list that isn&#39;t done yet. For that information to be known, we need to include the state in the <code>todos</code> object:</p><div class=code-block><div class=html><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0">, done: </span><span class="s_3">false</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0">, done: </span><span class="s_3">false</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=todo</span><span class="s_0">.</span><span class="s_2">done</span><span class="s_8"> valueChange</span><span class="s_0">(</span><span class="s_2">done</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">        todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">, { </span><span class="s_5">...</span><span class="s_2">todo</span><span class="s_0">, </span><span class="s_2">done</span><span class="s_0"> });</span></span>
-<span class="line"><span class="s_0">      }/></span></span>
+<span class="line"><span class="s_0">      }></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -237,8 +233,7 @@
 <span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
@@ -257,25 +252,24 @@
 <span class="line"><span class="s_0">      }</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,disabled=!done</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span></code></pre></div><div class=html-ts><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">todos=</span><span class="s_0">[</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">0</span><span class="s_0">, text: </span><span class="s_4">"Learn Marko"</span><span class="s_0">, done: </span><span class="s_3">false</span><span class="s_0"> },</span></span>
 <span class="line"><span class="s_0">  { id: </span><span class="s_3">1</span><span class="s_0">, text: </span><span class="s_4">"Make a Website"</span><span class="s_0">, done: </span><span class="s_3">false</span><span class="s_0"> },</span></span>
-<span class="line"><span class="s_0">]/></span></span>
+<span class="line"><span class="s_0">]></span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_5">ul</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">  &#x3C;</span><span class="s_1">for</span><span class="s_0">|</span><span class="s_6">todo</span><span class="s_0">, </span><span class="s_6">i</span><span class="s_0">| </span><span class="s_7">of</span><span class="s_2">=todos</span><span class="s_7"> by</span><span class="s_2">=</span><span class="s_4">"id"</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;</span><span class="s_5">li</span><span class="s_0">></span></span>
-<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">/></span></span>
+<span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">id</span><span class="s_0">/</span><span class="s_2">checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=todo</span><span class="s_0">.</span><span class="s_2">done</span><span class="s_8"> valueChange</span><span class="s_0">(</span><span class="s_2">done</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">        todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">, { </span><span class="s_5">...</span><span class="s_2">todo</span><span class="s_0">, </span><span class="s_2">done</span><span class="s_0"> });</span></span>
-<span class="line"><span class="s_0">      }/></span></span>
+<span class="line"><span class="s_0">      }></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">      &#x3C;</span><span class="s_5">label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0">></span></span>
 <span class="line"><span class="s_1">        ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
@@ -285,8 +279,7 @@
 <span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
 <span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
 <span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ></span></span>
+<span class="line"><span class="s_0">        }></span></span>
 <span class="line"><span class="s_4">        &#x26;times;</span></span>
 <span class="line"><span class="s_0">      &#x3C;/</span><span class="s_5">button</span><span class="s_0">></span></span>
 <span class="line"><span class="s_0">    &#x3C;/</span><span class="s_5">li</span><span class="s_0">></span></span>
@@ -305,20 +298,19 @@
 <span class="line"><span class="s_0">      }</span></span>
 <span class="line"><span class="s_5">      input</span><span class="s_7"> type</span><span class="s_2">=</span><span class="s_4">"checkbox"</span><span class="s_7"> checked</span><span class="s_0">:</span><span class="s_2">=done</span><span class="s_7"> id</span><span class="s_2">=checkboxId</span></span>
 <span class="line"><span class="s_5">      label</span><span class="s_7"> for</span><span class="s_2">=checkboxId</span><span class="s_0"> --</span><span class="s_1"> ${</span><span class="s_2">todo</span><span class="s_0">.</span><span class="s_2">text</span><span class="s_1">}</span></span>
-<span class="line"><span class="s_5">      button</span><span class="s_0"> [</span></span>
-<span class="line"><span class="s_7">        title</span><span class="s_2">=</span><span class="s_4">"delete"</span></span>
-<span class="line"><span class="s_7">        disabled</span><span class="s_2">=</span><span class="s_b">!done</span></span>
-<span class="line"><span class="s_8">        onClick</span><span class="s_0">() {</span></span>
-<span class="line"><span class="s_2">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_9">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">);</span></span>
-<span class="line"><span class="s_0">        }</span></span>
-<span class="line"><span class="s_0">      ]</span></span>
+<span class="line"><span class="s_5">      button</span></span>
+<span class="line"><span class="s_0">        ,title="delete"</span></span>
+<span class="line"><span class="s_0">        ,disabled=!done</span></span>
+<span class="line"><span class="s_0">        ,onClick() </span><span class="s_b">{</span></span>
+<span class="line"><span class="s_5">          todos</span><span class="s_2"> =</span><span class="s_2"> todos</span><span class="s_0">.</span><span class="s_2">toSpliced</span><span class="s_0">(</span><span class="s_2">i</span><span class="s_0">, </span><span class="s_3">1</span><span class="s_0">)</span><span class="s_b">;</span></span>
+<span class="line"><span class="s_b">        }</span></span>
 <span class="line"><span class="s_0">        --</span><span class="s_4"> &#x26;times;</span></span></code></pre></div></div><p>Modifying state trees directly like this is often tedious and hard to follow, so we could also use a library like <a href="https://immerjs.github.io/immer/">immer</a> to handle state updates:</p><div class=code-block><div class=html><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_5">import</span><span class="s_0"> { </span><span class="s_2">produce</span><span class="s_0"> } </span><span class="s_5">from</span><span class="s_4"> "immer"</span><span class="s_0">;</span></span>
 <span class="line"></span>
 <span class="line"><span class="s_0">&#x3C;</span><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=todo</span><span class="s_0">.</span><span class="s_2">done</span><span class="s_8"> valueChange</span><span class="s_0">(</span><span class="s_2">done</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_9"> produce</span><span class="s_0">(</span><span class="s_2">todos</span><span class="s_0">, (</span><span class="s_6">draft</span><span class="s_0">) </span><span class="s_c">=></span><span class="s_0"> {</span></span>
 <span class="line"><span class="s_2">    draft</span><span class="s_0">[</span><span class="s_2">i</span><span class="s_0">].</span><span class="s_2">done</span><span class="s_2"> =</span><span class="s_2"> done</span><span class="s_0">;</span></span>
 <span class="line"><span class="s_0">  });</span></span>
-<span class="line"><span class="s_0">}/></span></span></code></pre></div><div class=concise><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_5">import</span><span class="s_0"> { </span><span class="s_2">produce</span><span class="s_0"> } </span><span class="s_5">from</span><span class="s_4"> "immer"</span><span class="s_0">;</span></span>
+<span class="line"><span class="s_0">}></span></span></code></pre></div><div class=concise><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_5">import</span><span class="s_0"> { </span><span class="s_2">produce</span><span class="s_0"> } </span><span class="s_5">from</span><span class="s_4"> "immer"</span><span class="s_0">;</span></span>
 <span class="line"></span>
 <span class="line"><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=todo</span><span class="s_0">.</span><span class="s_2">done</span><span class="s_8"> valueChange</span><span class="s_0">(</span><span class="s_2">done</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_9"> produce</span><span class="s_0">(</span><span class="s_2">todos</span><span class="s_0">, (</span><span class="s_6">draft</span><span class="s_0">) </span><span class="s_c">=></span><span class="s_0"> {</span></span>
@@ -330,7 +322,7 @@
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_9"> produce</span><span class="s_0">(</span><span class="s_2">todos</span><span class="s_0">, (</span><span class="s_6">draft</span><span class="s_0">) </span><span class="s_c">=></span><span class="s_0"> {</span></span>
 <span class="line"><span class="s_2">    draft</span><span class="s_0">[</span><span class="s_2">i</span><span class="s_0">].</span><span class="s_2">done</span><span class="s_2"> =</span><span class="s_2"> done</span><span class="s_0">;</span></span>
 <span class="line"><span class="s_0">  });</span></span>
-<span class="line"><span class="s_0">}/></span></span></code></pre></div><div class=concise-ts><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_5">import</span><span class="s_0"> { </span><span class="s_2">produce</span><span class="s_0"> } </span><span class="s_5">from</span><span class="s_4"> "immer"</span><span class="s_0">;</span></span>
+<span class="line"><span class="s_0">}></span></span></code></pre></div><div class=concise-ts><pre class="shiki shiki-themes marko-light marko-dark s_a" tabindex="0"><code><span class="line"><span class="s_5">import</span><span class="s_0"> { </span><span class="s_2">produce</span><span class="s_0"> } </span><span class="s_5">from</span><span class="s_4"> "immer"</span><span class="s_0">;</span></span>
 <span class="line"></span>
 <span class="line"><span class="s_1">let</span><span class="s_0">/</span><span class="s_2">done=todo</span><span class="s_0">.</span><span class="s_2">done</span><span class="s_8"> valueChange</span><span class="s_0">(</span><span class="s_2">done</span><span class="s_0">) {</span></span>
 <span class="line"><span class="s_2">  todos</span><span class="s_2"> =</span><span class="s_9"> produce</span><span class="s_0">(</span><span class="s_2">todos</span><span class="s_0">, (</span><span class="s_6">draft</span><span class="s_0">) </span><span class="s_c">=></span><span class="s_0"> {</span></span>
