@@ -7,9 +7,9 @@ export interface Input extends Omit<Marko.HTML.Input, "type"> {
 
 const/{ on, off, ...checkboxInput }=input
 
-label.${styles.label}
+label class=styles.label
   span -- ${off}
-  span.${styles.appSwitch}
+  span class=styles.appSwitch
     input ...checkboxInput type="checkbox"
     fa-icon=faToggleOff
   span -- ${on}

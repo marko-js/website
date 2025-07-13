@@ -8,7 +8,6 @@ export function styleToClass(value: unknown) {
   if (style) {
     let className = classNames.get(style);
     if (!className) {
-
       className = `s_${classNames.size.toString(36)}`;
       classNames.set(style, className);
       styleText += `.${className}{${style}}`;
@@ -29,7 +28,7 @@ function applyStyles() {
     styleEl.textContent = styleText;
   } else {
     styleEl = document.createElement("style");
-    styleEl.textContent = styleText
+    styleEl.textContent = styleText;
     document.head.appendChild(styleEl);
   }
 }

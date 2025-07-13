@@ -11,14 +11,14 @@ export interface Input {
 let/tabs:=input.files
 let/selected:=input.selected
 
-.${styles.tabs}
-  .${styles.files}
+div class=styles.tabs
+  div class=styles.files
     for|tab, i| of=tabs
       const/isSelected=selected === i
       const/isEditable=i !== 0
       let/editing=false valueChange=(isEditable ? undefined : () => {})
 
-      .${styles.tab}
+      div
         ,aria-selected=isSelected && "true"
         ,tabindex=0
         ,role="button"
@@ -38,6 +38,7 @@ let/selected:=input.selected
             }
           }
         }
+        ,class=styles.tab
         if=editing
           let/length=(tab.path.length)
           input/$input
@@ -61,25 +62,27 @@ let/selected:=input.selected
           script --
             $input().focus();
             $input().setSelectionRange(0, $input().value.lastIndexOf("."));
-        else
-          -- ${tab.path}
+        else -- ${tab.path}
 
         if=isEditable
-          button.${styles.close}
+          button
             ,aria-label="close"
             ,onClick(e) {
               e.stopPropagation();
               selected = 0;
               tabs = tabs.toSpliced(i, 1);
             }
+            ,class=styles.close
             -- ×
 
-  button.${styles.add}
+  button
     ,aria-label="Add file"
     ,onClick() {
       let filename = prompt(
         "What filename (extension optional)?",
-        tabs.some((tab) => tab.path === "Tag.marko") ? `Tag${tabs.length}` : "Tag"
+        tabs.some((tab) => tab.path === "Tag.marko")
+          ? `Tag${tabs.length}`
+          : "Tag",
       );
 
       if (filename) {
@@ -87,4 +90,5 @@ let/selected:=input.selected
         tabs = [...tabs, { path: filename, content: "" }];
       }
     }
+    ,class=styles.add
     fa-icon=faPlus

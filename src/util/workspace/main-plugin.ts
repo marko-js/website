@@ -12,7 +12,11 @@ export interface MainPluginOptions {
 const mainId = "\0main";
 const excludeId = "\0exclude";
 
-export function mainPlugin({ ws: { fs }, code, browser }: MainPluginOptions): Plugin {
+export function mainPlugin({
+  ws: { fs },
+  code,
+  browser,
+}: MainPluginOptions): Plugin {
   const rollupFS: RollupFsModule = {
     appendFile: unsupported,
     copyFile: unsupported,

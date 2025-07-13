@@ -15,14 +15,10 @@ section class=styles.section
   div class=styles.content
     h2
       span class=styles.headingText -- HTML Re&#8209;imagined
-    p
-      --
+    p --
       Marko is HTML re&#8209;imagined as a language for building dynamic and reactive user interfaces.
-      --
-    p
-      --
+    p --
       Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
-      --
     a href="/docs/introduction/welcome-to-marko" class=styles.cta -- Learn More
 
   figure class=styles.example
@@ -30,11 +26,7 @@ section class=styles.section
       ,theme="dark"
       ,lang="marko"
       ,text=EXAMPLE_HTML
-      ,markoAlts=[
-        EXAMPLE_CONCISE,
-        EXAMPLE_HTML,
-        EXAMPLE_CONCISE
-      ]
+      ,markoAlts=[EXAMPLE_CONCISE, EXAMPLE_HTML, EXAMPLE_CONCISE]
     div class=styles.exampleOutput
       let/count=0
       button/inc onClick() {
@@ -45,13 +37,11 @@ section class=styles.section
       let/autoclick=true
       if=autoclick
         let/cursorVisible=false
-        img [
-          src="./pointinghand.svg?no-inline"
-          class=[styles.cursor, cursorVisible && styles.visible]
-        ]
+        img
+          ,src="./pointinghand.svg?no-inline"
+          ,class=[styles.cursor, cursorVisible && styles.visible]
         html-comment
-        script
-          --
+        script --
           let timeout = setTimeout(
             () => {
               cursorVisible = true;
@@ -75,9 +65,7 @@ section class=styles.section
             clearTimeout(timeout);
             inc().classList.remove(styles.active);
           };
-          --
-      script
-        --
+      script --
         inc().addEventListener("click", () => {
           autoclick = false;
         });
@@ -85,4 +73,3 @@ section class=styles.section
         const update = () => (autoclick = !isReducedMotion.matches);
         isReducedMotion.addEventListener("change", update);
         update();
-        --

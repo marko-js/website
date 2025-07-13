@@ -3,7 +3,7 @@ import type { ThemeInput } from "shiki";
 export const dark = {
   name: "marko-dark",
   colors: {
-    "focusBorder": "#00000000",
+    focusBorder: "#00000000",
     "editor.foreground": "#FFF",
     "editor.background": "#00000000",
   },
@@ -255,7 +255,7 @@ export const dark = {
 export const light = {
   name: "marko-light",
   colors: {
-    "focusBorder": "#00000000",
+    focusBorder: "#00000000",
     "editor.foreground": "#202124",
     "editor.background": "#00000000",
     "editor.lineHighlightBorder": "#f3f3f7",

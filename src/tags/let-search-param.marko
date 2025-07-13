@@ -1,7 +1,7 @@
 export interface Input {
   key: string;
 }
-<let/internalValue=$global.url.searchParams.get(input.key)/>
+<let/internalValue=$global.url.searchParams.get(input.key)>
 
 <return=internalValue valueChange(newValue: string | null) {
   const newUrl = new URL(window.location.href);
@@ -10,6 +10,6 @@ export interface Input {
   } else {
     newUrl.searchParams.set(input.key, newValue);
   }
-  history.replaceState(null, "", newUrl.toString())
+  history.replaceState(null, "", newUrl.toString());
   internalValue = newValue;
-}/>
+}>

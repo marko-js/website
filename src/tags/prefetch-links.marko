@@ -1,9 +1,9 @@
-static function isAnchorEvent(e: Event): e is Event & { target: HTMLAnchorElement } {
+static function isAnchorEvent(
+  e: Event,
+): e is Event & { target: HTMLAnchorElement } {
   return (e.target as HTMLElement)?.tagName === "A";
 }
-
 static const prefetchedUrls = new Set<string>();
-
 static function prefetch(e: Event) {
   if (isAnchorEvent(e)) {
     if (prefetchedUrls.has(e.target.href)) {
@@ -27,6 +27,15 @@ static function prefetch(e: Event) {
 }
 
 script --
-  document.addEventListener("mouseover", prefetch, { signal: $signal, capture: true });
-  document.addEventListener("touchstart", prefetch, { signal: $signal, capture: true });
-  document.addEventListener("focus", prefetch, { signal: $signal, capture: true });
+  document.addEventListener("mouseover", prefetch, {
+    signal: $signal,
+    capture: true,
+  });
+  document.addEventListener("touchstart", prefetch, {
+    signal: $signal,
+    capture: true,
+  });
+  document.addEventListener("focus", prefetch, {
+    signal: $signal,
+    capture: true,
+  });

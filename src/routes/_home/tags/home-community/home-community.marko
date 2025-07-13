@@ -5,44 +5,47 @@ import {
   faXTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import * as text from "app/styles/text.module.scss";
-
 import * as styles from "./home-community.style.module.scss";
 
-section.${styles.section}
+section class=styles.section
   h2
-    span.${text.greenGradient} -- Join the Community
+    span class=text.greenGradient -- Join the Community
 
   p -- Need help? Want to Contribute?
   p -- Get involved in the Marko Community!
 
-  .${styles.cards}
-    .${styles.stackoverflow}
-      a.${styles.logo} href="https://stackoverflow.com/questions/tagged/marko"
+  div class=styles.cards
+    div class=styles.stackoverflow
+      a
+        ,href="https://stackoverflow.com/questions/tagged/marko"
+        ,class=styles.logo
         fa-icon=faStackOverflow
       span
-        -- Ask & answer questions on StackOverflow with the 
+        -- Ask & answer questions on StackOverflow with the${" "}
         a href="https://stackoverflow.com/questions/tagged/marko" -- marko
-        --  tag
-    .${styles.discord}
-      a.${styles.logo} href="https://discord.gg/marko"
+        -- ${" "}tag
+    div class=styles.discord
+      a href="https://discord.gg/marko" class=styles.logo
         fa-icon=faDiscord
       span
-        -- Hang out in our 
+        -- Hang out in our${" "}
         a href="https://discord.gg/marko" -- Discord server
-        --  to ask questions & discuss marko
-    .${styles.twitter}
-      a.${styles.logo} href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+        -- ${" "}to ask questions & discuss marko
+    div class=styles.twitter
+      a
+        ,href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+        ,class=styles.logo
         fa-icon=faXTwitter
       span
-        -- Tweet to 
+        -- Tweet to${" "}
         a href="https://twitter.com/MarkoDevTeam" -- @MarkoDevTeam
-        --  or use the 
+        -- ${" "}or use the${" "}
         a href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
           -- #markojs
-        --  hashtag
-    .${styles.github}
-      a.${styles.logo} href="https://github.com/marko-js/marko"
+        -- ${" "}hashtag
+    div class=styles.github
+      a href="https://github.com/marko-js/marko" class=styles.logo
         fa-icon=faGithub
       span
-        -- Browse the code, open issues, & make pull requests on 
+        -- Browse the code, open issues, & make pull requests on${" "}
         a href="https://github.com/marko-js/marko" -- GitHub

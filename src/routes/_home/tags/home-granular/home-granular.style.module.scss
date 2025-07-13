@@ -140,7 +140,14 @@
         inset: 0;
         background: var(--section-color-dim);
         border-radius: 2rem;
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4rem), calc(100% - 4rem) 100%, 0 100%, 0 0);
+        clip-path: polygon(
+          0 0,
+          100% 0,
+          100% calc(100% - 4rem),
+          calc(100% - 4rem) 100%,
+          0 100%,
+          0 0
+        );
       }
     }
     @media (prefers-color-scheme: dark) {

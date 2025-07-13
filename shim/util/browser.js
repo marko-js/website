@@ -3,5 +3,5 @@ export function inspect(v) {
 }
 
 export default {
-  inspect
-}
+  inspect,
+};

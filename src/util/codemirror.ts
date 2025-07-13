@@ -56,10 +56,12 @@ export function update(view: EditorView, content: string, lang: string) {
   }
 }
 
-const baseLanguageData = [{
-  commentTokens: { line: "//", block: { open: "/*", close: "*/" } },
-  closeBrackets: { brackets: ["(", "[", "{", '"', "'", "`"] },
-}];
+const baseLanguageData = [
+  {
+    commentTokens: { line: "//", block: { open: "/*", close: "*/" } },
+    closeBrackets: { brackets: ["(", "[", "{", '"', "'", "`"] },
+  },
+];
 
 export default [
   history(),
@@ -79,7 +81,7 @@ export default [
       span.className = "cm-foldMarker" + (open ? " cm-foldMarkerOpen" : "");
       span.textContent = "›";
       return span;
-    }
+    },
   }),
   foldOnIndent(),
   keymap.of([

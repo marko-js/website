@@ -17,7 +17,8 @@
   padding: 0.5rem 1rem;
   text-wrap: nowrap;
   border-right: 2px solid transparent;
-  &:hover, &[aria-selected="true"] {
+  &:hover,
+  &[aria-selected="true"] {
     background-color: var(--color-gray-alt-dim);
   }
   &:not(:hover, [aria-selected="true"]) {
