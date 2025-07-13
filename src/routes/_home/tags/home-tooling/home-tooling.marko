@@ -6,37 +6,36 @@ server const EXAMPLE_HTML = `<div/$el>
 <script>
   $el().
 </script>`;
-
 server const EXAMPLE_CONCISE = `div/$el -- Hop in, we've got tags
 script -- $el().
 `;
 
-section.${styles.section}
-  .${styles.content}
+section class=styles.section
+  div class=styles.content
     h2
-      span.${styles.headingText} -- Types & Tooling
+      span class=styles.headingText -- Types & Tooling
     p
-      -- Marko has built-in 
+      -- Marko has built-in${" "}
       a href="/docs/reference/typescript" -- TypeScript support
-      -- , with strong type inference that works across templates and components. Editors get full language features like autocompletion, jump-to-definition, syntax highlighting, and clean formatting.
+      --
+        , with strong type inference that works across templates and components. Editors get full language features like autocompletion, jump-to-definition, syntax highlighting, and clean formatting.
     p -- Build confidently. Catch errors early. Write better code, faster.
-    a.${styles.cta} href="/docs/reference/typescript" -- Learn More
+    a href="/docs/reference/typescript" class=styles.cta -- Learn More
 
-  figure.${styles.demo} role="img" aria-label="An example showing intellisense information displayed while viewing a Marko file in a text editor."
-    .${styles.example}
-      .${styles.menuBar}
-        .${styles.menuBarRed}
-        .${styles.menuBarYellow}
-        .${styles.menuBarGreen}
+  figure
+    ,role="img"
+    ,aria-label="An example showing intellisense information displayed while viewing a Marko file in a text editor."
+    ,class=styles.demo
+    div class=styles.example
+      div class=styles.menuBar
+        div class=styles.menuBarRed
+        div class=styles.menuBarYellow
+        div class=styles.menuBarGreen
       app-code-block
         ,theme="dark"
         ,lang="marko"
         ,text=EXAMPLE_HTML
-        ,markoAlts=[
-          EXAMPLE_CONCISE,
-          EXAMPLE_HTML,
-          EXAMPLE_CONCISE
-        ]
+        ,markoAlts=[EXAMPLE_CONCISE, EXAMPLE_HTML, EXAMPLE_CONCISE]
         ,cursor={
           test: /\$el\(\)\./g,
           content(h) {
@@ -47,16 +46,17 @@ section.${styles.section}
               h("li", "appendChild"),
               h("li", "focus"),
             ]);
-          }
+          },
         }
         ,popovers=[
           {
             test: /\$el/g,
-            content: (_, code) => code("typescript", "const $el: () => HTMLDivElement"),
+            content: (_, code) =>
+              code("typescript", "const $el: () => HTMLDivElement"),
           },
           {
             test: /(?<!\/)div\b/g,
-            content: h => [
+            content: (h) => [
               "Built in HTML ",
               h(
                 "a",
@@ -70,7 +70,7 @@ section.${styles.section}
           },
           {
             test: /(?<!\/)script\b/g,
-            content: h => [
+            content: (h) => [
               "Built in core ",
               h(
                 "a",

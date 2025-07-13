@@ -6,6 +6,6 @@ export type HeadingList = {
 
 declare global {
   interface ReadableStream<R = any> {
-      [Symbol.asyncIterator](): AsyncIterableIterator<R>;
+    [Symbol.asyncIterator](): AsyncIterableIterator<R>;
   }
 }

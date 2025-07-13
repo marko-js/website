@@ -1,5 +1,5 @@
 import * as styles from "./home-tags-banner.style.module.scss";
-static const tags: { class: string, name: string; href: string }[] = [
+static const tags: { class: string; name: string; href: string }[] = [
   {
     class: styles.coreTag,
     name: "return",
@@ -14,7 +14,8 @@ static const tags: { class: string, name: string; href: string }[] = [
     class: styles.coreTag,
     name: "for",
     href: "/docs/reference/core-tag#for",
-  }, {
+  },
+  {
     class: styles.htmlTag,
     name: "div",
     href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
@@ -139,7 +140,7 @@ static const tags: { class: string, name: string; href: string }[] = [
     name: "a",
     href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
   },
-    {
+  {
     class: styles.coreTag,
     name: "lifecycle",
     href: "/docs/reference/core-tag#lifecycle",
@@ -161,12 +162,12 @@ static const tags: { class: string, name: string; href: string }[] = [
   },
 ];
 
-section.${styles.section}
-  .${styles.accelerator}
-    .${styles.marquee}
+section class=styles.section
+  div class=styles.accelerator
+    div class=styles.marquee
       for to=1
         for|tag| of=tags
-          a.${tag.class} href=tag.href
+          a href=tag.href class=tag.class
             -- <
-            span.${styles.name} -- ${tag.name}
+            span class=styles.name -- ${tag.name}
             -- >

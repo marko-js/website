@@ -2,25 +2,33 @@ import * as footerStyles from "../app-footer/app-footer.style.module.scss";
 import * as styles from "./app-header.style.module.scss";
 
 let/mobileMenu=false
-script -- document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
+script --
+  document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
 
 header#header
-  a#${styles.logo} title="Home" href="/"
-    picture 
+  a title="Home" href="/" id=styles.logo
+    picture
       source srcset="/logo.svg#dark" media="(prefers-color-scheme:dark)"
       img alt="Marko Logo" src="/logo.svg"
-  
-  .${styles.pageLinks}
+
+  div class=styles.pageLinks
     a href="/docs" -- Docs
     a href="/playground" -- Playground
     a href="https://github.com/marko-js/marko" -- GitHub
 
-  button#${styles.hamburger}
-    ,onClick() { mobileMenu = !mobileMenu }
-    ,aria-pressed=mobileMenu ? "true" : "false"
+  button
+    ,onClick() {
+      mobileMenu = !mobileMenu;
+    }
+    ,aria-pressed=(mobileMenu ? "true" : "false")
     ,aria-label=`${mobileMenu ? "Hide" : "Show"} menu`
+    ,id=styles.hamburger
 
-  #${styles.docsearch} onClick() { mobileMenu = false }
+  div
+    ,onClick() {
+      mobileMenu = false;
+    }
+    ,id=styles.docsearch
     button disabled aria-hidden="true"
 
 script --
@@ -28,7 +36,6 @@ script --
     if ("ScrollTimeline" in window) {
       setupStickyScroll();
     }
-
     const docsearch = (await import("./docsearch")).default;
     docsearch({
       container: document.getElementById(styles.docsearch)!,
@@ -38,8 +45,6 @@ script --
       apiKey: "6023164bfb0f58c658ba43d13b5e2eab",
     });
   });
-
-
 static function onLoad(cb: () => void) {
   if (document.readyState === "interactive") {
     cb();
@@ -47,7 +52,6 @@ static function onLoad(cb: () => void) {
     document.addEventListener("DOMContentLoaded", cb);
   }
 }
-
 static function setupStickyScroll() {
   const vp = visualViewport!;
   const html = document.documentElement;
@@ -69,7 +73,10 @@ static function setupStickyScroll() {
       }
 
       const stickSize = header.offsetHeight;
-      const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - (footer.offsetHeight * 2));
+      const stickMax = Math.max(
+        0,
+        html.scrollHeight - vp.height - stickSize - footer.offsetHeight * 2,
+      );
       stickTop = up
         ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
         : Math.min(stickMax, stickTop, y);

@@ -28,14 +28,12 @@ export class FileSystem {
 
     return entries;
   }
-};
+}
 
 class Stat {
   #isFile: boolean;
   mtime = 1;
-  constructor(
-    isFile: boolean,
-  ) {
+  constructor(isFile: boolean) {
     this.#isFile = isFile;
   }
 

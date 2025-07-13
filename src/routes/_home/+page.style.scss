@@ -1,6 +1,6 @@
 :root {
   --root-bleed: 0;
-  
+
   @media (min-width: 64rem) {
     --root-min-gap: 5rem;
     --root-bleed: calc(-1 * min(4rem, var(--root-gap)));

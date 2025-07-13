@@ -6,58 +6,92 @@ export interface Input {
   hydratePartial?: boolean;
   class?: Marko.HTML.Div["class"];
   label: Marko.HTML.Div["aria-label"];
-  title: string,
+  title: string;
   product: {
-    name: string,
-    price: string,
-    image: string,
-    description: string,
+    name: string;
+    price: string;
+    image: string;
+    description: string;
     review: {
-      title: string,
-      description: string
-    }
-  }
+      title: string;
+      description: string;
+    };
+  };
 }
 
 const/progress=(
   input.buffered ? Math.floor(input.progress / 0.9) : input.progress / 0.9
 )
 
-.${styles.wrapper} role="img" aria-label=input.label
-  .${styles.container} aria-hidden="true" class={
-    [styles.hydrateAll]: input.hydrateAll,
-    [styles.hydratePartial]: input.hydratePartial,
-  }
-    .${styles.header} class=[
-      styles.delay1,
-      { [styles.loading]: progress < 0.1 },
+div role="img" aria-label=input.label class=styles.wrapper
+  div
+    ,aria-hidden="true"
+    ,class=[
+      styles.container,
+      {
+        [styles.hydrateAll]: input.hydrateAll,
+        [styles.hydratePartial]: input.hydratePartial,
+      },
     ]
-      .${styles.link}.${styles.delay2} -- All Products
-      .${styles.logo}.${styles.delay3} -- BuyItNow
-      .${styles.cart}.${styles.delay4}.${styles.hydrated} -- Cart (0)
-    .${styles.product}.${styles.delay5} class={ [styles.loading]: progress < 0.14 }
-      img.${styles.image} alt="" src=input.product.image class={
-        [styles.lowRes]: progress < 0.6 || (input.buffered && input.progress < 1)
-      }
-      .${styles.description}.${styles.delay6}
-        span.${styles.descriptionTitle} -- ${input.product.name} - $${input.product.price}
-        .${styles.descriptionButton}.${styles.delay7}.${styles.hydrated}
+    div class=[
+      styles.delay1,
+      {
+        [styles.loading]: progress < 0.1,
+      },
+      styles.header,
+    ]
+      div class=[styles.link, styles.delay2] -- All Products
+      div class=[styles.logo, styles.delay3] -- BuyItNow
+      div class=[styles.cart, styles.delay4, styles.hydrated] -- Cart (0)
+    div class=[
+      styles.product,
+      styles.delay5,
+      {
+        [styles.loading]: progress < 0.14,
+      },
+    ]
+      img
+        ,alt=""
+        ,src=(input.product.image)
+        ,class=[
+          styles.image,
+          {
+            [styles.lowRes]:
+              progress < 0.6 || (input.buffered && input.progress < 1),
+          },
+        ]
+      div class=[styles.description, styles.delay6]
+        span class=styles.descriptionTitle
+          -- ${input.product.name} - $${input.product.price}
+        div class=[styles.descriptionButton, styles.delay7, styles.hydrated]
           -- Add to Cart
-        span.${styles.descriptionText} -- ${input.product.description}
-    .${styles.review}.${styles.delay8} class={ [styles.loading]: progress < 0.8 }
-      .${styles.rating}.${styles.delay9} -- ★★★★☆
-      span.${styles.descriptionText}
+        span class=styles.descriptionText -- ${input.product.description}
+    div class=[
+      styles.review,
+      styles.delay8,
+      {
+        [styles.loading]: progress < 0.8,
+      },
+    ]
+      div class=[styles.rating, styles.delay9] -- ★★★★☆
+      span class=styles.descriptionText
         strong -- ${input.product.review.title}
         -- ${" " + input.product.review.description}
-    .${styles.footer}.${styles.delay12} class={ [styles.loading]: progress < 0.1 }
-      .${styles.delay13} -- About
-      .${styles.delay14} -- Security
-      .${styles.delay15} -- Policies
-      .${styles.delay16} -- Help
-      .${styles.delay17} -- Sitemap
+    div class=[
+      styles.footer,
+      styles.delay12,
+      {
+        [styles.loading]: progress < 0.1,
+      },
+    ]
+      div class=styles.delay13 -- About
+      div class=styles.delay14 -- Security
+      div class=styles.delay15 -- Policies
+      div class=styles.delay16 -- Help
+      div class=styles.delay17 -- Sitemap
   if=input.buffered || input.hydrateAll
-    .${styles.title} -- ${input.title}
+    div class=styles.title -- ${input.title}
   else
-    .${styles.title}.${styles.titleMarko}
+    div class=[styles.title, styles.titleMarko]
       img src="./logo.svg" alt=""
       -- ${" "}${input.title}

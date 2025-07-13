@@ -12,9 +12,9 @@ import type { Workspace } from "../workspace";
 declare module "../workspace" {
   interface Workspace {
     markoCompiled?: {
-      dom?: Record<string, { code: string; map: any; }>;
-      html?: Record<string, { code: string; map: any; }>;
-    }
+      dom?: Record<string, { code: string; map: any }>;
+      html?: Record<string, { code: string; map: any }>;
+    };
   }
 }
 
@@ -77,7 +77,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
     },
   };
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
-  const compiled = (ws.markoCompiled ??= {})[output] ??= {};
+  const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
 
   for (const file of optimizeKnownTemplates) {
     const { code, map } = compiler.compileSync(
@@ -90,7 +90,14 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
 
   return {
     name: "marko",
-    resolveId(id) {
+    resolveId(id, importer) {
+      const tagName = importer && /^<([^>]+)>$/.exec(id)?.[1];
+      if (tagName) {
+        const tagDef = compiler.taglib
+          .buildLookup(importer.slice(0, importer.lastIndexOf("/")))
+          .getTag(tagName);
+        return tagDef && (tagDef.template || tagDef.renderer);
+      }
       if (id in runtimeModules) {
         return id;
       }

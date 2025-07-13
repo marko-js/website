@@ -3,10 +3,10 @@ export interface Input {
   fallback?: boolean;
 }
 
-<const/{ value: query, fallback }=input/>
+<const/{ value: query, fallback }=input>
 <let/isMatch=(
   typeof window !== "undefined" ? window.matchMedia(query).matches : !!fallback
-)/>
+)>
 
 <script>
   const mq = window.matchMedia(query);
@@ -22,4 +22,4 @@ export interface Input {
   );
 </script>
 
-<return=isMatch/>
+<return=isMatch>

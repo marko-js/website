@@ -3,21 +3,21 @@ import * as text from "app/styles/text.module.scss";
 import * as styles from "./home-cta.style.module.scss";
 
 h1
-  span.${text.redLight}
-    span.${styles.underlineBlue} -- A declarative
+  span class=text.redLight
+    span class=styles.underlineBlue -- A declarative
     -- ,
-  strong.${text.yellowGradient} -- ${" "}HTML&#8209;based${" "}
-  strong.${text.yellow} -- language${" "}
+  strong class=text.yellowGradient -- ${" "}HTML&#8209;based${" "}
+  strong class=text.yellow -- language${" "}
   span -- that makes${" "}
-  strong.${text.blueGradient} -- building web apps${" "}
-  strong.${text.green} -- fun.
+  strong class=text.blueGradient -- building web apps${" "}
+  strong class=text.green -- fun.
 
-nav.${styles.ctaNav}
-  a.${styles.primaryLink} href="docs/introduction/getting-started"
+nav class=styles.ctaNav
+  a href="docs/introduction/getting-started" class=styles.primaryLink
     -- Get Started
-  a.${styles.secondaryLink} [
-    href="https://github.com/marko-js/marko"
-    target="_blank"
-  ]
+  a
+    ,href="https://github.com/marko-js/marko"
+    ,target="_blank"
+    ,class=styles.secondaryLink
     fa-icon=faGithub
-    span.${styles.stars} -- GitHub
+    span class=styles.stars -- GitHub

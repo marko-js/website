@@ -4,36 +4,39 @@ static const product = {
   name: "Nintendo Switch 2",
   price: "449.99",
   image: productImg,
-  description: "Vibrant Joy-Con colors, in pristine condition! Stunning display and smooth gameplay, perfect for Super Mario Party Jamboree and more.",
+  description:
+    "Vibrant Joy-Con colors, in pristine condition! Stunning display and smooth gameplay, perfect for Super Mario Party Jamboree and more.",
   review: {
     title: "Super Fun, Super Colorful!",
-    description: "Wow, the screen is so bright and games like Super Mario Party Jamboree look amazing! The neon Joy-Cons are awesome and make it feel fresh."
-  }
-}
+    description:
+      "Wow, the screen is so bright and games like Super Mario Party Jamboree look amazing! The neon Joy-Cons are awesome and make it feel fresh.",
+  },
+};
 let/progress=0
 script --
   const id = setTimeout(() => (progress = (progress + 0.01) % 1.5), 20);
   $signal.onabort = () => clearTimeout(id);
 
-section.${styles.section}
-  .${styles.content}
+section class=styles.section
+  div class=styles.content
     h2
-      span.${styles.headingText} -- Faster First Paint
-    p -- Marko streams content to your users as soon as it's ready. No waiting for client side JavaScript bundles or data requests to start rendering.
-    p -- HTML, assets, and images are loaded as soon as possible with asynchronous content loading in as it completes.
-    a.${styles.cta} href="/docs/explanation/optimizing-performance" -- Learn More
+      span class=styles.headingText -- Faster First Paint
+    p --
+      Marko streams content to your users as soon as it's ready. No waiting for client side JavaScript bundles or data requests to start rendering.
+    p --
+      HTML, assets, and images are loaded as soon as possible with asynchronous content loading in as it completes.
+    a href="/docs/explanation/optimizing-performance" class=styles.cta
+      -- Learn More
 
-  figure.${styles.demo}
-    demo-page [
-      label="a blank white screen for 1 second, followed by a generic e-commerce page loaded all at once"
-      title="buffered"
-      product=product
-      progress=progress
-      buffered
-    ]
-    demo-page [
-      label="a generic e-commerce page rendered progressively while the buffered example shows a white screen"
-      title="streamed"
-      product=product
-      progress=progress
-    ]
+  figure class=styles.demo
+    demo-page
+      ,label="a blank white screen for 1 second, followed by a generic e-commerce page loaded all at once"
+      ,title="buffered"
+      ,product=product
+      ,progress=progress
+      ,buffered
+    demo-page
+      ,label="a generic e-commerce page rendered progressively while the buffered example shows a white screen"
+      ,title="streamed"
+      ,product=product
+      ,progress=progress

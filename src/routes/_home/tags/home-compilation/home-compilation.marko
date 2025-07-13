@@ -2,36 +2,37 @@ import * as styles from "./home-compilation.style.module.scss";
 static const EXAMPLE_HTML = `<div>Hello \${name}</div>`;
 static const EXAMPLE_CONCISE = `div -- Hello \${name}`;
 
-section.${styles.section}
-  .${styles.content}
+section class=styles.section
+  div class=styles.content
     h2
-      span.${styles.headingText} -- Write Code, Right Code
-    p -- Browsers and servers are built differently, shouldn't your code be too? Marko compiles your templates to perform their best with optimized, environment-specific output.
+      span class=styles.headingText -- Write Code, Right Code
+    p --
+      Browsers and servers are built differently, shouldn't your code be too? Marko compiles your templates to perform their best with optimized, environment-specific output.
     p -- Faster loads. Smaller bundles. One seamless language.
-    a.${styles.cta} href="/docs/explanation/optimizing-performance" -- Learn More
+    a href="/docs/explanation/optimizing-performance" class=styles.cta
+      -- Learn More
 
-  figure.${styles.demo} role="img" aria-label="An example showing that Marko compiler produces optimal code for the server and client."
-    .${styles.server}
+  figure
+    ,role="img"
+    ,aria-label="An example showing that Marko compiler produces optimal code for the server and client."
+    ,class=styles.demo
+    div class=styles.server
       h3 -- Streamed HTML
       span -- for the server
-      .${styles.logos}
-        .${styles.node}
-        .${styles.bun}
-        .${styles.deno}
-    .${styles.code}
+      div class=styles.logos
+        div class=styles.node
+        div class=styles.bun
+        div class=styles.deno
+    div class=styles.code
       app-code-block
         ,theme="dark"
         ,lang="marko"
         ,text=EXAMPLE_HTML
-        ,markoAlts=[
-          EXAMPLE_CONCISE,
-          EXAMPLE_HTML,
-          EXAMPLE_CONCISE
-        ]
-    .${styles.browser}
+        ,markoAlts=[EXAMPLE_CONCISE, EXAMPLE_HTML, EXAMPLE_CONCISE]
+    div class=styles.browser
       h3 -- Reactive DOM
       span -- for the browser
-      .${styles.logos}
-        .${styles.chrome}
-        .${styles.firefox}
-        .${styles.safari}
+      div class=styles.logos
+        div class=styles.chrome
+        div class=styles.firefox
+        div class=styles.safari

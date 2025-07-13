@@ -178,7 +178,8 @@ main {
       font-weight: 500;
     }
 
-    thead, tr:nth-child(even) {
+    thead,
+    tr:nth-child(even) {
       background-image: linear-gradient(
         to bottom left,
         color-mix(

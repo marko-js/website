@@ -1,5 +1,5 @@
 export async function* streamToIterable<T>(
-  stream: ReadableStream<T>
+  stream: ReadableStream<T>,
 ): AsyncIterable<T> {
   const reader = stream.getReader();
   try {

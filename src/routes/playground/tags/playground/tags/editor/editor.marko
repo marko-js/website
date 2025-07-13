@@ -1,8 +1,7 @@
-client import { EditorView } from "@codemirror/view"
+client import { EditorView } from "@codemirror/view";
 client import extensions, { update } from "app/util/codemirror";
 import type { File } from "app/util/workspace";
 import * as styles from "./editor.styles.module.scss";
-
 export interface Input {
   files: File[];
   filesChange?: (files: File[]) => void;
@@ -17,9 +16,9 @@ let/file=files[selected] valueChange(newValue) {
 }
 
 tabs files:=files selected:=selected
-#${styles.editor}.shiki/$editor
+div.shiki/$editor id=styles.editor
 
-lifecycle<{ editor?: EditorView, change?: boolean, set(v: string): void }>
+lifecycle<{ editor?: EditorView; change?: boolean; set(v: string): void }>
   ,set(content) {
     this.change = content !== file.content;
     if (this.change) {

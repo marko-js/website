@@ -24,7 +24,7 @@ export function toClass(key: WeakKey): ClassTransformer {
       }
       return className;
     }
-  }
+  };
   transformer = {
     pre(t) {
       const className = getClass(t.properties.style);
@@ -64,7 +64,7 @@ function styleToStr(value: unknown) {
     if (typeof value === "object") {
       let style = "";
       let sep = "";
-  
+
       if (Array.isArray(value)) {
         for (const item of value) {
           const str = styleToStr(item);
@@ -82,7 +82,7 @@ function styleToStr(value: unknown) {
           }
         }
       }
-  
+
       return style;
     } else {
       return "" + value;

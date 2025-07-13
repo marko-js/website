@@ -1,5 +1,4 @@
 import * as styles from "./split-pages.style.module.scss";
-
 export interface Pane extends Marko.HTML.Div {}
 export interface Input {
   first: Marko.AttrTag<Pane>;
@@ -10,10 +9,10 @@ const/{ first, second }=input
 let/editorSize=0.5
 let-match-media/isVertical="(max-aspect-ratio: 1/1)"
 
-.${styles.panes}/container
+div/container class=styles.panes
   div ...first style=[first.style, { "flex-grow": editorSize }]
     ${first.content}
-  button.${styles.divider}
+  button
     ,aria-label="resize display panes"
     ,onPointerDown(e) {
       (e.target as HTMLButtonElement).setPointerCapture(e.pointerId);
@@ -33,5 +32,6 @@ let-match-media/isVertical="(max-aspect-ratio: 1/1)"
     ,onPointerCancel(e) {
       (e.target as HTMLButtonElement).releasePointerCapture(e.pointerId);
     }
+    ,class=styles.divider
   div ...second style=[first.style, { "flex-grow": 1 - editorSize }]
     ${second.content}

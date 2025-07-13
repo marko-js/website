@@ -2,4 +2,4 @@ client import { subscribe, type Workspace } from "app/util/workspace";
 
 let/workspace=({} as Partial<Workspace>)
 return=workspace
-script -- subscribe(v => workspace = v, $signal);
+script -- subscribe((v) => (workspace = v), $signal);

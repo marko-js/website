@@ -27,7 +27,10 @@
   }
 }
 
-.stackoverflow, .discord, .twitter, .github {
+.stackoverflow,
+.discord,
+.twitter,
+.github {
   display: flex;
   max-width: 13rem;
   flex-direction: column;
