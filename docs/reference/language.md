@@ -18,8 +18,6 @@ The language makes HTML more strict while extending it with control flow and rea
   <a href="#attribute-tags">@attr-tag</a></code></pre>
 </div>
 
-<!--  -->
-
 > [!NOTE]
 > Jump to the section for a syntax by clicking on it.
 > The legend is not comprehensive, for more see:
@@ -749,8 +747,6 @@ import MyTagB from "<my-tag-b>"
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
 > ```
-
-<!--  -->
 
 > [!NOTE]
 > If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.

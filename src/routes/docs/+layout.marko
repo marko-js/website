@@ -1,18 +1,20 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import * as styles from "./+layout.style.module.scss";
-import * as menuStyles from "../../tags/app-menu/app-menu.style.module.scss"
+import * as menuStyles from "../../tags/app-menu/app-menu.style.module.scss";
 import type { HeadingList } from "../../types";
 export interface Input {
   content: Marko.Body;
 }
 
-article#${styles.article}
+article id=styles.article
   ${input.content}
   hr
-  section#${styles.contributors}
-    h2 id="contributors"
+  section id=styles.contributors
+    h2#contributors
       a href="#contributors" -- Contributors
-    p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
+    p --
+      Helpful? You can thank these awesome people! You can also edit this doc if
+      you see any issues or want to improve it.
     await|contributors|=$global.contributors
       ul
         for|contributor| of=contributors
@@ -22,9 +24,9 @@ article#${styles.article}
               -- ${contributor.username}
         li
           a href=`https://github.com/marko-js/website-next/blob/main/docs/${$global.url.pathname.slice(
-              "/docs/".length,
-              $global.url.pathname.length,
-            )}.md`
+            "/docs/".length,
+            $global.url.pathname.length,
+          )}.md`
             div
               fa-icon=faPlus
             -- You?
@@ -64,4 +66,4 @@ div#page-menu class=menuStyles.menu
     ul
       li
         strong id=tocLabelId -- On this Page
-      TocTree headings=(($global.meta as any).headings)
+      TocTree headings=($global.meta.headings)
