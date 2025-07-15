@@ -104,8 +104,6 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 >
 > For example, when exporting `dist/tags`, `dist/tags/tags/` could contain private components only available _within_ the library.
 
-<!--  -->
-
 > [!CAUTION]
 > If two packages export the tag name, Marko will choose the one it finds first. To prevent collisions, tag libraries are encouraged to prefix all exported tag names, e.g. `ebay-`. If you must use tags with conflicting names, you can import by path to disambiguate.
 

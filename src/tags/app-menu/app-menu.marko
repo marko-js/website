@@ -2,13 +2,11 @@ import * as styles from "./app-menu.style.module.scss";
 let-local-storage/conciseMode=false key="concise-mode"
 script --
   document.documentElement.classList.toggle("concise-mode", conciseMode);
-html-script --
-  document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');
+html-script -- ${`document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');`}
 
 let-local-storage/tsMode=false key="ts-mode"
 script -- document.documentElement.classList.toggle("ts-mode", tsMode);
-html-script --
-  document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');
+html-script -- ${`document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');`}
 
 div#site-menu class=styles.menu
   const/ariaCurrent=((page: string) => $global.url.pathname === page && "true")
