@@ -183,8 +183,6 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 
-<!--  -->
-
 > [!TIP]
 > The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
