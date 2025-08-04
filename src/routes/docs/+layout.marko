@@ -39,14 +39,8 @@ define/TocTree|input: { headings: HeadingList }|
         const element = document.getElementById(heading.id);
         if (element) {
           const observer = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  current = true;
-                } else {
-                  current = false;
-                }
-              });
+            ([entry]) => {
+              current = entry.isIntersecting;
             },
             {
               rootMargin: "-20% 0px -20% 0px",

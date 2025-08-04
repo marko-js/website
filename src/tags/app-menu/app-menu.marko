@@ -9,108 +9,66 @@ script -- document.documentElement.classList.toggle("ts-mode", tsMode);
 html-script -- ${`document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');`}
 
 div#site-menu class=styles.menu
-  const/ariaCurrent=((page: string) => $global.url.pathname === page && "true")
+  define/Page|{ value, content }: { value: string; content: Marko.Body }|
+    li
+      a href=value aria-current=($global.url.pathname === value && "true")
+        ${content}
+
   nav class=styles.nav id=styles.siteNav
     ul
       li
         strong -- Introduction
         ul
-          li
-            const/page="/docs/introduction/getting-started"
-            a href=page aria-current=ariaCurrent(page) -- Getting Started
-          li
-            const/page="/docs/introduction/welcome-to-marko"
-            a href=page aria-current=ariaCurrent(page) -- Welcome to Marko!
-          li
-            const/page="/docs/introduction/installation"
-            a href=page aria-current=ariaCurrent(page) -- Installation
+          Page="/docs/introduction/getting-started" -- Getting Started
+          Page="/docs/introduction/welcome-to-marko" -- Welcome to Marko!
+          Page="/docs/introduction/installation" -- Installation
+          Page="/docs/introduction/why-marko" -- Why Marko?
       li
         strong -- Tutorials
         ul
-          li
-            const/page="/docs/tutorial/fundamentals"
-            a href=page aria-current=ariaCurrent(page) -- Fundamentals
-          li
-            const/page="/docs/tutorial/app-from-scratch"
-            a href=page aria-current=ariaCurrent(page) -- App from Scratch
-          li
-            const/page="/docs/tutorial/components-and-reactivity"
-            a href=page aria-current=ariaCurrent(page)
-              -- Components and Reactivity
-          li
-            const/page="/docs/tutorial/experienced-developers"
-            a href=page aria-current=ariaCurrent(page) -- Experienced Developers
+          Page="/docs/tutorial/fundamentals" -- Fundamentals
+          Page="/docs/tutorial/app-from-scratch" -- App from Scratch
+          Page="/docs/tutorial/components-and-reactivity"
+            -- Components and Reactivity
+          Page="/docs/tutorial/experienced-developers" -- Experienced Developers
       li
         strong -- Guides
         ul
-          li
-            const/page="/docs/guide/existing-project"
-            a href=page aria-current=ariaCurrent(page) -- Existing Project
-          li
-            const/page="/docs/guide/styling"
-            a href=page aria-current=ariaCurrent(page) -- Styling
-          li
-            const/page="/docs/guide/low-level-apis"
-            a href=page aria-current=ariaCurrent(page) -- Low-Level APIs
-          li
-            const/page="/docs/guide/publishing-components"
-            a href=page aria-current=ariaCurrent(page) -- Publishing Components
-          li
-            const/page="/docs/guide/library-integration"
-            a href=page aria-current=ariaCurrent(page) -- Library Integration
-          li
-            const/page="/docs/guide/csp"
-            a href=page aria-current=ariaCurrent(page)
-              -- Content-Security Policy
+          Page="/docs/guide/existing-project" -- Existing Project
+          Page="/docs/guide/styling" -- Styling
+          Page="/docs/guide/low-level-apis" -- Low-Level APIs
+          Page="/docs/guide/publishing-components" -- Publishing Components
+          Page="/docs/guide/library-integration" -- Library Integration
+          Page="/docs/guide/csp" -- Content-Security Policy
       li
         strong -- Explanation
         ul
-          li
-            const/page="/docs/explanation/streaming"
-            a href=page aria-current=ariaCurrent(page) -- Streaming
-          li
-            const/page="/docs/explanation/forms"
-            a href=page aria-current=ariaCurrent(page) -- Working With Forms
-          li
-            const/page="/docs/explanation/controllable-components"
-            a href=page aria-current=ariaCurrent(page)
-              -- Controllable Components
-          li
-            const/page="/docs/explanation/nested-reactivity"
-            a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
-          li
-            const/page="/docs/explanation/optimizing-performance"
-            a href=page aria-current=ariaCurrent(page) -- Optimizing Performance
-          li
-            const/page="/docs/explanation/separation-of-concerns"
-            a href=page aria-current=ariaCurrent(page) -- Separation of Concerns
+          Page="/docs/explanation/streaming" -- Streaming
+          Page="/docs/explanation/forms" -- Working With Forms
+          Page="/docs/explanation/controllable-components"
+            -- Controllable Components
+          Page="/docs/explanation/nested-reactivity" -- Nested Reactivity
+          Page="/docs/explanation/optimizing-performance"
+            -- Optimizing Performance
+          Page="/docs/explanation/separation-of-concerns"
+            -- Separation of Concerns
       li
         strong -- Reference
         ul
-          li
-            const/page="/docs/reference/language"
-            a href=page aria-current=ariaCurrent(page) -- Language
-          li
-            const/page="/docs/reference/custom-tag"
-            a href=page aria-current=ariaCurrent(page) -- Custom Tags
-          li
-            const/page="/docs/reference/reactivity"
-            a href=page aria-current=ariaCurrent(page) -- Reactivity
-          li
-            const/page="/docs/reference/core-tag"
-            a href=page aria-current=ariaCurrent(page) -- Core Tags
-          li
-            const/page="/docs/reference/native-tag"
-            a href=page aria-current=ariaCurrent(page) -- Native Tags
-          li
-            const/page="/docs/reference/concise-syntax"
-            a href=page aria-current=ariaCurrent(page) -- Concise Syntax
-          li
-            const/page="/docs/reference/template"
-            a href=page aria-current=ariaCurrent(page) -- Template API
-          li
-            const/page="/docs/reference/typescript"
-            a href=page aria-current=ariaCurrent(page) -- TypeScript
+          Page="/docs/reference/language" -- Language
+          Page="/docs/reference/custom-tag" -- Custom Tags
+          Page="/docs/reference/reactivity" -- Reactivity
+          Page="/docs/reference/core-tag" -- Core Tags
+          Page="/docs/reference/native-tag" -- Native Tags
+          Page="/docs/reference/concise-syntax" -- Concise Syntax
+          Page="/docs/reference/template" -- Template API
+          Page="/docs/reference/typescript" -- TypeScript
+      li
+        strong -- Marko Run
+        ul
+          Page="/docs/marko-run/getting-started" -- Getting Started
+          Page="/docs/marko-run/file-based-routing" -- File-based Routing
+          Page="/docs/marko-run/typescript" -- TypeScript
   div id=styles.controls
     id/modeId
     strong id=modeId -- Settings

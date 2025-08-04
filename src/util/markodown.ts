@@ -118,7 +118,7 @@ function markoDocs(): MarkedExtension {
       if (token.type === "code") {
         // named files begin with `/* file.name */\n`
         const match = (token.text as string).match(
-          /^\/\* ([\w\.-/]+\.\w+) \*\/\n/,
+          /^\/\* ([\w\./-]+\.\w+) \*\/\n/,
         );
 
         if (match) {
