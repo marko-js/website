@@ -41,8 +41,6 @@ When this component is rendered, the only JavaScript included will be the logic 
 
 Marko's compiler intelligence automatically determines what needs JavaScript without any manual configuration. This means developers can focus on building features rather than optimizing bundle boundaries.
 
-Whether an application is structured as one large component or split into many small ones, the bundle size remains the same—determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized.
-
 Whether an application is structured as one large component or split into many small ones, the bundle size remains the same—determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
 
 This creates a development experience where good performance emerges naturally from the compilation process. Architectural decisions become about maintainability and developer experience, allowing teams to focus on building great user experiences while the compiler handles optimization automatically.

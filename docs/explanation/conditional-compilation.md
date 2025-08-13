@@ -1,15 +1,14 @@
-# Environment-Based Compilation
+# Conditional Compilation
 
 > [!TLDR]
-> - Marko compiles templates differently for server versus client environments.
-> - Server compilation optimizes for rendering speed through string operations.
-> - Client compilation optimizes for minimal bundle size with targeted DOM updates.
-> - Both environments coordinate seamlessly for progressive enhancement.
+> - Marko chooses what to compile to based on the environment
+> - String concatenation on the server
+> - DOM manipulation on the client
 
-Marko's compiler intelligently generates different code based on the target environment, optimizing templates for their specific runtime constraints. This 
+Marko's compiler intelligently generates different code based on the target environment, optimizing templates for their specific runtime constraints. This
 **dual-target approach** ensures maximum performance on both server and client without compromising developer experience or forcing architectural decisions.
 
-Instead of using a one-size-fits-all compilation strategy, Marko recognizes that server-side rendering and client-side interactions have fundamentally different 
+Instead of using a one-size-fits-all compilation strategy, Marko recognizes that server-side rendering and client-side interactions have fundamentally different
 performance characteristics and optimization opportunities.
 
 ## Server Compilation
@@ -35,7 +34,7 @@ Consider this Marko template:
 
 The compiler generates code that pre-computes static markup, properly escapes and inserts dynamic values, and translates conditional logic to minimal branching that writes the appropriate HTML segments. This allows output to be written incrementally as data becomes available with no intermediate object creation.
 
-Advanced optimizations include pre-computing static portions, optimizing loops for batch operations, and generating streaming-compatible code that works seamlessly with Marko's [HTML streaming](./streaming.md) capabilities.
+Advanced optimizations include pre-computing static portions and ensuring server code works seamlessly with Marko's [HTML streaming](./streaming.md) capabilities.
 
 ## Client Compilation
 
@@ -49,14 +48,14 @@ Using an interactive version of the template:
   <h2>${input.title}</h2>
   <p class="meta">By ${input.author} on ${input.date}</p>
   <div class="content">${input.content}</div>
-  
+
   // Interactive like button
   <div class="actions">
     <let/liked:=input.liked>
     <let/likes:=input.likes>
-    <button 
+    <button
       class=liked && 'liked'
-      onClick() { 
+      onClick() {
         liked = !liked;
         likes += liked ? 1 : -1;
       }
@@ -75,38 +74,33 @@ Static content (`input.title`, `input.author`, `input.content`) produces no clie
 
 Server and client compilation work together seamlessly. The server renders complete initial HTML while the client receives only the minimal JavaScript needed for interactivity. This pattern aligns with [fine-grained bundling](./fine-grained-bundling.md).
 
-Consider a documentation page mixing static and interactive content:
+Consider a tab component, which mixes static and interactive content:
 
 ```marko
-<div class="docs-page">
-  // Static content: server-only
-  <header>
-    <h1>${input.title}</h1>
-    <p class="description">${input.description}</p>
-  </header>
-  
-  // Interactive content: server + client
-  <let/activeTab=input.sections[0].id>
-  <div class="tabs">
-    <for|section| of=input.sections>
-      <button 
-        class=(activeTab === section.id && 'active')
-        onClick() { activeTab = section.id }
-      >
-        ${section.title}
-      </button>
-    </for>
-  </div>
-  
-  // Static content dependent on interactive state
-  <div class="content">
-    <for|section| of=input.sections>
-      <div class=(activeTab === section.id ? 'visible' : 'hidden')>
-        ${section.content}
-      </div>
-    </for>
-  </div>
+/* tabs.marko */
+// Static content: server-only
+<h1>${input.title}</h1>
+
+// Interactive content: server + client
+<let/activeTab=0>
+<div role="tablist">
+  <for|section, i| of=input.section>
+    <button
+      role="tab"
+      aria-selected=(i === activeTab && 'true')
+      onClick() { activeTab = i }
+    >
+      ${section.title}
+    </button>
+  </for>
 </div>
+
+// Static content dependent on interactive state
+<for|section, i| of=input.section>
+  <div role="tabpanel" hidden=(i !== activeTab)>
+    ${section.content}
+  </div>
+</for>
 ```
 
 Server compilation renders the complete initial HTML including the header and initial tab state. Client compilation generates JavaScript only for tab switching logic and content visibility updates. The bundle includes only interactive tab selection logic, with no code for rendering the header or static content.
@@ -115,9 +109,9 @@ This coordination ensures users receive a fully functional page from the initial
 
 ## Benefits
 
-Environment-based compilation delivers compound performance benefits that improve as applications scale.
+Conditional compilation delivers compound performance benefits that improve as applications scale.
 
-Write components once using natural syntax while the compiler handles environment-specific optimizations automatically. No need to maintain separate server and client implementations or coordinate between different rendering approaches.
+Components are written once using natural syntax, while the compiler handles environment-specific optimizations automatically. There is no need to maintain separate server and client implementations or coordinate between different rendering approaches.
 
 Server-side rendering achieves maximum throughput through string operations, while client-side updates achieve minimum overhead through targeted DOM manipulation. Each environment gets code optimized for its specific constraints.
 
