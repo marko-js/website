@@ -21,7 +21,7 @@ section class=styles.section
     p --
       Just about any valid HTML is valid Marko, but Marko extends the HTML
       language to allow building modern applications in a declarative way.
-    a href="/docs/introduction/welcome-to-marko" class=styles.cta -- Learn More
+    home-cta-button href="/docs/reference/language" -- Language Reference
 
   figure class=styles.example
     app-code-block
@@ -40,6 +40,7 @@ section class=styles.section
       if=autoclick
         let/cursorVisible=false
         img
+          ,alt=""
           ,src="./pointinghand.svg?no-inline"
           ,class=[styles.cursor, cursorVisible && styles.visible]
         html-comment

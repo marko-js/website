@@ -74,43 +74,6 @@
   }
 }
 
-.cta {
-  display: inline-flex;
-  margin-top: 1.5rem;
-  border-radius: 2rem;
-  padding: 1rem 4rem;
-  text-decoration: none;
-  color: var(--color-white);
-  background-color: var(--section-color);
-  font-size: 1.1rem;
-  font-weight: 500;
-  justify-content: center;
-  align-self: flex-start;
-  justify-self: end;
-  width: 100%;
-
-  @media (prefers-color-scheme: dark) {
-    color: var(--color-foreground);
-    background: linear-gradient(
-      to right,
-      var(--section-color-dark),
-      var(--section-color-light)
-    );
-  }
-
-  @media (min-width: 30rem) {
-    width: auto;
-  }
-
-  @media (min-width: 64rem) {
-    padding: 0.8rem 2.4rem;
-    @media (prefers-color-scheme: light) {
-      color: var(--section-color-dark);
-      background: var(--color-white);
-    }
-  }
-}
-
 .example {
   display: flex;
   position: relative;

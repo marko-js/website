@@ -1,7 +1,7 @@
 import {
+  faBluesky,
   faDiscord,
   faGithub,
-  faStackOverflow,
   faXTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import * as text from "app/styles/text.module.scss";
@@ -15,15 +15,6 @@ section class=styles.section
   p -- Get involved in the Marko Community!
 
   div class=styles.cards
-    div class=styles.stackoverflow
-      a
-        ,href="https://stackoverflow.com/questions/tagged/marko"
-        ,class=styles.logo
-        fa-icon=faStackOverflow
-      span
-        -- Ask & answer questions on StackOverflow with the${" "}
-        a href="https://stackoverflow.com/questions/tagged/marko" -- marko
-        -- ${" "}tag
     div class=styles.discord
       a href="https://discord.gg/marko" class=styles.logo
         fa-icon=faDiscord
@@ -43,6 +34,14 @@ section class=styles.section
         a href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
           -- #markojs
         -- ${" "}hashtag
+    div class=styles.bluesky
+      a
+        ,href="https://bsky.app/profile/markojs.com"
+        ,class=styles.logo
+        fa-icon=faBluesky
+      span
+        -- Keep up with the community on Bluesky at${" "}
+        a href="https://bsky.app/profile/markojs.com" -- @markojs.com
     div class=styles.github
       a href="https://github.com/marko-js/marko" class=styles.logo
         fa-icon=faGithub

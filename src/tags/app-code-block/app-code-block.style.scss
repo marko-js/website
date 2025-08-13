@@ -20,7 +20,8 @@
   color: var(--section-color);
   font-family: "Ubuntu Mono", monospace;
 
-  & ~ * pre {
+  & ~ * pre,
+  & + pre {
     margin-top: 0.5rem !important;
   }
 }

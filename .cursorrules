@@ -1,0 +1,84 @@
+# Marko Documentation Writing Guidelines
+
+## Voice and Tone
+
+- Use formal, technical tone without being overly academic
+- Avoid second person ("you") in main content - use impersonal phrasing instead
+  - ❌ "When you create a component..."
+  - ✅ "When creating a component..." or "When a component is created..."
+- Use "we" in tutorials when building something together
+- Be matter-of-fact and precise in reference docs
+- Use encouraging but professional language in tutorials ("Aha!", "Great!")
+
+## Headings and Structure
+
+- Keep headings short: 1-3 words maximum
+- Never use colons in headings followed by descriptions
+- Use clear hierarchical sections (##, ###)
+- Headings should be nouns or short phrases, not full sentences
+
+## Documentation Structure by Type
+
+### Reference Documents
+
+- Start with brief description of what the feature/API does
+- Use clear hierarchical sections (##, ###)
+- Include syntax examples immediately after explanations
+- End sections with practical code examples
+- Cross-reference related concepts frequently
+- Use parameter tables for APIs
+
+### Tutorial Documents
+
+- Include TLDR section with brief summary
+- Build complexity step-by-step with working examples
+- Use conversational tone with "we" to guide the reader
+- Show incremental improvements to the same example
+- Include complete, runnable code snippets
+
+### Explanation Documents
+
+- Include TLDR section with 2-4 very brief "at a glance" bullets. Fragments are allowed and usually should not end with periods. Do not include a blank line after the TLDR callout.
+- Focus on "why" and conceptual understanding
+- Use **bold** and _italics_ sparingly for truly key concepts only
+- Provide practical guidance and best practices
+- Include real-world examples and use cases
+- Maintain a technical but slightly conversational tone
+
+## Code Examples and Technical Content
+
+- Every concept should have a concise, focused code example
+- Examples must be minimal and strictly relevant
+- Add filenames to code examples with a `/* filename.extension */` on the first line
+- Examples must be unique across all documentation - avoid reusing common tropes
+- In Marko files, use JS-style comments (`// comment` or `/* comment */`) instead of HTML comments (`<!-- comment -->`)
+- Avoid the `**Bold Title**: description` list pattern which sounds LLM-generated
+- In surrounding prose, avoid calling examples "minimal" or "simple". Prefer neutral lead-ins such as "Consider this Marko template" or "Example".
+
+## Callouts and Formatting
+
+- Use `> [!TLDR]` for brief summaries (no empty line after)
+- Use `> [!NOTE]` sparingly for important clarifications
+- Use `> [!TIP]` occasionally for practical advice
+- Use `> [!WARNING]` for common mistakes or anti-patterns
+- Use `> [!CAUTION]` for critical warnings only
+- Use `> [!IMPORTANT]` rarely for notable but less central info
+- Use backticks for code elements, file names, and API references
+- Use **bold** sparingly for the most important key terms only
+- Use _italics_ sparingly for emphasis
+- Never use emdash (—); use periods, commas, or restructure sentences instead
+
+## Cross-References and Links
+
+- Link to related concepts in other documents
+- Reference specific sections using anchors
+- Link to external resources (MDN, etc.) for web standards
+- Maintain consistency in how concepts are referenced
+
+## Content Philosophy
+
+- Focus on Marko's strengths and unique features
+- Explain benefits without comparing negatively to other frameworks
+- Emphasize compile-time intelligence and automatic optimization
+- Highlight zero-JS by default and progressive enhancement
+- Show how features solve real development problems
