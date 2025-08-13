@@ -1,6 +1,7 @@
-# Conditional Compilation
+# Targeted Compilation
 
 > [!TLDR]
+>
 > - Marko chooses what to compile to based on the environment
 > - String concatenation on the server
 > - DOM manipulation on the client
@@ -109,7 +110,7 @@ This coordination ensures users receive a fully functional page from the initial
 
 ## Benefits
 
-Conditional compilation delivers compound performance benefits that improve as applications scale.
+Targeted compilation delivers compound performance benefits that improve as applications scale.
 
 Components are written once using natural syntax, while the compiler handles environment-specific optimizations automatically. There is no need to maintain separate server and client implementations or coordinate between different rendering approaches.
 
