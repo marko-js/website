@@ -38,23 +38,22 @@
 
 ### Explanation Documents
 
-- Include TLDR section with 2-4 very brief "at a glance" bullet points which are still full sentences (no empty line after TLDR)
+- Include TLDR section with 2-4 very brief "at a glance" bullets. Fragments are allowed and usually should not end with periods. Do not include a blank line after the TLDR callout.
 - Focus on "why" and conceptual understanding
 - Use **bold** and _italics_ sparingly for truly key concepts only
 - Provide practical guidance and best practices
 - Include real-world examples and use cases
+- Maintain a technical but slightly conversational tone
 
 ## Code Examples and Technical Content
 
 - Every concept should have a concise, focused code example
-- Examples should be complete and runnable when possible
-- Use comments in code to highlight important parts
-- Show before/after when demonstrating improvements
-- Include both simple and complex examples when appropriate
-- Add filenames to code examples with a `/* js-block-comment.extension */` on the first line
+- Examples must be minimal and strictly relevant
+- Add filenames to code examples with a `/* filename.extension */` on the first line
 - Examples must be unique across all documentation - avoid reusing common tropes
 - In Marko files, use JS-style comments (`// comment` or `/* comment */`) instead of HTML comments (`<!-- comment -->`)
 - Avoid the `**Bold Title**: description` list pattern which sounds LLM-generated
+- In surrounding prose, avoid calling examples "minimal" or "simple". Prefer neutral lead-ins such as "Consider this Marko template" or "Example".
 
 ## Callouts and Formatting
 
