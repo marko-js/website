@@ -348,3 +348,11 @@ Once that has been enabled, you can start by typing the input with JSDoc. Here's
 ## CI Type Checking
 
 For type checking Marko files outside of your editor there is the [`@marko/type-check` cli](https://github.com/marko-js/language-server/tree/main/packages/type-check). See the CLI documentation for more information.
+
+## Profiling Performance
+
+The [`--generateTrace`](https://www.typescriptlang.org/tsconfig/#generateTrace) flag can be used to determine the parts of a codebase which are using the most resources during type checking.
+
+```sh
+mtc --generateTrace TRACE_DIR
+```

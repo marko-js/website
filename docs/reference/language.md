@@ -529,6 +529,8 @@ export interface Input {
 </for>
 ```
 
+Attribute tags are generally singular by name, even when repeated. Prefer singular property names when consuming repeated attribute tags (for example, iterate `input.item` rather than `input.items`).
+
 > [!TIP]
 > If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
 >
