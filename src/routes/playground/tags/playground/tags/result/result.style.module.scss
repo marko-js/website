@@ -63,6 +63,12 @@
   iframe {
     flex: 1;
     border: none;
+    /* TODO:
+       Figure out why Chrome ignores the default iframe background color
+       after the playground recovers from a syntax error, and remove this line.
+       This is fine except `color-scheme: light dark` examples
+    */
+    background-color: white;
   }
 }
 
