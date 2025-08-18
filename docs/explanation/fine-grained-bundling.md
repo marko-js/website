@@ -7,19 +7,18 @@
 
 Marko uses **compile-time analysis** to generate minimal JavaScript bundles by identifying which parts of templates actually need interactivity. Instead of shipping entire component trees, only the code necessary for dynamic behavior reaches the browser. This means that Marko is **zero-JS by default**, and interactive pages only ship JavaScript for the parts that truly need it.
 
-## Sub-Component Islands
+## Beyond Islands
 
-From the beginning, Marko has used the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to reduce JavaScript in each page bundle. In early versions, islands were determined at the **component** level. If any part of a component (Marko 5 and below) was interactive, then it was marked as a "client component" and its JavaScript was included.
+Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to reduce JavaScript in each page bundle. Islands are determined at the **component** level, so applications authored in an islands-based framework need clear distinction between _server_ components and _client_ components.
 
-Marko 6 and the Tags API extended this by determining islands at the **sub-component** level.
-
-Consider a component that includes an interactive "watch" button:
+In Marko 6 the compiler decides which code to is interactive based on the _state_ tree, and only includes what is necessary in the browser bundle. Consider this tag that includes an interactive "watch" button:
 
 ```marko
 /* shop-item.marko */
 <div>
-  <img src=input.image alt=input.name>
   <h3>${input.name}</h3>
+
+  <${input.content}/>
   
   // Interactive toggle
   <let/watching:=input.watching>
