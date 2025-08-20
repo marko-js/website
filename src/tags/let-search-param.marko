@@ -2,9 +2,14 @@ export interface Input {
   key: string;
 }
 <let/internalValue=$global.url.searchParams.get(input.key)>
-
+<lifecycle onMount() {
+  const initialValue = new URLSearchParams(location.search).get(input.key);
+  if (initialValue !== $global.url.searchParams.get(input.key)) {
+    internalValue = initialValue;
+  }
+}>
 <return=internalValue valueChange(newValue: string | null) {
-  const newUrl = new URL(window.location.href);
+  const newUrl = new URL(location.href);
   if (newValue == null) {
     newUrl.searchParams.delete(input.key);
   } else {
