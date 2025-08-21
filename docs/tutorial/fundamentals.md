@@ -2,7 +2,7 @@
 
 > [!TLDR]
 >
-> - Marko builds on top of HTML, enabling components and JavaScript-based interpolation
+> Marko builds on top of HTML, enabling components and JavaScript-based interpolation
 
 Marko is designed to feel familiar if you know HTML, while making it easy to build dynamic, interactive websites. Let's walk through the core concepts.
 
@@ -17,6 +17,19 @@ Nearly any valid HTML is also valid Marko code. We can start with regular HTML a
   <a href="/contact">Contact</a>
 </nav>
 ```
+
+## Attributes are JS
+
+Almost all valid JavaScript expressions can be written as attribute values.
+
+```marko
+<a href=`/user/${user.id}`>My Profile</a>
+<a href=getRandomPage()>Discover Something New</a>
+```
+
+> [!NOTE]
+> The Reference Docs explain [more about Attributes](../reference/language.md#attributes) including how they support [`...spreads`](../reference/language.md#spread-attributes) and [`methods()`](../reference/language.md#shorthand-methods).
+
 
 ## Dynamic Content
 
@@ -50,9 +63,12 @@ This `<card>` component can now be used anywhere in the page:
 ```
 
 > [!NOTE]
-> Components in the `tags/` directory are automatically discovered. Learn more about tag discovery in our [reference docs](../reference/custom-tag.md#custom-tag-discovery).
+> Components in the `tags/` directory are [automatically discovered](../reference/custom-tag.md#custom-tag-discovery). No need to `import` them.
 
-## Passing Data to Components
+> [!TIP]
+> We can also write multiple "components" in a single file using the [`<define>` tag](../reference/core-tag.md#define).
+
+### Passing Data to Components
 
 Attributes on custom components are available through a special object called [`input`](../reference/language.md#input).
 
@@ -80,16 +96,12 @@ Now we can pass different data to each instance of `card`:
 <card name="Charlie" role="Product Manager" year=2022/>
 ```
 
-> [!TIP]
-> In Marko, attribute values are JavaScript expressions. This means they're not limited to just strings and numbers:
->
-> ```marko
-> <card name="You!" role=input.role joinDate=new Date().getFullYear() + 1/>
-> ```
+> [!NOTE]
+> Also check out [attribute tags](../reference/language.md#attribute-tags) which we can use to pass named content to a component
 
-## Conditionals
+## Core Tags
 
-We can use [conditional tags](../reference/core-tag.md#if--else) (`<if>` and `<else>`) to show or hide content based on conditions.
+Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, we can use [`<if>` and `<else>`](../reference/core-tag.md#if--else) to show or hide content based on conditions.
 
 ```marko
 /* tags/product.marko */
@@ -111,6 +123,14 @@ Now we can show different states based on the product data:
 <product name="T-Shirt" price=25 stock=10/>
 <product name="Hoodie" price=45 stock=0/>
 <product name="Hat" price=15 stock=5/>
+```
+
+And we can use the [`<for>` tag](../reference/core-tag.md#for) to display repeated content
+
+```marko
+<for|product| of=productsList>
+  <product name=product.name price=product.price stock=product.stock/>
+</for>
 ```
 
 ## Next Steps
