@@ -103,11 +103,8 @@
     flex-direction: row;
     margin-bottom: 5rem;
   }
-  @media (min-width: 58rem) {
-    align-self: flex-end;
-    margin-top: -6rem;
-  }
   @media (min-width: 64rem) {
+    align-self: flex-end;
     margin-top: 0;
     margin-bottom: 0;
     max-width: 40rem;

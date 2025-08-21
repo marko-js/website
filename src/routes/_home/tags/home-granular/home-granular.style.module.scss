@@ -84,12 +84,9 @@
   border-radius: 2rem;
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  @media (min-width: 61rem) {
-    margin-top: -6rem;
+  @media (min-width: 64rem) {
     align-self: flex-end;
     justify-content: flex-end;
-  }
-  @media (min-width: 64rem) {
     margin-top: 0;
     margin-bottom: 0;
     padding: 4rem;
