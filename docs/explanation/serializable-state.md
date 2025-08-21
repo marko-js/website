@@ -40,9 +40,20 @@ Nested values must also be serializable.
 
 Some values cannot be embedded into HTML in a stable, deterministic way. These should not generally be stored in state:
 
-- Functions and closures
+- Closures over JS instance variables
 - Class instances (except built-ins explicitly supported by the runtime)
 - DOM nodes and elements
+
+> [!NOTE]
+> ```marko
+> Most functions and closures in Marko _are_ serializable. Static variables and Marko state can be used safely.
+> <let/handler=null>
+> <const/onSecondClick() { 
+>   // serializable!
+> }>
+> 
+> <button onClick() { handler?.(); handler = onSecondClick }/>
+> ```
 
 Instead, keep plain data in state and construct functions, class instances, or DOM references at usage sites (for example, in event handlers or server actions).
 

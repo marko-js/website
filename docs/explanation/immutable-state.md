@@ -56,7 +56,7 @@ By replacing `user`, the view updates deterministically as a function of the new
 
 ## Serialization
 
-To pass work from server to client, state must be serialized. Only plain, JSON-serializable data can be reliably embedded into HTML and later hydrated. Class instances, DOM nodes, and closures cannot be serialized and should not be stored in state.
+To pass work from server to client, state must be serialized. Only serializable data can be reliably embedded into HTML and later hydrated. Class instances, DOM nodes, and some types of closures cannot be serialized and should not be stored in state.
 
 ```marko
 /* cart.marko */
