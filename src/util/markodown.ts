@@ -23,6 +23,8 @@ export default function markodownPlugin(): PluginOption {
         "docs",
         "_compiled-docs",
       );
+
+      await fs.rm(docsPages, { recursive: true });
       await fs.mkdir(docsPages, { recursive: true });
 
       const mdFiles = glob.sync("**/*.md", {
@@ -36,17 +38,19 @@ export default function markodownPlugin(): PluginOption {
             recursive: true,
           });
           const { markoCode, headings } = await mdToMarko(content);
-          await fs.writeFile(
-            path.join(docsPages, file.replace(".md", "+page.marko")),
-            markoCode,
-          );
-          await fs.writeFile(
-            path.join(docsPages, file.replace(".md", "+meta.json")),
-            JSON.stringify({
-              pageTitle: headings[0].title,
-              headings: headings[0].children,
-            }),
-          );
+          await Promise.all([
+            fs.writeFile(
+              path.join(docsPages, file.replace(".md", "+page.marko")),
+              markoCode,
+            ),
+            fs.writeFile(
+              path.join(docsPages, file.replace(".md", "+meta.json")),
+              JSON.stringify({
+                pageTitle: headings[0].title,
+                headings: headings[0].children,
+              }),
+            ),
+          ]);
         }),
       );
     },

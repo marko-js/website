@@ -176,3 +176,10 @@
     }
   }
 }
+
+.cta {
+  @media (min-width: 64rem) and (prefers-color-scheme: light) {
+    color: var(--section-color-dark) !important;
+    background: var(--color-white) !important;
+  }
+}
