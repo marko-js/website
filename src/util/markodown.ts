@@ -24,7 +24,7 @@ export default function markodownPlugin(): PluginOption {
         "_compiled-docs",
       );
 
-      await fs.rm(docsPages, { recursive: true });
+      await fs.rm(docsPages, { recursive: true, force: true });
       await fs.mkdir(docsPages, { recursive: true });
 
       const mdFiles = glob.sync("**/*.md", {
