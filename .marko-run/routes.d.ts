@@ -46,7 +46,6 @@ declare module "@marko/run" {
 			"/docs/reference/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json"); };
 			"/docs/tutorial/components-and-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+meta.json"); };
 			"/docs/tutorial/fundamentals": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+meta.json"); };
-			"/docs/tutorial/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/getting-started+meta.json"); };
 			"/docs/reference-full.md": { verb: "get"; };
 			"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
 		}
@@ -460,10 +459,10 @@ declare module "../src/routes/docs/_compiled-docs/tutorial/components-and-reacti
   }
 }
 
-declare module "../src/routes/docs/_compiled-docs/tutorial/getting-started+page.marko" {
+declare module "../src/routes/docs/_compiled-docs/tutorial/fundamentals+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/tutorial/getting-started"];
+    export type Route = Run.Routes["/docs/tutorial/fundamentals"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
