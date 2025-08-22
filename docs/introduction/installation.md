@@ -183,4 +183,6 @@ For other editors, you can use the Marko [language server](https://github.com/ma
 
 ## Next steps
 
-- [Components & Reactivity tutorial](../tutorial/components-and-reactivity.md)
+- [Syntax Fundamentals](../tutorial/fundamentals.md)
+- [Components & Reactivity](../tutorial/components-and-reactivity.md)
+- [Tooling Integrations](./integrations.md)

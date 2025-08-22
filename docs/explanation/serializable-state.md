@@ -24,16 +24,16 @@ State is embedded into HTML during server rendering. The serializer supports the
 Nested values must also be serializable.
 
 ```marko
-<let/state={
-  id: 42,
-  name: "Ada",
+<let/user={
+  id: 12,
+  name: "Marko",
   tags: ["admin", "editor"],
-  createdAt: new Date("2024-01-01T12:00:00.000Z"),
-  prefs: new Map([["theme", "dark"]]),
-  ids: new Set([1, 2, 3]),
-  bytes: new Uint8Array([1, 2, 3]),
-  query: new URLSearchParams({ q: "marko" }),
-}>
+  created: "2024-04-15"
+}/>
+
+<const/created=new Date(user.created)>
+
+<let/ids=new Set([user.id])>
 ```
 
 ## Unserializable Data
