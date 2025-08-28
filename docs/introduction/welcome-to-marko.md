@@ -4,7 +4,7 @@ Marko is a language designed to make it easier to write performant and "correct"
 
 ## What's Missing from Vanilla HTML, CSS, and JavaScript?
 
-The rise of frameworks in the frontend ecosystem didn't happen for no reason— for complex applications, vanilla technologies fall short in a few important areas.
+The rise of frameworks in the frontend ecosystem didn't happen for no reason. For complex applications, vanilla technologies fall short in a few important areas.
 
 - **Scalability**: Maintaining large applications is challenging due to the imperative nature of JavaScript and the global scope of CSS
 - **Performance**: Manual DOM manipulation is unwieldy and hard to follow, and it can lead to performance bottlenecks unless executed properly
@@ -51,7 +51,7 @@ Marko prioritizes performance at the architectural level, maximizing developer e
 
 ### Targeted Compilation
 
-Marko compiles every template twice— once for the server, and once for the browser. Server code is optimized for speed, while client code is optimized for bundle size. At compile time, the Marko compiler also figures out which parts of your application _need_ to be sent to the client and which can stay on the server.
+Marko compiles every template twice; once for the server, and once for the browser. Server code is optimized for speed, while client code for bundle size. At compile time, the Marko compiler also figures out which parts of your application _need_ to be sent to the client and which can stay on the server.
 
 ```marko
 <div>

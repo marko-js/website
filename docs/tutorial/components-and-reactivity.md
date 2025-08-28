@@ -185,7 +185,7 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 </style>
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > Make sure your `<gauge>` component file is in a `tags/` directory! Marko [auto-discovers](../reference/custom-tag.md#custom-tag-discovery) custom tags based on directory structure.
 
 <!-- markdownlint-disable MD026 allow exclamation point -->

@@ -348,7 +348,7 @@ Attributes can be terminated with a comma. This is useful in [concise mode](./co
 
 ## Tag Content
 
-Markup within a tag is made available as the `content` property of its [`input`](#input).
+Markup within the body of a tag is made available as the `content` property of its [`input`](#input).
 
 ```marko
 <my-tag>Content</my-tag>

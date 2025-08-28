@@ -92,7 +92,7 @@ template.mount({}, document.body, "afterbegin"); // prepended to the body
 ```
 
 > [!NOTE]
-> Valid values for `position` include
+> Valid values for `position` are based on [`insertAdjacentHTML()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position):
 >
 > - `"beforebegin"`: Before the element.
 > - `"afterbegin"`: Just inside the element, before its first child.
