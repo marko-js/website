@@ -1,7 +1,11 @@
 import fs from "fs/promises";
 import path from "path";
-import { Marked, type MarkedExtension, type TokensList } from "marked";
-import markedAlert from "marked-alert";
+import {
+  Marked,
+  type MarkedExtension,
+  type Tokens,
+  type TokensList,
+} from "marked";
 import GithubSlugger from "github-slugger";
 import { type PluginOption } from "vite";
 import * as prettier from "prettier";
@@ -60,38 +64,7 @@ export default function markodownPlugin(): PluginOption {
 async function mdToMarko(source: string) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(
-      markedAlert({
-        variants: [
-          {
-            type: "note",
-            icon: "",
-          },
-          {
-            type: "tip",
-            icon: "",
-          },
-          {
-            type: "important",
-            icon: "",
-          },
-          {
-            type: "warning",
-            icon: "",
-          },
-          {
-            type: "caution",
-            icon: "",
-          },
-          {
-            type: "tldr",
-            icon: "",
-          },
-        ],
-      }),
-      headingSections(headings),
-      markoDocs(),
-    )
+    .use(semanticAdmonitions(), headingSections(headings), markoDocs())
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -101,6 +74,57 @@ async function mdToMarko(source: string) {
     );
 
   return { headings, markoCode };
+}
+
+function semanticAdmonitions(): MarkedExtension {
+  const typeMap: Record<string, string> = {
+    note: "Note",
+    tip: "Tip",
+    important: "Important",
+    warning: "Warning",
+    caution: "Caution",
+    tldr: "TL;DR",
+  };
+
+  let nextCotId = 0;
+
+  return {
+    renderer: {
+      blockquote(token) {
+        const word = /^\[!(\w*)]/.exec(token.text ?? "");
+        const variant = word?.[1]?.toLowerCase();
+        if (variant && variant in typeMap) {
+          // logic inspired from https://github.com/bent10/marked-extensions/blob/main/packages/alert/src/index.ts#L42-L58
+
+          let body: string;
+          const { length } = word![0];
+          const firstParagraph = token.tokens[0] as Tokens.Paragraph;
+
+          if (firstParagraph.raw.trim().length === length) {
+            body = this.parser.parse(
+              token.tokens.slice(
+                firstParagraph.tokens[1]?.type === "br" ? 2 : 1,
+              ),
+            );
+          } else {
+            const firstText = firstParagraph.tokens[0] as Tokens.Text;
+            firstText.raw = firstText.raw.substring(length);
+            firstText.text = firstText.text.substring(length);
+
+            if (firstParagraph.tokens[1]?.type === "br") {
+              firstParagraph.tokens.splice(1, 1);
+            }
+            body = this.parser.parse(token.tokens);
+          }
+          const id = `callout-cot-${nextCotId++}`;
+
+          return `<\${"callout"} role="note" aria-labelledby="${id}" class="admonition-${variant}"><\${"cot"} id="${id}">${typeMap[variant]}</>${body}</>`;
+        }
+
+        return false;
+      },
+    },
+  };
 }
 
 declare module "marked" {

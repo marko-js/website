@@ -32,7 +32,7 @@ declare module "@marko/run" {
 
 If a [TSConfig](https://www.typescriptlang.org/tsconfig) file is discovered in the project root, the Vite plugin will automatically generate a .d.ts file which provides more specific types for each of your middleware, handlers, layouts, and pages. This file will be generated at `.marko-run/routes.d.ts` whenever the project is built - including dev.
 
-> **Note** TypeScript will not include this file by default. You should use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) and [add it in your tsconfig](https://www.typescriptlang.org/tsconfig#include).
+> [!NOTE] TypeScript will not include this file by default. You should use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) and [add it in your tsconfig](https://www.typescriptlang.org/tsconfig#include).
 
 These types are replaced with more specific versions per routable file:
 

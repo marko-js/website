@@ -264,7 +264,8 @@ main {
     max-width: 100% !important;
   }
 
-  .markdown-alert {
+  callout {
+    display: block;
     position: relative;
     margin: 2rem 0;
     border: 1px solid var(--section-color);
@@ -299,7 +300,7 @@ main {
     }
   }
 
-  .markdown-alert-title {
+  callout > cot {
     color: var(--section-color);
     display: flex;
     gap: 0.5rem;
@@ -313,7 +314,7 @@ main {
     }
   }
 
-  $alert-types: (
+  $admonition-types: (
     ("note", "doc", "blue"),
     ("caution", "throw", "red"),
     ("tip", "link", "yellow"),
@@ -322,7 +323,7 @@ main {
     ("tldr", "pixel", "yellow")
   );
 
-  .markdown-alert::before {
+  callout::before {
     pointer-events: none;
     float: right;
     content: "";
@@ -334,23 +335,23 @@ main {
     background-repeat: no-repeat;
   }
 
-  .markdown-alert-note::before {
+  .admonition-note::before {
     rotate: 4deg;
   }
-  .markdown-alert-caution::before {
+  .admonition-caution::before {
     rotate: -6deg;
   }
-  .markdown-alert-tip::before {
+  .admonition-tip::before {
     scale: -1 1;
     rotate: -5deg;
   }
-  .markdown-alert-important::before {
+  .admonition-important::before {
     scale: -1 1;
     rotate: 3deg;
   }
 
-  @each $name, $widget, $color in $alert-types {
-    .markdown-alert-#{$name} {
+  @each $name, $widget, $color in $admonition-types {
+    .admonition-#{$name} {
       @include colors.section($color, true);
       &::before {
         --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline");
@@ -359,15 +360,15 @@ main {
   }
 
   @media (prefers-color-scheme: dark) {
-    @each $name, $widget, $color in $alert-types {
-      .markdown-alert-#{$name}::before {
+    @each $name, $widget, $color in $admonition-types {
+      .admonition-#{$name}::before {
         --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline#dark");
       }
     }
   }
 
   @media (min-width: 48rem) and (min-height: 38rem) {
-    .markdown-alert::before {
+    callout::before {
       width: 7.5rem;
       height: 11.25rem;
       margin-top: -4rem;
@@ -376,15 +377,15 @@ main {
       rotate: 0deg;
     }
 
-    @each $name, $widget in $alert-types {
-      .markdown-alert-#{$name}::before {
+    @each $name, $widget in $admonition-types {
+      .admonition-#{$name}::before {
         --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline");
       }
     }
 
     @media (prefers-color-scheme: dark) {
-      @each $name, $widget, $color in $alert-types {
-        .markdown-alert-#{$name}::before {
+      @each $name, $widget, $color in $admonition-types {
+        .admonition-#{$name}::before {
           --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline#dark");
         }
       }
