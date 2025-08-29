@@ -7,12 +7,12 @@ The language makes HTML more strict while extending it with control flow and rea
 ## Syntax Legend
 
 <div class="code-block">
-<pre class="html"><code><a href="#statements">import "...";</a>
+<pre class="html html-ts"><code><a href="#statements">import "...";</a>
 &lt;<a href="#tags">tag</a>|...<a href="#tag-parameters">params</a>|/<a href="#tag-variables">var</a> ...<a href="#attributes">attrs</a>&gt;
   <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
   &lt;<a href="#attribute-tags">@attr-tags</a>/&gt;
 &lt;/&gt;</code></pre>
-<pre class="concise"><code><a href="#statements">import "...";</a>
+<pre class="concise concise-ts"><code><a href="#statements">import "...";</a>
 <a href="#tags">tag</a>|...<a href="#tag-parameters">params</a>|/<a href="#tag-variables">var</a> ...<a href="#attributes">attrs</a>
   -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
   <a href="#attribute-tags">@attr-tag</a></code></pre>
