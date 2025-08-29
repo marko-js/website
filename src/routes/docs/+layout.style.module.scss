@@ -46,6 +46,10 @@ main {
     }
   }
 
+  section:target > :first-child {
+    border-bottom: 2px solid var(--section-color-dim);
+  }
+
   h1 {
     color: var(--section-color);
     background: linear-gradient(
