@@ -1,3 +1,4 @@
+import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
 client import highlighter from "app/util/shiki";
 client import { update, type File } from "app/util/workspace";
@@ -10,8 +11,10 @@ export interface Input {
 }
 static const outputTypes = {
   preview: "Preview",
-  html: "Compiled (HTML)",
   dom: "Compiled (DOM)",
+  html: "Compiled (HTML)",
+  browserJS: "Bundled (JS)",
+  browserCSS: "Bundled (CSS)",
 } as const;
 static const compiledHighlightOpts: CodeToHastOptions = {
   lang: "js",
@@ -59,18 +62,30 @@ define/Stat|{ name, size }: { name: string; size: number | undefined }|
 
 const/selectedFile=(input.files[input.selected]?.path as string | undefined)
 let/outputType=Object.keys(outputTypes)[0]
-workspace/{ stats, buildErrors, runtimeErrors, markoCompiled }
+workspace/ws
 let-debounce/files=input.files
-const/compiled=(
-  selectedFile && (outputType === "dom" || outputType === "html")
-    ? markoCompiled?.[outputType]?.[`/tags/${selectedFile}`]
-    : undefined
-)
-const/compiledCode=compiled?.code
+const/showPreview=!(outputType !== "preview" || ws.buildErrors || ws.runtimeErrors)
 let-search-param/debugParam key="debug"
 let/debug=!!debugParam valueChange(debug) {
   debugParam = debug ? "1" : null;
 }
+const/compiledCode=(() => {
+  if (selectedFile) {
+    switch (outputType) {
+      case "dom": {
+        return debug
+          ? ws.markoCompiled?.dom?.[`/tags/${selectedFile}`]?.code
+          : ws.browserModules?.[`/tags/${selectedFile}`]?.code;
+      }
+      case "html":
+        return ws.markoCompiled?.html?.[`/tags/${selectedFile}`]?.code;
+      case "browserJS":
+        return ws.browserJS;
+      case "browserCSS":
+        return ws.browserCSS;
+    }
+  }
+})();
 
 div class=styles.result
   div class=styles.controls
@@ -82,31 +97,44 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
+    button class=[styles.control, styles.reload] onClick() {
+      ($frame as any)().replaceWith(($frame as any)());
+    }
+      fa-icon=faRotateRight
 
   div class=styles.output
-    if=buildErrors
+    if=ws.buildErrors
       div class=styles.error
-        p -- ${buildErrors.join("\n")}
+        p -- ${ws.buildErrors.join("\n")}
         p -- Check the devtools console for more information.
-    else if=compiledCode
+    else if=outputType !== "preview"
       div id=styles.compiled
-        -- $!{highlighter.codeToHtml(compiledCode, compiledHighlightOpts)}
-    else if=runtimeErrors
+        -- $!{highlighter.codeToHtml(compiledCode || "/* empty */", {
+          ...compiledHighlightOpts,
+          lang: outputType === "browserCSS" ? "css" : "js",
+        })}
+    else if=ws.runtimeErrors
       div class=styles.error
-        p -- ${runtimeErrors.join("\n")}
+        p -- ${ws.runtimeErrors.join("\n")}
         p -- Check the devtools console for more information.
 
-    iframe/$frame
-      ,title="code output"
-      ,class={
-        [styles.hide]: !!(buildErrors || runtimeErrors || compiledCode),
-      }
-
+    iframe/$frame title="code output" class={ [styles.hide]: !showPreview }
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
-    if=stats
-      div class=styles.stats
-        Stat name="js" size=(stats.script?.gzip)
-        Stat name="css" size=(stats.style?.gzip)
-        Stat name="html" size=(stats.markup?.gzip)
+    if=outputType === "preview"
+      if=ws.stats
+        div class=styles.stats
+          Stat name="js" size=(ws.stats.script?.gzip)
+          Stat name="css" size=(ws.stats.style?.gzip)
+          Stat name="html" size=(ws.stats.markup?.gzip)
+    else if=outputType === "browserJS"
+      if=ws.stats?.script
+        div class=styles.stats
+          Stat name="size" size=(ws.stats.script.size)
+          Stat name="gzip" size=(ws.stats.script.gzip)
+    else if=outputType === "browserCSS"
+      if=ws.stats?.style
+        div class=styles.stats
+          Stat name="size" size=(ws.stats.style.size)
+          Stat name="gzip" size=(ws.stats.style.gzip)
