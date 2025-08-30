@@ -64,6 +64,6 @@
     "terser": "^5.43.1",
     "util": "./shim/util",
     "vite-css-modules": "^1.10.0",
-    "writable-dom": "^1.0.5"
+    "writable-dom": "^1.0.6"
   }
 }
