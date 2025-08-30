@@ -1,3 +1,7 @@
+import { format } from "prettier/standalone";
+import prettierCSS from "prettier/plugins/postcss"
+import prettierBabel from "prettier/plugins/babel";
+import prettierEstree from "prettier/plugins/estree";
 import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
 import WritableDOMStream from "writable-dom";
 
@@ -16,9 +20,12 @@ export interface File {
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
+  browserJS: undefined | string;
+  browserCSS: undefined | string;
+  browserModules: undefined | OutputChunk["modules"];
   buildErrors: undefined | [Error, ...Error[]];
   runtimeErrors: undefined | [Error, ...Error[]];
-  server: Worker | undefined;
+  server: undefined | Worker;
   stats:
     | undefined
     | {
@@ -58,6 +65,9 @@ export async function update(
   const ws: Workspace = (workspace = {
     fs,
     optimize,
+    browserJS: undefined,
+    browserCSS: undefined,
+    browserModules: undefined,
     buildErrors: undefined,
     runtimeErrors: undefined,
     stats: undefined,
@@ -75,7 +85,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: false,
-            code: `import t from "${rootDir}index.marko";onmessage=async()=>{for await(const c of t.render())postMessage(c);postMessage(0)}`,
+            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}`,
           }),
           markoPlugin({
             ws,
@@ -146,10 +156,34 @@ export async function update(
 
       if (signal.aborted) return;
 
+      ws.browserModules = output[0]?.modules;
+      emit();
+
       const code = getAssetCode(output, file);
       const cssCode = getAssetCode(output, cssFile);
       const codeSize = code ? toByteSizes(code) : undefined;
       const cssCodeSize = cssCode ? toByteSizes(cssCode) : undefined;
+      if (code) {
+        void format(code, {
+          parser: "babel",
+          plugins: [prettierBabel, prettierEstree]
+        }).then(formattedCode => {
+          if (signal.aborted) return;
+          ws.browserJS = formattedCode;
+          emit();
+        });
+      }
+
+      if (cssCode) {
+        void format(cssCode, {
+          parser: "css",
+          plugins: [prettierCSS]
+        }).then(formattedCode => {
+          if (signal.aborted) return;
+          ws.browserCSS = formattedCode;
+          emit();
+        });
+      }
 
       frame.addEventListener("error", onRuntimeError, { signal });
       frame.addEventListener(
@@ -157,26 +191,22 @@ export async function update(
         async () => {
           const win = frame.contentWindow!;
           win.addEventListener("error", onRuntimeError, { signal });
-          win.addEventListener("unhandledrejection", onRuntimeError, {
-            signal,
-          });
+          win.addEventListener("unhandledrejection", onRuntimeError, { signal });
           await serverBuild;
           const { server } = ws;
           if (!server || signal.aborted) return;
 
           const htmlStream = new ReadableStream({
             start(c) {
-              server.addEventListener(
-                "message",
-                (ev) => {
+              server.onmessage = (ev) => {
+                if (!signal.aborted) {
                   if (ev.data) {
                     c.enqueue(ev.data);
                   } else {
                     c.close();
                   }
-                },
-                { signal },
-              );
+                }
+              }
               server.postMessage(1);
             },
           });
