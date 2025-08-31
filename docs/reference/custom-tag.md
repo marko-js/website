@@ -17,7 +17,7 @@ When you use a `<Tag>` in Marko it is resolved in the following order:
 
 If a tag name starts with an uppercase letter, Marko first checks for a local variable with the same name.
 
-This is useful for importing custom tags that can't be [discovered automatically](./custom-tag.md#custom-tag-discovery)
+This is useful for importing custom tags that can't be [discovered automatically](#relative-custom-tags).
 
 ```marko
 import MyTag from "./my-tag.marko"
