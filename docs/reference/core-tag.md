@@ -409,6 +409,21 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
+If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+
+```marko
+/* textbox.marko */
+export interface Input {
+  id?: string;
+  description: string;
+}
+
+<id/id=input.id>
+
+<input aria-describedby=id>
+<span id=id>${description}</span>
+```
+
 ## `<log>`
 
 The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) of its `value=` attribute (shown here using [the shorthand](./language.md#shorthand-value)).
