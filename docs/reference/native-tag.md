@@ -1,5 +1,7 @@
 # Native Tags
 
+Native tags are the [built-in HTML elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements). In Marko they behave like standard HTML with a few ergonomic enhancements.
+
 ## Element References
 
 All native tags expose a [Tag Variable](./language.md#tag-variables) that provides a getter to the reference of the DOM node.
