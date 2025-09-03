@@ -1,5 +1,5 @@
 import { format } from "prettier/standalone";
-import prettierCSS from "prettier/plugins/postcss"
+import prettierCSS from "prettier/plugins/postcss";
 import prettierBabel from "prettier/plugins/babel";
 import prettierEstree from "prettier/plugins/estree";
 import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
@@ -12,6 +12,7 @@ import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
+import { prettyPrintHTML } from "./pretty-print-html";
 
 export interface File {
   path: string;
@@ -20,18 +21,19 @@ export interface File {
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
-  browserJS: undefined | string;
-  browserCSS: undefined | string;
-  browserModules: undefined | OutputChunk["modules"];
+  previewJS: string;
+  previewCSS: string;
+  previewHTML: string;
+  previewModules: undefined | OutputChunk["modules"];
   buildErrors: undefined | [Error, ...Error[]];
   runtimeErrors: undefined | [Error, ...Error[]];
   server: undefined | Worker;
   stats:
     | undefined
     | {
-        markup: undefined | Sizes;
-        script: undefined | Sizes;
-        style: undefined | Sizes;
+        markup?: undefined | Sizes;
+        script?: undefined | Sizes;
+        style?: undefined | Sizes;
       };
 }
 
@@ -54,7 +56,7 @@ const consoleInjection = (ns: string, color: string) => `(c => {
     if (!cond) { (typeof rest[0]==='string') ? rest[0]=label+rest[0] : rest.unshift(label); rest.splice(1,0,sty,''); }
     return a.call(c, cond, ...rest);
   };
-})(console);`
+})(console);`;
 
 export function subscribe(
   handler: (workspace: Workspace) => void,
@@ -82,9 +84,10 @@ export async function update(
   const ws: Workspace = (workspace = {
     fs,
     optimize,
-    browserJS: undefined,
-    browserCSS: undefined,
-    browserModules: undefined,
+    previewJS: "",
+    previewCSS: "",
+    previewHTML: "",
+    previewModules: undefined,
     buildErrors: undefined,
     runtimeErrors: undefined,
     stats: undefined,
@@ -173,31 +176,38 @@ export async function update(
 
       if (signal.aborted) return;
 
-      ws.browserModules = output[0]?.modules;
+      ws.previewModules = output[0]?.modules;
       emit();
 
       const code = getAssetCode(output, file);
       const cssCode = getAssetCode(output, cssFile);
-      const codeSize = code ? toByteSizes(code) : undefined;
-      const cssCodeSize = cssCode ? toByteSizes(cssCode) : undefined;
+
       if (code) {
+        void toByteSizes(code).then((size) => {
+          ws.stats = { ...ws.stats, script: size };
+          emit();
+        });
+
         void format(code, {
           parser: "babel",
-          plugins: [prettierBabel, prettierEstree]
-        }).then(formattedCode => {
-          if (signal.aborted) return;
-          ws.browserJS = formattedCode;
+          plugins: [prettierBabel, prettierEstree],
+        }).then((formattedCode) => {
+          ws.previewJS = formattedCode;
           emit();
         });
       }
 
       if (cssCode) {
+        void toByteSizes(cssCode).then((size) => {
+          ws.stats = { ...ws.stats, style: size };
+          emit();
+        });
+
         void format(cssCode, {
           parser: "css",
-          plugins: [prettierCSS]
-        }).then(formattedCode => {
-          if (signal.aborted) return;
-          ws.browserCSS = formattedCode;
+          plugins: [prettierCSS],
+        }).then((formattedCode) => {
+          ws.previewCSS = formattedCode;
           emit();
         });
       }
@@ -208,41 +218,31 @@ export async function update(
         async () => {
           const win = frame.contentWindow!;
           win.addEventListener("error", onRuntimeError, { signal });
-          win.addEventListener("unhandledrejection", onRuntimeError, { signal });
+          win.addEventListener("unhandledrejection", onRuntimeError, {
+            signal,
+          });
           await serverBuild;
           const { server } = ws;
           if (!server || signal.aborted) return;
 
-          const htmlStream = new ReadableStream({
-            start(c) {
-              server.onmessage = (ev) => {
-                if (!signal.aborted) {
-                  if (ev.data) {
-                    c.enqueue(ev.data);
-                  } else {
-                    c.close();
-                  }
-                }
-              }
-              server.postMessage(1);
-            },
-          });
-
-          const [htmlStreamA, htmlStreamB] = htmlStream.tee();
-          const markupSize = toByteSizes(
-            htmlStreamA.pipeThrough(new TextEncoderStream(), { signal }),
-          );
-          void htmlStreamB.pipeTo(
-            new WritableDOMStream(frame.contentDocument!.body),
-            { signal },
-          );
-
-          ws.stats = {
-            markup: await markupSize,
-            script: await codeSize,
-            style: await cssCodeSize,
+          const domWriter = WritableDOMStream(frame.contentDocument!.body);
+          let rawHTML = "";
+          server.onmessage = (ev) => {
+            if (signal.aborted) return;
+            if (ev.data) {
+              rawHTML += ev.data;
+              ws.previewHTML = prettyPrintHTML(rawHTML);
+              emit();
+              domWriter.write(ev.data);
+            } else {
+              void toByteSizes(rawHTML).then((size) => {
+                ws.stats = { ...ws.stats, markup: size };
+                emit();
+              });
+              domWriter.close();
+            }
           };
-          emit();
+          server.postMessage(1);
         },
         { signal },
       );

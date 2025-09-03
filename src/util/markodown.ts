@@ -8,8 +8,8 @@ import {
 } from "marked";
 import GithubSlugger from "github-slugger";
 import { type PluginOption } from "vite";
-import * as prettier from "prettier";
-import * as markoPrettier from "prettier-plugin-marko";
+import { format } from "prettier/standalone";
+import * as prettierMarko from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
 import { glob } from "glob";
 import type { HeadingList } from "../types";
@@ -170,36 +170,36 @@ function markoDocs(): MarkedExtension {
       if (token.type === "code" && token.lang === "marko") {
         const releaseLock = await acquireMutexLock();
 
-        markoPrettier.setCompiler(compiler, {
+        prettierMarko.setCompiler(compiler, {
           stripTypes: true,
         });
         token.html = (
-          await prettier.format(token.text, {
+          await format(token.text, {
             parser: "marko",
-            plugins: [markoPrettier],
+            plugins: [prettierMarko],
             markoSyntax: "html",
           })
         ).trim();
         token.concise = (
-          await prettier.format(token.text, {
+          await format(token.text, {
             parser: "marko",
-            plugins: [markoPrettier],
+            plugins: [prettierMarko],
             markoSyntax: "concise",
           })
         ).trim();
 
-        markoPrettier.setCompiler(compiler, {});
+        prettierMarko.setCompiler(compiler, {});
         token.htmlTS = (
-          await prettier.format(token.text, {
+          await format(token.text, {
             parser: "marko",
-            plugins: [markoPrettier],
+            plugins: [prettierMarko],
             markoSyntax: "html",
           })
         ).trim();
         token.conciseTS = (
-          await prettier.format(token.text, {
+          await format(token.text, {
             parser: "marko",
-            plugins: [markoPrettier],
+            plugins: [prettierMarko],
             markoSyntax: "concise",
           })
         ).trim();
