@@ -38,6 +38,23 @@ export interface Workspace {
 let workspace: Workspace | undefined;
 const rootDir = "/tags/";
 const subs = new Set<(workspace: Workspace) => void>();
+const consoleInjection = (ns: string, color: string) => `(c => {
+  const label = '%c[${ns}]%c ';
+  const sty = 'color:${color}; font-weight:bold;';
+  ['log','info','warn','error','debug','trace'].forEach(k => {
+    const f = c[k];
+    c[k] = (...a) => {
+      (typeof a[0]==='string') ? a[0]=label + a[0] : a.unshift(label);
+      a.splice(1,0,sty,'');
+      return f.apply(c,a);
+    };
+  });
+  const a = c.assert;
+  c.assert = (cond, ...rest) => {
+    if (!cond) { (typeof rest[0]==='string') ? rest[0]=label+rest[0] : rest.unshift(label); rest.splice(1,0,sty,''); }
+    return a.call(c, cond, ...rest);
+  };
+})(console);`
 
 export function subscribe(
   handler: (workspace: Workspace) => void,
@@ -85,7 +102,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: false,
-            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}`,
+            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n${consoleInjection("server", "#00FFFF")}`,
           }),
           markoPlugin({
             ws,
@@ -136,7 +153,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: true,
-            code: `import "${rootDir}index.marko?hydrate"`,
+            code: `import "${rootDir}index.marko?hydrate"\n${consoleInjection("client", "#c2185b")}`,
           }),
           markoPlugin({ ws, browser: true }),
           cssPlugin({ browser: true }),
