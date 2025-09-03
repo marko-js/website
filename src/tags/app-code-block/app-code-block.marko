@@ -120,10 +120,19 @@ div class=["code-block", input.theme && `code-block--${input.theme}`]
     div.filename -- ${input.filename}
   if=input.markoAlts
     const/[concise, htmlTS, conciseTS]=input.markoAlts
-    div.html -- $!{highlight(input.text)}
-    div.concise -- $!{highlight(concise)}
-    div.html-ts -- $!{highlight(htmlTS)}
-    div.concise-ts -- $!{highlight(conciseTS)}
+
+    if=htmlTS
+      div.html -- $!{highlight(input.text)}
+      div.html-ts -- $!{highlight(htmlTS)}
+    else
+      div.html.html-ts -- $!{highlight(input.text)}
+
+    if=conciseTS
+      div.concise -- $!{highlight(concise)}
+      div.concise-ts -- $!{highlight(conciseTS)}
+    else
+      div.concise.concise-ts -- $!{highlight(concise)}
+
   else -- $!{highlight(input.text)}
 
 const/css=getCSS($global)

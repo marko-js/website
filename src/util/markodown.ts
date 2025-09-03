@@ -218,7 +218,7 @@ function markoDocs(): MarkedExtension {
           out += ` filename="${filename}"`;
         }
         if (lang === "marko") {
-          out += ` text=${JSON.stringify(html)} markoAlts=[${JSON.stringify(concise)},${JSON.stringify(htmlTS)},${JSON.stringify(conciseTS)}]`;
+          out += ` text=${JSON.stringify(html)} markoAlts=[${JSON.stringify(concise)}${html === htmlTS ? "" : `,${JSON.stringify(htmlTS)},${JSON.stringify(conciseTS)}`}]`;
         } else {
           out += ` text=${JSON.stringify(text)}`;
         }
