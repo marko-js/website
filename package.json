@@ -37,7 +37,7 @@
     "@marko/run-adapter-static": "^2.0.2",
     "@marko/type-check": "^2.1.5",
     "@rollup/browser": "^4.50.0",
-    "@shikijs/langs-precompiled": "^3.12.2",
+    "@shikijs/langs-precompiled": "3.8.1",
     "@types/node": "^24.3.0",
     "assert": "./shim/assert",
     "autoprefixer": "^10.4.21",
