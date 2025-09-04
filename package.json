@@ -38,7 +38,7 @@
     "@marko/type-check": "^2.1.5",
     "@rollup/browser": "^4.50.0",
     "@shikijs/langs-precompiled": "3.8.1",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "assert": "./shim/assert",
     "autoprefixer": "^10.4.21",
     "codemirror": "^6.0.2",
