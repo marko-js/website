@@ -318,7 +318,7 @@ export async function update(
 function isErrorEvent(
   ev: ErrorEvent | PromiseRejectionEvent,
 ): ev is ErrorEvent {
-  return ev.type === "error";
+  return ev.type === "error" && !!(ev as ErrorEvent).message;
 }
 
 function getAssetCode(chunks: (OutputChunk | OutputAsset)[], name: string) {
