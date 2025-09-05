@@ -5,6 +5,7 @@ import prettierEstree from "prettier/plugins/estree";
 import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
 import WritableDOMStream from "writable-dom";
 
+import { cdnPlugin } from "./workspace/cdn-plugin";
 import { cssPlugin } from "./workspace/css-plugin";
 import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
@@ -114,6 +115,7 @@ export async function update(
             browser: false,
           }),
           cssPlugin({ browser: false }),
+          cdnPlugin(),
           minifyScriptPlugin(),
         ],
       });
@@ -162,6 +164,7 @@ export async function update(
           }),
           markoPlugin({ ws, browser: true }),
           cssPlugin({ browser: true }),
+          cdnPlugin(),
           minifyScriptPlugin(),
         ],
       });
