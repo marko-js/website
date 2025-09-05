@@ -1,16 +1,9 @@
 # Serializable State
 
-> [!TLDR]
-> - Serialize plain data only
-> - Supported: primitives, arrays, plain objects, Dates, Map/Set, TypedArrays, URL/SearchParams, BigInt
->   - References and cycles are preserved
-> - Avoid: user-defined functions, non-built-in class instances, DOM, closures
+Marko seemlessly picks up where the server left off when it comes to events, scripts and client side updates through state.
+In order to do this Marko will attempt to serialize as little data as possible from the server to the client.
 
-State passed from server to client must be serialized into HTML. Keeping state plain and deterministic ensures reliable hydration and enables compiler optimizations.
-
-## Serializable Data
-
-State is embedded into HTML during server rendering. The serializer supports the following plain data types:
+Most standard data types can be serialized, including:
 
 - Primitives: `null`, `boolean`, `number`, `string`, `bigint`
 - Arrays and plain objects with serializable values
@@ -21,32 +14,21 @@ State is embedded into HTML during server rendering. The serializer supports the
 - Additional built-in JS and Browser objects
   - For a complete list, see the [serializer file](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/html/serializer.ts) from source
 
-Nested values must also be serializable.
-
-```marko
-<let/user={
-  id: 12,
-  name: "Marko",
-  tags: ["admin", "editor"],
-  created: "2024-04-15"
-}/>
-
-<const/created=new Date(user.created)>
-
-<let/ids=new Set([user.id])>
-```
+... and many more.
 
 ## Unserializable Data
 
-Some values cannot be embedded into HTML in a stable, deterministic way. These should not generally be stored in state:
+Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.
 
-- Closures over JS instance variables
+Examples of unserializable data include:
+- Closures (top level functions are fine!)
+- Functions that come from arbitrary javascript code or imports
 - Class instances (except built-ins explicitly supported by the runtime)
 - DOM nodes and elements
 
 > [!NOTE]
 > ```marko
-> Most functions and closures in Marko _are_ serializable. Static variables and Marko state can be used safely.
+> // Most functions and closures in Marko _are_ serializable.
 > <let/handler=null>
 > <const/onSecondClick() { 
 >   // serializable!
@@ -55,12 +37,7 @@ Some values cannot be embedded into HTML in a stable, deterministic way. These s
 > <button onClick() { handler?.(); handler = onSecondClick }/>
 > ```
 
-Instead, keep plain data in state and construct functions, class instances, or DOM references at usage sites (for example, in event handlers or server actions).
-
 ```marko
-// ❌ BAD: function in state
-<let/state={ save: () => doThing() }>
-
 // ❌ BAD: custom class instance in state
 <let/state=new Cart()>
 
