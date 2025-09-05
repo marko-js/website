@@ -9,18 +9,20 @@ export async function toByteSizes(
 ): Promise<Sizes> {
   if (typeof data === "string") {
     const blob = new Blob([data]);
+    const size = blob.size;
     return {
-      size: blob.size,
-      gzip: await streamToGzipByteLength(blob.stream()),
+      size,
+      gzip: size ? await streamToGzipByteLength(blob.stream()) : 0,
     };
   }
 
   const [a, b] = data.tee();
   const pSize = streamToByteLength(a);
   const pGzip = streamToGzipByteLength(b);
+  const size = await pSize;
   return {
-    size: await pSize,
-    gzip: await pGzip,
+    size,
+    gzip: size ? await pGzip : 0,
   };
 }
 

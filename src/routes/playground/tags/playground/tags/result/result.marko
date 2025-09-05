@@ -46,7 +46,7 @@ static const compiledHighlightOpts: CodeToHastOptions = {
 } as const;
 
 define/Stat|{ name, size }: { name: string; size: number | undefined }|
-  if=size
+  if=size !== undefined
     const/{ value, unit }=bytesToUnits(size)
     div
       -- ${name} =${" "}
