@@ -57,12 +57,22 @@ const/selectedFile=(input.files[input.selected]?.path as string | undefined)
 let/outputType="preview"
 workspace/ws
 let-debounce/files=input.files
-const/showPreview=!(outputType !== "preview" || ws.buildErrors || ws.runtimeErrors)
+const/showPreview=!(
+  outputType !== "preview" ||
+  ws.buildErrors ||
+  ws.runtimeErrors
+)
 let-search-param/debugParam key="debug"
 let/debug=!!debugParam valueChange(debug) {
   debugParam = debug ? "1" : null;
 }
-const/outputLang=outputType === "previewCSS" ? "css" : outputType === "previewHTML" ? "html" : "js"
+const/outputLang=(
+  outputType === "previewCSS"
+    ? "css"
+    : outputType === "previewHTML"
+      ? "html"
+      : "js"
+)
 const/compiledCode=(() => {
   if (selectedFile) {
     switch (outputType) {
@@ -81,7 +91,7 @@ const/compiledCode=(() => {
         return ws.previewHTML;
     }
   }
-})();
+})()
 
 div class=styles.result
   div class=styles.controls
@@ -99,9 +109,11 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
-    button class=[styles.control, styles.reload] onClick() {
-      ($frame as any)().replaceWith(($frame as any)());
-    }
+    button
+      ,class=[styles.control, styles.reload]
+      ,onClick() {
+        ($frame as any)().replaceWith(($frame as any)());
+      }
       fa-icon=faRotateRight
 
   div class=styles.output
@@ -111,16 +123,24 @@ div class=styles.result
         p -- Check the devtools console for more information.
     else if=outputType !== "preview"
       div id=styles.compiled
-        -- $!{highlighter.codeToHtml(compiledCode || (outputLang === "html" ? "" : "/* empty */"), {
-          ...compiledHighlightOpts,
-          lang: outputLang,
-        })}
+        --
+          $!{highlighter.codeToHtml(
+            compiledCode || (outputLang === "html" ? "" : "/* empty */"),
+            {
+              ...compiledHighlightOpts,
+              lang: outputLang,
+            },
+          )}
     else if=ws.runtimeErrors
       div class=styles.error
         p -- ${ws.runtimeErrors.join("\n")}
         p -- Check the devtools console for more information.
 
-    iframe/$frame title="code output" class={ [styles.hide]: !showPreview }
+    iframe/$frame
+      ,title="code output"
+      ,class={
+        [styles.hide]: !showPreview,
+      }
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
@@ -131,12 +151,12 @@ div class=styles.result
           Stat name="css" size=(ws.stats.style?.gzip)
           Stat name="html" size=(ws.stats.markup?.gzip)
     else if=outputType === "previewJS"
-      if=ws.stats?.script
+      if=(ws.stats?.script)
         div class=styles.stats
           Stat name="size" size=(ws.stats.script.size)
           Stat name="gzip" size=(ws.stats.script.gzip)
     else if=outputType === "previewCSS"
-      if=ws.stats?.style
+      if=(ws.stats?.style)
         div class=styles.stats
           Stat name="size" size=(ws.stats.style.size)
           Stat name="gzip" size=(ws.stats.style.gzip)

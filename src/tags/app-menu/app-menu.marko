@@ -41,9 +41,9 @@ div#site-menu class=styles.menu
         strong -- Explanation
         ul
           Page="/docs/explanation/streaming" -- Streaming
-          Page="/docs/explanation/targeted-compilation"
-            -- Targeted Compilation
-          Page="/docs/explanation/fine-grained-bundling" -- Fine-Grained Bundling
+          Page="/docs/explanation/targeted-compilation" -- Targeted Compilation
+          Page="/docs/explanation/fine-grained-bundling"
+            -- Fine-Grained Bundling
           Page="/docs/explanation/separation-of-concerns"
             -- Separation of Concerns
           Page="/docs/explanation/controllable-components"
@@ -69,11 +69,23 @@ div#site-menu class=styles.menu
           Page="/docs/marko-run/file-based-routing" -- File-based Routing
           Page="/docs/marko-run/typescript" -- TypeScript
   div id=styles.controls
-    id/modeId
-    strong id=modeId -- Settings
+    label class=styles.versionControl
+      -- Version&nbsp;
+      select onChange(_, el) {
+        const { value } = el;
+        if (value) {
+          el.selectedIndex = 0;
+          location.href = value;
+        }
+      }
+        option value="" selected -- 6.x
+        option value="https://v5.markojs.com/docs/getting-started" -- 5.x
+        option value="http://marko-v4.github.io/docs/" -- 4.x
+        option value="http://v3.markojs.com/docs/" -- 3.x
+        option value="http://marko-v2.github.io/docs/" -- 2.x
     app-switch
-      ,aria-labelledby=modeId
+      ,aria-label="Toggle Concise mode"
       ,checked:=conciseMode
       ,off="HTML"
       ,on="Concise"
-    app-switch aria-labelledby=modeId checked:=tsMode off="JS" on="TS"
+    app-switch aria-label="Toggle TS mode" checked:=tsMode off="JS" on="TS"

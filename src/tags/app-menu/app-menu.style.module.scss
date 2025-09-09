@@ -1,7 +1,7 @@
 @use "app/styles/sticky" as sticky;
 @use "app/styles/colors" as colors;
 
-$fixed-controls-height: 6rem;
+$fixed-controls-height: 8rem;
 
 .menu {
   position: sticky;
@@ -89,6 +89,7 @@ $fixed-controls-height: 6rem;
     font-weight: 500;
     text-transform: uppercase;
     color: var(--color-red);
+    line-height: 1.6;
     background: linear-gradient(
       to bottom,
       var(--color-red),
@@ -204,5 +205,11 @@ $fixed-controls-height: 6rem;
     padding: 0 var(--root-gap);
     height: $fixed-controls-height;
     justify-content: center;
+  }
+}
+
+.versionControl {
+  select {
+    @include colors.section("gray");
   }
 }
