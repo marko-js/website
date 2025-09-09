@@ -4,12 +4,14 @@
 $black: #202124;
 $white: #ffffff;
 $colors: (
-  ("red", #cc0067, #ff5467),
-  ("green", #00b068, #7ced64),
-  ("blue", #0073d8, #00cffb),
-  ("yellow", #fc5c00, #ffd100),
-  ("gray", #6e6e6e, #cccccc)
+  ("red", #cc0067, #ff5467) /* mix: #e63467 */,
+  ("green", #00b068, #7ced64) /* mix: #49cf69 */,
+  ("blue", #0073d8, #00cffb) /* mix: #00a2ec */,
+  ("yellow", #fc5c00, #ffd100) /* mix: #ff9800 */,
+  ("gray", #6e6e6e, #cccccc) /* mix: #9c9c9c */
 );
+// ("purple", #5b43a7, #c999ec) /* mix: #916dca */
+// mix playground: https://next.markojs.com/playground#djIfiwgAAAAAAAATnVLBbtRADP0Va1qqRGTTbCU4bJUDFCS40iNTqZOJkx068UQTp6Ra5d-Rky0tFVIRN897z_azx98Pqje8VzvlqMYp70y8CypTNhAjsdop6x0Sg-v6EBkOwOELTjBDE0MHWuXnIzs_aKVJk0c-N6VWJ01TFEUhoECVQEUh4KprHPp6QNYE4LFFqmGzgavgQ4QPAjrqRwZ-6LHUygquFdwbP-KuNE-CBSkNBLraG2oxwRQOQgMYKCHBnE1skfNFCOVq_gWcppeSMr9m7ONrxqqXxqq_Gav-y5issQsjMdZQQmP8gJoGG13P4vCJ4jjipSYbaODzzk1Yl4_k2dmxze1ifNO5KXEE4c7bfQanBzPDu-KNRNWc3qbSto8IAz94LA-gVWXsXRvDSPXmOPoOlhYwLyYk3MHpYQlmTWrOfp_XciX5j-HP2xKXYA3dmwFKqIMdOyTObUTD-NmjvBKtVoVWspA1zn-6mvdQHpPzPbp2z1DC9nF4sDw98S3ylbSdpNxFvZbShNNy1c1Ill2g436W4Y4fZnnKG-f9tWxB6gl3-Zz5hpaTIoMig20G27UwwGrie8ygzaC6kVSexMfXzrT4ybB5npTXhs0xMyKPkSBZ70WrE63g7fqIOYdrjo7aZPs-zXtTX7OJnFxkoFWhVfoobP9VWL0mFJnMNKv55hc31gwaLgQAAA
 
 @mixin init {
   :root {
