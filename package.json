@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "marko-run build",
-    "deploy": "marko-run build && gh-pages --cname next.markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
+    "deploy": "marko-run build && gh-pages --cname markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
     "preview": "marko-run preview"
