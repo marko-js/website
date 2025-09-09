@@ -25,32 +25,6 @@
   border-right: 2px solid var(--color-gray-alt-dim);
 }
 
-.reload {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  gap: 0.5rem;
-  border: 1px solid transparent;
-  font-size: 1rem;
-  border-radius: 0;
-  background-color: var(--color-gray-dim);
-  margin-left: auto;
-  &:focus-within {
-    outline: none;
-    border-color: var(--section-color-alt, var(--color-blue-alt));
-  }
-
-  &:hover {
-    border-color: var(--section-color, var(--color-blue));
-  }
-
-  svg {
-    height: 100%;
-    fill: var(--color-blue);
-  }
-}
-
 .checkbox {
   display: flex;
   align-items: center;
@@ -80,11 +54,23 @@
   }
 }
 
+:global(.fullscreen) {
+  visibility: hidden;
+}
+
 .output {
   position: relative;
   display: flex;
   flex: 1;
   overflow-y: auto;
+
+
+  :global(.fullscreen) & {
+    visibility: visible;
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+  }
 
   iframe {
     flex: 1;
@@ -120,6 +106,31 @@
   gap: 1rem;
 }
 
+.previewControl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  height: 1lh;
+  font-size: 1rem;
+  border-radius: 0;
+  background-color: var(--color-gray-dim);
+  &:focus-within {
+    outline: none;
+  }
+
+  &:hover {
+    outline: none;
+  }
+
+  svg {
+    height: 1lh;
+    fill: var(--color-blue);
+  }
+}
+
+
 #compiled {
   display: flex;
   flex: 1;
@@ -152,4 +163,29 @@
 
 .hide {
   display: none;
+}
+
+.markoLogo {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0.5rem;
+  height: 2.5rem;
+  width: 3.5rem;
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-position: 0.5rem 0.2rem;
+  background-size: auto 2rem;
+  background-image: url("/fav.svg");
+  filter: brightness(0%) invert(30%);
+
+  &:hover {
+    transition: filter 0.2s ease;
+    filter: none;
+  }
+
+  :global(.fullscreen) & {
+    display: block;
+  }
 }

@@ -1,4 +1,4 @@
-import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { faCompress, faExpand, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
 client import highlighter from "app/util/shiki";
 client import { update, type File } from "app/util/workspace";
@@ -66,6 +66,15 @@ let-search-param/debugParam key="debug"
 let/debug=!!debugParam valueChange(debug) {
   debugParam = debug ? "1" : null;
 }
+
+let-search-param/fullscreenParam key="fullscreen"
+let/fullscreen=!!fullscreenParam valueChange(fullscreen) {
+  fullscreenParam = fullscreen ? "1" : null;
+}
+script --
+  document.documentElement.classList.toggle("fullscreen", fullscreen);
+html-script -- ${`document.documentElement.classList.toggle("fullscreen",localStorage.getItem("fullscreen")==='true');`}
+
 const/outputLang=(
   outputType === "previewCSS"
     ? "css"
@@ -109,12 +118,6 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
-    button
-      ,class=[styles.control, styles.reload]
-      ,onClick() {
-        ($frame as any)().replaceWith(($frame as any)());
-      }
-      fa-icon=faRotateRight
 
   div class=styles.output
     if=ws.buildErrors
@@ -144,19 +147,27 @@ div class=styles.result
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
-    if=outputType === "preview"
-      if=ws.stats
-        div class=styles.stats
-          Stat name="js" size=(ws.stats.script?.gzip)
-          Stat name="css" size=(ws.stats.style?.gzip)
-          Stat name="html" size=(ws.stats.markup?.gzip)
-    else if=outputType === "previewJS"
-      if=(ws.stats?.script)
-        div class=styles.stats
-          Stat name="size" size=(ws.stats.script.size)
-          Stat name="gzip" size=(ws.stats.script.gzip)
-    else if=outputType === "previewCSS"
-      if=(ws.stats?.style)
-        div class=styles.stats
-          Stat name="size" size=(ws.stats.style.size)
-          Stat name="gzip" size=(ws.stats.style.gzip)
+    a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
+    div class=styles.stats
+      if=outputType === "preview"
+        Stat name="js" size=(ws.stats?.script?.gzip)
+        Stat name="css" size=(ws.stats?.style?.gzip)
+        Stat name="html" size=(ws.stats?.markup?.gzip)
+        button
+          ,class=styles.previewControl
+          ,onClick() {
+            ($frame as any)().replaceWith(($frame as any)());
+          }
+          fa-icon=faRotateRight
+        button
+          ,class=styles.previewControl
+          ,onClick() {
+            fullscreen = !fullscreen
+          }
+          fa-icon=fullscreen ? faCompress : faExpand
+      else if=outputType === "previewJS"
+        Stat name="size" size=(ws.stats?.script?.size)
+        Stat name="gzip" size=(ws.stats?.script?.gzip)
+      else if=outputType === "previewCSS"
+        Stat name="size" size=(ws.stats?.style?.size)
+        Stat name="gzip" size=(ws.stats?.style?.gzip)
