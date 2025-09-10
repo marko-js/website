@@ -13,7 +13,9 @@ export async function compress(value: string) {
 
   let result = NEW_COMPRESSION_PREFIX;
   for await (const chunk of streamToIterable(stream.readable)) {
-    result += String.fromCharCode(...chunk);
+    for (const byte of chunk) {
+      result += String.fromCharCode(byte);
+    }
   }
 
   return btoa(result)

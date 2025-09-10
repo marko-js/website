@@ -39,6 +39,7 @@ export interface Workspace {
 }
 
 let workspace: Workspace | undefined;
+const encoder = new TextEncoder();
 const rootDir = "/tags/";
 const subs = new Set<(workspace: Workspace) => void>();
 const consoleInjection = (c: typeof console, ns: string, color: string) => {
@@ -371,5 +372,9 @@ function toAssetURL(id: string, type: string, code: string) {
 }
 
 function toDataURI(type: string, code: string) {
-  return `data:${type};charset=utf-8;base64,${btoa(code)}`;
+  let binary = "";
+  for (const byte of encoder.encode(code)) {
+    binary += String.fromCharCode(byte);
+  }
+  return `data:${type};charset=utf-8;base64,${btoa(binary)}`;
 }
