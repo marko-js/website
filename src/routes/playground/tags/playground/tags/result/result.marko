@@ -73,7 +73,7 @@ let/fullscreen=!!fullscreenParam valueChange(fullscreen) {
 }
 script --
   document.documentElement.classList.toggle("fullscreen", fullscreen);
-html-script -- ${`document.documentElement.classList.toggle("fullscreen",localStorage.getItem("fullscreen")==='true');`}
+html-script -- ${`document.documentElement.classList.toggle("fullscreen",new URLSearchParams(location.search).get("fullscreen")=="1");`}
 
 const/outputLang=(
   outputType === "previewCSS"
