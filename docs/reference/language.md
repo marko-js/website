@@ -289,17 +289,18 @@ For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 
 [Emmet style](https://docs.emmet.io/abbreviations/syntax/#id-and-class) `class` and `id` attribute shorthands are supported.
 
-```marko
+```marko no-format
 <div#foo.bar.baz/>
 
 // same as
+
 <div id="foo" class="bar baz"/>
 ```
 
 > [!TIP]
 > Interpolations are supported within a dynamic class/id.
 >
-> ```marko
+> ```marko no-format
 > <div.icon-${iconName}/>
 > ```
 

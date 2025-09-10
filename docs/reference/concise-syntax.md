@@ -99,6 +99,14 @@ The output is:
 <Hello World></Hello> <Welcome to Marko></Welcome>
 ```
 
+The proper way to include root level text is with [code fences](#text).
+
+```marko no-format
+-- Welcome to Marko
+```
+
+<!--
+
 The proper way to include root level text is with [string literals or code fences](#text).
 
 ```marko no-format
@@ -139,3 +147,5 @@ div
 > div.shell > div.wrapper > p
 >   -- This text belongs to the paragraph
 > ```
+
+-->
