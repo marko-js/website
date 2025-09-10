@@ -41,27 +41,6 @@ Each example in this guide will build on the following client-side To-Do list ap
   <input name="text" placeholder="Another Item">
   <button type="submit">Add</button>
 </form>
-
-<!-- ignore -->
-<style>
-  ul {
-    max-width: 20rem;
-    padding: 0;
-  }
-  li {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-
-    label {
-      width: 100%;
-    }
-  }
-  input:checked + label {
-    text-decoration: line-through;
-  }
-</style>
-<!-- /ignore -->
 ```
 
 ## Case 1: Local State
@@ -93,39 +72,6 @@ In most cases, it makes more sense to create local state than to add a value to 
     </li>
   </for>
 </ul>
-
-<!-- ignore -->
-<let/nextId=2/>
-<form onSubmit(e) {
-  e.preventDefault();
-  todos = todos.concat({
-    id: nextId++,
-    text: e.target.text.value,
-  })
-}>
-  <input name="text" placeholder="Another Item">
-  <button type="submit">Add</button>
-</form>
-
-<style>
-  ul {
-    max-width: 20rem;
-    padding: 0;
-  }
-  li {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-
-    label {
-      width: 100%;
-    }
-  }
-  input:checked + label {
-    text-decoration: line-through;
-  }
-</style>
-<!-- /ignore -->
 ```
 
 Notice that for this feature, there is _no need_ to modify the `todos` object at the top level. State can stay local, so nested reactivity on that object is unnecessary.
@@ -159,106 +105,18 @@ Sometimes, it _does_ make sense to hoist state up to a global object. Suppose we
     </li>
   </for>
 </ul>
-
-<!-- ignore -->
-<let/nextId=2/>
-<form onSubmit(e) {
-  e.preventDefault();
-  todos = todos.concat({
-    id: nextId++,
-    text: e.target.text.value,
-  })
-}>
-  <input name="text" placeholder="Another Item">
-  <button type="submit">Add</button>
-</form>
-
-<style>
-  ul {
-    max-width: 20rem;
-    padding: 0;
-  }
-  li {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-
-    label {
-      width: 100%;
-    }
-  }
-  input:checked + label {
-    text-decoration: line-through;
-  }
-</style>
-<!-- /ignore -->
 ```
 
 Modifying state trees directly like this is often tedious and hard to follow, so we could also use a library like [immer](https://immerjs.github.io/immer/) to handle state updates:
 
 ```marko
 import { produce } from "immer"
-<!-- ignore -->
-<let/todos=[
-  { id: 0, text: "Learn Marko", done: false },
-  { id: 1, text: "Make a Website", done: false },
-]>
 
-<ul>
-  <for|todo, i| of=todos by="id">
-    <li>
-      <id/checkboxId>
-<!-- /ignore -->
 <let/done=todo.done valueChange(done) {
   todos = produce(todos, draft => {
     draft[i].done = done
   });
 }>
-<!-- ignore -->
-      <input type="checkbox" checked:=done id=checkboxId>
-      <label for=checkboxId>${todo.text}</label>
-      <button
-        title="delete"
-        disabled=!done
-        onClick() {
-          todos = todos.toSpliced(i, 1);
-        }
-      >&times;</button>
-    </li>
-  </for>
-</ul>
-
-<let/nextId=2/>
-<form onSubmit(e) {
-  e.preventDefault();
-  todos = todos.concat({
-    id: nextId++,
-    text: e.target.text.value,
-  })
-}>
-  <input name="text" placeholder="Another Item">
-  <button type="submit">Add</button>
-</form>
-
-<style>
-  ul {
-    max-width: 20rem;
-    padding: 0;
-  }
-  li {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-
-    label {
-      width: 100%;
-    }
-  }
-  input:checked + label {
-    text-decoration: line-through;
-  }
-</style>
-<!-- /ignore -->
 ```
 
 ## Case 3: Complex Hoisted State

@@ -154,57 +154,52 @@ function markoDocs(): MarkedExtension {
           token.filename = match[1];
         }
 
-        // skip sections surrounded by `<!-- ignore --> <!-- /ignore -->`
-        let ignoreStart;
-        while (
-          (ignoreStart = (token.text as string).indexOf("<!-- ignore -->")) >= 0
-        ) {
-          token.text =
-            (token.text as string).slice(0, ignoreStart) +
-            (token.text as string).slice(
-              (token.text as string).indexOf("<!-- /ignore -->") +
-                "<!-- /ignore -->".length,
-            );
+        if (token.lang.startsWith("marko")) {
+          const modifiers = token.lang.trim().split(/\s+/).toSpliced(0, 1);
+          token.lang = "marko";
+
+          if (!modifiers.includes("no-format")) {
+            const unlock = await acquireMutexLock();
+
+            prettierMarko.setCompiler(compiler, {
+              stripTypes: true,
+            });
+            token.html = (
+              await format(token.text, {
+                parser: "marko",
+                plugins: [prettierMarko],
+                markoSyntax: "html",
+              })
+            ).trim();
+            token.concise = (
+              await format(token.text, {
+                parser: "marko",
+                plugins: [prettierMarko],
+                markoSyntax: "concise",
+              })
+            ).trim();
+
+            prettierMarko.setCompiler(compiler, {});
+            token.htmlTS = (
+              await format(token.text, {
+                parser: "marko",
+                plugins: [prettierMarko],
+                markoSyntax: "html",
+              })
+            ).trim();
+            token.conciseTS = (
+              await format(token.text, {
+                parser: "marko",
+                plugins: [prettierMarko],
+                markoSyntax: "concise",
+              })
+            ).trim();
+
+            unlock();
+          }
         }
       }
       if (token.type === "code" && token.lang === "marko") {
-        const releaseLock = await acquireMutexLock();
-
-        prettierMarko.setCompiler(compiler, {
-          stripTypes: true,
-        });
-        token.html = (
-          await format(token.text, {
-            parser: "marko",
-            plugins: [prettierMarko],
-            markoSyntax: "html",
-          })
-        ).trim();
-        token.concise = (
-          await format(token.text, {
-            parser: "marko",
-            plugins: [prettierMarko],
-            markoSyntax: "concise",
-          })
-        ).trim();
-
-        prettierMarko.setCompiler(compiler, {});
-        token.htmlTS = (
-          await format(token.text, {
-            parser: "marko",
-            plugins: [prettierMarko],
-            markoSyntax: "html",
-          })
-        ).trim();
-        token.conciseTS = (
-          await format(token.text, {
-            parser: "marko",
-            plugins: [prettierMarko],
-            markoSyntax: "concise",
-          })
-        ).trim();
-
-        releaseLock();
       } else if (token.type === "codespan") {
         // token.text = (token.text as string).replaceAll("${", "${");
       } else if (token.type === "link") {
@@ -217,7 +212,7 @@ function markoDocs(): MarkedExtension {
         if (filename) {
           out += ` filename="${filename}"`;
         }
-        if (lang === "marko") {
+        if (lang === "marko" && (html || concise)) {
           out += ` text=${JSON.stringify(html)} markoAlts=[${JSON.stringify(concise)}${html === htmlTS ? "" : `,${JSON.stringify(htmlTS)},${JSON.stringify(conciseTS)}`}]`;
         } else {
           out += ` text=${JSON.stringify(text)}`;
