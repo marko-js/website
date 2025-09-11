@@ -6,6 +6,7 @@
   text-align: center;
   gap: 1.5rem;
   width: 100%;
+  margin: 2.5rem 0;
   @media (min-width: 64rem) {
     grid-template-columns: repeat(4, 1fr);
   }

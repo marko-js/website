@@ -183,3 +183,39 @@
     background: var(--color-white) !important;
   }
 }
+
+.menuBar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  top: -0.5rem;
+  left: -2px;
+  right: -2px;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+  height: 2.5rem;
+  border-radius: 1rem 1rem 0 0;
+  background-image: linear-gradient(to bottom, #f6f6f6 0, #ddd);
+}
+
+.menuBarRed,
+.menuBarYellow,
+.menuBarGreen {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 100%;
+  border: 1px solid #000;
+}
+.menuBarRed {
+  background: #ff6159;
+  border-color: #e0453e;
+}
+.menuBarYellow {
+  background: #ffbd2e;
+  border-color: #e09e19;
+}
+.menuBarGreen {
+  background: #28ca42;
+  border-color: #10ab24;
+}

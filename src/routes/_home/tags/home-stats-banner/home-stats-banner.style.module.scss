@@ -4,7 +4,7 @@
   @include colors.section("blue");
 
   background-color: var(--color-black);
-  margin: 0 calc(-1 * var(--root-gap));
+  margin: 2.5rem calc(-1 * var(--root-gap));
   overflow: hidden;
   white-space: nowrap;
   background-color: color-mix(
@@ -45,7 +45,7 @@
     padding: 2rem 0;
   }
 
-  &:hover {
+  &:hover, &:focus-within {
     animation-play-state: paused;
   }
 }
