@@ -1,0 +1,50 @@
+import * as styles from "./+404.style.module.scss";
+
+<html-script>
+  (async function() {
+    const v5Page = window.location.href.replace(window.location.origin, "https://v5.markojs.com");
+    if ((await fetch(v5Page, { method:"HEAD" })).status === 200) {
+      window.location.replace(v5Page);
+    }
+  })();
+</html-script>
+
+<div class=styles.main>
+  <section class=styles.content aria-labelledby="title">
+    <span class=styles.pill aria-hidden="true">
+      ERR_CODE: NOT_FOUND
+    </span>
+    <div class=styles.code aria-hidden="true">
+      <span>404</span>
+      <img
+        src="../tags/widget/leak.svg"
+        class=styles.codeWidget
+        alt=""
+        aria-hidden="true">
+    </div>
+    <h1 class=styles.title>
+      We looked everywhere… now we’re crying
+    </h1>
+    <p class=styles.description>
+      It might have been moved, deleted, or maybe the link was just typed wrong.
+      Here are some places that might help you get back on track:
+    </p>
+    <div class=styles.actions>
+      <a class=styles.primaryBtn href="/">
+        Go home
+      </a>
+      <a class=styles.secondaryBtn href="/docs/">
+        View docs
+      </a>
+      <a
+        class=styles.secondaryBtn
+        href="https://github.com/marko-js/website/issues"
+        title="Report the issue">
+        Report issue
+      </a>
+    </div>
+  </section>
+  <section class=styles.largeWidget aria-hidden="true">
+    <img src="../tags/widget/leak.svg" alt="Leak mascot">
+  </section>
+</div>

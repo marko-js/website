@@ -1,0 +1,199 @@
+ @use "app/styles/colors" as colors;
+
+.main {
+  flex:1;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 2rem;
+  padding-top: 0;;
+  align-items: center;
+
+  @include colors.section("blue");
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.content {
+  flex:1;
+  padding: clamp(1rem, 4vw, 3rem);
+  display: grid;
+  align-content: center;
+  gap: 1.5rem;
+
+  flex-basis: 32rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  background-color: var(--section-color-alt-dim);
+  color: var(--section-color);
+  border: 1px solid var(--section-color-dim);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-family: "Ubuntu Mono", monospace;
+}
+
+.code {
+  font-weight: 800;
+  font-size: clamp(3.5rem, 12vw, 7.5rem);
+  line-height: 0.9;
+  margin: 0.5rem 0;
+  background: linear-gradient(90deg, var(--section-color), var(--section-color-alt));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: "Ubuntu Mono", monospace;
+}
+
+.codeWidget {
+  height: calc(clamp(3.5rem, 12vw, 7.5rem) + 0.8rem);
+  width: auto;
+  vertical-align: middle;
+  margin-left: 0.2rem;
+  margin-top:-0.14em;
+  
+  @media (min-width: 64rem) {
+    display: none;
+  }
+}
+
+.largeWidget {
+  flex:2;
+  padding: 1rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1.2 / 1;
+    display: grid;
+    place-items: center;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @media (max-width: 64rem) {
+    display: none;
+  }
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+.description {
+  margin: 0;
+  color: var(--color-foreground);
+  opacity: 0.8;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 40rem) {
+    flex-direction: column;
+  }
+}
+
+.primaryBtn,
+.secondaryBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  border-radius: 2rem;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 32rem) {
+    width: auto;
+  }
+
+  @media (min-width: 64rem) {
+    padding: 0.8rem 2.4rem;
+  }
+}
+
+.primaryBtn {
+  color: var(--color-white);
+  background: linear-gradient(
+    to right,
+    var(--section-color-dark),
+    var(--section-color-light)
+  );
+  border: none;
+
+  @media (prefers-color-scheme: dark) {
+    color: var(--color-foreground);
+  }
+
+  &:hover::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    width: 150%;
+    height: 200%;
+    background: linear-gradient(
+      -45deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+}
+
+.secondaryBtn {
+  color: var(--color-foreground);
+  border: 1px solid var(--section-color-dim);
+  background: transparent;
+
+  &:hover {
+    border-color: var(--section-color);
+  }
+}
+
+
+
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  50%,
+  to {
+    transform: translateX(100%);
+  }
+}
