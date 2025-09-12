@@ -543,6 +543,9 @@ The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) 
 
 Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
 
+> [!CAUTION]
+> The `<html-*>` tags are only used for specialized use cases, and should _almost never_ be used over [`<script>`](./native-tag.md#script) or [`<style>`](./native-tag.md#style).
+
 ```marko
 // Literally written out as a `<script>` html tag.
 <html-script type="importmap">
