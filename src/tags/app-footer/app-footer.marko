@@ -1,16 +1,19 @@
 import * as styles from "./app-footer.style.module.scss";
 footer id=styles.footer
-  a href="https://openjsf.org/" class=styles.openjsf
+  a href="https://openjsf.org/" class=styles.openjsf target="_blank"
     img src="./openjsf.svg?no-inline" alt=""
     -- ${" "}
     span
       span class=styles.bold -- OpenJS&nbsp;
       span class=styles.light -- Foundation
   div class=styles.separator
-  a href="https://github.com/marko-js/marko/blob/main/LICENSE" class=styles.osi
+  a
+    ,href="https://github.com/marko-js/marko/blob/main/LICENSE"
+    ,class=styles.osi
+    ,target="_blank"
     img src="./osi.svg?no-inline" alt=""
     -- ${" "}MIT&nbsp;License
   div class=styles.separator
-  a href="https://github.com/eBay" class=styles.ebay
+  a href="https://github.com/eBay" class=styles.ebay target="_blank"
     img src="./ebay.svg?no-inline" alt="eBay"
     -- ${" "}open&nbsp;source
