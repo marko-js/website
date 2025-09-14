@@ -17,6 +17,7 @@
     "deploy": "marko-run build && gh-pages --cname markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
+    "prepare": "husky",
     "preview": "marko-run preview"
   },
   "devDependencies": {
@@ -46,7 +47,9 @@
     "gh-pages": "^6.3.0",
     "github-slugger": "^2.0.0",
     "hastscript": "^9.0.1",
+    "husky": "^9.1.7",
     "lightningcss-wasm": "^1.30.1",
+    "lint-staged": "^16.1.6",
     "lz-string": "^1.5.0",
     "marked": "^16.2.1",
     "marko": "^6.0.61",

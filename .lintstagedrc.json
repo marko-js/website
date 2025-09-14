@@ -1,0 +1,4 @@
+{
+  "$schema": "https://json.schemastore.org/lintstagedrc.schema.json",
+  "*.{json,md,css,scss,ts,js,marko}": ["prettier --write"]
+}
