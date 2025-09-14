@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import {
+  marked,
   Marked,
   type MarkedExtension,
   type Tokens,
@@ -64,7 +65,12 @@ export default function markodownPlugin(): PluginOption {
 async function mdToMarko(source: string) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(semanticAdmonitions(), headingSections(headings), markoDocs())
+    .use(
+      semanticAdmonitions(),
+      headingSections(headings),
+      markoDocs(),
+      externalLinks(),
+    )
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -312,6 +318,19 @@ function headingSections(headings: HeadingList): MarkedExtension {
         },
       },
     ],
+  };
+}
+
+function externalLinks(): MarkedExtension {
+  return {
+    renderer: {
+      link(link) {
+        var out = marked.Renderer.prototype.link.apply(this, [link]);
+        const isExternal = /^https?:\/\//.test(link.href);
+        if (isExternal) return out.replace(/^<a/, '<a target="_blank"');
+        return out;
+      },
+    },
   };
 }
 
