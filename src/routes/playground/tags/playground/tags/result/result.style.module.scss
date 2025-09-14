@@ -64,7 +64,6 @@
   flex: 1;
   overflow-y: auto;
 
-
   :global(.fullscreen) & {
     visibility: visible;
     position: fixed;
@@ -130,7 +129,6 @@
     fill: var(--color-blue);
   }
 }
-
 
 #compiled {
   display: flex;
