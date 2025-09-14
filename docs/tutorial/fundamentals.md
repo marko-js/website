@@ -136,4 +136,4 @@ And we can use the [`<for>` tag](../reference/core-tag.md#for) to display repeat
 ## Next Steps
 
 - [Components and Reactivity](./components-and-reactivity.md)
-- [Build an App](./app-from-scratch.md)
+- [Build an App](../marko-run/getting-started.md)

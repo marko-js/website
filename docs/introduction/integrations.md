@@ -15,7 +15,7 @@ If [Prettier](https://prettier.io/) is installed, the official plugin will also 
 
 ## Bundlers
 
-The official recommendation for using Marko in a project is [Marko Run](../marko-run/getting-started.md), which uses [Vite](#vite) and requires no configuration.
+The official recommendation for using Marko in a project is [Marko Run](../marko-run/getting-started.md), which uses [Vite](https://github.com/marko-js/vite) and requires no configuration.
 
 For projects that _aren't_ using Marko Run, the following options are available.
 
@@ -31,4 +31,3 @@ Marko supports most test runners, through [`@marko/testing-library`](https://git
 ## Development
 
 [Storybook](https://storybook.js.org/) can be used to preview components using [`@storybook/marko`](https://github.com/storybookjs/marko).
-
