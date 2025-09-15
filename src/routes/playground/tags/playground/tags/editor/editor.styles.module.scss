@@ -3,17 +3,20 @@
 }
 
 :global {
-  .cm-editor.cm-editor {
+  .cm-editor {
     height: 100%;
     font-size: 1rem;
     font-family: "Ubuntu Mono", monospace;
-    padding: 1rem 0rem;
+
     .cm-activeLine {
       background-color: color-mix(
         in srgb,
         var(--color-blue-alt-dim),
         transparent
       );
+    }
+    .cm-line:last-child {
+      margin-bottom: 20rem;
     }
     .cm-scroller {
       font-family: inherit;
