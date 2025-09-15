@@ -202,7 +202,5 @@ That's all we're going to build for now, but feel free to add more! Here are som
 
 ## Next Steps
 
-- [Marko for Experienced Developers](./experienced-developers.md)
 - [Nested Reactivity](../explanation/nested-reactivity.md)
-- [Publishing Components](../guide/publishing-components.md)
 - [Language Reference](../reference/language.md)
