@@ -10,6 +10,8 @@
 
 .panes > div {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .divider {

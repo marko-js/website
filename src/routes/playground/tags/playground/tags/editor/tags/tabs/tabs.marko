@@ -69,7 +69,9 @@ div class=styles.tabs
             ,aria-label="close"
             ,onClick(e) {
               e.stopPropagation();
-              selected = 0;
+              if (selected >= i) {
+                selected--;
+              }
               tabs = tabs.toSpliced(i, 1);
             }
             ,class=styles.close
@@ -88,6 +90,7 @@ div class=styles.tabs
       if (filename) {
         if (!filename.includes(".")) filename += ".marko";
         tabs = [...tabs, { path: filename, content: "" }];
+        selected = tabs.length - 1;
       }
     }
     ,class=styles.add
