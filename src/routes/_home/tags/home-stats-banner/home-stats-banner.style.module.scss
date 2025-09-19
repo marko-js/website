@@ -45,7 +45,8 @@
     padding: 2rem 0;
   }
 
-  &:hover, &:focus-within {
+  &:hover,
+  &:focus-within {
     animation-play-state: paused;
   }
 }

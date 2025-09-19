@@ -1,12 +1,12 @@
- @use "app/styles/colors" as colors;
+@use "app/styles/colors" as colors;
 
 .main {
-  flex:1;
+  flex: 1;
   display: flex;
   flex-direction: row;
   gap: 2rem;
   padding: 2rem;
-  padding-top: 0;;
+  padding-top: 0;
   align-items: center;
 
   @include colors.section("blue");
@@ -17,7 +17,7 @@
 }
 
 .content {
-  flex:1;
+  flex: 1;
   padding: clamp(1rem, 4vw, 3rem);
   display: grid;
   align-content: center;
@@ -48,7 +48,11 @@
   font-size: clamp(3.5rem, 12vw, 7.5rem);
   line-height: 0.9;
   margin: 0.5rem 0;
-  background: linear-gradient(90deg, var(--section-color), var(--section-color-alt));
+  background: linear-gradient(
+    90deg,
+    var(--section-color),
+    var(--section-color-alt)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -60,15 +64,15 @@
   width: auto;
   vertical-align: middle;
   margin-left: 0.2rem;
-  margin-top:-0.14em;
-  
+  margin-top: -0.14em;
+
   @media (min-width: 64rem) {
     display: none;
   }
 }
 
 .largeWidget {
-  flex:2;
+  flex: 2;
   padding: 1rem;
   display: grid;
   place-items: center;
@@ -174,9 +178,6 @@
     border-color: var(--section-color);
   }
 }
-
-
-
 
 @keyframes float {
   0%,
