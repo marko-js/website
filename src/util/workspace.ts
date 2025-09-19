@@ -144,7 +144,7 @@ export async function update(
         toAssetURL(
           file,
           "application/javascript",
-          code + getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+          code + "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" + getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
         ),
         {
           name: file,
@@ -236,6 +236,7 @@ export async function update(
 
           const domWriter = WritableDOMStream(frame.contentDocument!.body);
           let rawHTML = "";
+          ws.runtimeErrors = undefined;
           server.onmessage = (ev) => {
             if (signal.aborted) return;
             if (ev.data) {
