@@ -10,11 +10,7 @@
     font-family: "Ubuntu Mono", monospace;
 
     .cm-activeLine {
-      background-color: color-mix(
-        in srgb,
-        var(--color-blue-alt-dim),
-        transparent
-      );
+      background-color: transparent;
     }
     .cm-line:last-child {
       margin-bottom: 20rem;
@@ -62,9 +58,8 @@
     .cm-activeLineGutter {
       background-color: transparent;
     }
-    &.cm-focused .cm-selectionBackground,
-    ::selection {
-      background-color: unset !important;
+    .cm-selectionBackground {
+      background: var(--color-blue-dim) !important;
     }
   }
 }
