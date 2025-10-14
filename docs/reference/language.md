@@ -37,7 +37,7 @@ A JavaScript object globally available in every template that gives access to th
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) available in all JavaScript statements and expressions.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
 
 It is aborted when
 
@@ -118,7 +118,8 @@ All valid javascript statements are allowed, including functions, declarations, 
 ```marko
 static {
   console.log("this will be logged only ONE time");
-  console.log("no matter how often the component is used")
+  console.log("no matter how often the component is used");
+  console.log("or how many requests are made to the server");
 }
 ```
 
