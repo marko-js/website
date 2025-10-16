@@ -23,6 +23,20 @@
   align-items: center;
   justify-content: center;
   border-right: 2px solid var(--color-gray-alt-dim);
+
+  & > :hover {
+    background-color: var(--color-gray-alt-dim);
+    border-color: transparent;
+  }
+}
+
+.version {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 0.9rem;
+  flex-grow: 1;
+  text-align: right;
+  align-self: center;
+  padding: 0 0.5rem;
 }
 
 .checkbox {
@@ -35,10 +49,6 @@
   &:focus-within {
     outline: none;
     border-color: var(--section-color-alt, var(--color-blue-alt));
-  }
-
-  &:hover {
-    border-color: var(--section-color, var(--color-blue));
   }
 
   label {
@@ -63,7 +73,6 @@
   display: flex;
   flex: 1;
   overflow-y: auto;
-
 
   :global(.fullscreen) & {
     visibility: visible;
@@ -123,6 +132,7 @@
 
   &:hover {
     outline: none;
+    background-color: var(--color-gray-alt-dim);
   }
 
   svg {
@@ -131,6 +141,15 @@
   }
 }
 
+.spin {
+  animation: spin 0.25s ease-out;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
 
 #compiled {
   display: flex;

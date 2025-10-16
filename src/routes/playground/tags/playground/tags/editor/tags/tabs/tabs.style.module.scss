@@ -13,7 +13,6 @@
 
 .tab {
   display: flex;
-  gap: 1rem;
   padding: 0.5rem 1rem;
   text-wrap: nowrap;
   border-right: 2px solid transparent;
@@ -29,6 +28,8 @@
 .close {
   background: none;
   border: none;
+  padding: 0 0.5rem;
+  margin-right: -0.5rem;
   &:hover {
     color: var(--color-red);
   }
@@ -39,12 +40,13 @@
   margin-left: auto;
   border: none;
   padding: 0.5rem 1rem;
-  color: var(--color-foreground);
-  background-color: var(--color-blue-alt-dim);
+  color: var(--color-blue);
+  background-color: var(--color-gray-dim);
   align-items: center;
   border: 1px solid transparent;
   &:hover {
-    border-color: var(--color-blue);
+    background-color: var(--color-gray-alt-dim);
+    // color: var(--color-gray-dim);
   }
 
   svg {

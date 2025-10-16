@@ -1,5 +1,10 @@
-import { faCompress, faExpand, faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCompress,
+  faExpand,
+  faRotateRight,
+} from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
+import { version as markoVersion } from "marko/package.json";
 client import highlighter from "app/util/shiki";
 client import { update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
@@ -71,8 +76,7 @@ let-search-param/fullscreenParam key="fullscreen"
 let/fullscreen=!!fullscreenParam valueChange(fullscreen) {
   fullscreenParam = fullscreen ? "1" : null;
 }
-script --
-  document.documentElement.classList.toggle("fullscreen", fullscreen);
+script -- document.documentElement.classList.toggle("fullscreen", fullscreen);
 html-script -- ${`document.documentElement.classList.toggle("fullscreen",new URLSearchParams(location.search).get("fullscreen")=="1");`}
 
 const/outputLang=(
@@ -118,6 +122,7 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
+    span class=styles.version -- v${markoVersion}
 
   div class=styles.output
     if=ws.buildErrors
@@ -153,18 +158,26 @@ div class=styles.result
         Stat name="js" size=(ws.stats?.script?.gzip)
         Stat name="css" size=(ws.stats?.style?.gzip)
         Stat name="html" size=(ws.stats?.markup?.gzip)
+        let/spinning=false
         button
+          ,title="Reload preview"
           ,class=styles.previewControl
           ,onClick() {
             ($frame as any)().replaceWith(($frame as any)());
+            spinning = true;
           }
           fa-icon=faRotateRight
+            ,class=spinning && styles.spin
+            ,onAnimationEnd() {
+              spinning = false;
+            }
         button
+          ,title=(fullscreen ? "Leave fullscreen" : "Expand to fullscreen")
           ,class=styles.previewControl
           ,onClick() {
-            fullscreen = !fullscreen
+            fullscreen = !fullscreen;
           }
-          fa-icon=fullscreen ? faCompress : faExpand
+          fa-icon=(fullscreen ? faCompress : faExpand)
       else if=outputType === "previewJS"
         Stat name="size" size=(ws.stats?.script?.size)
         Stat name="gzip" size=(ws.stats?.script?.gzip)
