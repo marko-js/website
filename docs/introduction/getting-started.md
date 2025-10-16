@@ -1,5 +1,8 @@
 # Getting Started
 
+> [!NOTE]
+> This is the documentation for Marko 6 and the Tags API. If you are looking for v5 docs, use the version selector on the bottom left or visit [v5.markojs.com](https://v5.markojs.com/docs/getting-started/).
+
 Marko re-imagines HTML as a language for building dynamic and reactive user interfaces. Nearly any valid HTML is also valid Marko, but Marko extends the HTML language to enable building modern applications in a declarative way.
 
 ## Prerequisite Knowledge
