@@ -18,7 +18,7 @@
   <path stroke="#000" stroke-linecap="round" stroke-width="4" d="M20 105h80"/>
   <g mask="url(#b)" transform="translate(0 -181)">
     <animateTransform additive="sum" attributeName="transform" calcMode="spline" dur="40s" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" repeatCount="indefinite" type="rotate" values="-4;4;-4"/>
-    <ellipse id="c" fill="none" stroke-width="6" rx="140" ry="20"/>
+    <ellipse fill="none" stroke="var(--f)" stroke-width="6" rx="140" ry="20"/>
     <path d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="var(--f)">
       <animateMotion begin="-0s" dur="124s" path="M 170 0 a 85 20 0 0 1 -340 0 a 85 16 0 0 1 340 0" repeatCount="indefinite"/>
       <animateTransform additive="sum" attributeName="transform" begin="-0s" dur="124s" repeatCount="indefinite" type="scale" values="1;1.3;1;0.6;1"/>

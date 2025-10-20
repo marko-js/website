@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
+  <g fill="#e5fbe0" stroke="#e5fbe0" stroke-width="5" stroke-linecap="round">
+    <path d="M100 130q-6 150 10 300" fill="none"></path>
+    <path d="M110 430q-3 -15 -26 -12t-23 13q0 7 36 6 13 -1 13 -7"></path>
+    <mask id="f">
+      <rect x="-240" y="-240" width="480" height="720" fill="white"></rect>
+      <path d="M110 430q-3 -15 -26 -12t-23 13q0 7 36 6 13 -1 13 -7" fill="white" stroke="black" stroke-width="10"></path>
+    </mask>
+    <g mask="url(#f)">
+      <path d="M60 130q-6 150 10 300" fill="none"></path>
+      <path d="M70 430q-3 -15 -26 -12t-23 13q0 7 36 6 13 -1 13 -7"></path>
+    </g>
+  </g>
+
+  <g transform="rotate(5)">
+    <path d="M-130-140h86c7 0 10-9 8-13s-10-12-10-28c0-22 19-46 46-46s46 24 46 46c0 16-8 24-10 28s1 13 8 13h86a10 10 0 0110 10V130a10 10 0 01-10 10H46c-3 0-5-3-3-6s9-10 9-30c0-21-16-51-52-51s-52 30-52 51c0 20 7 27 9 30s0 6-3 6h-84a10 10 0 01-10-10V44c0-7-9-10-13-8s-12 10-28 10c-22 0-46-19-46-46s24-46 46-46c16 0 24 8 28 10s13-1 13-8v-86a10 10 0 0110-10" fill="url(#a)"></path>
+    <defs>
+      <linearGradient id="a" gradientTransform="rotate(70)">
+        <stop offset="5%" stop-color="#7ced64"/>
+        <stop offset="95%" stop-color="#63e165"/>
+      </linearGradient>
+      <g id="b">
+        <circle r="46" fill="white"></circle>
+        <circle r="34" fill="black"></circle>
+        <g transform="translate(12, -12)">
+          <path d="M-20-6-6-7l6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="white">
+            <animateTransform dur="55s" attributeName="transform" type="rotate" from="0" to="360" repeatCount="indefinite"></animateTransform>
+          </path>
+        </g>
+      </g>
+      <clipPath id="c">
+        <ellipse cx="-60" cy="20" rx="22" ry="18"></ellipse>
+      </clipPath>
+    </defs>
+    <g transform="translate(-60, -42)">
+      <use href="#b" transform="translate(-54, 0)"></use>
+      <use href="#b" transform="translate(54, 0)"></use>
+    </g>
+    <use href="#c" fill="black"></use>
+    <rect clip-path="url(#c)" width="48" height="36" x="-82" y="2"></rect>
+    <ellipse id="c" cx="-60" cy="20" rx="22" ry="18"></ellipse>
+    <path clip-path="url(#c)" d="M-82 34q10-15 22-5 12-10 22 5l-22 13z" fill="#e5fbe0"></path>
+  </g>
+</svg>
