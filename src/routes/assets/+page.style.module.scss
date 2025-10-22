@@ -1,0 +1,139 @@
+@use "app/styles/sticky" as sticky;
+
+.title {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.subtitle {
+  max-width: 60rem;
+  margin: auto;
+}
+
+.light {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.asset {
+  max-width: 20rem;
+  flex: 1;
+  border-radius: 1rem;
+  overflow: clip;
+  border: 2px solid var(--section-color-dim);
+
+  img {
+    padding: 1rem;
+    background-color: light-dark(var(--color-white), var(--color-black));
+    user-select: none;
+  }
+
+  > strong {
+    padding: 0.5rem 1rem;
+    display: block;
+    color: var(--section-color);
+    font-size: large;
+  }
+  > p {
+    padding: 0 1rem;
+  }
+
+  div {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+
+    a {
+      color: var(--color-background);
+      background: linear-gradient(
+        to bottom right,
+        var(--section-color),
+        color-mix(in srgb, var(--section-color-alt), var(--section-color))
+      );
+      text-decoration: none;
+      padding: 0.1rem 0.5rem;
+      border-radius: 1rem;
+    }
+  }
+}
+
+.logos {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+section:nth-of-type(1) {
+  --section-color: var(--color-yellow);
+  --section-color-dim: var(--color-yellow-dim);
+  --section-color-alt: var(--color-yellow-alt);
+  --section-color-alt-dim: var(--color-yellow-alt-dim);
+}
+
+section:nth-of-type(2) {
+  --section-color: var(--color-green);
+  --section-color-dim: var(--color-green-dim);
+  --section-color-alt: var(--color-green-alt);
+  --section-color-alt-dim: var(--color-green-alt-dim);
+}
+
+section:nth-of-type(3) {
+  --section-color: var(--color-blue);
+  --section-color-dim: var(--color-blue-dim);
+  --section-color-alt: var(--color-blue-alt);
+  --section-color-alt-dim: var(--color-blue-alt-dim);
+}
+
+section {
+  scroll-margin-top: sticky.$size;
+}
+
+section:target > :first-child {
+  border-bottom: 2px solid var(--section-color-dim);
+}
+
+h2,
+h3 {
+  color: var(--section-color);
+  background: linear-gradient(
+    to bottom,
+    var(--section-color),
+    color-mix(in srgb, var(--section-color-alt), var(--section-color))
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 1em;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+
+  > a {
+    color: var(--section-color);
+
+    &:hover {
+      color: var(--section-color);
+      text-decoration: none;
+
+      &::before {
+        color: var(--section-color);
+        -webkit-text-fill-color: var(--section-color);
+      }
+    }
+
+    &::before {
+      position: absolute;
+      display: inline-flex;
+      content: "#";
+      text-wrap: nowrap;
+      padding-right: 0.5rem;
+      color: var(--section-color-dim);
+      -webkit-text-fill-color: var(--section-color-dim);
+      scale: 0.75;
+      top: 50%;
+      left: 0;
+      translate: -100% -50%;
+    }
+  }
+}

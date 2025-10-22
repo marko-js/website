@@ -11,6 +11,7 @@ declare module "@marko/run" {
 	interface AppData extends Run.DefineApp<{
 		routes: {
 			"/": { verb: "get"; };
+			"/assets": { verb: "get"; };
 			"/docs": { verb: "get"; };
 			"/docs/explanation/controllable-components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/controllable-components+meta.json"); };
 			"/docs/explanation/fine-grained-bundling": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/fine-grained-bundling+meta.json"); };
@@ -89,6 +90,17 @@ declare module "../src/routes/_home/+page.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/"];
+    export type Context = Run.MultiRouteContext<Route> & Marko.Global;
+    export type Handler = Run.HandlerLike<Route>;
+    /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
+    export const route: Run.HandlerTypeFn<Route>;
+  }
+}
+
+declare module "../src/routes/assets/+page.marko" {
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = Run.Routes["/assets"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -485,7 +497,7 @@ declare module "../src/routes/+layout.marko" {
   export interface Input extends Run.LayoutInput<typeof import("../src/routes/+layout.marko")> {}
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/playground"];
+    export type Route = Run.Routes["/" | "/assets" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/playground"];
     export type Context = Run.MultiRouteContext<Route> & Marko.Global;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */

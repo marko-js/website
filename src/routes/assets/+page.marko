@@ -1,0 +1,127 @@
+import * as text from "app/styles/text.module.scss";
+import * as styles from "./+page.style.module.scss";
+
+
+static interface AssetInput {
+  title: string;
+  colorScheme?: "light" | "dark";
+  content: Marko.Body;
+  download: Marko.AttrTag<{ src: string }>
+}
+define/Asset|{ content, colorScheme, title, download }: AssetInput|
+  article class=[styles.asset, colorScheme && styles[colorScheme]]
+    img src=download.src alt=""
+    strong -- ${title}
+    p
+      ${content}
+    div
+      for|{ src }| of=download
+        a href=src download
+          -- ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
+
+h1 class=styles.title
+  span class=text.redGradient -- Brand
+  -- ${" "}&${" "}
+  span class=text.blueGradient -- Assets
+p class=styles.subtitle
+  -- Download the logo and learn about our mascots!
+
+section id="logo"
+  h2
+    a href="#logo" -- Marko Logo
+
+  div class=styles.logos
+    Asset title="Adaptive"
+      @download src="/assets/logo.svg"
+      -- SVG that adapts to the color theme
+    Asset title="Dark" colorScheme="dark"
+      @download src="/assets/logo-dark.svg"
+      @download src="/assets/logo-dark.png"
+      -- Logo for dark backgrounds
+    Asset title="Light" colorScheme="light"
+      @download src="/assets/logo-light.svg"
+      @download src="/assets/logo-light.png"
+      -- Logo for light backgrounds
+
+section id="logomark"
+  h2
+    a href="#logomark" -- Logomark (No text)
+
+  div class=styles.logos
+    Asset title="Standard"
+      @download src="/assets/logomark.svg"
+      @download src="/assets/logomark.png"
+      -- Use this for your presentations, marketing material, or cake decorating
+
+static interface WidgetInput {
+  name: string;
+  color: string;
+  content: Marko.Body;
+}
+define/Widget|{ name, color, content }: WidgetInput|
+  section id=name style={
+    "--section-color": `var(--color-${color})`,
+    "--section-color-alt": `var(--color-${color}-alt)`,
+    "--section-color-dim": `var(--color-${color}-dim)`,
+    "--section-color-dim-alt": `var(--color-${color}-dim-alt)`,
+  }
+    h3 
+      a href=`#${name}` -- ${name[0].toUpperCase()}${name.slice(1).toLowerCase()}
+  
+    ${content}
+    
+    div class=styles.logos
+      Asset title="Adaptive"
+        @download src=`/assets/widget/${name}.svg`
+        -- SVG that adapts to the color scheme
+      Asset title="Dark" colorScheme="dark"
+        @download src=`/assets/widget/${name}-dark.svg`
+        @download src=`/assets/widget/${name}-dark.png`
+        -- Used for dark backgrounds
+      Asset title="Light" colorScheme="light"
+        @download src=`/assets/widget/${name}-light.svg`
+        @download src=`/assets/widget/${name}-light.png`
+        -- Use for light backgrounds
+      Asset title="Adaptive (Legs)"
+        @download src=`/assets/widget/${name}-legs.svg`
+        -- SVG that adapts to the color scheme
+      Asset title="Dark (Legs)" colorScheme="dark"
+        @download src=`/assets/widget/${name}-legs-dark.svg`
+        @download src=`/assets/widget/${name}-legs-dark.png`
+        -- Used for dark backgrounds
+      Asset title="Light (Legs)" colorScheme="light"
+        @download src=`/assets/widget/${name}-legs-light.svg`
+        @download src=`/assets/widget/${name}-legs-light.png`
+        -- Use for light backgrounds
+
+section id="widgets"
+  h2
+    a href="#widgets" -- Widgets
+  
+  Widget name="doc" color="blue"
+    -- Doc provides clarity and keeps documentation accessible
+
+  Widget name="leak" color="blue"
+    -- Leak uncovers hidden details and exposes the inner workings
+
+  Widget name="button" color="green"
+    -- Button brings interactivity and initiates powerful actions
+
+  Widget name="link" color="yellow"
+    -- Link connects resources, making navigation seamless
+
+  Widget name="pixel" color="yellow"
+    -- Pixel sharpens the interface with precise detail and color
+
+  Widget name="fetch" color="green"
+    -- Fetch retrieves data efficiently and keeps things up to date
+
+  Widget name="cookie" color="red"
+    -- Cookie manages settings persistently with a playful attitude
+
+  Widget name="throw" color="red"
+    -- Throw shakes things up and handles unexpected changes dynamically
+
+  Widget name="crash" color="gray"
+    -- Crash alerts to problems and handles failures gracefully
+
