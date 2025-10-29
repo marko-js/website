@@ -16,7 +16,7 @@
 To set up your project:
 
 ```bash
-npm init marko -- -t basic-tags
+npm init marko -- -t basic
 cd ./my-marko-application
 npm run dev
 ```
