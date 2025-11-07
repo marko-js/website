@@ -21,7 +21,7 @@ cd ./my-marko-application
 npm run dev
 ```
 
-Open `src/routes/_index/+page.marko` in your editor to modify the index page. See the [routing documentation](https://github.com/marko-js/run#file-based-routing) to learn how to add additional pages to your project.
+Open `src/routes/+page.marko` in your editor to modify the index page. See the [routing documentation](https://github.com/marko-js/run#file-based-routing) to learn how to add additional pages to your project.
 
 ## Manual Setup
 

@@ -195,7 +195,7 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 That's all we're going to build for now, but feel free to add more! Here are some ideas:
 
 - How about a new temperature unit? Maybe Kelvin or [Delisle](https://en.wikipedia.org/wiki/Delisle_scale)?
-- Most of the world actually uses celsius 😅, maybe users should be able pick which unit to start with
+- Most of the world actually uses celsius 😅, maybe users should be able to pick which unit to start with
 - What about wind chill? Apparently there are [standard formulas](https://en.wikipedia.org/wiki/Wind_chill) if "wind velocity" is known
 - Converting between temperatures is cool, but this system _could_ be generalized. What if it converted between weights, volumes, or distances?
 - Anything else! The opportunities are limitless!
