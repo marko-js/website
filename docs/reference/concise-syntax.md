@@ -95,8 +95,8 @@ Welcome to Marko
 
 The output is:
 
-```html
-<Hello World></Hello> <Welcome to Marko></Welcome>
+```marko no-format
+<Hello World></Hello><Welcome to Marko></Welcome>
 ```
 
 The proper way to include root level text is with [code fences](#text).
