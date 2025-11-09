@@ -1,0 +1,191 @@
+import * as text from "app/styles/text.module.scss";
+import * as styles from "./+page.style.module.scss";
+static interface AssetInput {
+  title: string;
+  colorScheme?: "light" | "dark";
+  content: Marko.Body;
+  download: Marko.AttrTag<{ src: string }>;
+}
+define/Asset|{ content, colorScheme, title, download }: AssetInput|
+  article class=[styles.asset, colorScheme && styles[colorScheme]]
+    img src=download.src alt=""
+    strong -- ${title}
+    p
+      ${content}
+    div class=styles.downloadPills
+      for|{ src }| of=download
+        a href=src download
+          -- ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
+
+h1 class=styles.title
+  span class=text.redGradient -- Brand
+  -- ${" "}&${" "}
+  span class=text.blueGradient -- Assets
+p class=styles.subtitle -- Download the logo and learn about our mascots!
+
+section#logo
+  h2
+    a href="#logo" -- Marko Logo
+
+  div class=styles.logos
+    Asset title="Adaptive"
+      @download src="/assets/logo.svg"
+      -- SVG that adapts to the color theme
+    Asset title="Dark" colorScheme="dark"
+      @download src="/assets/logo-dark.svg"
+      @download src="/assets/logo-dark.png"
+      -- Logo for dark backgrounds
+    Asset title="Light" colorScheme="light"
+      @download src="/assets/logo-light.svg"
+      @download src="/assets/logo-light.png"
+      -- Logo for light backgrounds
+
+section#logomark
+  h2
+    a href="#logomark" -- Logomark (No text)
+
+  div class=styles.logos
+    Asset title="Standard"
+      @download src="/assets/logomark.svg"
+      @download src="/assets/logomark.png"
+      -- Use this for your presentations, marketing material, or cake decorating
+
+static interface Widget {
+  name: string;
+  color: string;
+  description: string;
+}
+static const widgets: Widget[] = [
+  { 
+    name: "Doc", 
+    color: "blue", 
+    description: "The brainiac of the bunch! Always wears glasses, always has the answer, and probably corrected your syntax before you even saved the file." 
+  },
+  { 
+    name: "Leak", 
+    color: "blue", 
+    description: "A little emotional and prone to memory lapses. Always crying over unclosed tags and lost data. Keep a tissue and a garbage collector nearby!" 
+  },
+  { 
+    name: "Button", 
+    color: "green", 
+    description: "Click-happy and full of energy. Loves being pushed and lights up whenever someone takes action. Just don't double-click too hard." 
+  },
+  { 
+    name: "Link", 
+    color: "yellow", 
+    description: "A nomadic eccentric who carries a magic wand for CSS animations. Forever guiding friends to new adventures (and sometimes 404s)." 
+  },
+  { 
+    name: "Pixel", 
+    color: "yellow", 
+    description: "Sparkly-eyed and full of creative magic, Pixel adds the finishing flair to every page. Lives for crisp borders and perfect drop shadows." 
+  },
+  { 
+    name: "Fetch", 
+    color: "green", 
+    description: "The speedy one! Fetch loves bringing back whatever you ask for—JSON, HTML, or the occasional surprise 500 error. Loyal but sometimes a little too fast." 
+  },
+  { 
+    name: "Cookie", 
+    color: "red", 
+    description: "Sweet and lovable, but dangerously clingy. Cookie remembers everything about you, especially the things you thought you cleared." 
+  },
+  { 
+    name: "Throw", 
+    color: "red", 
+    description: 'Fiery and dramatic, Throw never misses a chance to make a scene. Loves shouting "Error!" and rocking a villainous mustache while doing it.' 
+  },
+  { 
+    name: "Crash", 
+    color: "gray", 
+    description: "Perpetually dizzy with stars spinning overhead. Crashes the app in style, then wakes up pretending nothing happened." 
+  }
+];
+
+section#widgets
+  h2
+    a href="#widgets" -- The Widgets!
+
+  let/_selected=0
+  let/selected=_selected valueChange(v) {
+    _selected = ((v % 9) + 9) % 9;
+  }
+  id/tabId
+  div class=styles.widgetTabs
+    div role="tablist" class=styles.widgetGrid
+      for|widget, i| of=widgets
+        const/isSelected=i === selected
+        script -- isSelected && $btn().focus();
+        button/$btn
+          ,id=`${tabId}-${i}`
+          ,role="tab"
+          ,aria-selected=isSelected && "true"
+          ,tabindex=(isSelected ? 0 : -1)
+          ,onClick() {
+            selected = i;
+          }
+          ,onKeyDown(e) {
+            switch (e.key) {
+              case "ArrowRight":
+                selected++;
+                break;
+              case "ArrowLeft":
+                selected--;
+                break;
+              case "ArrowUp":
+                e.preventDefault();
+                selected -= 3;
+                break;
+              case "ArrowDown":
+                e.preventDefault();
+                selected += 3;
+                break;
+            }
+          }
+          img src=`/assets/widget/${widget.name}.svg` alt=widget.name
+    for|widget, i| of=widgets
+      div
+        ,role="tabpanel"
+        ,aria-labelledby=`${tabId}-${i}`
+        ,hidden=i !== selected
+        ,class=styles.widgetPanel
+        ,style={
+          display: i !== selected && "none",
+          "--section-color": `var(--color-${widget.color})`,
+          "--section-color-dim": `var(--color-${widget.color}-dim)`,
+          "--section-color-alt": `var(--color-${widget.color}-alt)`,
+          "--section-color-alt-dim": `var(--color-${widget.color}-alt-dim)`,
+        }
+        img
+          ,src=`/assets/widget/${widget.name}-legs.svg`
+          ,alt=`The "${widget.name}" widget, a puzzle piece with legs`
+        article
+          strong -- ${widget.name}
+          p -- ${widget.description}
+
+          strong -- Head Only
+          div class=styles.downloadPills
+            a href=`/assets/widget/${widget.name}.svg` download
+              -- SVG
+            a href=`/assets/widget/${widget.name}-light.svg` download
+              -- SVG (light)
+            a href=`/assets/widget/${widget.name}-dark.svg` download
+              -- SVG (dark)
+            a href=`/assets/widget/${widget.name}-light.png` download
+              -- PNG (light)
+            a href=`/assets/widget/${widget.name}-dark.png` download
+              -- PNG (dark)
+
+          strong -- Head & Legs
+          div class=styles.downloadPills
+            a href=`/assets/widget/${widget.name}-legs.svg` download
+              -- SVG
+            a href=`/assets/widget/${widget.name}-legs-light.svg` download
+              -- SVG (light)
+            a href=`/assets/widget/${widget.name}-legs-dark.svg` download
+              -- SVG (dark)
+            a href=`/assets/widget/${widget.name}-legs-light.png` download
+              -- PNG (light)
+            a href=`/assets/widget/${widget.name}-legs-dark.png` download
+              -- PNG (dark)
