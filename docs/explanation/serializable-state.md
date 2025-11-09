@@ -1,6 +1,6 @@
 # Serializable State
 
-Marko seemlessly picks up where the server left off when it comes to events, scripts and client side updates through state.
+Marko seamlessly picks up where the server left off when it comes to events, scripts and client side updates through state.
 In order to do this Marko will attempt to serialize as little data as possible from the server to the client.
 
 Most standard data types can be serialized, including:
@@ -27,8 +27,9 @@ Examples of unserializable data include:
 - DOM nodes and elements
 
 > [!NOTE]
+> Most functions and closures _are_ serializable.
+> 
 > ```marko
-> // Most functions and closures in Marko _are_ serializable.
 > <let/handler=null>
 > <const/onSecondClick() { 
 >   // serializable!
