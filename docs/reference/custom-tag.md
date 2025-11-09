@@ -1,23 +1,23 @@
-# Custom Tag Discovery
+# カスタムタグの検出
 
-Custom Tags in Marko allow for reusing markup across the application.
+Markoのカスタムタグは、アプリケーション全体でマークアップを再利用することを可能にします。
 
-## Priority
+## 優先順位
 
-When you use a `<Tag>` in Marko it is resolved in the following order:
+Markoで`<Tag>`を使用する場合、以下の順序で解決されます:
 
-- [Custom Tag Discovery](#custom-tag-discovery)
-  - [Priority](#priority)
-  - [Local Variable Custom Tags](#local-variable-custom-tags)
-  - [Relative Custom Tags](#relative-custom-tags)
-  - [Installed Custom Tags](#installed-custom-tags)
-  - [Supporting Files](#supporting-files)
+- [カスタムタグの検出](#カスタムタグの検出)
+  - [優先順位](#優先順位)
+  - [ローカル変数カスタムタグ](#ローカル変数カスタムタグ)
+  - [相対カスタムタグ](#相対カスタムタグ)
+  - [インストール済みカスタムタグ](#インストール済みカスタムタグ)
+  - [サポートファイル](#サポートファイル)
 
-## Local Variable Custom Tags
+## ローカル変数カスタムタグ
 
-If a tag name starts with an uppercase letter, Marko first checks for a local variable with the same name.
+タグ名が大文字で始まる場合、Markoはまず同じ名前のローカル変数を確認します。
 
-This is useful for importing custom tags that can't be [discovered automatically](#relative-custom-tags).
+これは、[自動的に検出](#相対カスタムタグ)できないカスタムタグをインポートする際に便利です。
 
 ```marko
 import MyTag from "./my-tag.marko"
@@ -25,7 +25,7 @@ import MyTag from "./my-tag.marko"
 <MyTag/>
 ```
 
-or when using the [`<define>` tag](./core-tag.md#define)
+または、[`<define>`タグ](./core-tag.md#define)を使用する場合:
 
 ```marko
 <define/MyTag|input: { name: string }| foo=1>
@@ -37,7 +37,7 @@ or when using the [`<define>` tag](./core-tag.md#define)
 ```
 
 > [!NOTE]
-> If you need to reference a local variable that is _not_ `PascalCase`, you can do so using a [dynamic tag](./language.md#dynamic-tags).
+> `PascalCase`では_ない_ローカル変数を参照する必要がある場合は、[動的タグ](./language.md#dynamic-tags)を使用できます。
 >
 > ```marko
 > import { camelCaseTag } from "somewhere"
@@ -45,15 +45,15 @@ or when using the [`<define>` tag](./core-tag.md#define)
 > <${camelCaseTag} />
 > ```
 
-## Relative Custom Tags
+## 相対カスタムタグ
 
-If Marko did not resolve a [local variable tag name](#local-variable-custom-tags) it checks the file system. From the current file, it looks recursively upward for:
+Markoが[ローカル変数タグ名](#ローカル変数カスタムタグ)を解決できなかった場合、ファイルシステムをチェックします。現在のファイルから、以下を再帰的に上方向へ探します:
 
 - `tags/TAG_NAME.marko`
 - `tags/TAG_NAME/index.marko`
 - `tags/TAG_NAME/TAG_NAME.marko`
 
-Let's take a look at an example directory structure to understand this better:
+これをよりよく理解するために、ディレクトリ構造の例を見てみましょう:
 
 ```
 tags/
@@ -70,25 +70,25 @@ pages/
         page.marko
 ```
 
-The file `pages/home/page.marko` can resolve:
+ファイル`pages/home/page.marko`は以下を解決できます:
 
 - `<app-header>`
 - `<app-footer>`
 - `<home-banner>`
 
-And the file `pages/about/page.marko` can resolve:
+そして、ファイル`pages/about/page.marko`は以下を解決できます:
 
 - `<app-header>`
 - `<app-footer>`
 - `<team-members>`
 
-The `home` page can't resolve `<team-members>` and the `about` page can't resolve `<home-banner>`. By using nested `tag/` directories, we've scoped our page-specific tags to their respective pages.
+`home`ページは`<team-members>`を解決できず、`about`ページは`<home-banner>`を解決できません。ネストされた`tag/`ディレクトリを使用することで、ページ固有のタグをそれぞれのページにスコープしています。
 
-## Installed Custom Tags
+## インストール済みカスタムタグ
 
-If no Local Variable or Relative Custom Tag is found, Marko checks installed tag libraries in your `node_modules`.
+ローカル変数または相対カスタムタグが見つからない場合、Markoは`node_modules`内のインストール済みタグライブラリをチェックします。
 
-Packages that provide Marko Custom Tags must include a `marko.json` at the root which tells Marko where the exported tags are.
+Markoカスタムタグを提供するパッケージは、ルートに`marko.json`を含める必要があり、これがエクスポートされたタグの場所をMarkoに伝えます。
 
 ```json
 /* marko.json */
@@ -97,19 +97,19 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 }
 ```
 
-This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package.
+この例のファイルは、パッケージを使用するアプリケーションに対して、`dist/tags/`ディレクトリ直下のすべてのカスタムタグを公開するようMarkoに指示します。
 
 > [!TIP]
-> Often a tag library will have "private tags" and "exported tags". A common way to achieve this is to have a `tags/` folder _within_ the exported `tags/` folder 🤯.
+> タグライブラリには「プライベートタグ」と「エクスポートされたタグ」があることがよくあります。これを実現する一般的な方法は、エクスポートされた`tags/`フォルダの_内部_に`tags/`フォルダを配置することです🤯。
 >
-> For example, when exporting `dist/tags`, `dist/tags/tags/` could contain private components only available _within_ the library.
+> 例えば、`dist/tags`をエクスポートする場合、`dist/tags/tags/`にはライブラリ_内部_でのみ利用可能なプライベートコンポーネントを含めることができます。
 
 > [!CAUTION]
-> If two packages export the tag name, Marko will choose the one it finds first. To prevent collisions, tag libraries are encouraged to prefix all exported tag names, e.g. `ebay-`. If you must use tags with conflicting names, you can import by path to disambiguate.
+> 2つのパッケージが同じタグ名をエクスポートする場合、Markoは最初に見つけたものを選択します。衝突を防ぐために、タグライブラリはすべてのエクスポートされたタグ名にプレフィックスを付けることが推奨されます（例: `ebay-`）。競合する名前のタグを使用する必要がある場合は、パスでインポートして曖昧さを解消できます。
 
-## Supporting Files
+## サポートファイル
 
-Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
+Markoは、`.marko`ファイルに隣接する[`style`](./styling.md)および`marko-tag.json`ファイルを検出します。
 
 ```
 foo.marko
@@ -117,9 +117,9 @@ foo.style.css
 foo.marko-tag.json
 ```
 
-Here, the `<foo>` tag has associated styles and metadata.
+ここでは、`<foo>`タグに関連するスタイルとメタデータがあります。
 
-When the file is named `index.marko` the prefix is optional.
+ファイル名が`index.marko`の場合、プレフィックスはオプションです。
 
 ```
 tags/
@@ -131,9 +131,9 @@ tags/
     marko-tag.json
 ```
 
-Here, the `<bar>` tag has an associated `style.css` and the `<baz>` tag has an associated `marko-tag.json`.
+ここでは、`<bar>`タグに関連する`style.css`があり、`<baz>`タグに関連する`marko-tag.json`があります。
 
-For `style` files any extension may be used allowing for CSS preprocessors.
+`style`ファイルには任意の拡張子を使用でき、CSSプリプロセッサが利用できます。
 
 ```
 tags/

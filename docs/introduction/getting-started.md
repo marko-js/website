@@ -1,21 +1,21 @@
-# Getting Started
+# はじめに
 
 > [!NOTE]
-> This is the documentation for Marko 6 and the Tags API. If you are looking for v5 docs, use the version selector on the bottom left or visit [v5.markojs.com](https://v5.markojs.com/docs/getting-started/).
+> これはMarko 6とTags APIのドキュメントです。v5のドキュメントをお探しの場合は、左下のバージョンセレクターを使用するか、[v5.markojs.com](https://v5.markojs.com/docs/getting-started/)をご覧ください。
 
-Marko re-imagines HTML as a language for building dynamic and reactive user interfaces. Nearly any valid HTML is also valid Marko, but Marko extends the HTML language to enable building modern applications in a declarative way.
+Markoは、動的でリアクティブなユーザーインターフェースを構築するための言語としてHTMLを再構築します。ほぼすべての有効なHTMLは有効なMarkoでもありますが、Markoは宣言的な方法で最新のアプリケーションを構築できるようにHTML言語を拡張します。
 
-## Prerequisite Knowledge
+## 前提知識
 
-Marko's goal is to be easy and accessible for every web developer. Familiarity with the following will help you when developing Marko applications:
+Markoの目標は、すべてのウェブ開発者にとって簡単でアクセスしやすいことです。Markoアプリケーションを開発する際、以下に精通していると役立ちます：
 
 - HTML
 - CSS
 - JavaScript
 
-Numerous guides and tutorials are available online for learning web development. Marko builds on HTML, so everything you learn about HTML can be applied to Marko. For comprehensive guides, some of our favorites include [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML) and [Free Code Camp](https://www.freecodecamp.org/news/introduction-to-html-basics/).
+ウェブ開発を学ぶためのガイドやチュートリアルはオンラインで多数利用できます。MarkoはHTMLをベースに構築されているため、HTMLについて学んだことはすべてMarkoに適用できます。包括的なガイドとして、お気に入りには[MDN](https://developer.mozilla.org/en-US/docs/Web/HTML)や[Free Code Camp](https://www.freecodecamp.org/news/introduction-to-html-basics/)などがあります。
 
-## Next Steps
+## 次のステップ
 
-- [Installation](./installation.md)
-- [Welcome to Marko](./welcome-to-marko.md)
+- [インストール](./installation.md)
+- [Markoへようこそ](./welcome-to-marko.md)

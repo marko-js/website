@@ -1,15 +1,15 @@
-# Core Tags
+# コアタグ
 
 ## `<if>` / `<else>`
 
-The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./language.md#attribute-tags).
+`<if>`と`<else>`の制御フロータグは、コンテンツを条件付きで表示したり、[属性タグ](./language.md#attribute-tags)を適用するために使用されます。
 
-An `<if>` is applied when its `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and may be followed by an `<else>`.
+`<if>`は、その`value=`属性（[以下で使用される省略記法](./language.md#shorthand-value)）が[truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)の場合に適用され、`<else>`を後に続けることができます。
 
-The `<else>` tag may have its own condition as an `if=` attribute.
-When it has a condition, the condition is checked before the `<else>` is applied and another `<else>` may follow.
+`<else>`タグは、`if=`属性として独自の条件を持つことができます。
+条件がある場合、`<else>`が適用される前に条件がチェックされ、別の`<else>`を後に続けることができます。
 
-Expressions in the if/else chain are evaluated in order.
+if/elseチェーン内の式は順番に評価されます。
 
 ```marko
 <if=EXPRESSION>
@@ -25,11 +25,11 @@ Expressions in the if/else chain are evaluated in order.
 
 ## `<for>`
 
-The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters).
+`<for>`制御フロータグは、イテレーション中にコンテンツを書き込んだり、[属性タグ](./language.md#attribute-tags)を適用したりすることを可能にします。その[コンテンツ](./language.md#tag-content)は、[タグパラメータ](./language.md#tag-parameters)を通じて各イテレーションの情報にアクセスできます。
 
-The `<for>` tag can iterate over:
+`<for>`タグは以下を反復処理できます:
 
-- Arrays and [Iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with the `of=` attribute
+- `of=`属性を使用した配列と[イテラブル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol)
 
   ```marko
   <for|item, index| of=["a", "b", "c"]>
@@ -37,7 +37,7 @@ The `<for>` tag can iterate over:
   </for>
   ```
 
-- Object properties and values with the `in=` attribute
+- `in=`属性を使用したオブジェクトのプロパティと値
 
   ```marko
   <for|key, value| in={a: 1, b: 2, c: 3}>
@@ -45,7 +45,7 @@ The `<for>` tag can iterate over:
   </for>
   ```
 
-- **Exclusive** ranges of numbers with the `until=`, `from=`, and `step=` attributes
+- `until=`、`from=`、`step=`属性を使用した**排他的**な数値の範囲
 
   ```marko
   <for|num| until=5>${num}</for>
@@ -58,7 +58,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8
   ```
 
-- **Inclusive** ranges of numbers with the `to=`, `from=`, and `step=` attributes
+- `to=`、`from=`、`step=`属性を使用した**包括的**な数値の範囲
 
   ```marko
   <for|num| to=5>${num}</for>
@@ -71,7 +71,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
-The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
+`<for>`タグには`by=`属性があり、ループ内のコンテンツを並べ替える際に状態を保持するのに役立ちます。値は関数である必要があり（ループ自体と同じパラメータを受け取ります）、各イテレーションに一意のキーを与えるために使用されます。
 
 ```marko
 <for|user| of=users by=user => user.id>
@@ -79,11 +79,11 @@ The `<for>` tag has a `by=` attribute which helps preserve state while reorderin
 </for>
 ```
 
-The `by=` attribute above keys each iteration by its `user.id` property.
+上記の`by=`属性は、各イテレーションを`user.id`プロパティでキー付けします。
 
-Additionally, when using the `of=` attribute, `by=` may be a string. This will key the items by the corresponding property on each item.
+さらに、`of=`属性を使用する場合、`by=`は文字列でもかまいません。これにより、各アイテムの対応するプロパティでアイテムがキー付けされます。
 
-This means the previous example can simplified to:
+これは、前の例を次のように簡略化できることを意味します:
 
 ```marko
 <for|user| of=users by="id">
@@ -93,15 +93,15 @@ This means the previous example can simplified to:
 
 ## `<let>`
 
-The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables).
+`<let>`タグは、その[タグ変数](./language.md#tag-variables)を通じて可変状態を導入します。
 
 ```marko
 <let/x=1>
 ```
 
-The `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) provides an initial value for its state.
+`value=`属性（通常は[省略記法](./language.md#shorthand-value)を使用）は、その状態の初期値を提供します。
 
-When a tag variable is updated, everywhere it is used also re-runs. This is the core of Marko's reactive system.
+タグ変数が更新されると、それが使用されているすべての場所も再実行されます。これがMarkoのリアクティブシステムの核心です。
 
 ```marko
 <let/count=1>
@@ -111,10 +111,10 @@ When a tag variable is updated, everywhere it is used also re-runs. This is the 
 </button>
 ```
 
-In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#tag-variables), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
+このテンプレートでは、ボタンがクリックされたときに`count`が増分されます。`count`は[タグ変数](./language.md#tag-variables)であるため、変更されるたびに下流の式（この場合はボタン内のテキスト）が更新されます。
 
 > [!NOTE]
-> The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
+> `<let>`タグは、[制御可能](#controllable-let)でない限り、その`value=`属性の変更に対してリアクティブではありません。そのタグ変数は、直接代入または変更ハンドラを通じてのみ更新されます。
 >
 > ```marko
 > export interface Input {
@@ -126,24 +126,24 @@ In this template, `count` is incremented when the button is clicked. Since `coun
 > <p>Input Count: ${input.initialCount}</p>
 > ```
 >
-> Here, even if `input.initialCount` changes, `count` remains at its initial value.
+> ここでは、`input.initialCount`が変更されても、`count`は初期値のままです。
 
-### Controllable Let
+### 制御可能なLet
 
-The `<let>` tag can be made **controllable** using its `valueChange=` attribute, similarly to [native tag change handlers](./native-tag.md#change-handlers). This enables interception and transformation of state changes, or synchronization of state between parent and child components.
+`<let>`タグは、[ネイティブタグの変更ハンドラ](./native-tag.md#change-handlers)と同様に、`valueChange=`属性を使用して**制御可能**にできます。これにより、状態変更の傍受と変換、または親と子コンポーネント間の状態の同期が可能になります。
 
 ```marko
 <let/value="HELLO">
 <let/controlled_value=value valueChange(newValue) { value = newValue.toUpperCase() }>
 ```
 
-In this example:
+この例では:
 
-1. `value` holds the base state with an initial value of "HELLO"
-2. `controlled_value` reflects the value of `value`, but its `valueChange` handler ensures all updates are uppercase
-3. Any changes to `controlled_value` are intercepted, transformed to uppercase, and stored in `value`
+1. `value`は「HELLO」の初期値を持つベース状態を保持します
+2. `controlled_value`は`value`の値を反映しますが、その`valueChange`ハンドラはすべての更新が大文字であることを保証します
+3. `controlled_value`への変更はすべて傍受され、大文字に変換され、`value`に格納されます
 
-A more common use case is creating state that can be optionally controlled by a parent component:
+より一般的なユースケースは、親コンポーネントによってオプションで制御できる状態を作成することです:
 
 ```marko
 /* counter.marko */
@@ -159,15 +159,15 @@ export interface Input {
 </button>
 ```
 
-This creates two possible behaviors:
+これにより、2つの可能な動作が作成されます:
 
-1. **Uncontrolled**: If the parent only provides `count=`, the child maintains its own state:
+1. **非制御**: 親が`count=`のみを提供する場合、子は独自の状態を維持します:
 
    ```marko
    <counter count=0/>
    ```
 
-2. **Controlled**: If the parent provides both `count=` and `countChange=`, the parent takes control of the state:
+2. **制御**: 親が`count=`と`countChange=`の両方を提供する場合、親が状態を制御します:
 
    ```marko
    <let/count=0>
@@ -179,9 +179,9 @@ This creates two possible behaviors:
 
 ## `<const>`
 
-The `<const>` exposes its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) through its [Tag Variable](./language.md#tag-variables).
+`<const>`は、その`value=`属性（通常は[省略記法](./language.md#shorthand-value)を使用）を[タグ変数](./language.md#tag-variables)を通じて公開します。
 
-Extending the [`<let>`](#let) example we could derive data from the `count` state like so:
+[`<let>`](#let)の例を拡張して、`count`状態からデータを導出できます:
 
 ```marko
 <let/count=1>
@@ -194,10 +194,10 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 ```
 
 > [!NOTE]
-> The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
+> `<const>`タグはローカルスコープであり、コンポーネントのすべてのインスタンスに対して初期化されます。プログラム全体の定数を公開することが目的の場合は、代わりに[`static const`](./language.md#static)を使用する必要があります。
 
 > [!TIP]
-> The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
+> [`<const>`](#const)タグの実装は、概念的にはその`input.value`を[`<return>`](#return)するのと同じです。🤯
 >
 > ```marko
 > /* const.marko */
@@ -210,16 +210,16 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 
 ## `<return>`
 
-The `<return>` tag allows any [custom tag](./custom-tag.md) to expose a [Tag Variable](./language.md#tag-variables).
+`<return>`タグは、任意の[カスタムタグ](./custom-tag.md)が[タグ変数](./language.md#tag-variables)を公開することを可能にします。
 
-The `value=` attribute (usually expressed via the [shorthand](./language.md#shorthand-value)) is made available as the tag variable of the template.
+`value=`属性（通常は[省略記法](./language.md#shorthand-value)を介して表現されます）は、テンプレートのタグ変数として利用可能になります。
 
 ```marko
 /* answer.marko */
 <return=42>
 ```
 
-The return value may then be used in the parent template:
+戻り値は、親テンプレートで使用できます:
 
 ```marko
 <answer/value/>
@@ -227,11 +227,11 @@ The return value may then be used in the parent template:
 <div>${value}</div>
 ```
 
-### Assignable Return Value
+### 代入可能な戻り値
 
-By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
+デフォルトでは、公開された変数には値を代入できません。値の代入は、`<return>`の`valueChange=`属性で有効にできます。
 
-If a `valueChange=` attribute is provided, it is called whenever the tag variable is assigned a value.
+`valueChange=`属性が提供されている場合、タグ変数に値が代入されるたびに呼び出されます。
 
 ```marko
 /* uppercase.marko */
@@ -246,20 +246,20 @@ export interface Input {
 }/>
 ```
 
-In the above example, the exposed tag variable is initialized to an UPPERCASE version of `input.value` and when new values are assigned it will first UPPERCASE the value before storing it in state.
+上記の例では、公開されたタグ変数は`input.value`の大文字バージョンに初期化され、新しい値が代入されると、状態に格納する前にまず値を大文字にします。
 
 ```marko
 <uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
-<div>${value}</div> // value is always uppercased
+<div>${value}</div> // valueは常に大文字
 ```
 
 ## `<script>`
 
-The `<script>` tag has special behavior in Marko.
+`<script>`タグは、Markoで特別な動作をします。
 
-The content of a `<script>` tag is executed first when the template has finished rendering and is mounted in the browser.
-It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters) it references has changed.
+`<script>`タグのコンテンツは、テンプレートのレンダリングが完了し、ブラウザにマウントされたときに最初に実行されます。
+また、参照している[タグ変数](./language.md#tag-variables)または[タグパラメータ](./language.md#tag-parameters)のいずれかが変更された後に_再度_実行されます。
 
 ```marko
 <let/count=1>
@@ -268,13 +268,13 @@ It will also be executed _again_ after any [Tag Variable](./language.md#tag-vari
 </button>
 
 <script>
-  // Runs in the browser for each instance of this tag.
-  // Also runs when either `myButton` or `count` updates
+  // このタグの各インスタンスに対してブラウザで実行されます。
+  // また、`myButton`または`count`が更新されたときにも実行されます
   console.log("clicked", myButton(), count, "times");
 </script>
 ```
 
-Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signal) to apply some side effect, and cleanup afterward.
+多くの場合、`<script>`タグは[`$signal` API](./language.md#signal)と組み合わせて、副作用を適用し、その後クリーンアップします。
 
 ```marko
 <script>
@@ -287,22 +287,22 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
 ```
 
 > [!TIP]
-> There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
+> _本物の_`<script>`タグを使用すべきケースはほとんどありませんが、絶対に必要な場合は[`<html-script>`](#html-script--html-style)のフォールバックを使用できます。
 
 ## `<style>`
 
-The `<style>` tag has special behavior in Marko. No matter how many times a component renders, its styles are only loaded once.
+`<style>`タグは、Markoで特別な動作をします。コンポーネントが何回レンダリングされても、そのスタイルは一度だけロードされます。
 
 ```marko
 <style>
-  /* Bundled and loaded once */
+  /* バンドルされ、一度だけロードされます */
   body {
     color: green;
   }
 </style>
 ```
 
-The `<style>` may include a file extension to enable css preprocessors such as [scss](https://sass-lang.com/documentation/syntax/#scss) and [less](https://lesscss.org/).
+`<style>`には、[scss](https://sass-lang.com/documentation/syntax/#scss)や[less](https://lesscss.org/)などのCSSプリプロセッサを有効にするファイル拡張子を含めることができます。
 
 ```marko
 <style.scss>
@@ -326,7 +326,7 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 <div class="fancy-less">Hello!</div>
 ```
 
-If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+`<style>`タグに[タグ変数](./language.md#tag-variables)がある場合、[CSSモジュール](https://github.com/css-modules/css-modules)を活用して、そのクラスをオブジェクトとして公開します。
 
 ```marko
 <style/styles>
@@ -341,11 +341,11 @@ If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it lever
 ```
 
 > [!TIP]
-> There are very few cases where you should be using a _real_ inline `<style>` tag but if needed you can use the fallback [`<html-style>`](#html-script--html-style) tag.
+> _本物の_インライン`<style>`タグを使用すべきケースはほとんどありませんが、必要な場合はフォールバック[`<html-style>`](#html-script--html-style)タグを使用できます。
 
 ## `<define>`
 
-The `<define>` tag is primarily used to create reusable snippets of markup that can be shared across the template.
+`<define>`タグは、主にテンプレート全体で共有できる再利用可能なマークアップのスニペットを作成するために使用されます。
 
 ```marko
 <define/MyTag|input: { name: string }| foo=1>
@@ -358,10 +358,10 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+[タグ変数](./language.md#tag-variables)は、`<define>`タグに提供された属性（[コンテンツ](./language.md#tag-content)を含む）を反映します。
 
 > [!TIP]
-> The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
+> 上記の`<define>`タグの実装は、概念的にはその`input`を[`<return>`](#return)するのと同じです。🤯
 >
 > ```marko
 > /* define.marko */
@@ -371,23 +371,23 @@ The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<de
 
 ## `<lifecycle>`
 
-The `<lifecycle>` tag is used to synchronize side-effects from imperative client APIs.
+`<lifecycle>`タグは、命令型クライアントAPIからの副作用を同期するために使用されます。
 
 ```marko
 <lifecycle
   onMount() {
-    // Called once this tag is attached to the dom, and never again.
+    // このタグがDOMに接続されたときに一度だけ呼び出され、二度と呼び出されません。
   }
   onUpdate() {
-    // Called every time the dependencies of the `onUpdate` function are invalidated.
+    // `onUpdate`関数の依存関係が無効化されるたびに呼び出されます。
   }
   onDestroy() {
-    // Called once this tag is removed from the dom.
+    // このタグがDOMから削除されたときに一度だけ呼び出されます。
   }
 />
 ```
 
-The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be mutated.
+`this`は`<lifecycle>`タグの生涯にわたって一貫しており、変更できます。
 
 ```marko
 client import { WorldMap } from "world-map-api";
@@ -410,11 +410,11 @@ client import { WorldMap } from "world-map-api";
 ```
 
 > [!TIP]
-> All attributes on the `<lifecycle>` tag attributes available as the `this` in any of the event handler attributes.
+> `<lifecycle>`タグのすべての属性は、イベントハンドラ属性のいずれかで`this`として利用できます。
 
 ## `<id>`
 
-The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a short unique id string (compatible with [`id=` and aria attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)).
+`<id>`タグは、短い一意のID文字列（[`id=`およびaria属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)と互換性があります）を持つ[タグ変数](./language.md#tag-variables)を公開します。
 
 ```marko
 <id/cheeseId/>
@@ -422,7 +422,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+`value=`属性にnull不可の値が含まれている場合、生成されたものの代わりにそれが使用されます。
 
 ```marko
 /* textbox.marko */
@@ -439,9 +439,9 @@ export interface Input {
 
 ## `<log>`
 
-The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) of its `value=` attribute (shown here using [the shorthand](./language.md#shorthand-value)).
+`<log>`タグは、その`value=`属性の[console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static)を実行します（ここでは[省略記法](./language.md#shorthand-value)を使用して示されています）。
 
-The log is re-executed each time its tag variable updates.
+ログは、タグ変数が更新されるたびに再実行されます。
 
 ```marko
 <let/count=0>
@@ -449,11 +449,11 @@ The log is re-executed each time its tag variable updates.
 <button onClick() { count++ }>Log</button>
 ```
 
-This logs `Current count: 0` on both server and client and again whenever `count` changes.
+これにより、サーバーとクライアントの両方で`Current count: 0`がログに記録され、`count`が変更されるたびに再度記録されます。
 
 ## `<debug>`
 
-The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) within the template that will be executed once the tag renders.
+`<debug>`タグは、タグがレンダリングされたときに実行される[`debugger`ステートメント](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger)をテンプレート内に挿入します。
 
 ```marko
 export interface Input {
@@ -462,10 +462,10 @@ export interface Input {
 
 <const/{ stuff } = input>
 
-<debug/> // Can be useful to inspect render-scoped variables with a debugger.
+<debug/> // デバッガでレンダースコープの変数を検査するのに役立ちます。
 ```
 
-If a `value=` attribute is included, the debugger will be executed whenever it changes.
+`value=`属性が含まれている場合、デバッガは変更されるたびに実行されます。
 
 ```marko
 export interface Input {
@@ -476,11 +476,11 @@ export interface Input {
 <debug=[input.firstName, input.lastName]>
 ```
 
-This debugger executes on the initial render and whenever `input.firstName` or `input.lastName` changes.
+このデバッガは、初期レンダリング時と`input.firstName`または`input.lastName`が変更されたときに実行されます。
 
 ## `<await>`
 
-The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters).
+`<await>`タグは、その[`value=`属性](./language.md#shorthand-value)内のPromiseをアンラップし、[タグパラメータ](./language.md#tag-parameters)を通じて公開します。
 
 ```marko
 <await|user|=getUser()>
@@ -489,7 +489,7 @@ The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#
 </await>
 ```
 
-If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder), the placeholder content is shown while the promise is pending.
+このタグに[`@placeholder`](#placeholder)を持つ[`<try>`](#try)祖先がある場合、Promiseが保留中の間、プレースホルダーコンテンツが表示されます。
 
 ```marko
 <try>
@@ -511,11 +511,11 @@ If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder)
 
 ## `<try>`
 
-The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#attribute-tags): `@catch` and `@placeholder`.
+`<try>`タグは、実行時エラーをキャッチし、非同期境界を管理するために使用されます。2つのオプションの[属性タグ](./language.md#attribute-tags)があります: `@catch`と`@placeholder`。
 
 ### `@catch`
 
-When a runtime error occurs in the [content](./language.md#tag-content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#tag-parameters) of the `@catch`.
+`<try>`の[コンテンツ](./language.md#tag-content)またはその`@placeholder`属性タグで実行時エラーが発生すると、コンテンツは`@catch`属性タグのコンテンツに置き換えられます。スローされた`error`は、`@catch`の[タグパラメータ](./language.md#tag-parameters)として利用可能になります。
 
 ```marko
 <try>
@@ -530,17 +530,17 @@ When a runtime error occurs in the [content](./language.md#tag-content) of the `
 
 ### `@placeholder`
 
-The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
+`@placeholder` [属性タグ](./language.md#attribute-tags)の[コンテンツ](./language.md#tag-content)は、`<try>`のコンテンツ内で[`<await>`タグ](#await)が保留中の間、表示されます。
 
 ## `<html-comment>`
 
-By default, [html comments](./language.md#Comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
+デフォルトでは、[HTMLコメント](./language.md#Comments)は出力から除外されます。`<html-comment>`タグは、リテラル`<!-- comment -->`を出力するために使用されます。
 
 ```marko
 <html-comment>Hello, view source</html-comment>
 ```
 
-This tag also exposes a [tag variable](./language.md#tag-variables) which contains a getter to the reference of the [comment node](https://developer.mozilla.org/en-US/docs/Web/API/Comment) in the DOM.
+このタグは、DOM内の[コメントノード](https://developer.mozilla.org/en-US/docs/Web/API/Comment)への参照のゲッターを含む[タグ変数](./language.md#tag-variables)も公開します。
 
 ```marko
 <html-comment/commentNode/>
@@ -552,20 +552,20 @@ This tag also exposes a [tag variable](./language.md#tag-variables) which contai
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common footguns.
+[`<script>`](./native-tag.md#script)および[`<style>`](./native-tag.md#style)タグは、ベストプラクティスを可能にし、開発者が一般的な落とし穴を避けるのを助けるために拡張されています。
 
-Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
+通常は必要ありませんが、これらのタグのバニラバージョンは、それぞれ`<html-script>`および`<html-style>`タグを介して記述できます。
 
 > [!CAUTION]
-> The `<html-*>` tags are only used for specialized use cases, and should _almost never_ be used over [`<script>`](./native-tag.md#script) or [`<style>`](./native-tag.md#style).
+> `<html-*>`タグは特殊なユースケースにのみ使用され、[`<script>`](./native-tag.md#script)または[`<style>`](./native-tag.md#style)の代わりに使用されることは_ほとんどありません_。
 
 ```marko
-// Literally written out as a `<script>` html tag.
+// 文字通り`<script>` HTMLタグとして書き出されます。
 <html-script type="importmap">
   { "imports": { "square": "./module/shapes/square.js" } }
 </html-script>
 
-// Literally written out as a `<style>` html tag.
+// 文字通り`<style>` HTMLタグとして書き出されます。
 <html-style>
   @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 </html-style>

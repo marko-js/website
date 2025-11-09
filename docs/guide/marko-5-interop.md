@@ -1,3 +1,3 @@
-# Using Marko 5 and Marko 6 together
+# Marko 5とMarko 6を一緒に使用する
 
-All Marko 5 apps are equipped to use tags API components without any changes. To use both Marko 5 and Marko 6 together, ensure that Marko 5 is installed at the project root.
+すべてのMarko 5アプリは、変更なしでTags APIコンポーネントを使用できるように装備されています。Marko 5とMarko 6を一緒に使用するには、プロジェクトルートにMarko 5がインストールされていることを確認してください。

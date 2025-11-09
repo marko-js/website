@@ -1,24 +1,24 @@
-# Welcome to Marko!
+# Markoへようこそ！
 
-Marko is a language designed to make it easier to write performant and "correct" websites. It offers a unique and compelling approach to web development, built upon core principles and features that set it apart.
+Markoは、パフォーマンスが高く「正確な」ウェブサイトを簡単に作成できるように設計された言語です。ウェブ開発に対して独自で説得力のあるアプローチを提供し、他とは一線を画すコア原則と機能に基づいています。
 
-## What's Missing from Vanilla HTML, CSS, and JavaScript?
+## バニラHTML、CSS、JavaScriptに欠けているものは？
 
-The rise of frameworks in the frontend ecosystem didn't happen for no reason. For complex applications, vanilla technologies fall short in a few important areas.
+フロントエンドエコシステムにおけるフレームワークの台頭は、理由もなく起こったわけではありません。複雑なアプリケーションでは、バニラテクノロジーはいくつかの重要な領域で不足しています。
 
-- **Scalability**: Maintaining large applications is challenging due to the imperative nature of JavaScript and the global scope of CSS
-- **Performance**: Manual DOM manipulation is unwieldy and hard to follow, and it can lead to performance bottlenecks unless executed properly
-- **Maintainability**: Verbose HTML and complex JavaScript logic can make codebases difficult to understand and maintain
+- **スケーラビリティ**: JavaScriptの命令的な性質とCSSのグローバルスコープにより、大規模アプリケーションの保守が困難
+- **パフォーマンス**: 手動でのDOM操作は扱いにくくフォローしづらく、適切に実行されない限りパフォーマンスのボトルネックにつながる可能性がある
+- **保守性**: 冗長なHTMLと複雑なJavaScriptロジックにより、コードベースの理解と保守が困難になる
 
-Frameworks and languages for the web address these issues through concepts like component-based architecture, declarative UI, and managed state. Marko provides a familiar but unique solution for each of these common problems.
+ウェブ向けのフレームワークや言語は、コンポーネントベースアーキテクチャ、宣言的UI、管理された状態などの概念を通じてこれらの問題に対処します。Markoは、これらの一般的な問題に対して、馴染み深くも独自のソリューションを提供します。
 
-## Declarative Language
+## 宣言的言語
 
-Marko embraces a declarative approach, allowing developers to describe what the UI should look like instead of how it should be rendered. This paradigm enables powerful compiler optimizations and simplifies state management.
+Markoは宣言的アプローチを採用しており、開発者がUIをどのようにレンダリングすべきかではなく、どのように見えるべきかを記述できます。このパラダイムにより、強力なコンパイラの最適化が可能になり、状態管理が簡素化されます。
 
-### Components
+### コンポーネント
 
-Marko's component model promotes reusability and modularity, simplifying the construction of complex UIs.
+Markoのコンポーネントモデルは、再利用性とモジュール性を促進し、複雑なUIの構築を簡素化します。
 
 ```marko
 /* hello.marko */
@@ -34,9 +34,9 @@ export interface Input {
 <hello name="Marko"/>
 ```
 
-### State Management
+### 状態管理
 
-The Marko language allows developers to declare state within markup, which automatically propagates updates, while imperative blocks and statements allow for control over side effects.
+Marko言語により、開発者はマークアップ内で状態を宣言でき、更新が自動的に伝播されます。一方、命令的ブロックとステートメントにより、副作用を制御できます。
 
 ```marko
 <let/count=0>
@@ -45,13 +45,13 @@ The Marko language allows developers to declare state within markup, which autom
 </button>
 ```
 
-## Performance-first Architecture
+## パフォーマンス第一のアーキテクチャ
 
-Marko prioritizes performance at the architectural level, maximizing developer experience while ensuring that the experience of the website's users is never sacrificed.
+Markoはアーキテクチャレベルでパフォーマンスを優先し、開発者エクスペリエンスを最大化すると同時に、ウェブサイトのユーザーエクスペリエンスが決して犠牲にならないようにします。
 
-### Targeted Compilation
+### ターゲット化されたコンパイル
 
-Marko compiles every template twice; once for the server, and once for the browser. Server code is optimized for speed, while client code for bundle size. At compile time, the Marko compiler also figures out which parts of your application _need_ to be sent to the client and which can stay on the server.
+Markoはすべてのテンプレートを2回コンパイルします。1回はサーバー用、1回はブラウザ用です。サーバーコードは速度のために最適化され、クライアントコードはバンドルサイズのために最適化されます。コンパイル時に、Markoコンパイラは、アプリケーションのどの部分をクライアントに送信する_必要がある_か、どの部分をサーバーに残せるかも判断します。
 
 ```marko
 <div>
@@ -64,13 +64,13 @@ Marko compiles every template twice; once for the server, and once for the brows
 </div>
 ```
 
-#### Fine-grained Reactivity
+#### きめ細かいリアクティビティ
 
-Marko determines at compile time which changes need to happen to the page whenever state is updated, so granular updates are ensured to improve client-side performance.
+Markoは、状態が更新されるたびにページに必要な変更をコンパイル時に決定するため、きめ細かい更新が保証され、クライアント側のパフォーマンスが向上します。
 
-### Streaming
+### ストリーミング
 
-Marko takes advantage of HTML streaming to send content to the client as soon as it becomes available. Both in-order _and_ out-of-order streaming are supported, enabling developers to decide how to show content as quickly as possible.
+Markoは、コンテンツが利用可能になり次第クライアントに送信するために、HTMLストリーミングを活用します。順序どおりのストリーミング_と_順序に関係ないストリーミングの両方がサポートされており、開発者はコンテンツをできるだけ早く表示する方法を決定できます。
 
 ```marko
 <header>Sent immediately</header>
@@ -79,14 +79,14 @@ Marko takes advantage of HTML streaming to send content to the client as soon as
 </await>
 ```
 
-### Resumability
+### 再開可能性
 
-When Marko streams HTML, it also includes serialized values for state so the client can pick up where the server left off without performing any extra calculations. This ensures a faster time-to-interactive and reduced client-side JavaScript.
+MarkoがHTMLをストリーミングする際、状態のシリアル化された値も含まれるため、クライアントは追加の計算を実行することなく、サーバーが中断したところから続行できます。これにより、インタラクティブになるまでの時間が短縮され、クライアント側のJavaScriptが削減されます。
 
-## The Marko Mindset
+## Markoマインドセット
 
-Marko aims to provide a developer experience that feels as close to writing declarative HTML as possible, while enabling the capabilities of complex applications.
+Markoは、宣言的なHTMLを書くのにできるだけ近い開発者エクスペリエンスを提供しながら、複雑なアプリケーションの機能を可能にすることを目指しています。
 
-## Next Steps
+## 次のステップ
 
-- [Installation](./installation.md)
+- [インストール](./installation.md)

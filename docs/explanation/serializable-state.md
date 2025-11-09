@@ -1,54 +1,54 @@
-# Serializable State
+# シリアライズ可能な状態
 
-Marko seamlessly picks up where the server left off when it comes to events, scripts and client side updates through state.
-In order to do this Marko will attempt to serialize as little data as possible from the server to the client.
+Marko は、イベント、スクリプト、クライアント側の更新に関して、サーバーが中断したところからシームレスに引き継ぎます。
+これを実現するために、Marko はサーバーからクライアントへの可能な限り少ないデータのシリアライズを試みます。
 
-Most standard data types can be serialized, including:
+ほとんどの標準データ型はシリアライズできます。以下が含まれます：
 
-- Primitives: `null`, `boolean`, `number`, `string`, `bigint`
-- Arrays and plain objects with serializable values
-- Dates
+- プリミティブ: `null`, `boolean`, `number`, `string`, `bigint`
+- シリアライズ可能な値を持つ配列とプレーンオブジェクト
+- Date
 - Map, Set
-- Typed arrays and ArrayBuffer/DataView
-- URL and URLSearchParams
-- Additional built-in JS and Browser objects
-  - For a complete list, see the [serializer file](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/html/serializer.ts) from source
+- 型付き配列と ArrayBuffer/DataView
+- URL と URLSearchParams
+- 追加の組み込み JS およびブラウザオブジェクト
+  - 完全なリストについては、ソースの[シリアライザーファイル](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/html/serializer.ts)を参照してください
 
-... and many more.
+... など、さらに多くのデータ型があります。
 
-## Unserializable Data
+## シリアライズ不可能なデータ
 
-Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.
+一部の値はシリアライズできません。これらの値が検出されると、Marko ランタイムは関連するコードを見つけるための役立つメッセージを提供します。
 
-Examples of unserializable data include:
-- Closures (top level functions are fine!)
-- Functions that come from arbitrary javascript code or imports
-- Class instances (except built-ins explicitly supported by the runtime)
-- DOM nodes and elements
+シリアライズ不可能なデータの例：
+- クロージャ（トップレベル関数は問題ありません！）
+- 任意の JavaScript コードまたはインポートから来る関数
+- クラスインスタンス（ランタイムによって明示的にサポートされている組み込みを除く）
+- DOM ノードと要素
 
 > [!NOTE]
-> Most functions and closures _are_ serializable.
-> 
+> ほとんどの関数とクロージャ_は_シリアライズ可能です。
+>
 > ```marko
 > <let/handler=null>
-> <const/onSecondClick() { 
->   // serializable!
+> <const/onSecondClick() {
+>   // シリアライズ可能！
 > }>
-> 
+>
 > <button onClick() { handler?.(); handler = onSecondClick }/>
 > ```
 
 ```marko
-// ❌ BAD: custom class instance in state
+// ❌ 悪い例: 状態内のカスタムクラスインスタンス
 <let/state=new Cart()>
 
-// ❌ BAD: DOM nodes in state
+// ❌ 悪い例: 状態内の DOM ノード
 <let/state={ el: document.body }>
 ```
 
-## Further Reading
+## さらに読む
 
-- [Immutable State](./immutable-state.md)
-- [Reactivity](../reference/reactivity.md)
-- [Fine-Grained Bundling](./fine-grained-bundling.md)
-- [Streaming](./streaming.md)
+- [不変状態](./immutable-state.md)
+- [リアクティビティ](../reference/reactivity.md)
+- [細粒度バンドリング](./fine-grained-bundling.md)
+- [ストリーミング](./streaming.md)

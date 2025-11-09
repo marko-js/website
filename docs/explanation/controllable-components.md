@@ -1,17 +1,17 @@
-# Controllable Components
+# 制御可能なコンポーネント
 
 > [!TLDR]
 >
-> - **Controlled** components are driven by `input` props
-> - **Uncontrolled** components are driven by internal state
-> - **Controllable** components can be both controlled _and_ uncontrolled
-> - Marko provides first-class patterns for building controllable components
+> - **制御された**コンポーネントは `input` プロパティによって駆動される
+> - **非制御**コンポーネントは内部状態によって駆動される
+> - **制御可能な**コンポーネントは制御され_かつ_非制御にもなれる
+> - Marko は制御可能なコンポーネントを構築するための第一級のパターンを提供する
 
-In component-based frameworks, developers must know where the _source of truth_ is for state. Typically, a decision is made at the component level about whether it should be [**controlled** or **uncontrolled**](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components).
+コンポーネントベースのフレームワークでは、開発者は状態の_信頼できる情報源_がどこにあるかを知る必要があります。通常、コンポーネントレベルで[**制御された**または**非制御**](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components)のどちらにするかの決定が行われます。
 
-## Uncontrolled Components
+## 非制御コンポーネント
 
-Uncontrolled components manage their own state.
+非制御コンポーネントは自身の状態を管理します。
 
 ```marko
 /* counter.marko */
@@ -22,31 +22,31 @@ Uncontrolled components manage their own state.
 </button>
 ```
 
-Because `<counter>` manages its own state (via `<let>`), it can be used anywhere without extra work.
+`<counter>` は自身の状態を管理する（`<let>` を介して）ため、追加の作業なしでどこでも使用できます。
 
 ```marko
 /* parent.marko */
 <counter/>
 ```
 
-However, since the state is created in `counter.marko`, `count` can _only_ be accessed within the component. This means there's no way for a parent to use the state. For example, how might a parent use this count and display it elsewhere on the page?
+しかし、状態は `counter.marko` 内で作成されるため、`count` はコンポーネント内でのみアクセスできます。つまり、親が状態を使用する方法がありません。例えば、親がこのカウントを使用してページの別の場所に表示するにはどうすればよいでしょうか？
 
 ```marko
 /* parent.marko */
 <counter/>
 
-// 🤔 How can we access `count` out here?
+// 🤔 ここで `count` にアクセスするにはどうすればよいでしょうか？
 <output>${count}</output>
 ```
 
-This isn't possible with only modifications to `parent.marko`! Instead, we need to change `<counter>` to give more **control** to its parent.
+これは `parent.marko` への変更だけでは不可能です！代わりに、`<counter>` を変更して親により多くの**制御**を与える必要があります。
 
-### State synchronization
+### 状態の同期
 
-A naive approach for allowing parents to access state is to trigger events when updates happen.
+親が状態にアクセスできるようにするための単純なアプローチは、更新が発生したときにイベントをトリガーすることです。
 
 > [!WARNING]
-> This is an anti-pattern! It is **almost always better** to use [the controllable pattern](#the-controllable-pattern) for cases like this instead of synchronizing state
+> これはアンチパターンです！このような場合は、状態を同期する代わりに[制御可能なパターン](#the-controllable-pattern)を使用する方が**ほぼ常に優れています**
 
 ```marko
 /* counter.marko */
@@ -63,7 +63,7 @@ export interface Input {
 </button>
 ```
 
-With this event handler, `parent.marko` could keep track of its own copy of `count`.
+このイベントハンドラを使用すると、`parent.marko` は独自の `count` のコピーを追跡できます。
 
 ```marko
 /* parent.marko */
@@ -74,17 +74,17 @@ With this event handler, `parent.marko` could keep track of its own copy of `cou
 <output>${count}</output>
 ```
 
-This approach leaves room for error:
+このアプローチにはエラーの余地があります：
 
-- We have _two_ `count` variables that must stay synchronized
-- If these variables get out of sync, our website will be broken
-- We must track _all_ changes in `<counter>` and synchronize them in the parent
+- _2つ_の `count` 変数を同期させる必要がある
+- これらの変数が同期しなくなると、ウェブサイトは壊れる
+- `<counter>` 内の_すべて_の変更を追跡し、親で同期する必要がある
 
-As we'll discuss later, most stateful [native HTML elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements) use this "uncontrolled with state synchronization" approach by default. Marko [extends](../reference/native-tag.md#change-handlers) these tags to enable [the controllable pattern](#the-controllable-pattern).
+後で説明するように、ほとんどのステートフルな[ネイティブ HTML 要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements)は、デフォルトでこの「状態同期を伴う非制御」アプローチを使用しています。Marko はこれらのタグを[拡張](../reference/native-tag.md#change-handlers)して[制御可能なパターン](#the-controllable-pattern)を有効にします。
 
-### Controlled Components
+### 制御されたコンポーネント
 
-Controlled components receive state from their parent and delegate changes back up the component tree.
+制御されたコンポーネントは、親から状態を受け取り、変更をコンポーネントツリーの上位に委譲します。
 
 ```marko
 /* counter.marko */
@@ -98,7 +98,7 @@ export interface Input {
 </button>
 ```
 
-If this `<counter>` component is used directly, it won't be interactive! To manage `<counter>` effectively, we need to _create state in the parent_.
+この `<counter>` コンポーネントを直接使用すると、インタラクティブになりません！`<counter>` を効果的に管理するには、親で状態を_作成_する必要があります。
 
 ```marko
 /* parent.marko */
@@ -110,24 +110,24 @@ If this `<counter>` component is used directly, it won't be interactive! To mana
 />
 ```
 
-This is great because the parent has full control over component state, but it has trade-offs:
+親がコンポーネントの状態を完全に制御できるため、これは素晴らしいことですが、トレードオフがあります：
 
-- _Every_ parent of `<counter>` needs this boilerplate, even if they don't use `count`
-- This refactor was only possible because _we_ authored `<counter>` and can change its API
+- `<counter>` の_すべて_の親にこのボイラープレートが必要であり、たとえ `count` を使用しない場合でも必要
+- このリファクタリングは、_私たち_が `<counter>` を作成し、その API を変更できるからこそ可能だった
 
-## The Controllable Pattern
+## 制御可能なパターン
 
-Ultimately, at _component authoring time_ it's impossible to know whether we want state to be controlled or uncontrolled. It may need to be controlled _sometimes_ but otherwise manage its own state. For these cases, Marko introduces the **controllable** pattern.
+最終的に、_コンポーネント作成時_に状態を制御するか非制御にするかを知ることは不可能です。_時には_制御する必要があるかもしれませんが、それ以外の場合は独自の状態を管理する必要があります。これらのケースのために、Marko は**制御可能な**パターンを導入しています。
 
-Controllable components are [uncontrolled](#uncontrolled-components) by default, but with a change handler they become [controlled](#controlled-components).
+制御可能なコンポーネントは、デフォルトで[非制御](#uncontrolled-components)ですが、変更ハンドラを使用すると[制御された](#controlled-components)ものになります。
 
-Before digging into our `<counter>` example and making it controllable, let's explore what this pattern looks like on native elements.
+`<counter>` の例を掘り下げて制御可能にする前に、このパターンがネイティブ要素でどのように見えるかを探ってみましょう。
 
-### Controllable Native Tags
+### 制御可能なネイティブタグ
 
-Most native HTML elements follow the [uncontrolled](#uncontrolled-components) pattern by default, but Marko enhances them with [change handlers](../reference/native-tag.md#change-handlers) to enable the [controlled](#controlled-components) pattern.
+ほとんどのネイティブ HTML 要素は、デフォルトで[非制御](#uncontrolled-components)パターンに従いますが、Marko は[変更ハンドラ](../reference/native-tag.md#change-handlers)を使用してそれらを拡張し、[制御された](#controlled-components)パターンを有効にします。
 
-To take control of a stateful HTML element, we can add a `Change` handler.
+ステートフルな HTML 要素を制御するには、`Change` ハンドラを追加できます。
 
 ```marko
 <let/textValue="">
@@ -135,9 +135,9 @@ To take control of a stateful HTML element, we can add a `Change` handler.
 <input value=textValue valueChange(v) { textValue = v }>
 ```
 
-Since `valueChange` is present, Marko knows this `<input>` is **controlled** and its value will always derive from `textValue`. This is called **binding**.
+`valueChange` が存在するため、Marko はこの `<input>` が**制御されている**ことを認識し、その値は常に `textValue` から派生します。これは**バインディング**と呼ばれます。
 
-Because this is a common pattern, Marko provides a [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) using the `:=` operator.
+これは一般的なパターンであるため、Marko は `:=` 演算子を使用した[バインディングの省略記法](../reference/language.md#shorthand-change-handlers-two-way-binding)を提供しています。
 
 ```marko
 <let/textValue="">
@@ -146,11 +146,11 @@ Because this is a common pattern, Marko provides a [binding shorthand](../refere
 ```
 
 > [!NOTE]
-> The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) acts differently when used with an _identifier_ versus a _member expression_. Above is the identifier behavior; we'll see the member expression behavior next.
+> [バインディングの省略記法](../reference/language.md#shorthand-change-handlers-two-way-binding)は、_識別子_と_メンバー式_で使用される場合に異なる動作をします。上記は識別子の動作です。次にメンバー式の動作を見ていきます。
 
-### Controllable `<let>`
+### 制御可能な `<let>`
 
-We want our `<counter>` tag to follow the same controllable pattern as native tags like `<input>` in Marko. Let's take advantage of the fact that [`<let>` is _also_ controllable](../reference/core-tag.md#controllable-let).
+`<counter>` タグが、Marko の `<input>` のようなネイティブタグと同じ制御可能なパターンに従うようにしたいと考えています。[`<let>` も制御可能である](../reference/core-tag.md#controllable-let)という事実を利用しましょう。
 
 ```marko
 /* counter.marko */
@@ -166,25 +166,25 @@ export interface Input {
 </button>
 ```
 
-This component now has two behaviors, depending on the `<let>` tag's `valueChange`:
+このコンポーネントは、`<let>` タグの `valueChange` に応じて2つの動作を持つようになりました：
 
-- When `countChange` is a function
-  - `<let>` forfeits control of its state and acts as a derivation of `input.count`
-- When `countChange` is `undefined`
-  - `<let>` acts just as it did in our first example
+- `countChange` が関数の場合
+  - `<let>` は状態の制御を放棄し、`input.count` の派生として機能する
+- `countChange` が `undefined` の場合
+  - `<let>` は最初の例と同様に機能する
 
 ```marko
 /* parent.marko */
 <let/parentCount=0>
 
-// `parentCount` is the source of truth
+// `parentCount` が信頼できる情報源
 <counter count=parentCount countChange(count) { parentCount = count }/>
 
-// This one holds its own state
+// これは独自の状態を保持する
 <counter/>
 ```
 
-The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) accommodates both sides of this exchange, as it acts differently for identifiers and member expressions.
+[バインディングの省略記法](../reference/language.md#shorthand-change-handlers-two-way-binding)は、識別子とメンバー式で異なる動作をするため、この交換の両側に対応しています。
 
 ```marko
 /* counter.marko */
@@ -209,11 +209,11 @@ export interface Input {
 <output>${count}</output>
 ```
 
-## More Power
+## より多くの力
 
-The controllable pattern allows the _user_ of a component to decide whether to manage state. Simple cases remain simple, but complex state management is also possible.
+制御可能なパターンにより、コンポーネントの_ユーザー_が状態を管理するかどうかを決定できます。シンプルなケースはシンプルなままですが、複雑な状態管理も可能です。
 
-We've only scratched the surface! When a parent hoists state up, it takes _full_ control. This means we can add a max value:
+表面をなぞっただけです！親が状態を引き上げると、_完全な_制御を得ます。つまり、最大値を追加できます：
 
 ```marko
 /* parent.marko */
@@ -228,7 +228,7 @@ We've only scratched the surface! When a parent hoists state up, it takes _full_
 }/>
 ```
 
-or perform validation:
+または検証を実行できます：
 
 ```marko
 /* parent.marko */
@@ -241,9 +241,9 @@ or perform validation:
 }/>
 ```
 
-The key is that the _parent_ decides what to do with state. If components are designed with the controllable pattern, they can be used in various scenarios without requiring changes to the component itself.
+重要なのは、_親_が状態で何をするかを決定することです。コンポーネントが制御可能なパターンで設計されている場合、コンポーネント自体を変更することなく、さまざまなシナリオで使用できます。
 
-## Further Reading
+## さらに読む
 
-- [Nested Reactivity](./nested-reactivity.md)
-- [Separation of Concerns](./separation-of-concerns.md)
+- [ネストされたリアクティビティ](./nested-reactivity.md)
+- [関心の分離](./separation-of-concerns.md)

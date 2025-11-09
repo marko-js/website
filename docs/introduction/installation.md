@@ -1,19 +1,19 @@
-# Install Marko
+# Markoのインストール
 
 > [!NOTE]
-> If you'd like to experiment and learn about Marko directly in your browser, head over to our [Playground](/playground). You can develop a Marko application right there without any local setup.
+> ブラウザで直接Markoを試して学びたい場合は、[Playground](/playground)にアクセスしてください。ローカルセットアップなしでMarkoアプリケーションをすぐに開発できます。
 
-## Prerequisites
+## 前提条件
 
-- [Node.js](https://nodejs.org/en) `v18`, `v20`, `v22` or higher.
-- IDE - We recommend [VS Code](https://code.visualstudio.com/) and our [Official Marko extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode)
-- Terminal - You will use the command-line interface (CLI) to set up and start the application.
+- [Node.js](https://nodejs.org/en) `v18`、`v20`、`v22`以降
+- IDE - [VS Code](https://code.visualstudio.com/)と[公式Marko拡張機能](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode)を推奨します
+- ターミナル - コマンドラインインターフェース（CLI）を使用してアプリケーションをセットアップし、起動します
 
-## Marko Run Setup (Recommended)
+## Marko Runのセットアップ（推奨）
 
-[Marko Run](https://github.com/marko-js/run) makes it easy to get started with minimal configuration and is the recommended starting point for a new Marko project. It's the official application framework from the Marko team and powered by [Vite](https://vite.dev/).
+[Marko Run](https://github.com/marko-js/run)は最小限の設定で簡単に始められ、新しいMarkoプロジェクトの推奨開始点です。Markoチームの公式アプリケーションフレームワークで、[Vite](https://vite.dev/)を使用しています。
 
-To set up your project:
+プロジェクトをセットアップするには：
 
 ```bash
 npm init marko -- -t basic
@@ -21,46 +21,46 @@ cd ./my-marko-application
 npm run dev
 ```
 
-Open `src/routes/+page.marko` in your editor to modify the index page. See the [routing documentation](https://github.com/marko-js/run#file-based-routing) to learn how to add additional pages to your project.
+エディタで`src/routes/+page.marko`を開いてインデックスページを編集してください。プロジェクトにページを追加する方法については、[ルーティングドキュメント](https://github.com/marko-js/run#file-based-routing)を参照してください。
 
-## Manual Setup
+## 手動セットアップ
 
-If you prefer to create your own application structure, you can set up your project using your preferred bundler. The Marko team maintains the plugins for [Vite](https://github.com/marko-js/vite), [Webpack](https://github.com/marko-js/webpack), and [Rollup](https://github.com/marko-js/rollup). The following guide will help you set up Vite.
+独自のアプリケーション構造を作成したい場合は、お好みのバンドラを使用してプロジェクトをセットアップできます。Markoチームは[Vite](https://github.com/marko-js/vite)、[Webpack](https://github.com/marko-js/webpack)、[Rollup](https://github.com/marko-js/rollup)のプラグインを保守しています。以下のガイドでは、Viteのセットアップを行います。
 
-1. **Create your project directory**
+1. **プロジェクトディレクトリを作成する**
 
-   Create an empty directory with your project's name and navigate into it:
+   プロジェクト名で空のディレクトリを作成し、その中に移動します：
 
    ```bash
    mkdir my-marko-application
    cd my-marko-application
    ```
 
-   Once inside the directory, initialize your `package.json` file, which is used to manage your project's dependencies:
+   ディレクトリ内で、プロジェクトの依存関係を管理するために使用される`package.json`ファイルを初期化します：
 
    ```bash
    npm init --yes
    ```
 
-1. **Install Marko**
+1. **Markoをインストールする**
 
-   Let's install the dependencies required for Marko.
+   Markoに必要な依存関係をインストールしましょう。
 
-   First, install `marko` 6 as your dependency.
+   まず、`marko` 6を依存関係としてインストールします。
 
    ```bash
    npm install marko@next
    ```
 
-   Next, install Vite and the Marko plugin as development dependencies using the npm `-D` flag:
+   次に、npmの`-D`フラグを使用して、Viteとmarkoプラグインを開発依存関係としてインストールします：
 
    ```bash
    npm install -D vite @marko/vite
    ```
 
-1. **Create the `vite.config.ts` file**
+1. **`vite.config.ts`ファイルを作成する**
 
-   Create `vite.config.ts` file to export the [Vite configuration](https://vite.dev/config/) and add the `marko()` plugin to the `plugins` list.
+   [Vite設定](https://vite.dev/config/)をエクスポートし、`plugins`リストに`marko()`プラグインを追加するために、`vite.config.ts`ファイルを作成します。
 
    ```typescript
    import { defineConfig } from "vite";
@@ -71,9 +71,9 @@ If you prefer to create your own application structure, you can set up your proj
    });
    ```
 
-1. **Create your first Marko page**
+1. **最初のMarkoページを作成する**
 
-   In your text editor, create a `src/routes/index.marko` file. This will be your first Marko page of the project. Copy and paste the following content into the new file:
+   テキストエディタで`src/routes/index.marko`ファイルを作成します。これがプロジェクトの最初のMarkoページになります。新しいファイルに以下の内容をコピー＆ペーストします：
 
    ```marko
    <html lang="en">
@@ -83,17 +83,17 @@ If you prefer to create your own application structure, you can set up your proj
    </html>
    ```
 
-1. **Add a server**
+1. **サーバーを追加する**
 
-   By default, the `marko()` plugin requires the use of [Vite Server Side Rendering (SSR) mode](https://vite.dev/guide/ssr.html#server-side-rendering-ssr) (this can be disabled with the Marko plugin's `linked` option). Therefore, you need to create a server file to start your application. This guide will use [`express`](https://expressjs.com/).
+   デフォルトでは、`marko()`プラグインは[Vite Server Side Rendering (SSR) モード](https://vite.dev/guide/ssr.html#server-side-rendering-ssr)の使用を必要とします（これはMarkoプラグインの`linked`オプションで無効にできます）。したがって、アプリケーションを起動するためにサーバーファイルを作成する必要があります。このガイドでは[`express`](https://expressjs.com/)を使用します。
 
-   First, install `express`:
+   まず、`express`をインストールします：
 
    ```bash
    npm install express
    ```
 
-   Now, create the server logic inside an `index.js` file. This code sets up an Express server and integrates with Vite for handling server-side rendering of a Marko template. For simplicity, this setup is intended for development environments only. For more examples, refer to the [Marko JS examples repository](https://github.com/marko-js/examples/tree/master/examples).
+   次に、`index.js`ファイル内にサーバーロジックを作成します。このコードは、Expressサーバーをセットアップし、Markoテンプレートのサーバーサイドレンダリングを処理するためにViteと統合します。簡単にするために、このセットアップは開発環境専用です。より多くの例については、[Marko JSサンプルリポジトリ](https://github.com/marko-js/examples/tree/master/examples)を参照してください。
 
    ```javascript
    import express from "express";
@@ -122,23 +122,23 @@ If you prefer to create your own application structure, you can set up your proj
    app.listen(3000);
    ```
 
-   Note that `?marko-server-entry` is used to indicate the server code's entry point to the Vite plugin.
+   `?marko-server-entry`は、サーバーコードのエントリーポイントをViteプラグインに示すために使用されることに注意してください。
 
-1. **Start the application**
+1. **アプリケーションを起動する**
 
-   You can now start the application using the command below and access http://localhost:3000 to see the preview of your code while you build your app!
+   以下のコマンドを使用してアプリケーションを起動し、http://localhost:3000 にアクセスして、アプリの構築中にコードのプレビューを確認できます！
 
    ```bash
    node index.js
    ```
 
-## Set up TypeScript
+## TypeScriptのセットアップ
 
-Marko’s TypeScript support offers in-editor error checking, makes refactoring less scary, verifies that data matches expectations, and even helps with API design.
+MarkoのTypeScriptサポートは、エディタ内でのエラーチェック、リファクタリングの不安軽減、データが期待に一致することの検証、さらにはAPI設計の支援を提供します。
 
-Or perhaps you simply want more autocomplete in VS Code—that works too!
+または、単にVS Codeでより多くのオートコンプリートが欲しいだけかもしれません。それもうまくいきます！
 
-To add TypeScript support to your Marko application, add a `tsconfig.json` file in the project's root directory. You can use the following `tsconfig.json` as a starting point:
+MarkoアプリケーションにTypeScriptサポートを追加するには、プロジェクトのルートディレクトリに`tsconfig.json`ファイルを追加します。開始点として以下の`tsconfig.json`を使用できます：
 
 ```json
 {
@@ -161,28 +161,28 @@ To add TypeScript support to your Marko application, add a `tsconfig.json` file 
 }
 ```
 
-For type checking Marko files in the CLI, you can install `@marko/type-check` in your project with the following command:
+CLIでMarkoファイルの型チェックを行うには、以下のコマンドでプロジェクトに`@marko/type-check`をインストールできます：
 
 ```bash
 npm install -D @marko/type-check
 ```
 
-You can then use `mtc` (Marko type check) instead of `tsc`:
+その後、`tsc`の代わりに`mtc`（Marko type check）を使用できます：
 
 ```bash
 mtc
 ```
 
-For more information about working with Marko and TypeScript check [this reference page](../reference/typescript.md).
+MarkoとTypeScriptの使用に関する詳細については、[このリファレンスページ](../reference/typescript.md)をご覧ください。
 
-## IDE Plugin
+## IDEプラグイン
 
-The Marko team maintains a [Marko VS Code extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) that provides Marko syntax highlighting, pretty-printing, TypeScript, IntelliSense, and more.
+Markoチームは、Markoのシンタックスハイライト、整形、TypeScript、IntelliSenseなどを提供する[Marko VS Code拡張機能](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode)を保守しています。
 
-For other editors, you can use the Marko [language server](https://github.com/marko-js/language-server/tree/main) to enhance the developer experience with Marko in your IDE.
+他のエディタの場合、Marko [language server](https://github.com/marko-js/language-server/tree/main)を使用してIDEでのMarkoの開発者エクスペリエンスを向上させることができます。
 
-## Next steps
+## 次のステップ
 
-- [Syntax Fundamentals](../tutorial/fundamentals.md)
-- [Components & Reactivity](../tutorial/components-and-reactivity.md)
-- [Tooling Integrations](./integrations.md)
+- [構文の基礎](../tutorial/fundamentals.md)
+- [コンポーネントとリアクティビティ](../tutorial/components-and-reactivity.md)
+- [ツール統合](./integrations.md)

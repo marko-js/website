@@ -1,72 +1,72 @@
-# HTML Streaming
+# HTML ストリーミング
 
 > [!TLDR]
 >
-> - HTML streaming sends content to browsers incrementally
-> - `<await>` and `<try>` tags enable async rendering
-> - Built-in error handling and loading states are included
+> - HTML ストリーミングはコンテンツをブラウザに段階的に送信する
+> - `<await>` と `<try>` タグは非同期レンダリングを可能にする
+> - 組み込みのエラーハンドリングとローディング状態が含まれる
 
-Marko provides a powerful, yet simple, declarative approach to HTML streaming via `<await>` and `<try>` to improve perceived and real performance of your pages.
+Marko は、`<await>` と `<try>` を介して HTML ストリーミングへの強力でありながらシンプルな宣言的アプローチを提供し、ページの知覚されるパフォーマンスと実際のパフォーマンスを向上させます。
 
-Streaming is the process of transmitting data incrementally as it’s generated. On the web, **HTML streaming** means sending HTML to the browser chunk-by-chunk, as soon as it's ready, rather than waiting until the entire document is completed.
+ストリーミングは、生成されるデータを段階的に送信するプロセスです。ウェブでは、**HTML ストリーミング**とは、ドキュメント全体が完成するまで待つのではなく、準備ができ次第、HTML をブラウザにチャンクごとに送信することを意味します。
 
-In contrast, **buffering** means generating the full HTML page first, and only then sending it to the browser.
+対照的に、**バッファリング**とは、完全な HTML ページを最初に生成し、その後でのみブラウザに送信することを意味します。
 
-## Background & History
+## 背景と歴史
 
-- **Origins of Progressive Rendering**
+- **プログレッシブレンダリングの起源**
 
-  - Browsers supported progressive rendering—the ability to render an partial HTML page—as early as Netscape Navigator 1.0 released in 1994
-  - Chunked transfer encoding—enabling servers to send a partial response—was introduced as part of HTTP/1.1 in 1999
-    - HTTP/2 and HTTP/3 are chunked (technically [framed](https://httpwg.org/specs/rfc7540.html#:~:text=of%20the%20connection.-,frame,-%3A)) by default
-  - Although supported at the protocol level, most high level web libraries across most programming languages have buffered HTML responses
-  - Within the JS ecosystem we've only seen HTML streaming become more mainstream in the 2020s
+  - ブラウザは、1994年にリリースされた Netscape Navigator 1.0 の頃から、部分的な HTML ページをレンダリングする能力であるプログレッシブレンダリングをサポートしていました
+  - チャンク転送エンコーディング（サーバーが部分的なレスポンスを送信できるようにする）は、1999年に HTTP/1.1 の一部として導入されました
+    - HTTP/2 と HTTP/3 はデフォルトでチャンク化されています（技術的には[フレーム化](https://httpwg.org/specs/rfc7540.html#:~:text=of%20the%20connection.-,frame,-%3A)）
+  - プロトコルレベルでサポートされているにもかかわらず、ほとんどのプログラミング言語のほとんどの高レベルウェブライブラリは HTML レスポンスをバッファリングしてきました
+  - JS エコシステム内では、2020年代になってようやく HTML ストリーミングがよりメインストリームになり始めました
 
-- **Marko’s Streaming History**
+- **Marko のストリーミング履歴**
 
-  - Marko has supported streaming [since its inception in 2014](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/)
+  - Marko は[2014年の設立以来](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/)ストリーミングをサポートしています
 
-### Types of HTML Streaming
+### HTML ストリーミングのタイプ
 
-- **In-order streaming**
+- **順序どおりのストリーミング**
 
-  - HTML arrives in the exact order of document structure.
+  - HTML はドキュメント構造の正確な順序で到着します。
 
-- **Out-of-order streaming**
+- **順序どおりでないストリーミング**
 
-  - HTML fragments arrive as data becomes ready, even if out of sequence.
-  - Requires minimal JavaScript client-side to rearrange HTML in correct order.
+  - HTML フラグメントは、シーケンスが順不同であっても、データが準備できると到着します。
+  - クライアント側で HTML を正しい順序に並べ替えるために、最小限の JavaScript が必要です。
 
-## Benefits of Streaming
+## ストリーミングのメリット
 
-### Perceived Performance (User Experience)
+### 知覚されるパフォーマンス（ユーザーエクスペリエンス）
 
-- Users see content immediately, improving engagement.
-- Reduces perceived loading times significantly by showing progressive content.
+- ユーザーは即座にコンテンツを見ることができ、エンゲージメントが向上します。
+- プログレッシブコンテンツを表示することで、知覚される読み込み時間を大幅に短縮します。
 
-### Real Performance (Network & Rendering)
+### 実際のパフォーマンス（ネットワークとレンダリング）
 
-- **Faster Time to First Byte (TTFB)**
-  Content starts arriving sooner, browsers begin parsing immediately.
-- **Earlier Asset Downloads**
-  CSS, fonts, and JavaScript can begin downloading before the entire page HTML completes.
-- **Improved Time to Interactive (TTI)**
-  Users can start interacting with visible components faster.
+- **最初のバイトまでの時間（TTFB）の短縮**
+  コンテンツがより早く到着し始め、ブラウザは即座に解析を開始します。
+- **より早いアセットのダウンロード**
+  ページ全体の HTML が完成する前に、CSS、フォント、JavaScript のダウンロードを開始できます。
+- **インタラクティブになるまでの時間（TTI）の改善**
+  ユーザーは表示されているコンポーネントとより早くインタラクションを開始できます。
 
-### Reduced Server Load
+### サーバー負荷の削減
 
-- Incremental streaming reduces memory usage.
-- Lower latency and increased throughput.
+- 段階的なストリーミングはメモリ使用量を削減します。
+- レイテンシの低下とスループットの向上。
 
-## How to Stream using Marko 6
+## Marko 6 を使用したストリーミング方法
 
-Marko provides intuitive built-in tags to handle asynchronous HTML generation and streaming:
+Marko は、非同期 HTML 生成とストリーミングを処理するための直感的な組み込みタグを提供します：
 
 ### `<await>`
 
-Wait for a promise to render a section of the template
+テンプレートのセクションをレンダリングするために Promise を待機します
 
-**Syntax example:**
+**構文例：**
 
 ```marko
 <await|user|=getUser()>
@@ -75,14 +75,14 @@ Wait for a promise to render a section of the template
 </await>
 ```
 
-- Marko will flush as much HTML content as possible up to an `<await>`
-- Upon resolution of `getUser()`, the remaining HTML will be flushed
+- Marko は `<await>` まで可能な限り多くの HTML コンテンツをフラッシュします
+- `getUser()` が解決されると、残りの HTML がフラッシュされます
 
 ### `<try>`
 
-Manage asynchronous boundaries, handle loading states, and gracefully catch errors within streaming (and non-streaming) HTML.
+非同期境界を管理し、ローディング状態を処理し、ストリーミング（および非ストリーミング）HTML 内でエラーを適切にキャッチします。
 
-**Basic syntax:**
+**基本構文：**
 
 ```marko
 <try>
@@ -102,48 +102,48 @@ Manage asynchronous boundaries, handle loading states, and gracefully catch erro
 
 #### `@placeholder`
 
-- Provides temporary content displayed immediately while asynchronous data is loading.
-- Opts into out of order rendering.
-  - Marko supports rendering HTML fragments as soon as they’re ready, regardless of document order.
-  - Automatically inserts minimal JavaScript to rearrange DOM elements on the client-side for correct final positioning.
+- 非同期データが読み込まれている間、即座に表示される一時的なコンテンツを提供します。
+- 順序どおりでないレンダリングを選択します。
+  - Marko は、ドキュメントの順序に関係なく、準備ができ次第 HTML フラグメントをレンダリングすることをサポートします。
+  - 正しい最終的な配置のために、クライアント側で DOM 要素を並べ替えるための最小限の JavaScript を自動的に挿入します。
 
 #### `@catch`
 
-- Captures and handles runtime errors occurring within rendered content, preventing the entire page from breaking.
+- レンダリングされたコンテンツ内で発生するランタイムエラーをキャプチャして処理し、ページ全体が壊れるのを防ぎます。
 
-## Troubleshooting & Common Pitfalls
+## トラブルシューティングと一般的な落とし穴
 
-### Avoiding Layout Shift (CLS)
+### レイアウトシフトの回避（CLS）
 
-Out-of-order streaming involves temporary placeholders being replaced with real content once it is ready. If not handled properly, this can cause content the user is reading or interacting with to shift, leading to a poor user experience.
+順序どおりでないストリーミングには、準備ができると実際のコンテンツに置き換えられる一時的なプレースホルダーが含まれます。適切に処理されないと、ユーザーが読んでいたりインタラクションしているコンテンツがシフトし、ユーザーエクスペリエンスが低下する可能性があります。
 
-- Use placeholders that reserve the correct amount of space.
-- Utilize loading indicators/skeleton screens that accurately represent the content.
-- Fallback to in-order streaming where it makes sense or content size cannot be determined
+- 正しいスペースを確保するプレースホルダーを使用します。
+- コンテンツを正確に表すローディングインジケーター/スケルトン画面を利用します。
+- 意味がある場合や、コンテンツサイズを決定できない場合は、順序どおりのストリーミングにフォールバックします
 
-### Avoiding Buffering
+### バッファリングの回避
 
-Even though streaming has been supported on the web for decades and more tools are utilizing it, you may still find that some default configurations of third parties may assume a buffered response. Here are some known culprits that may buffer your server’s output HTTP streams:
+ストリーミングは数十年前からウェブでサポートされており、より多くのツールがそれを利用していますが、サードパーティのデフォルト設定の一部は、バッファリングされたレスポンスを前提としている場合があります。以下は、サーバーの出力 HTTP ストリームをバッファリングする可能性のある既知の原因です：
 
-#### Reverse proxies/load balancers
+#### リバースプロキシ/ロードバランサー
 
-- Turn off proxy buffering, or if you can’t, set the proxy buffer sizes to be reasonably small.
-- Make sure the “upstream” HTTP version is 1.1 or higher; HTTP/1.0 and lower do not support streaming.
-- Some software doesn’t support HTTP/2 or higher “upstream” connections at all or very well — if your Node server uses HTTP/2, you may need to downgrade.
-- Check if “upstream” connections are `keep-alive`: overhead from closing and reopening connections may delay responses.
-- For typical modern webpage filesizes, the following bullet points probably won’t matter. But if you want to stream **small chunks of data with the lowest latency**, investigate these sources of buffering:
-  - Automatic gzip/brotli compression may have their buffer sizes set too high; you can tune their buffers to be smaller for faster streaming in exchange for slightly worse compression.
-  - You can [tune HTTPS record sizes for lower latency, as described in High Performance Browser Networking](https://hpbn.co/transport-layer-security-tls/#optimize-tls-record-size).
-  - Turning off MIME sniffing with [the `X-Content-Type-Options`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options) header eliminates browser buffering at the very beginning of HTTP responses
+- プロキシバッファリングをオフにするか、できない場合は、プロキシバッファサイズを合理的に小さく設定します。
+- 「アップストリーム」HTTP バージョンが 1.1 以上であることを確認してください。HTTP/1.0 以下はストリーミングをサポートしていません。
+- 一部のソフトウェアは、HTTP/2 以上の「アップストリーム」接続をまったくサポートしていないか、あまりうまくサポートしていません。Node サーバーが HTTP/2 を使用している場合は、ダウングレードが必要になる場合があります。
+- 「アップストリーム」接続が `keep-alive` かどうかを確認してください：接続を閉じて再度開くオーバーヘッドがレスポンスを遅らせる可能性があります。
+- 典型的な現代のウェブページファイルサイズの場合、以下の項目はおそらく重要ではありません。しかし、**最も低いレイテンシで小さなデータチャンクをストリーミングしたい**場合は、以下のバッファリングのソースを調査してください：
+  - 自動 gzip/brotli 圧縮のバッファサイズが高すぎる設定になっている可能性があります。わずかに圧縮が悪化する代わりに、より高速なストリーミングのためにバッファを小さくチューニングできます。
+  - [High Performance Browser Networking で説明されているように、低レイテンシのために HTTPS レコードサイズをチューニング](https://hpbn.co/transport-layer-security-tls/#optimize-tls-record-size)できます。
+  - [`X-Content-Type-Options` ヘッダー](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options)で MIME スニッフィングをオフにすると、HTTP レスポンスの最初でのブラウザバッファリングが排除されます
 
 <details>
   <summary><strong>NGiNX</strong></summary>
 
-Most of NGiNX’s relevant parameters are inside [its builtin `http_proxy` module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering):
+NGiNX の関連するパラメータのほとんどは[組み込みの `http_proxy` モジュール](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering)内にあります：
 
 ```
-proxy_http_version 1.1; # 1.0 by default
-proxy_buffering off; # on by default
+proxy_http_version 1.1; # デフォルトは 1.0
+proxy_buffering off; # デフォルトは on
 ```
 
 </details>
@@ -151,24 +151,24 @@ proxy_buffering off; # on by default
 <details>
   <summary><strong>Apache</strong></summary>
 
-Apache’s default configuration works fine with streaming, but your host may have it configured differently. The relevant Apache configuration is inside [its `mod_proxy` and `mod_proxy_*` modules](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) and their [associated environment variables](https://httpd.apache.org/docs/2.4/env.html).
+Apache のデフォルト設定はストリーミングで問題なく動作しますが、ホストが異なる設定をしている可能性があります。関連する Apache 設定は[`mod_proxy` および `mod_proxy_*` モジュール](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html)と、それらの[関連する環境変数](https://httpd.apache.org/docs/2.4/env.html)内にあります。
 
 </details>
 
-#### CDNs
+#### CDN
 
-Content Delivery Networks (CDNs) consider efficient streaming one of their best features, but it may be off by default or if certain features are enabled.
+コンテンツデリバリーネットワーク（CDN）は、効率的なストリーミングを最良の機能の1つと考えていますが、デフォルトでオフになっているか、特定の機能が有効になっている場合があります。
 
 <details>
   <summary><strong>Fastly (Varnish)</strong></summary>
 
-For Fastly or another provider that uses VCL configuration, check [if backend responses have `beresp.do_stream = true` set](https://developer.fastly.com/reference/vcl/variables/backend-response/beresp-do-stream/).
+Fastly または VCL 設定を使用する別のプロバイダーの場合、[バックエンドレスポンスに `beresp.do_stream = true` が設定されているかどうか](https://developer.fastly.com/reference/vcl/variables/backend-response/beresp-do-stream/)を確認してください。
 
 </details>
 <details>
   <summary><strong>Akamai</strong></summary>
 
-Some [Akamai features designed to mitigate slow backends can ironically slow down fast chunked responses](https://community.akamai.com/customers/s/question/0D50f00006n975d/enabling-chunked-transfer-encoding-responses). Try toggling off Adaptive Acceleration, Ion, mPulse, Prefetch, and/or similar performance features. Also check for the following in the configuration:
+遅いバックエンドを軽減するように設計された[一部の Akamai 機能は、皮肉なことに高速チャンクレスポンスを遅くする可能性があります](https://community.akamai.com/customers/s/question/0D50f00006n975d/enabling-chunked-transfer-encoding-responses)。Adaptive Acceleration、Ion、mPulse、Prefetch、および/または類似のパフォーマンス機能をオフにしてみてください。また、設定内で以下を確認してください：
 
 ```
 <network:http.buffer-response-v2>off</network:http.buffer-response-v2>
@@ -176,9 +176,9 @@ Some [Akamai features designed to mitigate slow backends can ironically slow dow
 
 </details>
 
-#### Node.js itself
+#### Node.js 自体
 
-For extreme cases where [Node streams very small HTML chunks with its built-in compression modules](https://github.com/marko-js/marko/pull/1641), you may need to tweak the compressor stream settings. Here’s an example with `createGzip` and its `Z_PARTIAL_FLUSH` flag:
+[Node が組み込みの圧縮モジュールで非常に小さな HTML チャンクをストリーミングする](https://github.com/marko-js/marko/pull/1641)極端なケースでは、コンプレッサーストリーム設定を調整する必要がある場合があります。以下は `createGzip` とその `Z_PARTIAL_FLUSH` フラグの例です：
 
 ```js
 import http from "http";

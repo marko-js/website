@@ -1,77 +1,77 @@
-# Getting Started
+# はじめに
 
-Marko Run is a framework for building web applications with Marko. This is a _meta_-framework for Marko, similar to Next.js or Remix for React, SvelteKit for Svelte, and Nuxt for Vue.
+Marko Run は、Marko で Web アプリケーションを構築するためのフレームワークです。これは Marko の _メタ_ フレームワークで、React の Next.js や Remix、Svelte の SvelteKit、Vue の Nuxt と同様のものです。
 
-Marko Run is powered by Vite, a fast and modern build tool that provides a great developer experience. It is designed to be easy to use and flexible, allowing developers to build applications with Marko quickly and efficiently.
+Marko Run は、優れた開発者体験を提供する高速で最新のビルドツールである Vite を使用しています。使いやすく柔軟性があり、開発者が Marko でアプリケーションを迅速かつ効率的に構築できるように設計されています。
 
-## Using a Template
+## テンプレートの使用
 
-Marko's CLI provides a variety of templates to get started with Marko, many of which use Marko Run.
+Marko の CLI は、Marko を始めるためのさまざまなテンプレートを提供しており、その多くは Marko Run を使用しています。
 
 ```sh
 npm init marko
 ```
 
-## Starting from Zero
+## ゼロから始める
 
-The smallest possible Marko Run project requires just a few files.
+最小限の Marko Run プロジェクトには、わずか数個のファイルが必要です。
 
 ```sh
 npm init
 npm install @marko/run
 ```
 
-## Adding to an Existing Project
+## 既存のプロジェクトへの追加
 
-Marko Run can be added to an existing Marko project by installing the package.
+Marko Run は、パッケージをインストールすることで既存の Marko プロジェクトに追加できます。
 
 ```sh
 npm install @marko/run
 ```
 
-## Zero Config Setup
+## ゼロコンフィグ設定
 
-`marko-run` enables quick project initialization with minimal configuration. The package ships with a default Vite config and node-based adapter.
+`marko-run` は、最小限の設定で迅速なプロジェクトの初期化を可能にします。パッケージには、デフォルトの Vite 設定と node ベースのアダプターが付属しています。
 
-Starting with a template:
+テンプレートから始める場合：
 
-1. Create a new project
+1. 新しいプロジェクトを作成
 
    ```sh
    npm init marko -- -t basic
    ```
 
-2. Navigate to project directory
+2. プロジェクトディレクトリに移動
 
    ```sh
    cd PROJECT_NAME
    ```
 
-3. Start development server
+3. 開発サーバーを起動
 
    ```sh
    npm run dev
    ```
 
-Manual project setup:
+手動でプロジェクトを設定する場合：
 
-1. Install the required package: `npm install @marko/run`
-2. Create the entry file: `src/routes/+page.marko`
-3. Start the development server: `npm exec marko-run`
+1. 必要なパッケージをインストール：`npm install @marko/run`
+2. エントリーファイルを作成：`src/routes/+page.marko`
+3. 開発サーバーを起動：`npm exec marko-run`
 
-The application will be available at `http://localhost:3000` 🚀
+アプリケーションは `http://localhost:3000` で利用可能になります 🚀
 
-## CLI Commands
+## CLI コマンド
 
 ### `marko-run dev`
 
-Starts a development server in watch mode
+ウォッチモードで開発サーバーを起動します
 
 ```sh
 npm exec marko-run
 ```
 
-or (with explicit sub command)
+または（明示的なサブコマンドを使用）
 
 ```sh
 npm exec marko-run dev
@@ -79,7 +79,7 @@ npm exec marko-run dev
 
 ### `marko-run build`
 
-Creates a production build
+本番用ビルドを作成します
 
 ```sh
 npm exec marko-run build
@@ -87,7 +87,7 @@ npm exec marko-run build
 
 ### `marko-run preview`
 
-Creates a production build and start the preview server
+本番用ビルドを作成し、プレビューサーバーを起動します
 
 ```sh
 npm exec marko-run preview

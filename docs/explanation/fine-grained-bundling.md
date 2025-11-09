@@ -1,17 +1,17 @@
-# Fine-Grained Bundling
+# 細粒度バンドリング
 
 > [!TLDR]
-> - Marko bundles only interactive JavaScript at compile time
-> - Static content requires zero client-side JavaScript
-> - Bundle size depends on interactivity, not architecture
+> - Marko はコンパイル時にインタラクティブな JavaScript のみをバンドルする
+> - 静的コンテンツにはクライアント側の JavaScript が不要
+> - バンドルサイズはアーキテクチャではなく、インタラクティビティに依存する
 
-Marko uses **compile-time analysis** to generate minimal JavaScript bundles by identifying which parts of templates actually need interactivity. Instead of shipping entire component trees, only the code necessary for dynamic behavior reaches the browser. This means that Marko is **zero-JS by default**, and interactive pages only ship JavaScript for the parts that truly need it.
+Marko は**コンパイル時解析**を使用して、テンプレートのどの部分が実際にインタラクティビティを必要とするかを識別することで、最小限の JavaScript バンドルを生成します。コンポーネントツリー全体を配信する代わりに、動的な動作に必要なコードのみがブラウザに到達します。つまり、Marko は**デフォルトで JavaScript ゼロ**であり、インタラクティブなページは真に必要な部分に対してのみ JavaScript を配信します。
 
-## Beyond Islands
+## アイランドを超えて
 
-Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to reduce JavaScript in each page bundle. Islands are determined at the **component** level, so applications authored in an islands-based framework need clear distinction between _server_ components and _client_ components.
+Marko の古いバージョンを含む一部のフレームワークは、各ページバンドル内の JavaScript を削減するために[アイランドアーキテクチャ](https://www.patterns.dev/vanilla/islands-architecture/)を使用しています。アイランドは**コンポーネント**レベルで決定されるため、アイランドベースのフレームワークで作成されたアプリケーションは、_サーバー_コンポーネントと_クライアント_コンポーネントの明確な区別が必要です。
 
-In Marko 6 the compiler decides which code to is interactive based on the _state_ tree, and only includes what is necessary in the browser bundle. Consider this tag that includes an interactive "watch" button:
+Marko 6 では、コンパイラは_状態_ツリーに基づいてどのコードがインタラクティブかを決定し、ブラウザバンドルに必要なものだけを含めます。インタラクティブな「watch」ボタンを含むこのタグを考えてみましょう：
 
 ```marko
 /* shop-item.marko */
@@ -19,8 +19,8 @@ In Marko 6 the compiler decides which code to is interactive based on the _state
   <h3>${input.name}</h3>
 
   <${input.content}/>
-  
-  // Interactive toggle
+
+  // インタラクティブなトグル
   <let/watching:=input.watching>
   <button onClick() { watching = !watching }>
     ${watching ? "watching" : "watch"}
@@ -28,13 +28,12 @@ In Marko 6 the compiler decides which code to is interactive based on the _state
 </div>
 ```
 
-Only the JavaScript for toggling `watching` and updating the button text is included. JavaScript for rendering static content or creating the button element is not included.
+`watching` をトグルし、ボタンテキストを更新するための JavaScript のみが含まれます。静的コンテンツをレンダリングしたり、ボタン要素を作成したりするための JavaScript は含まれません。
 
-## Automatic Optimization
+## 自動最適化
 
-Marko's compiler automatically determines what needs JavaScript without manual configuration.
+Marko のコンパイラは、手動設定なしで何が JavaScript を必要とするかを自動的に判断します。
 
-Whether an application is structured as one large component or split into many small ones, the bundle size remains the same—determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
+アプリケーションが1つの大きなコンポーネントとして構造化されているか、多くの小さなコンポーネントに分割されているかにかかわらず、バンドルサイズは同じままです。つまり、コンポーネントアーキテクチャではなく、純粋にインタラクティビティの量によって決定されます。コンパイラは、コードがどのように構成されているかに関係なく、インタラクティブな部分のみを抽出します。このようにして、コンポーネントは[関心の分離](./separation-of-concerns.md)に従って分割できます。
 
-This creates a development experience where good performance emerges naturally from the compilation process. Architectural decisions become about maintainability and developer experience, while the compiler handles optimization automatically.
-
+これにより、コンパイルプロセスから自然に優れたパフォーマンスが生まれる開発体験が生まれます。アーキテクチャの決定は保守性と開発者体験に関するものになり、コンパイラが自動的に最適化を処理します。

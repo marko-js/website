@@ -1,14 +1,14 @@
-# Marko Fundamentals
+# Markoの基礎
 
 > [!TLDR]
 >
-> Marko builds on top of HTML, enabling components and JavaScript-based interpolation
+> MarkoはHTMLをベースに構築されており、コンポーネントとJavaScriptベースの補間を可能にします
 
-Marko is designed to feel familiar if you know HTML, while making it easy to build dynamic, interactive websites. Let's walk through the core concepts.
+Markoは、HTMLを知っていれば親しみやすく感じられるように設計されており、動的でインタラクティブなウェブサイトを簡単に構築できます。コアコンセプトを見ていきましょう。
 
-## Templates are HTML
+## テンプレートはHTML
 
-Nearly any valid HTML is also valid Marko code. We can start with regular HTML and gradually add features as needed.
+ほぼすべての有効なHTMLは、有効なMarkoコードでもあります。通常のHTMLから始めて、必要に応じて徐々に機能を追加できます。
 
 ```marko
 <h1>My Blog</h1>
@@ -18,9 +18,9 @@ Nearly any valid HTML is also valid Marko code. We can start with regular HTML a
 </nav>
 ```
 
-## Attributes are JS
+## 属性はJS
 
-Almost all valid JavaScript expressions can be written as attribute values.
+ほぼすべての有効なJavaScript式を属性値として記述できます。
 
 ```marko
 <a href=`/user/${user.id}`>My Profile</a>
@@ -28,21 +28,21 @@ Almost all valid JavaScript expressions can be written as attribute values.
 ```
 
 > [!NOTE]
-> The Reference Docs explain [more about Attributes](../reference/language.md#attributes) including how they support [`...spreads`](../reference/language.md#spread-attributes) and [`methods()`](../reference/language.md#shorthand-methods).
+> リファレンスドキュメントでは、[`...spreads`](../reference/language.md#spread-attributes)や[`methods()`](../reference/language.md#shorthand-methods)のサポートを含む[属性の詳細](../reference/language.md#attributes)について説明しています。
 
 
-## Dynamic Content
+## 動的コンテンツ
 
-Tag content in Marko is similar to [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript, so dynamic text can be added with [interpolated `${expressions}`](../reference/language.md#dynamic-text)
+Markoのタグコンテンツは、JavaScriptの[テンプレートリテラル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)に似ており、[補間された`${式}`](../reference/language.md#dynamic-text)で動的なテキストを追加できます
 
 ```marko
 <p>Today is ${new Date().toDateString()}</p>
 <p>Random number: ${Math.floor(Math.random() * 100)}</p>
 ```
 
-## Components
+## コンポーネント
 
-To reuse code, we can move it into a separate file. Each `.marko` file is a component that can be used like an HTML tag.
+コードを再利用するには、別のファイルに移動できます。各`.marko`ファイルは、HTMLタグのように使用できるコンポーネントです。
 
 ```marko
 /* tags/card.marko */
@@ -53,7 +53,7 @@ To reuse code, we can move it into a separate file. Each `.marko` file is a comp
 </div>
 ```
 
-This `<card>` component can now be used anywhere in the page:
+この`<card>`コンポーネントは、ページ内のどこでも使用できます：
 
 ```marko
 <h1>Our Team</h1>
@@ -63,14 +63,14 @@ This `<card>` component can now be used anywhere in the page:
 ```
 
 > [!NOTE]
-> Components in the `tags/` directory are [automatically discovered](../reference/custom-tag.md#custom-tag-discovery). No need to `import` them.
+> `tags/`ディレクトリ内のコンポーネントは[自動的に検出](../reference/custom-tag.md#custom-tag-discovery)されます。`import`する必要はありません。
 
 > [!TIP]
-> We can also write multiple "components" in a single file using the [`<define>` tag](../reference/core-tag.md#define).
+> [`<define>`タグ](../reference/core-tag.md#define)を使用して、単一のファイルに複数の「コンポーネント」を記述することもできます。
 
-### Passing Data to Components
+### コンポーネントへのデータの受け渡し
 
-Attributes on custom components are available through a special object called [`input`](../reference/language.md#input).
+カスタムコンポーネントの属性は、[`input`](../reference/language.md#input)と呼ばれる特別なオブジェクトを通じて利用できます。
 
 ```marko
 /* card.marko */
@@ -87,7 +87,7 @@ export interface Input {
 </div>
 ```
 
-Now we can pass different data to each instance of `card`:
+これで、`card`の各インスタンスに異なるデータを渡すことができます：
 
 ```marko
 <h1>Our Team</h1>
@@ -97,11 +97,11 @@ Now we can pass different data to each instance of `card`:
 ```
 
 > [!NOTE]
-> Also check out [attribute tags](../reference/language.md#attribute-tags) which we can use to pass named content to a component
+> コンポーネントに名前付きコンテンツを渡すために使用できる[属性タグ](../reference/language.md#attribute-tags)もチェックしてください
 
-## Core Tags
+## コアタグ
 
-Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, we can use [`<if>` and `<else>`](../reference/core-tag.md#if--else) to show or hide content based on conditions.
+Markoは多くの便利な[コアタグ](../reference/core-tag.md)を提供しています。たとえば、[`<if>`と`<else>`](../reference/core-tag.md#if--else)を使用して、条件に基づいてコンテンツを表示または非表示にできます。
 
 ```marko
 /* tags/product.marko */
@@ -117,7 +117,7 @@ Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, 
 </div>
 ```
 
-Now we can show different states based on the product data:
+これで、製品データに基づいて異なる状態を表示できます：
 
 ```marko
 <product name="T-Shirt" price=25 stock=10/>
@@ -125,7 +125,7 @@ Now we can show different states based on the product data:
 <product name="Hat" price=15 stock=5/>
 ```
 
-And we can use the [`<for>` tag](../reference/core-tag.md#for) to display repeated content
+また、[`<for>`タグ](../reference/core-tag.md#for)を使用して繰り返しコンテンツを表示できます
 
 ```marko
 <for|product| of=productsList>
@@ -133,7 +133,7 @@ And we can use the [`<for>` tag](../reference/core-tag.md#for) to display repeat
 </for>
 ```
 
-## Next Steps
+## 次のステップ
 
-- [Components and Reactivity](./components-and-reactivity.md)
-- [Build an App](../marko-run/getting-started.md)
+- [コンポーネントとリアクティビティ](./components-and-reactivity.md)
+- [アプリの構築](../marko-run/getting-started.md)

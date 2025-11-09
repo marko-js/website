@@ -1,10 +1,10 @@
-# Language Reference
+# 言語リファレンス
 
-Marko is a superset of [well-formed](https://en.wikipedia.org/wiki/Well-formed_document) HTML.
+Markoは、[整形式](https://en.wikipedia.org/wiki/Well-formed_document) HTMLのスーパーセットです。
 
-The language makes HTML more strict while extending it with control flow and reactive data bindings. It does this by meshing JavaScript syntax features with HTML and introducing a few new syntaxes of its own. Most HTML is valid Marko but there are some important deviations.
+この言語は、制御フローとリアクティブデータバインディングでHTMLを拡張しながら、HTMLをより厳密にします。これは、JavaScript構文機能をHTMLとメッシュし、独自のいくつかの新しい構文を導入することで実現します。ほとんどのHTMLは有効なMarkoですが、いくつかの重要な相違点があります。
 
-## Syntax Legend
+## 構文凡例
 
 <div class="code-block">
 <pre class="html html-ts"><code><a href="#statements">import "...";</a>
@@ -19,55 +19,55 @@ The language makes HTML more strict while extending it with control flow and rea
 </div>
 
 > [!NOTE]
-> Jump to the section for a syntax by clicking on it.
-> The legend is not comprehensive, for more see:
+> 構文をクリックすることで、そのセクションにジャンプできます。
+> 凡例は包括的ではありません。詳細については、以下を参照してください:
 >
-> - [`<${dynamic}/>` tag](#dynamic-tags)
-> - [Attributes](#attributes) for various attribute shorthands
-> - [Tag Arguments](#tag-arguments) as an alternative to attributes
-> - [Concise Mode](./concise-syntax.md)
+> - [`<${dynamic}/>`タグ](#dynamic-tags)
+> - さまざまな属性省略記法については[属性](#attributes)
+> - 属性の代替としての[タグ引数](#tag-arguments)
+> - [簡潔モード](./concise-syntax.md)
 
-## Template Variables
+## テンプレート変数
 
-Within Marko templates a few variables are automatically made available.
+Markoテンプレート内では、いくつかの変数が自動的に利用可能になります。
 
 ### `input`
 
-A JavaScript object globally available in every template that gives access to the [attributes](#attributes) it was provided from a [custom tag](./custom-tag.md) or the data passed in through the [top level api](./template.md).
+すべてのテンプレートでグローバルに利用可能なJavaScriptオブジェクトで、[カスタムタグ](./custom-tag.md)から提供された[属性](#attributes)または[トップレベルAPI](./template.md)を通じて渡されたデータへのアクセスを提供します。
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
+[`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)は、`.marko`ファイル内のすべてのJavaScriptステートメント、式、およびブロックで利用できます。
 
-It is aborted when
+これは以下の場合に中止されます
 
-1. The expression is invalidated
-2. The template or [tag content](#tag-content) is removed from the DOM
+1. 式が無効化されたとき
+2. テンプレートまたは[タグコンテンツ](#tag-content)がDOMから削除されたとき
 
-This is primarily to handle cleaning up side effects.
+これは主に副作用のクリーンアップを処理するためのものです。
 
 > [!TIP]
-> Many built-in APIs like [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal) include the option to pass a signal for cleanup.
+> [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal)などの多くの組み込みAPIには、クリーンアップのためにシグナルを渡すオプションが含まれています。
 >
 > ```marko
 > <script>
 >   document.addEventListener("resize", () => {
->     // this function will be automatically cleaned up
+>     // この関数は自動的にクリーンアップされます
 >   }, { signal: $signal })
 > </script>
 > ```
 
 ### `$global`
 
-Gives access the ["render globals"](./template.md#inputglobal) provided through the [top level api](./template.md).
+[トップレベルAPI](./template.md)を通じて提供される[「レンダーグローバル」](./template.md#inputglobal)へのアクセスを提供します。
 
-## Statements
+## ステートメント
 
-Marko supports a few module scoped top level statements.
+Markoは、モジュールスコープのトップレベルステートメントをいくつかサポートしています。
 
 ### `import`
 
-JavaScript [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) statements are allowed at the root of the template.
+JavaScriptの[`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)ステートメントは、テンプレートのルートで使用できます。
 
 ```marko
 import sum from "sum"
@@ -76,11 +76,11 @@ import sum from "sum"
 ```
 
 > [!NOTE]
-> This syntax is a shorthand for [`static import`](#static). For server and client specific imports, you can use [`server` and `client`](#server-and-client) statements.
+> この構文は[`static import`](#static)の省略形です。サーバーとクライアント固有のインポートについては、[`server`と`client`](#server-and-client)ステートメントを使用できます。
 
-#### Tag `import` shorthand
+#### タグ`import`省略記法
 
-[Custom tags](./custom-tag.md) may be referenced using angle brackets in the `from` of the import, which will use Marko's [custom tag discovery logic](./custom-tag.md).
+[カスタムタグ](./custom-tag.md)は、インポートの`from`で山括弧を使用して参照でき、Markoの[カスタムタグ検出ロジック](./custom-tag.md)が使用されます。
 
 ```marko
 import MyTag from "<my-tag>"
@@ -90,7 +90,7 @@ import MyTag from "<my-tag>"
 
 ### `export`
 
-JavaScript [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export) statements are allowed at the root of the template.
+JavaScriptの[`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)ステートメントは、テンプレートのルートで使用できます。
 
 ```marko
 export function getAnswer() {
@@ -102,7 +102,7 @@ export function getAnswer() {
 
 ### `static`
 
-Statements prefixed with `static` allow running JavaScript expressions in module scope. The statements will run when the template loaded on the server and in the browser.
+`static`を接頭辞に持つステートメントは、モジュールスコープでJavaScript式を実行できます。このステートメントは、テンプレートがサーバーとブラウザで読み込まれたときに実行されます。
 
 ```marko
 static const answer = 41;
@@ -113,7 +113,7 @@ static function getAnswer() {
 <div data-answer=getAnswer()></div>
 ```
 
-All valid javascript statements are allowed, including functions, declarations, conditions, and blocks.
+関数、宣言、条件、ブロックを含む、すべての有効なJavaScriptステートメントが使用できます。
 
 ```marko
 static {
@@ -123,9 +123,9 @@ static {
 }
 ```
 
-### `server` and `client`
+### `server`と`client`
 
-As an alternative to [`static`](#static), statements prefixed with `server` or `client` allow arbitrary module scoped JavaScript expressions that are exclusively executed when the template is loaded in a specific environment (the server or the browser).
+[`static`](#static)の代わりに、`server`または`client`を接頭辞に持つステートメントを使用すると、テンプレートが特定の環境（サーバーまたはブラウザ）で読み込まれたときにのみ実行される、任意のモジュールスコープのJavaScript式を記述できます。
 
 ```marko
 server console.log("on the server")
@@ -133,7 +133,7 @@ server console.log("on the server")
 client console.log("in the browser")
 ```
 
-All valid javascript statements are allowed, including functions, declarations, conditions, and blocks.
+関数、宣言、条件、ブロックを含む、すべての有効なJavaScriptステートメントが使用できます。
 
 ```marko
 server {
@@ -150,36 +150,36 @@ server {
 ```
 
 > [!TIP]
-> The [`import`](#import) statement is really a shortcut for `static import`. This can be leveraged with `server` and `client` if you want a module to only be imported on one platform
+> [`import`](#import)ステートメントは実際には`static import`のショートカットです。モジュールを1つのプラットフォームでのみインポートしたい場合は、`server`と`client`でこれを活用できます
 >
 > ```marko
 > server import "./init-db"
 > client import "bootstrap"
 > ```
 
-## Tags
+## タグ
 
-Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tags.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
+Markoは、すべてのネイティブHTML/SVG/その他のタグと属性をサポートしています。これらに加えて、便利な[コアタグ](./core-tags.md)のセットが提供されています。各プロジェクトには独自の[カスタムタグ](./custom-tag.md)があり、サードパーティのタグは`node_modules`を通じて含めることができます。
 
-All of these types of tags use the same syntax:
+これらすべてのタイプのタグは同じ構文を使用します：
 
 ```marko
 <my-tag/>
 ```
 
-`.marko` files are [automatically discovered](./custom-tag.md#custom-tag-discovery) as [custom tags](./custom-tag.md) (no need for `import`).
+`.marko`ファイルは[カスタムタグ](./custom-tag.md)として[自動的に検出](./custom-tag.md#custom-tag-discovery)されます（`import`は不要です）。
 
-All tags can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags) when there is no [content](#tag-content). This means `<div/>` is valid, unlike in HTML. Additionally [`void` tags](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) like `<input>` and `<br>` can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags).
+すべてのタグは、[コンテンツ](#tag-content)がない場合、[自己閉じタグ](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags)にできます。これは、HTMLとは異なり、`<div/>`が有効であることを意味します。さらに、`<input>`や`<br>`のような[`void`タグ](https://developer.mozilla.org/en-US/docs/Glossary/Void_element)も[自己閉じタグ](https://developer.mozilla.org/en-US/docs/Glossary/Void_element#self-closing_tags)にできます。
 
-In all closing tags, the tag name may be omitted.
+すべての閉じタグでは、タグ名を省略できます。
 
 ```marko
 <div>Hello World</>
 ```
 
-## Attributes
+## 属性
 
-Attribute values are JavaScript expressions:
+属性値はJavaScript式です：
 
 ```marko
 <my-tag str="Hello"></my-tag>
@@ -189,28 +189,28 @@ Attribute values are JavaScript expressions:
 <my-tag fn=function myFn(param1) { console.log("hi") }></my-tag>
 ```
 
-Almost all valid JavaScript expressions can be written as the attribute value.
-Even with `<my-tag str="Hello">` the `"Hello"` string is a JavaScript string literal and not an html attribute string.
+ほぼすべての有効なJavaScript式を属性値として記述できます。
+`<my-tag str="Hello">`の場合でも、`"Hello"`文字列はJavaScript文字列リテラルであり、HTML属性文字列ではありません。
 
-Attributes can be thought of as JavaScript objects in Marko which are passed to a tag.
+属性は、Markoではタグに渡されるJavaScriptオブジェクトと考えることができます。
 
 > [!CAUTION]
-> Values cannot contain an unenclosed `>` since it is ambiguous. These expressions must use parentheses:
+> 値には、括弧で囲まれていない`>`を含めることはできません（曖昧になるため）。これらの式は括弧を使用する必要があります：
 >
 > ```marko
 > <my-tag value=(1 > 2)></my-tag>
 > ```
 
-### Skipped Attributes
+### スキップされる属性
 
-If an attribute value is `null`, `undefined` or `false` it will not be written to the html.
+属性値が`null`、`undefined`、または`false`の場合、HTMLに書き込まれません。
 
 > [!NOTE]
-> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written.
+> _すべての_[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)値がスキップされるわけではありません。`0`、`NaN`、`""`は引き続き書き込まれます。
 
-### Boolean Attributes
+### 真偽値属性
 
-[HTML boolean attributes](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML) become JavaScript booleans.
+[HTMLの真偽値属性](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML)はJavaScriptの真偽値になります。
 
 ```marko
 <input type="checkbox" checked>
@@ -219,54 +219,54 @@ If an attribute value is `null`, `undefined` or `false` it will not be written t
 
 > [!IMPORTANT]
 >
-> [ARIA enumerated attributes](https://developer.mozilla.org/en-US/docs/Glossary/Enumerated#aria_enumerated_attributes) use strings instead of booleans, so make sure to pass a string.
+> [ARIA列挙属性](https://developer.mozilla.org/en-US/docs/Glossary/Enumerated#aria_enumerated_attributes)は真偽値の代わりに文字列を使用するため、必ず文字列を渡してください。
 >
 > ```marko
-> // ❌ WRONG: Don't do this
+> // ❌ 間違い：これはしないでください
 > <button aria-pressed=isPressed />
 > // outputs <button aria-pressed=""/>
 > ```
 >
 > ```marko
-> // 👍 Correct use of aria attributes
+> // 👍 正しいaria属性の使用
 > <button aria-pressed=isPressed && "true" />
 > // outputs <button aria-pressed="true"/>
 > ```
 
-### Spread Attributes
+### スプレッド属性
 
-Attributes may be dynamically included with the [spread](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals) syntax.
+属性は、[スプレッド](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)構文を使用して動的に含めることができます。
 
 ```marko
 <my-tag ...input foo="bar"/>
 ```
 
-In this case `<my-tag>` would receive the attributes as an object like `{ ...input, foo: "bar" }`.
+この場合、`<my-tag>`は`{ ...input, foo: "bar" }`のようなオブジェクトとして属性を受け取ります。
 
-Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
+属性は左から右にマージされ、競合がある場合は後のスプレッドが前のものを上書きします。
 
 > [!NOTE]
-> The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
+> `...`の後の値は（[JavaScriptと同様に](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)）任意の有効なJavaScript式を使用できます。つまり、省略記法のプロパティ名を活用できます：
 >
 > ```marko
 > <my-tag ...{ property }/>
 > ```
 
-### Shorthand Methods
+### メソッド省略記法
 
-[Method definitions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions) allow for a concise way to pass functions as attributes, such as event handlers.
+[メソッド定義](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions)を使用すると、イベントハンドラなどの関数を属性として渡す簡潔な方法が提供されます。
 
 ```marko
 <button onClick(e) { console.log(e.target) }>Click Me</button>
 ```
 
-### Shorthand Change Handlers (Two-Way Binding)
+### 変更ハンドラ省略記法（双方向バインディング）
 
-The change handler shorthand (`:=`) provides both a value for an attribute and a change handler with the attribute's name suffixed by "Change".
+変更ハンドラ省略記法（`:=`）は、属性の値と、属性名に「Change」をサフィックスとして付けた変更ハンドラの両方を提供します。
 
-The value must be an [Identifier](https://developer.mozilla.org/en-US/docs/Glossary/Identifier) or a [Property Accessor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors).
+値は[識別子](https://developer.mozilla.org/en-US/docs/Glossary/Identifier)または[プロパティアクセサ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors)である必要があります。
 
-For [Identifiers](https://developer.mozilla.org/en-US/docs/Glossary/Identifier), the change handler desugars to a function with an assignment.
+[識別子](https://developer.mozilla.org/en-US/docs/Glossary/Identifier)の場合、変更ハンドラは代入を伴う関数に展開されます。
 
 ```marko
 <counter value:=count/>
@@ -276,7 +276,7 @@ For [Identifiers](https://developer.mozilla.org/en-US/docs/Glossary/Identifier),
 <counter value=count valueChange(newCount) { count = newCount }/>
 ```
 
-For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the change handler desugars to a member expression with a `Change` suffix.
+[プロパティアクセサ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors)の場合、変更ハンドラは`Change`サフィックスを持つメンバー式に展開されます。
 
 ```marko
 <counter value:=input.count/>
@@ -286,9 +286,9 @@ For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 <counter value=input.count valueChange=input.countChange/>
 ```
 
-### Shorthand `class` and `id`
+### `class`と`id`の省略記法
 
-[Emmet style](https://docs.emmet.io/abbreviations/syntax/#id-and-class) `class` and `id` attribute shorthands are supported.
+[Emmetスタイル](https://docs.emmet.io/abbreviations/syntax/#id-and-class)の`class`と`id`属性の省略記法がサポートされています。
 
 ```marko no-format
 <div#foo.bar.baz/>
@@ -299,15 +299,15 @@ For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 ```
 
 > [!TIP]
-> Interpolations are supported within a dynamic class/id.
+> 動的なclass/id内で補間がサポートされています。
 >
 > ```marko no-format
 > <div.icon-${iconName}/>
 > ```
 
-### Shorthand `value`
+### `value`の省略記法
 
-It is common for a tag to use a single input property; therefore Marko allows a shorthand for passing an attribute named `value`. If the attribute name is omitted at the beginning of a tag, it will be passed as `value`.
+タグが単一の入力プロパティを使用することは一般的です。そのため、Markoは`value`という名前の属性を渡すための省略記法を提供しています。タグの先頭で属性名を省略すると、`value`として渡されます。
 
 ```marko
 <my-tag=1/>
@@ -317,7 +317,7 @@ It is common for a tag to use a single input property; therefore Marko allows a 
 <my-tag value=1/>
 ```
 
-The [method shorthand](#shorthand-methods) can be combined with the value attribute to give us the _value method shorthand_.
+[メソッド省略記法](#shorthand-methods)は、value属性と組み合わせることができ、_valueメソッド省略記法_を提供します。
 
 ```marko
 <my-tag() {
@@ -333,30 +333,30 @@ The [method shorthand](#shorthand-methods) can be combined with the value attrib
 // Received by the child as { value() { ... } }
 ```
 
-### Attribute Termination
+### 属性の終端
 
-Attributes can be terminated with a comma. This is useful in [concise mode](./concise-syntax.md#attributes-on-multiple-lines).
+属性はカンマで終端できます。これは[簡潔モード](./concise-syntax.md#attributes-on-multiple-lines)で便利です。
 
 ```marko
 <my-tag a=1, b=2/>
 ```
 
 > [!CAUTION]
-> Sequence expressions with [comma operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator) must be wrapped in parentheses
+> [カンマ演算子](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator)を使用したシーケンス式は括弧で囲む必要があります
 >
 > ```marko
 > <my-tag a=(console.log(foo), foo)/>
 > ```
 
-## Tag Content
+## タグコンテンツ
 
-Markup within the body of a tag is made available as the `content` property of its [`input`](#input).
+タグの本体内のマークアップは、[`input`](#input)の`content`プロパティとして利用可能になります。
 
 ```marko
 <my-tag>Content</my-tag>
 ```
 
-The implementation of `<my-tag>` above can write out the content by passing its `input.content` to a [dynamic tag](#dynamic-tags):
+上記の`<my-tag>`の実装は、`input.content`を[動的タグ](#dynamic-tags)に渡すことでコンテンツを書き出すことができます：
 
 ```marko
 export interface Input {
@@ -368,9 +368,9 @@ export interface Input {
 </div>
 ```
 
-### Dynamic Text
+### 動的テキスト
 
-Dynamic text content can be `${interpolated}` in the tag content. This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
+動的テキストコンテンツは、タグコンテンツ内で`${補間}`できます。これはJavaScriptの[テンプレートリテラル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)と同じ構文を使用します。
 
 ```marko
 export interface Input {
@@ -383,11 +383,11 @@ export interface Input {
 ```
 
 > [!NOTE]
-> The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
+> 補間された値は、[XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS)を回避するために自動的にエスケープされます。
 
-## Attribute Tags
+## 属性タグ
 
-Tags prefixed with an `@` are not rendered, but instead passed alongside attributes in [`input`](./language.md#input). Attribute tags allow for passing named or repeated [content](#tag-content) as additional attributes.
+`@`で始まるタグはレンダリングされず、代わりに[`input`](./language.md#input)の属性と一緒に渡されます。属性タグは、名前付きまたは繰り返しの[コンテンツ](#tag-content)を追加の属性として渡すことができます。
 
 ```marko
 <my-layout title="Welcome">
@@ -399,9 +399,9 @@ Tags prefixed with an `@` are not rendered, but instead passed alongside attribu
 </my-layout>
 ```
 
-Here, `@header` is available to `<my-layout>` as `input.header`. The `class` attribute from `@header` is in `input.header.class` and its content is in `input.header.content`.
+ここで、`@header`は`<my-layout>`に`input.header`として利用可能です。`@header`の`class`属性は`input.header.class`に、そのコンテンツは`input.header.content`にあります。
 
-The full [input](./language.md#input) object provided to `<my-tag>` in this example would look like:
+この例で`<my-tag>`に提供される完全な[input](./language.md#input)オブジェクトは次のようになります：
 
 ```js
 // a representation of `input` received by `my-layout.marko` (from the previous code snippet)
@@ -415,7 +415,7 @@ The full [input](./language.md#input) object provided to `<my-tag>` in this exam
 }
 ```
 
-The implementation of `my-layout.marko` might look like
+`my-layout.marko`の実装は次のようになります
 
 ```marko
 export interface Input {
@@ -455,11 +455,11 @@ export interface Input {
 ```
 
 > [!NOTE]
-> Control flow tags ([`<if>`](./core-tag.md#if--else) and [`<for>`](./core-tag.md#for)) cannot contain attribute tags themselves, and instead are used for [dynamically creating attribute tags](#conditional-attribute-tags).
+> 制御フロータグ（[`<if>`](./core-tag.md#if--else)と[`<for>`](./core-tag.md#for)）自体は属性タグを含めることができず、代わりに[属性タグを動的に作成](#conditional-attribute-tags)するために使用されます。
 
-### Nested Attribute tags
+### ネストされた属性タグ
 
-Attribute tags may be nested in other attribute tags.
+属性タグは他の属性タグ内にネストできます。
 
 ```marko
 <my-tag>
@@ -469,7 +469,7 @@ Attribute tags may be nested in other attribute tags.
 </>
 ```
 
-Would provide the following as input
+これは次のような入力を提供します
 
 ```js
 {
@@ -480,9 +480,9 @@ Would provide the following as input
 }
 ```
 
-### Repeated Attribute Tags
+### 繰り返し属性タグ
 
-When multiple attribute tags share a name, all instances may be consumed using the [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol).
+複数の属性タグが名前を共有する場合、すべてのインスタンスは[イテラブルプロトコル](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol)を使用して消費できます。
 
 ```marko
 <my-menu>
@@ -496,7 +496,7 @@ When multiple attribute tags share a name, all instances may be consumed using t
 </my-menu>
 ```
 
-This example uses two `<@item>` tags, but `<my-menu>` receives only a single `item` attribute.
+この例では2つの`<@item>`タグを使用していますが、`<my-menu>`は単一の`item`属性のみを受け取ります。
 
 ```js
 {
@@ -514,7 +514,7 @@ This example uses two `<@item>` tags, but `<my-menu>` receives only a single `it
 }
 ```
 
-The other `<@item>` tags are reached through the iterator. The most common way to do so is with a [for tag](./core-tag.md#for) or one of JavaScript's [syntaxes for iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables).
+他の`<@item>`タグはイテレータを通じてアクセスされます。最も一般的な方法は、[forタグ](./core-tag.md#for)またはJavaScriptの[イテラブルの構文](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#syntaxes_expecting_iterables)のいずれかを使用することです。
 
 ```marko
 /* my-menu.marko */
@@ -531,10 +531,10 @@ export interface Input {
 </for>
 ```
 
-Attribute tags are generally singular by name, even when repeated. Prefer singular property names when consuming repeated attribute tags (for example, iterate `input.item` rather than `input.items`).
+属性タグは、繰り返される場合でも、一般的に名前は単数形です。繰り返し属性タグを消費する場合は、単数形のプロパティ名を使用してください（例：`input.items`ではなく`input.item`を反復処理します）。
 
 > [!TIP]
-> If you need repeated attribute tags as a list, it is a common pattern to spread into an array with a [`<const>` tag](./core-tag.md#const)
+> 繰り返し属性タグをリストとして必要とする場合、[`<const>`タグ](./core-tag.md#const)を使用して配列にスプレッドするのが一般的なパターンです
 >
 > ```marko
 > export interface Input {
@@ -546,9 +546,9 @@ Attribute tags are generally singular by name, even when repeated. Prefer singul
 > <div>${items.length}</div>
 > ```
 
-### Conditional Attribute Tags
+### 条件付き属性タグ
 
-Attribute tags are generally provided directly to their immediate parent. The exception to this is control flow tags ([`<if>`](./core-tag.md#if--else) and [`<for>`](./core-tag.md#for)), which are used to dynamically apply attribute tags.
+属性タグは通常、直接の親に直接提供されます。これの例外は制御フロータグ（[`<if>`](./core-tag.md#if--else)と[`<for>`](./core-tag.md#for)）で、これらは属性タグを動的に適用するために使用されます。
 
 ```marko
 <my-message>
@@ -561,7 +561,7 @@ Attribute tags are generally provided directly to their immediate parent. The ex
 </my-message>
 ```
 
-In this case, the `@title` received by `<my-message>` depends on `welcome`.
+この場合、`<my-message>`が受け取る`@title`は`welcome`に依存します。
 
 ```marko
 <my-select>
@@ -573,16 +573,16 @@ In this case, the `@title` received by `<my-message>` depends on `welcome`.
 </my-select>
 ```
 
-Here, `<my-select>` unconditionally receives the first `@option`, and also all of the `@option` tags applied by the `<for>` loop.
+ここでは、`<my-select>`は最初の`@option`を無条件に受け取り、`<for>`ループによって適用されるすべての`@option`タグも受け取ります。
 
 > [!NOTE]
-> You can't mix [attribute tags](#attribute-tags) with default [content](#tag-content) while inside a [control flow tag](./core-tag.md#if--else).
+> [制御フロータグ](./core-tag.md#if--else)内では、[属性タグ](#attribute-tags)をデフォルトの[コンテンツ](#tag-content)と混在させることはできません。
 
-## Tag Variables
+## タグ変数
 
-Tag variables expose a value from a tag to be used within a template (from a custom tag, the variable is taken from its [`<return>`](./core-tag.md#return)). These variables are not _quite_ like JavaScript variables, as they are used to power [Marko's compiled reactivity](./reactivity.md).
+タグ変数は、テンプレート内で使用するためにタグから値を公開します（カスタムタグからは、変数はその[`<return>`](./core-tag.md#return)から取得されます）。これらの変数は、[Markoのコンパイル済みリアクティビティ](./reactivity.md)を強化するために使用されるため、JavaScript変数とは_まったく_同じではありません。
 
-Tag Variables use a `/` followed by a valid JavaScript [identifier](https://developer.mozilla.org/en-US/docs/Glossary/Identifier) or [destructure assignment pattern](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) after the tag name.
+タグ変数は、タグ名の後に`/`と、有効なJavaScript[識別子](https://developer.mozilla.org/en-US/docs/Glossary/Identifier)または[分割代入パターン](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)を続けて使用します。
 
 ```marko
 <my-tag/foo/>
@@ -592,7 +592,7 @@ Tag Variables use a `/` followed by a valid JavaScript [identifier](https://deve
 <div>`my-other-tag` returned an object containing ${bar} and ${baz}</div>
 ```
 
-Native tags have an implicitly returned tag variable that contains a reference to the element.
+ネイティブタグには、要素への参照を含む暗黙的に返されるタグ変数があります。
 
 ```marko
 <div/myDiv/>
@@ -602,13 +602,13 @@ Native tags have an implicitly returned tag variable that contains a reference t
 </script>
 ```
 
-In this case `myDiv` will be a variable which can be called to get the `myDiv` element in the browser.
+この場合、`myDiv`はブラウザで`myDiv`要素を取得するために呼び出すことができる変数になります。
 
-Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return a value into it's parents scope as a tag variable.
+[コア`<return>`タグ](./core-tag.md#return)を使用すると、任意のカスタムタグがタグ変数として親スコープに値を返すことができます。
 
-### Scope
+### スコープ
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+タグ変数は自動的に[ホイスト](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)され、[モジュールステートメント](#statements)を除くテンプレート内のどこからでもアクセスできます。つまり、ツリー内のどこからでもタグ変数を読み取ることができます。
 
 ```marko
 <form>
@@ -621,9 +621,9 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
 </script>
 ```
 
-## Tag Parameters
+## タグパラメータ
 
-While rendering [content](#tag-content), child may pass information _back_ to its parent using tag parameters.
+[コンテンツ](#tag-content)をレンダリングする間、子はタグパラメータを使用して親に情報を_返す_ことができます。
 
 ```marko
 /* child.marko */
@@ -643,16 +643,16 @@ export interface Input {
 </child>
 ```
 
-This example results in the following HTML:
+この例は次のHTMLを生成します：
 
 ```html
 <div>Rendered with 1337 as the `number=` attribute</div>
 ```
 
-The `|parameters|` are enclosed in pipes after a tag name, and act functionally like [JavaScript function parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#function_parameters) within which the first parameter is an object containing all attributes passed from the child component.
+`|parameters|`はタグ名の後にパイプで囲まれており、機能的には[JavaScript関数パラメータ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#function_parameters)のように動作します。最初のパラメータは子コンポーネントから渡されたすべての属性を含むオブジェクトです。
 
 > [!TIP]
-> Parameters include all features of the [JavaScript function parameters syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#function_parameters), so feel free to destructure.
+> パラメータには[JavaScript関数パラメータ構文](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#function_parameters)のすべての機能が含まれているため、自由に分割できます。
 >
 > ```marko
 > <child|{ number }|>
@@ -660,9 +660,9 @@ The `|parameters|` are enclosed in pipes after a tag name, and act functionally 
 > </child>
 > ```
 
-### Tag Arguments
+### タグ引数
 
-Multiple [tag parameters](#tag-parameters) may be provided to the content by using the Tag Arguments syntax, which uses the JavaScript `(...args)` syntax after the tag name.
+複数の[タグパラメータ](#tag-parameters)は、タグ名の後にJavaScriptの`(...args)`構文を使用するタグ引数構文を使用してコンテンツに提供できます。
 
 ```marko
 export interface Input {
@@ -672,7 +672,7 @@ export interface Input {
 <${input.content}(1, 2, 3)/>
 ```
 
-This example passes three arguments back to its parent.
+この例は、3つの引数を親に返します。
 
 ```marko
 <my-tag|a, b, c|>
@@ -686,7 +686,7 @@ This example passes three arguments back to its parent.
 ```
 
 > [!WARNING]
-> Tag content may use attributes _or_ arguments, but not both at once.
+> タグコンテンツは属性_または_引数を使用できますが、両方を同時に使用することはできません。
 >
 > ```marko
 > <my-tag a=1 b=2 c=3 />
@@ -694,17 +694,17 @@ This example passes three arguments back to its parent.
 > <my-tag({ a: 1, b: 2, c: 3 })/>
 > ```
 
-### Scope
+### スコープ
 
-Tag parameters are scoped to the [tag content](#tag-content) only.
-This means you cannot access the tag parameters outside the body of the tag.
+タグパラメータは[タグコンテンツ](#tag-content)のみにスコープされます。
+これは、タグの本体の外側ではタグパラメータにアクセスできないことを意味します。
 
 > [!CAUTION]
-> Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
+> タグパラメータは属性として評価されるため、[属性タグ](#attribute-tags)からアクセスすることはできません。
 
-## Comments
+## コメント
 
-Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment) comments are supported.
+[HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments)と[JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment)の両方のコメントがサポートされています。
 
 ```marko
 <div>
@@ -715,17 +715,17 @@ Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [Jav
 ```
 
 > [!NOTE]
-> Comments are ignored completely. To include a literal HTML comment in the output, use the [`<html-comment>` core tag](./core-tag.md#html-comment).
+> コメントは完全に無視されます。出力にリテラルHTMLコメントを含めるには、[`<html-comment>`コアタグ](./core-tag.md#html-comment)を使用してください。
 
-## Dynamic Tags
+## 動的タグ
 
-In place of the tag name, an `${interpolation}` may be used to dynamically output a [native tag](./native-tag.md), [custom tag](./custom-tag.md), or [tag content](#tag-content).
+タグ名の代わりに、`${補間}`を使用して[ネイティブタグ](./native-tag.md)、[カスタムタグ](./custom-tag.md)、または[タグコンテンツ](#tag-content)を動的に出力できます。
 
-With a dynamic tag the closing tag should be `</>`, or if there is no [content](#tag-content) the tag may be self-closed.
+動的タグの場合、閉じタグは`</>`にする必要があります。または、[コンテンツ](#tag-content)がない場合は、タグを自己閉じにすることができます。
 
-### Dynamic Native Tags
+### 動的ネイティブタグ
 
-When the value of the dynamic tag name is a string,
+動的タグ名の値が文字列の場合、
 
 ```marko
 export interface Input {
@@ -736,7 +736,7 @@ export interface Input {
 <${"h" + input.headingSize}>Hello!</>
 ```
 
-### Dynamic Custom Tags
+### 動的カスタムタグ
 
 ```marko
 // Dynamically output a custom tag.
@@ -746,14 +746,14 @@ import MyTagB from "<my-tag-b>"
 ```
 
 > [!CAUTION]
-> Strings will _always_ render native tags. When rendering a custom tag, you must have a reference to it. The following is _not_ equivalent to the above example, since Marko would output a native HTML element (as if you called `document.createElement("my-tag-a")`).
+> 文字列は_常に_ネイティブタグをレンダリングします。カスタムタグをレンダリングする場合は、それへの参照が必要です。次の例は上記の例と_同等ではありません_。MarkoはネイティブHTML要素を出力します（`document.createElement("my-tag-a")`を呼び出した場合と同様）。
 >
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
 > ```
 
 > [!NOTE]
-> If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.
+> `content`プロパティを持つオブジェクトが提供されると、`content`値が動的タグ名になります。これは[define](./core-tag.md#define)タグが内部でどのように動作するかです🤯。
 >
 > ```marko
 > <define/message>
@@ -762,11 +762,11 @@ import MyTagB from "<my-tag-b>"
 > <${message}/>
 > ```
 >
-> Although in this case you should prefer a [PascalCase](#pascalcase-variables) `<Message>` tag instead.
+> ただし、この場合は代わりに[PascalCase](#pascalcase-variables)の`<Message>`タグを使用することをお勧めします。
 
-### Conditional Parent Tags
+### 条件付き親タグ
 
-When a dynamic tag name is [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) it will output the tag's [content](#tag-content) only. This is useful for conditional parenting and fallback content.
+動的タグ名が[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)の場合、タグの[コンテンツ](#tag-content)のみを出力します。これは、条件付き親とフォールバックコンテンツに便利です。
 
 ```marko
 export interface Input {
@@ -777,9 +777,9 @@ export interface Input {
 <${input.href && "a"} href=input.href>Hello World</>
 ```
 
-### PascalCase Variables
+### PascalCase変数
 
-Local variable names that start with an upper case letter (`PascalCase`) can also be used as tag names without the explicit dynamic tag syntax. This is useful for referencing an imported custom tag or with the [`<define>` tag](./core-tag.md#define).
+大文字で始まるローカル変数名（`PascalCase`）は、明示的な動的タグ構文なしでタグ名として使用することもできます。これは、インポートされたカスタムタグを参照する場合や[`<define>`タグ](./core-tag.md#define)を使用する場合に便利です。
 
 ```marko
 import MyTag from "./my-tag.marko"
@@ -787,7 +787,7 @@ import MyTag from "./my-tag.marko"
 <MyTag/>
 ```
 
-This is equivalent to
+これは次と同等です
 
 ```marko
 import MyTag from "./my-tag.marko"

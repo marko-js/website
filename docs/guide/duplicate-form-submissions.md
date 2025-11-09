@@ -1,3 +1,3 @@
-# Preventing Multiple Form Submissions
+# 複数回のフォーム送信を防ぐ
 
-This guide will discuss disabling buttons & forms after the first submission.
+このガイドでは、最初の送信後にボタンとフォームを無効にする方法について説明します。

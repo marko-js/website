@@ -1,16 +1,16 @@
-# Why Marko?
+# なぜMarkoなのか？
 
-Marko delivers fast, scalable, robust, and maintainable applications without sacrificing developer experience or user performance. It addresses three fundamental problems in web development by evolving HTML itself rather than replacing it with JavaScript abstractions.
+Markoは、開発者エクスペリエンスやユーザーパフォーマンスを犠牲にすることなく、高速でスケーラブル、堅牢で保守性の高いアプリケーションを提供します。JavaScriptの抽象化で置き換えるのではなく、HTML自体を進化させることで、ウェブ開発における3つの基本的な問題に対処します。
 
-## Three Problems
+## 3つの問題
 
-Modern web development faces a series of interconnected challenges that have shaped the evolution of frontend frameworks. Understanding these problems is essential to evaluating whether current solutions have overcorrected and created new issues.
+最新のウェブ開発は、フロントエンドフレームワークの進化を形成してきた一連の相互接続された課題に直面しています。これらの問題を理解することは、現在のソリューションが過剰に修正され、新しい問題を生み出しているかどうかを評価するために不可欠です。
 
-### HTML Can't Scale
+### HTMLはスケールできない
 
-HTML was designed for static documents, not dynamic applications. This fundamental limitation creates several cascading problems as applications grow in complexity.
+HTMLは動的なアプリケーションではなく、静的なドキュメント用に設計されました。この基本的な制限により、アプリケーションの複雑さが増すにつれて、いくつかの連鎖的な問題が発生します。
 
-HTML provides no mechanism for coordinating dynamic state across different parts of an application. Consider a shopping cart page:
+HTMLは、アプリケーションのさまざまな部分にわたって動的な状態を調整するメカニズムを提供しません。ショッピングカートページを考えてみましょう：
 
 ```html
 /* index.html */
@@ -51,27 +51,27 @@ function addItem(name, price) {
   const navCount = document.getElementById('nav-count');
   const newNavCount = parseInt(navCount.textContent) + 1;
   navCount.textContent = newNavCount;
-  
+
   // Update cart summary
   const cartCount = document.getElementById('cart-count');
   const cartTotal = document.getElementById('cart-total');
-  
+
   cartCount.textContent = newNavCount;
   cartTotal.textContent = parseFloat(cartTotal.textContent) + price;
-  
+
   // Enable checkout button if it was disabled
   const checkout = document.getElementById('checkout');
   if (newNavCount > 0) {
     checkout.disabled = false;
   }
-  
+
   // Any other UI that depends on cart state also needs manual updates...
 }
 ```
 
-Every state change requires manual coordination across multiple DOM elements. The function must update the navigation badge, cart summary, and checkout button state independently. Each UI element that depends on cart state needs explicit updates, and as applications grow, this coordination becomes exponentially complex.
+すべての状態変更には、複数のDOM要素にわたる手動の調整が必要です。この関数は、ナビゲーションバッジ、カートサマリー、チェックアウトボタンの状態を独立して更新する必要があります。カートの状態に依存する各UI要素には明示的な更新が必要であり、アプリケーションが成長するにつれて、この調整は指数関数的に複雑になります。
 
-Componentization presents another challenge. Modern platform features like custom elements and `<template>` tags provide some encapsulation, but introduce their own complexity:
+コンポーネント化は別の課題を提示します。カスタム要素や`<template>`タグのような最新のプラットフォーム機能は、ある程度のカプセル化を提供しますが、独自の複雑さをもたらします：
 
 ```javascript
 /* modal-dialog.js */
@@ -109,13 +109,13 @@ customElements.define('modal-dialog', ModalDialog);
 </modal-dialog>
 ```
 
-While this provides encapsulation, it requires significant boilerplate for basic functionality. State management across components still requires manual coordination, and the imperative API (calling `.open()` and `.close()`) doesn't compose well with reactive data flow.
+これはカプセル化を提供しますが、基本的な機能には大量のボイラープレートが必要です。コンポーネント間の状態管理には依然として手動の調整が必要であり、命令的API（`.open()`と`.close()`の呼び出し）はリアクティブなデータフローとうまく組み合わせることができません。
 
-### Component Coordination
+### コンポーネントの調整
 
-Building reusable, encapsulated components requires significant boilerplate and manual coordination. Even modern platform features like custom elements impose complexity that grows with application requirements, making component development tedious and error-prone.
+再利用可能でカプセル化されたコンポーネントを構築するには、大量のボイラープレートと手動の調整が必要です。カスタム要素のような最新のプラットフォーム機能でさえ、アプリケーション要件とともに増大する複雑さを課し、コンポーネント開発を面倒でエラーが発生しやすいものにします。
 
-Consider implementing a modal component with custom elements:
+カスタム要素でモーダルコンポーネントを実装することを考えてみましょう：
 
 ```javascript
 /* modal-dialog.js */
@@ -152,9 +152,9 @@ customElements.define('modal-dialog', ModalDialog);
 </modal-dialog>
 ```
 
-The component provides encapsulation but requires extensive setup code for basic functionality. State management across components still requires manual coordination, and the imperative API (calling `.open()` and `.close()`) doesn't compose well with reactive data flow.
+このコンポーネントはカプセル化を提供しますが、基本的な機能には広範なセットアップコードが必要です。コンポーネント間の状態管理には依然として手動の調整が必要であり、命令的API（`.open()`と`.close()`の呼び出し）はリアクティブなデータフローとうまく組み合わせることができません。
 
-Component communication becomes increasingly complex. Consider a shopping cart that needs to coordinate between multiple interface elements:
+コンポーネント間の通信はますます複雑になります。複数のインターフェース要素間で調整する必要があるショッピングカートを考えてみましょう：
 
 ```javascript
 // Manual coordination across components
@@ -163,16 +163,16 @@ class CartManager {
     this.items = [];
     this.subscribers = [];
   }
-  
+
   addItem(item) {
     this.items.push(item);
     this.notifySubscribers();
   }
-  
+
   subscribe(callback) {
     this.subscribers.push(callback);
   }
-  
+
   notifySubscribers() {
     this.subscribers.forEach(callback => callback(this.items));
   }
@@ -197,29 +197,29 @@ class CartTotal extends HTMLElement {
 }
 ```
 
-Every component requiring cart data must manually subscribe to updates, handle cleanup, and coordinate its own state. Adding features like quantity management, discounts, or persistence requires touching multiple components and maintaining manual synchronization. The coordination overhead grows exponentially with application complexity.
+カートデータを必要とするすべてのコンポーネントは、更新を手動でサブスクライブし、クリーンアップを処理し、独自の状態を調整する必要があります。数量管理、割引、または永続化などの機能を追加するには、複数のコンポーネントに触れ、手動の同期を維持する必要があります。調整のオーバーヘッドは、アプリケーションの複雑さとともに指数関数的に増大します。
 
-### Runtime Burden
+### ランタイムの負担
 
-Development decisions impose ongoing costs on users rather than developers. Work that could happen once during the build process gets repeated millions of times across user sessions, creating unnecessary overhead that accumulates as applications scale.
+開発の決定は、開発者ではなくユーザーに継続的なコストを課します。ビルドプロセス中に1回で済む作業が、ユーザーセッション全体で何百万回も繰り返され、アプリケーションのスケールとともに蓄積される不必要なオーバーヘッドを生み出します。
 
-Consider template parsing across user sessions. Every user's browser repeats identical analysis:
+ユーザーセッション全体でのテンプレート解析を考えてみましょう。すべてのユーザーのブラウザが同一の分析を繰り返します：
 
 ```javascript
 // This analysis happens for every user, every session
 function processTemplate(template) {
   // Parse component structure
   const ast = parseTemplate(template);
-  
+
   // Identify dynamic parts
   const dynamicNodes = findDynamicNodes(ast);
-  
+
   // Build dependency graph
   const dependencies = analyzeDependencies(dynamicNodes);
-  
+
   // Generate update strategies
   const updatePlan = createUpdatePlan(dependencies);
-  
+
   return { ast, dynamicNodes, dependencies, updatePlan };
 }
 
@@ -229,9 +229,9 @@ const userSession2 = processTemplate(blogTemplate); // Same result
 const userSession3 = processTemplate(blogTemplate); // Same result
 ```
 
-This analysis produces identical results for every user because the template structure is static. The parsing logic, dependency relationships, and update strategies remain constant, yet each browser performs this work independently.
+この分析は、テンプレート構造が静的であるため、すべてのユーザーに対して同一の結果を生成します。解析ロジック、依存関係、更新戦略は一定のままですが、各ブラウザはこの作業を独立して実行します。
 
-Component optimization demonstrates the burden clearly. Simple implementations create ongoing costs, while optimized versions require extensive coordination:
+コンポーネントの最適化は、負担を明確に示します。シンプルな実装は継続的なコストを生み出し、最適化されたバージョンには広範な調整が必要です：
 
 ```javascript
 // Creates burden: every render recalculates everything
@@ -240,7 +240,7 @@ class ProductList extends Component {
     const sortedProducts = this.props.products
       .sort((a, b) => a.price - b.price)  // Repeated calculation
       .filter(p => p.inStock);            // Repeated filtering
-    
+
     return sortedProducts.map(product =>   // Repeated mapping
       `<div class="product">${product.name}: $${product.price}</div>`
     ).join('');
@@ -254,53 +254,53 @@ class OptimizedProductList extends Component {
     this.memoizedSort = framework.createMemo();
     this.virtualizer = framework.createVirtualizer();
   }
-  
+
   render() {
     const sorted = this.memoizedSort(
       () => this.props.products.sort((a, b) => a.price - b.price),
       [this.props.products]
     );
-    
+
     return this.virtualizer.render(sorted, this.renderProduct);
   }
 }
 ```
 
-The burden extends to server-side operations where identical work repeats across requests. Each request rebuilds the same component hierarchies and executes predictable render logic:
+負担はサーバーサイドの操作にも及び、同一の作業がリクエスト全体で繰り返されます。各リクエストは同じコンポーネント階層を再構築し、予測可能なレンダリングロジックを実行します：
 
 ```javascript
 app.get('/product/:id', async (req, res) => {
   // 1. Parse and compile component tree structure
   const componentTree = buildServerComponents();
-  
-  // 2. Resolve data dependencies 
+
+  // 2. Resolve data dependencies
   const productData = await fetchProduct(req.params.id);
   const recommendations = await fetchRecommendations(productData.category);
-  
+
   // 3. Execute render logic
   const html = framework.renderToString('ProductPage', {
     product: productData,
     recommendations: recommendations
   });
-  
+
   // 4. Generate final HTML with boilerplate
   res.send(wrapWithLayout(html));
 });
 ```
 
-Every request performs template compilation, dependency resolution, and HTML generation work that could be pre-computed for static portions. This overhead multiplies across concurrent users, consuming server resources and increasing response times.
+すべてのリクエストは、テンプレートのコンパイル、依存関係の解決、静的部分に対して事前計算できるHTML生成作業を実行します。このオーバーヘッドは同時ユーザー全体で倍増し、サーバーリソースを消費し、応答時間を増加させます。
 
-The burden shifts to users because frameworks prioritize developer convenience over runtime efficiency. Each user pays CPU cycles and battery life for analysis that benefits no one after the first calculation. Applications with millions of users repeat identical computations billions of times, consuming collective resources that could be eliminated through build-time analysis.
+フレームワークがランタイム効率よりも開発者の利便性を優先するため、負担はユーザーに転嫁されます。各ユーザーは、最初の計算後は誰にも利益をもたらさない分析のためにCPUサイクルとバッテリー寿命を支払います。数百万人のユーザーを持つアプリケーションは、同一の計算を数十億回繰り返し、ビルド時の分析によって排除できる集合的なリソースを消費します。
 
-## Three Solutions
+## 3つのソリューション
 
-Marko addresses these problems through fundamental architectural decisions that eliminate the tradeoffs rather than managing them. The approach focuses on extending HTML's capabilities while preserving its strengths.
+Markoは、トレードオフを管理するのではなく排除する基本的なアーキテクチャの決定を通じて、これらの問題に対処します。このアプローチは、HTMLの強みを保持しながら、その機能を拡張することに焦点を当てています。
 
-### Augment HTML
+### HTMLを拡張する
 
-Rather than generating HTML from JavaScript, Marko enhances HTML with the language features modern applications require. This preserves platform alignment while addressing scalability limitations.
+JavaScriptからHTMLを生成するのではなく、Markoは最新のアプリケーションが必要とする言語機能でHTMLを強化します。これにより、スケーラビリティの制限に対処しながら、プラットフォームの整合性が保たれます。
 
-Templates begin as familiar HTML and evolve naturally. Almost all HTML code works as Marko code.
+テンプレートは馴染みのあるHTMLとして始まり、自然に進化します。ほぼすべてのHTMLコードがMarkoコードとして機能します。
 
 ```marko
 /* products.marko */
@@ -311,7 +311,7 @@ Templates begin as familiar HTML and evolve naturally. Almost all HTML code work
 </ul>
 ```
 
-State and control flow integrate directly into the markup:
+状態と制御フローはマークアップに直接統合されます：
 
 ```marko
 /* products.marko */
@@ -323,7 +323,7 @@ State and control flow integrate directly into the markup:
 </ul>
 ```
 
-Asynchronous operations become declarative:
+非同期操作は宣言的になります：
 
 ```marko
 /* products.marko */
@@ -336,24 +336,24 @@ Asynchronous operations become declarative:
       </for>
     </ul>
   </await>
-  
+
   <@placeholder>
     Loading products...
   </@placeholder>
-  
+
   <@catch|error|>
     Failed to load: ${error.message}
   </@catch>
 </try>
 ```
 
-This progression requires no architectural changes. State management becomes part of the markup language, eliminating the conceptual gap between document structure and application logic. The approach preserves HTML's readability and browser compatibility while adding necessary capabilities.
+この進化にはアーキテクチャの変更は必要ありません。状態管理はマークアップ言語の一部となり、ドキュメント構造とアプリケーションロジック間の概念的なギャップが解消されます。このアプローチは、必要な機能を追加しながら、HTMLの可読性とブラウザの互換性を保持します。
 
-### Component Encapsulation
+### コンポーネントのカプセル化
 
-Marko provides true component encapsulation without the boilerplate and complexity of custom elements. Components group related HTML, styling, and behavior into cohesive units that work declaratively rather than imperatively.
+Markoは、カスタム要素のボイラープレートと複雑さなしに、真のコンポーネントカプセル化を提供します。コンポーネントは、関連するHTML、スタイリング、動作を、命令的ではなく宣言的に機能する凝集性のある単位にグループ化します。
 
-The modal component that required extensive custom element setup becomes straightforward:
+広範なカスタム要素のセットアップが必要だったモーダルコンポーネントは、シンプルになります：
 
 ```marko
 /* modal.marko */
@@ -376,7 +376,7 @@ The modal component that required extensive custom element setup becomes straigh
 </style>
 ```
 
-Usage requires no imperative API calls or manual state coordination:
+使用には命令的なAPI呼び出しや手動の状態調整は必要ありません：
 
 ```marko
 <modal>
@@ -384,9 +384,9 @@ Usage requires no imperative API calls or manual state coordination:
 </modal>
 ```
 
-State flows declaratively through the component. Opening and closing behaviors integrate naturally with the markup structure.
+状態はコンポーネントを通じて宣言的に流れます。開閉動作はマークアップ構造と自然に統合されます。
 
-This encapsulation extends to interactive components. Consider a rating component that coordinates between multiple elements:
+このカプセル化はインタラクティブなコンポーネントにも拡張されます。複数の要素間で調整する評価コンポーネントを考えてみましょう：
 
 ```marko
 <let/rating=0>
@@ -394,7 +394,7 @@ This encapsulation extends to interactive components. Consider a rating componen
 
 <div>
   <for|i| from=1 to=5>
-    <button 
+    <button
       class=((hovering || rating) >= i && 'filled')
       onPointerEnter() { hovering = i }
       onPointerLeave() { hovering = 0 }
@@ -415,19 +415,19 @@ This encapsulation extends to interactive components. Consider a rating componen
 </div>
 ```
 
-Component communication happens through props and events rather than global references or manual coordination. State changes propagate automatically to dependent elements without explicit wiring.
+コンポーネント間の通信は、グローバル参照や手動調整ではなく、プロパティとイベントを通じて行われます。状態の変更は、明示的な配線なしで、依存する要素に自動的に伝播します。
 
-### Compile-Time Intelligence
+### コンパイル時のインテリジェンス
 
-Marko's compilation approach enables optimizations that runtime-only solutions cannot achieve. By analyzing templates during the build process, the compiler makes decisions about code generation, dependency tracking, and performance optimizations that would be impossible or expensive at runtime.
+Markoのコンパイルアプローチにより、ランタイムのみのソリューションでは達成できない最適化が可能になります。ビルドプロセス中にテンプレートを分析することで、コンパイラはコード生成、依存関係の追跡、ランタイムでは不可能または高コストなパフォーマンス最適化について決定を下します。
 
-Selective code generation produces minimal JavaScript bundles:
+選択的なコード生成により、最小限のJavaScriptバンドルが生成されます：
 
 ```marko
 <div>
   // Static content: no JavaScript generated
   <p>This is static content</p>
-  
+
   // Stateful content: targeted JavaScript generated
   <let/count=0>
   <button onClick() { count++ }>
@@ -436,9 +436,9 @@ Selective code generation produces minimal JavaScript bundles:
 </div>
 ```
 
-The compiler generates client-side JavaScript only for components requiring interactive behavior. Static content compiles to plain HTML, while dynamic sections include only necessary JavaScript for their specific behavior.
+コンパイラは、インタラクティブな動作を必要とするコンポーネントに対してのみクライアント側のJavaScriptを生成します。静的コンテンツはプレーンなHTMLにコンパイルされ、動的セクションには特定の動作に必要なJavaScriptのみが含まれます。
 
-Reactivity analysis happens at compile time rather than runtime:
+リアクティビティの分析は、ランタイムではなくコンパイル時に行われます：
 
 ```marko
 <let/firstName="John">
@@ -452,26 +452,26 @@ Reactivity analysis happens at compile time rather than runtime:
 <p>Your initials are ${firstName[0]}${lastName[0]}</p>
 ```
 
-When `firstName` changes, the compiler ensures updates to the input value, derived `fullName`, h1 text, and paragraph initials. This analysis generates optimal update code affecting only dependent elements, eliminating runtime dependency tracking overhead while enabling surgical DOM updates.
+`firstName`が変更されると、コンパイラは入力値、派生した`fullName`、h1テキスト、段落のイニシャルへの更新を保証します。この分析により、依存する要素のみに影響する最適な更新コードが生成され、ランタイムの依存関係追跡オーバーヘッドを排除しながら、外科的なDOM更新が可能になります。
 
-Dual environment optimization compiles templates separately for server and client, each optimized for specific constraints. Server compilation prioritizes HTML generation throughput with efficient string concatenation and streaming support. Client compilation focuses on bundle size and precise updates, generating direct DOM manipulation rather than framework abstractions.
+デュアル環境最適化は、サーバーとクライアント用にテンプレートを個別にコンパイルし、それぞれが特定の制約に最適化されます。サーバーコンパイルは、効率的な文字列連結とストリーミングサポートによりHTML生成のスループットを優先します。クライアントコンパイルは、バンドルサイズと正確な更新に焦点を当て、フレームワークの抽象化ではなく直接的なDOM操作を生成します。
 
-## The Result
+## 結果
 
-These architectural decisions produce applications with characteristics that improve rather than degrade over time. The compilation approach handles complexity at build time, allowing development teams to focus on feature implementation rather than framework coordination.
+これらのアーキテクチャの決定により、時間の経過とともに劣化するのではなく改善する特性を持つアプリケーションが生成されます。コンパイルアプローチはビルド時に複雑さを処理し、開発チームがフレームワークの調整ではなく機能実装に集中できるようにします。
 
-Performance becomes automatic rather than effortful. Default streaming delivers content as soon as available. Selective JavaScript generation minimizes bundle sizes while maintaining full functionality. Precise updates affect only dependent DOM nodes. Progressive loading renders critical content first while interactive features enhance progressively.
+パフォーマンスは努力の結果ではなく自動的なものになります。デフォルトのストリーミングは、コンテンツが利用可能になり次第配信します。選択的なJavaScript生成は、完全な機能を維持しながらバンドルサイズを最小化します。正確な更新は依存するDOMノードのみに影響します。プログレッシブローディングは、インタラクティブな機能が段階的に強化される間、重要なコンテンツを最初にレンダリングします。
 
-Maintainability emerges from systematic design. Co-located concerns ensure component structure, styling, and behavior remain unified, eliminating coordination overhead that typically grows with application complexity. TypeScript integration provides template-level type checking equivalent to JavaScript analysis. The compiler identifies error categories at build time that would otherwise manifest as runtime failures.
+保守性は体系的な設計から生まれます。共同配置された関心事により、コンポーネント構造、スタイリング、動作が統一され、アプリケーションの複雑さとともに通常増大する調整オーバーヘッドが排除されます。TypeScript統合により、JavaScript分析と同等のテンプレートレベルの型チェックが提供されます。コンパイラは、ランタイムの失敗として現れるであろうエラーカテゴリをビルド時に識別します。
 
-Component flexibility supports evolving requirements without architectural changes. Applications can start with simple uncontrolled components and add coordination as needed, or implement complex validation and synchronization patterns when appropriate.
+コンポーネントの柔軟性は、アーキテクチャの変更なしに進化する要件をサポートします。アプリケーションは、シンプルな非制御コンポーネントから始めて必要に応じて調整を追加したり、適切な場合に複雑な検証と同期パターンを実装したりできます。
 
-Progressive enhancement occurs naturally from the architecture. Applications function without JavaScript and enhance with it, supporting diverse user environments and improving resilience. This characteristic becomes increasingly valuable as applications serve broader user bases with varying device capabilities and network conditions.
+プログレッシブエンハンスメントは、アーキテクチャから自然に発生します。アプリケーションはJavaScriptなしで機能し、JavaScriptで強化され、多様なユーザー環境をサポートし、回復力を向上させます。この特性は、アプリケーションがさまざまなデバイス機能とネットワーク条件を持つより広いユーザーベースにサービスを提供するにつれて、ますます価値が高まります。
 
-The result is a development approach that aligns with web platform evolution rather than working against it, producing applications that achieve high performance and maintainability through systematic design rather than optimization techniques.
+結果として、最適化技術ではなく体系的な設計を通じて高いパフォーマンスと保守性を達成するアプリケーションを生み出す、ウェブプラットフォームの進化と対立するのではなく整合する開発アプローチが得られます。
 
-## Next Steps
+## 次のステップ
 
-- [Welcome to Marko](./welcome-to-marko.md)
-- [Components & Reactivity Tutorial](../tutorial/components-and-reactivity.md)
-- [Language Reference](../reference/language.md)
+- [Markoへようこそ](./welcome-to-marko.md)
+- [コンポーネントとリアクティビティのチュートリアル](../tutorial/components-and-reactivity.md)
+- [言語リファレンス](../reference/language.md)

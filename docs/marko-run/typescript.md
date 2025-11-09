@@ -1,51 +1,51 @@
 # TypeScript
 
-## Global Namespace
+## グローバル名前空間
 
-`marko/run` provides a global namespace `MarkoRun` with the following types:
+`marko/run` は、以下の型を持つグローバル名前空間 `MarkoRun` を提供します：
 
-**`MarkoRun.Handler`** - Type that represents a handler function to be exported by a +handler or +middleware file
+**`MarkoRun.Handler`** - +handler または +middleware ファイルでエクスポートされるハンドラー関数を表す型
 
-**`MarkoRun.Route`** - Type of the route's params and metadata
+**`MarkoRun.Route`** - ルートのパラメータとメタデータの型
 
-**`MarkoRun.Context`** - Type of the request context object in a handler and `$global` in your Marko files. This type can be extended using TypeScript's module and interface merging by declaring a `Context` interface on the `@marko/run` module within your applcation code
+**`MarkoRun.Context`** - ハンドラー内のリクエストコンテキストオブジェクトの型、および Marko ファイル内の `$global` の型。この型は、アプリケーションコード内で `@marko/run` モジュールに `Context` インターフェースを宣言することで、TypeScript のモジュールとインターフェースのマージを使用して拡張できます
 
 ```ts
 declare module "@marko/run" {
   interface Context {
-    customPropery: MyCustomThing; // will be globally defined on MarkoRun.Context
+    customPropery: MyCustomThing; // MarkoRun.Context にグローバルに定義されます
   }
 }
 ```
 
-**`MarkoRun.Platform`** - Type of the platform object provided by the adapter in use. This interface can be extended in that same way as `Context` (see above) by declaring a `Platform` interface:
+**`MarkoRun.Platform`** - 使用中のアダプターによって提供されるプラットフォームオブジェクトの型。このインターフェースは、`Context` と同じ方法で（上記を参照）、`Platform` インターフェースを宣言することで拡張できます：
 
 ```ts
 declare module "@marko/run" {
   interface Platform {
-    customPropery: MyCustomThing; // will be globally defined on MarkoRun.Platform
+    customPropery: MyCustomThing; // MarkoRun.Platform にグローバルに定義されます
   }
 }
 ```
 
-## Generated Types
+## 生成される型
 
-If a [TSConfig](https://www.typescriptlang.org/tsconfig) file is discovered in the project root, the Vite plugin will automatically generate a .d.ts file which provides more specific types for each of your middleware, handlers, layouts, and pages. This file will be generated at `.marko-run/routes.d.ts` whenever the project is built - including dev.
+プロジェクトルートで [TSConfig](https://www.typescriptlang.org/tsconfig) ファイルが見つかった場合、Vite プラグインは、各ミドルウェア、ハンドラー、レイアウト、ページに対してより具体的な型を提供する .d.ts ファイルを自動的に生成します。このファイルは、開発環境を含め、プロジェクトがビルドされるたびに `.marko-run/routes.d.ts` に生成されます。
 
-> [!NOTE] TypeScript will not include this file by default. You should use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) and [add it in your tsconfig](https://www.typescriptlang.org/tsconfig#include).
+> [!NOTE] TypeScript はデフォルトでこのファイルを含めません。[Marko VSCode プラグイン](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) を使用し、[tsconfig に追加する](https://www.typescriptlang.org/tsconfig#include) 必要があります。
 
-These types are replaced with more specific versions per routable file:
+これらの型は、ルーティング可能なファイルごとに、より具体的なバージョンに置き換えられます：
 
 **`MarkoRun.Handler`**
 
-- Overrides context with specific MarkoRun.Context
+- コンテキストを特定の MarkoRun.Context でオーバーライド
 
 **`MarkoRun.Route`**
 
-- Adds specific parameters and meta types
-- In middleware and layouts which are used in many routes, this type will be a union of all possible routes that the file will see
+- 特定のパラメータとメタタイプを追加
+- 多くのルートで使用されるミドルウェアとレイアウトでは、この型はファイルが参照するすべての可能なルートのユニオンになります
 
 **`MarkoRun.Context`**
 
-- In middleware and layouts which are used in many routes, this type will be a union of all possible routes that the file will see.
-- When an adapter is used, it can provide types for the platform
+- 多くのルートで使用されるミドルウェアとレイアウトでは、この型はファイルが参照するすべての可能なルートのユニオンになります
+- アダプターが使用されている場合、プラットフォームの型を提供できます

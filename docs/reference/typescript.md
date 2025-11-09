@@ -1,12 +1,12 @@
 # TypeScript
 
-Marko’s TypeScript support offers in-editor error checking, makes refactoring less scary, verifies that data matches expectations, and even helps with API design.
+MarkoのTypeScriptサポートは、エディタ内でのエラーチェック、リファクタリングの不安軽減、データが期待通りであることの検証、さらにはAPI設計の支援を提供します。
 
-## Enabling TypeScript in your Marko project
+## MarkoプロジェクトでTypeScriptを有効にする
 
-There are two (non-exclusive) ways to add TypeScript to a Marko project:
+Markoプロジェクトに TypeScript を追加するには、2つの（排他的でない）方法があります:
 
-- **For sites and web apps**, [a `tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root is the only requirement:
+- **サイトやWebアプリの場合**、プロジェクトルートに[`tsconfig.json`ファイル](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)を置くだけです:
 
   ```
   src/
@@ -14,7 +14,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   tsconfig.json
   ```
 
-- **For [packages of Marko tags](https://markojs.com/docs/custom-tags/#publishing-tags-to-npm)**, the `"script-lang"` attribute must be set to `"ts"` in [the `marko.json`](./marko-json.md):
+- **[Markoタグのパッケージ](https://markojs.com/docs/custom-tags/#publishing-tags-to-npm)の場合**、[`marko.json`](./marko-json.md)内で`"script-lang"`属性を`"ts"`に設定する必要があります:
 
   ```json
   /* marko.json */
@@ -23,22 +23,22 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   }
   ```
 
-  This will automatically expose type-checking and autocomplete for the published tags.
+  これにより、公開されたタグの型チェックとオートコンプリートが自動的に公開されます。
 
 > [!TIP]
-> You can also use the `script-lang` method for sites and apps.
+> サイトやアプリでも`script-lang`メソッドを使用できます。
 >
-> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined.
+> Markoは、`script-lang`が定義された`marko.json`を探してディレクトリを上方向にクロールします。
 >
-> This helps when incrementally migrating to TypeScript allowing folders to opt-in or opt-out of strict type checking.
+> これは、TypeScriptに段階的に移行する際に、フォルダごとに厳密な型チェックをオプトインまたはオプトアウトできるため役立ちます。
 
-## Typing `input`
+## `input`の型付け
 
-A `.marko` file will use any exported `Input` type for [that file’s `input` object](./language.md#input).
+`.marko`ファイルは、[そのファイルの`input`オブジェクト](./language.md#input)に対してエクスポートされた`Input`型を使用します。
 
-This can be `export type Input` or `export interface Input`.
+これは`export type Input`または`export interface Input`にできます。
 
-### Example
+### 例
 
 ```marko
 /* PriceField.marko */
@@ -53,7 +53,7 @@ export interface Input {
 </label>
 ```
 
-Since it is exported, `Input` may be accessed from other `.marko` and `.ts` files:
+エクスポートされているため、`Input`は他の`.marko`および`.ts`ファイルからアクセスできます:
 
 ```marko
 import { Input as PriceInput } from "<PriceField>";
@@ -69,9 +69,9 @@ export interface Input extends PriceInput {
 };
 ```
 
-### Generic `Input`
+### ジェネリック`Input`
 
-[Generic Types and Type Parameters](https://www.typescriptlang.org/docs/handbook/2/generics.html) on `Input` are recognized throughout the entire `.marko` template (excluding [static statements](./language.md#static)).
+`Input`の[ジェネリック型と型パラメータ](https://www.typescriptlang.org/docs/handbook/2/generics.html)は、`.marko`テンプレート全体で認識されます（[staticステートメント](./language.md#static)を除く）。
 
 ```marko
 export interface Input<T> {
@@ -80,14 +80,14 @@ export interface Input<T> {
 }
 
 static function staticFn() {
-  // can NOT use `T` here
+  // ここでは`T`を使用できません
 }
 
 <const/instanceFn(val: T) {
-  // can use `T` here
+  // ここでは`T`を使用できます
 }/>
 
-// can use `as T` here
+// ここでは`as T`を使用できます
 <select onInput(evt) { input.onSelect(options[evt.target.value] as T) }>
   <for|value, i| of=input.options>
     <option value=i>${value}</option>
@@ -95,49 +95,49 @@ static function staticFn() {
 </select>
 ```
 
-## Built-in Marko Types
+## 組み込みMarko型
 
-Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/marko/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
+Markoは、`Marko` [TypeScript名前空間](https://www.typescriptlang.org/docs/handbook/namespaces.html)を通じて一般的な[型定義](https://github.com/marko-js/marko/blob/main/packages/marko/index.d.ts)を公開しています:
 
 - **`Marko.Template<Input, Return>`**
-  - The type of a `.marko` file
+  - `.marko`ファイルの型
   - `typeof import("./template.marko")`
 - **`Marko.TemplateInput<Input>`**
-  - The object accepted by the render methods of a template. It includes the template's `Input` and `$global` values.
+  - テンプレートのrenderメソッドが受け入れるオブジェクト。テンプレートの`Input`と`$global`値を含みます。
 - **`Marko.Body<Params, Return>`**
-  - Used to type [tag content](./language.md#tag-content)
+  - [タグコンテンツ](./language.md#tag-content)を型付けするために使用されます
 - **`Marko.Renderable`**
-  - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tags)
+  - [`<${dynamic}/>`タグ](./language.md#dynamic-tags)が受け入れるすべての値
   - `string | Marko.Template | Marko.Body | { content: Marko.Body}`
 - **`Marko.Global`**
-  - The type of [the `$global` object](./language.md#global)
+  - [`$global`オブジェクト](./language.md#global)の型
 - **`Marko.RenderResult`**
-  - The result of [rendering a Marko template](./template.md#templaterenderinput)
+  - [Markoテンプレートのレンダリング](./template.md#templaterenderinput)の結果
   - `ReturnType<template.renderSync>`
   - `Awaited<ReturnType<template.render>>`
 - **`Marko.NativeTags`**
-  - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
-- **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
-  - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
-- **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
-  - Helper to extract the parameters and return types from a `Marko.Body`
+  - `Marko.NativeTags`: すべての[ネイティブタグ](./native-tag.md)とその型を含むオブジェクト
+- **`Marko.Input<TagName>`**と**`Marko.Return<TagName>`**
+  - ネイティブタグ（文字列が渡された場合）またはカスタムタグから入力と戻り値の型を抽出するヘルパー
+- **`Marko.BodyParameters<Body>`**と**`Marko.BodyReturnType<Body>`**
+  - `Marko.Body`からパラメータと戻り値の型を抽出するヘルパー
 - **`Marko.AttrTag<T>`**
-  - Used to represent types for [attributes tags](./language.md#attribute-tags)
-  - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
+  - [属性タグ](./language.md#attribute-tags)の型を表すために使用されます
+  - 繰り返しタグを消費するための`[Symbol.iterator]`を持つ単一の属性タグ
 
-### Deprecated
+### 非推奨
 
 - **`Marko.Component<Input, State>`**
-  - The base class for a [class component](https://markojs.com/v5/docs/class-components/#class-components)
+  - [クラスコンポーネント](https://markojs.com/v5/docs/class-components/#class-components)の基底クラス
 - **`Marko.Out`**
-  - The render context with methods like `write`, `beginAsync`, etc.
+  - `write`、`beginAsync`などのメソッドを持つレンダーコンテキスト
   - `ReturnType<template.render>`
 - **`Marko.Emitter`**
-  - `EventEmitter` from `@types/node`
+  - `@types/node`の`EventEmitter`
 
-### Typing `content`
+### `content`の型付け
 
-A commonly used type from the `Marko` namespace is `Marko.Body` which can be used to type the [content](./language.md#tag-content) in `input.content`:
+`Marko`名前空間からよく使用される型は`Marko.Body`で、`input.content`の[コンテンツ](./language.md#tag-content)を型付けするために使用できます:
 
 ```marko
 /* child.marko */
@@ -146,7 +146,7 @@ export interface Input {
 }
 ```
 
-Here, all of the following are acceptable:
+ここでは、以下のすべてが許容されます:
 
 ```marko
 /* index.marko */
@@ -157,7 +157,7 @@ Here, all of the following are acceptable:
 </child>
 ```
 
-Passing other values (including components) causes a type error:
+他の値（コンポーネントを含む）を渡すと型エラーが発生します:
 
 ```marko
 /* index.marko */
@@ -165,9 +165,9 @@ import OtherTag from "<other-tag>";
 <child content=OtherTag/>
 ```
 
-#### Typing Tag Parameters
+#### タグパラメータの型付け
 
-Tag parameters are provided to the `content` by the child tag. For this reason, `Marko.Body` allows typing of its parameters:
+タグパラメータは、子タグによって`content`に提供されます。このため、`Marko.Body`はそのパラメータの型付けを可能にします:
 
 ```marko
 /* for-by-two.marko */
@@ -188,9 +188,9 @@ export interface Input {
 </for-by-two>
 ```
 
-### Typing Attribute Tags
+### 属性タグの型付け
 
-All attribute tags are typed as iterable with a `[Symbol.iterator]`, regardless of intent. This means all attribute tag inputs must be wrapped in `Marko.AttrTag`.
+すべての属性タグは、意図に関係なく`[Symbol.iterator]`を持つイテラブルとして型付けされます。これは、すべての属性タグ入力が`Marko.AttrTag`でラップされる必要があることを意味します。
 
 ```marko
 /* my-select.marko */
@@ -205,9 +205,9 @@ export interface Input {
 </select>
 ```
 
-### Extending native tag types within a Marko tag
+### Markoタグ内でネイティブタグ型を拡張する
 
-The types for native tags are accessed via the global `Marko.Input` type. Here's an example of a component that extends the `button` html tag:
+ネイティブタグの型は、グローバル`Marko.Input`型を介してアクセスされます。以下は、`button` HTMLタグを拡張するコンポーネントの例です:
 
 ```marko
 /* color-button.marko */
@@ -223,7 +223,7 @@ $ const { color, ...attrs } = input;
 </button>
 ```
 
-### Registering a new native tag (e.g. for custom elements)
+### 新しいネイティブタグの登録（例: カスタム要素用）
 
 ```ts
 interface MyCustomElementAttributes {
@@ -233,42 +233,42 @@ interface MyCustomElementAttributes {
 declare global {
   namespace Marko {
     interface NativeTags {
-      // By adding this entry, you can now use `my-custom-element` as a native html tag.
+      // このエントリを追加することで、`my-custom-element`をネイティブHTMLタグとして使用できるようになります。
       "my-custom-element": MyCustomElementAttributes;
     }
   }
 }
 ```
 
-### Registering new "global" HTML Attributes
+### 新しい「グローバル」HTML属性の登録
 
 ```ts
 declare global {
   namespace Marko {
     interface HTMLAttributes {
-      "my-non-standard-attribute"?: string; // Adds this attribute as available on all HTML tags.
+      "my-non-standard-attribute"?: string; // この属性をすべてのHTMLタグで利用可能として追加します。
     }
   }
 }
 ```
 
-### Registering CSS Properties (eg for custom properties)
+### CSSプロパティの登録（例: カスタムプロパティ用）
 
 ```ts
 declare global {
   namespace Marko {
     namespace CSS {
       interface Properties {
-        "--foo"?: string; // adds a support for a custom `--foo` css property.
+        "--foo"?: string; // カスタム`--foo` CSSプロパティのサポートを追加します。
       }
     }
   }
 }
 ```
 
-## TypeScript Syntax in `.marko`
+## `.marko`でのTypeScript構文
 
-Any JavaScript expression in Marko can also be written as a TypeScript expression.
+MarkoのすべてのJavaScript式は、TypeScript式としても記述できます。
 
 ```marko
 <my-tag foo=1 as any>
@@ -276,7 +276,7 @@ Any JavaScript expression in Marko can also be written as a TypeScript expressio
 </my-tag>
 ```
 
-### Tag Type Parameters
+### タグ型パラメータ
 
 ```marko
 <child <T>|value: T|>
@@ -284,7 +284,7 @@ Any JavaScript expression in Marko can also be written as a TypeScript expressio
 </child>
 ```
 
-### Tag Type Arguments
+### タグ型引数
 
 ```marko
 /* components/child.marko */
@@ -295,19 +295,19 @@ export interface Input<T> {
 
 ```marko
 /* index.marko */
-// number would be inferred in this case, but we can be explicit
+// この場合numberは推論されますが、明示的にすることもできます
 <child<number> value=1 />
 ```
 
-### Method Shorthand Type Parameters
+### メソッド省略記法の型パラメータ
 
 ```marko
 <child process<T>() { /* ... */ } />
 ```
 
-### Attribute Type Assertions
+### 属性の型アサーション
 
-The types of attribute values can _usually_ be inferred. When needed, you can assert values to be more specific with [TypeScript’s `as` keyword](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions):
+属性値の型は_通常_推論できます。必要に応じて、[TypeScriptの`as`キーワード](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)を使用して、値をより具体的にアサートできます:
 
 ```marko
 <some-component
@@ -316,21 +316,21 @@ The types of attribute values can _usually_ be inferred. When needed, you can as
 />
 ```
 
-## JSDoc Support
+## JSDocサポート
 
-For existing projects that want to incrementally add type safety, adding full TypeScript support is a big leap. This is why Marko also includes full support for [incremental typing via JSDoc](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html).
+型安全性を段階的に追加したい既存のプロジェクトにとって、完全なTypeScriptサポートの追加は大きな飛躍です。このため、Markoは[JSDocによる段階的な型付け](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html)の完全なサポートも含んでいます。
 
-### Setup
+### セットアップ
 
-You can enable type checking in an existing `.marko` file by adding a `// @ts-check` comment at the top:
+既存の`.marko`ファイルで型チェックを有効にするには、先頭に`// @ts-check`コメントを追加します:
 
 ```js
 // @ts-check
 ```
 
-If you want to enable type checking for all Marko & JavaScript files in a JavaScript project, you can switch to using a [`jsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#using-tsconfigjson-or-jsconfigjson). You can skip checking some files by adding a `// @ts-nocheck` comment to files.
+JavaScriptプロジェクトのすべてのMarkoおよびJavaScriptファイルで型チェックを有効にしたい場合は、[`jsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#using-tsconfigjson-or-jsconfigjson)の使用に切り替えることができます。ファイルに`// @ts-nocheck`コメントを追加することで、一部のファイルのチェックをスキップできます。
 
-Once that has been enabled, you can start by typing the input with JSDoc. Here's an example component with typed `input`:
+有効になったら、JSDocで入力を型付けすることから始めることができます。以下は、型付けされた`input`を持つコンポーネントの例です:
 
 ```marko
 // @ts-check
@@ -345,13 +345,13 @@ Once that has been enabled, you can start by typing the input with JSDoc. Here's
 <div>${firstName} ${lastName}</div>
 ```
 
-## CI Type Checking
+## CI型チェック
 
-For type checking Marko files outside of your editor there is the [`@marko/type-check` cli](https://github.com/marko-js/language-server/tree/main/packages/type-check). See the CLI documentation for more information.
+エディタの外でMarkoファイルを型チェックするには、[`@marko/type-check` CLI](https://github.com/marko-js/language-server/tree/main/packages/type-check)があります。詳細については、CLIドキュメントを参照してください。
 
-## Profiling Performance
+## パフォーマンスプロファイリング
 
-The [`--generateTrace`](https://www.typescriptlang.org/tsconfig/#generateTrace) flag can be used to determine the parts of a codebase which are using the most resources during type checking.
+[`--generateTrace`](https://www.typescriptlang.org/tsconfig/#generateTrace)フラグを使用して、型チェック中に最もリソースを使用しているコードベースの部分を特定できます。
 
 ```sh
 mtc --generateTrace TRACE_DIR

@@ -1,10 +1,10 @@
-# File-based Routing
+# ファイルベースルーティング
 
-## Routes Directory
+## ルートディレクトリ
 
-The plugin looks for route files in the configured **routes directory**. By default, this is set to `./src/routes` relative to the Vite config file. This directory contains all the routing logic for the application.
+プラグインは、設定された **ルートディレクトリ** でルートファイルを検索します。デフォルトでは、Vite 設定ファイルからの相対パスで `./src/routes` に設定されています。このディレクトリには、アプリケーションのすべてのルーティングロジックが含まれます。
 
-Here's how to configure a different routes directory:
+異なるルートディレクトリを設定する方法は次のとおりです：
 
 ```ts
 /* vite.config.ts */
@@ -14,24 +14,24 @@ import marko from "@marko/run/vite";
 export default defineConfig({
   plugins: [
     marko({
-      routesDir: "src/pages", // Use `./src/pages` (relative to this file) as the routes directory
+      routesDir: "src/pages", // ルートディレクトリとして `./src/pages`（このファイルからの相対パス）を使用
     }),
   ],
 });
 ```
 
-## Routable Files
+## ルーティング可能なファイル
 
-The router only recognizes certain filenames, all prefixed with `+`. The following filenames will be discovered in any directory inside your application’s [routes directory](#routes-directory).
+ルーターは特定のファイル名のみを認識し、すべて `+` で始まります。以下のファイル名は、アプリケーションの [ルートディレクトリ](#ルートディレクトリ) 内の任意のディレクトリで検出されます。
 
 ### `+page.marko`
 
-These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
+これらのファイルは、現在のディレクトリパスにルートを確立し、`GET` リクエストに対してページの HTML コンテンツが提供されます。提供されるパスごとに存在できるページは 1 つだけです。
 
 ### `+layout.marko`
 
-These files provide a **layout component**, which will wrap all nested layouts and pages. Information is obtained from [`$global`](../reference/language.md#global) and `input`
-Layouts are like any other Marko component, with no extra constraints. Each layout receives the request, path params, URL, and route metadata as input, as well as a `content` which refers to the nested page that is being rendered.
+これらのファイルは **レイアウトコンポーネント** を提供し、すべてのネストされたレイアウトとページをラップします。情報は [`$global`](../reference/language.md#global) と `input` から取得されます。
+レイアウトは他の Marko コンポーネントと同様で、追加の制約はありません。各レイアウトは、リクエスト、パスパラメータ、URL、ルートメタデータを入力として受け取り、レンダリングされるネストされたページを参照する `content` も受け取ります。
 
 ```marko
 /* +layout.marko */
@@ -42,27 +42,27 @@ export interface Input {
 <main>
   <h1>My Products</h1>
 
-  <${input.content}/> // render the page or layout here
+  <${input.content}/> // ここでページまたはレイアウトをレンダリング
 </main>
 ```
 
 ### `+handler.*`
 
-These files establish a route at the current directory path that can handle requests for `GET`, `POST`, `PUT`, and `DELETE` HTTP methods. <!-- TODO: what about HEAD? -->
+これらのファイルは、`GET`、`POST`、`PUT`、`DELETE` HTTP メソッドのリクエストを処理できる現在のディレクトリパスにルートを確立します。<!-- TODO: what about HEAD? -->
 
-Typically, these will be `.js` or `.ts` files, depending on your project. Like pages, only one handler for each method may exist for any served path. A handler should export functions
+通常、これらはプロジェクトに応じて `.js` または `.ts` ファイルになります。ページと同様に、提供されるパスごとに各メソッドのハンドラーは 1 つだけ存在できます。ハンドラーは関数をエクスポートする必要があります
 
-- Valid exports are functions named `GET`, `POST`, `PUT`, or `DELETE`.
-- Exports can be one of the following
-  - Handler function (see below)
-  - Array of handler functions - will be composed by calling them in order
-  - Promise that resolves to a handler function or an array of handler functions
-- Handler functions are synchronous or asynchronous functions that
+- 有効なエクスポートは、`GET`、`POST`、`PUT`、または `DELETE` という名前の関数です
+- エクスポートは以下のいずれかになります
+  - ハンドラー関数（下記参照）
+  - ハンドラー関数の配列 - 順番に呼び出されて構成されます
+  - ハンドラー関数またはハンドラー関数の配列に解決される Promise
+- ハンドラー関数は同期または非同期関数で
 
-  - Receives a `context` and `next` argument,
-    - The `context` argument contains the WHATWG request object, path parameters, URL, and route metadata.
-    - The `next` argument will call the page for `GET` requests where applicable or return a `204` response.
-  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined, the `next` argument will be automatically called and used as the response.
+  - `context` と `next` 引数を受け取ります
+    - `context` 引数には、WHATWG リクエストオブジェクト、パスパラメータ、URL、ルートメタデータが含まれます
+    - `next` 引数は、該当する場合は `GET` リクエストのページを呼び出すか、`204` レスポンスを返します
+  - WHATWG レスポンスを返すか、WHATWG レスポンスをスローするか、undefined を返します。関数が undefined を返す場合、`next` 引数が自動的に呼び出され、レスポンスとして使用されます
 
     ```ts
     /* +handler.ts */
@@ -72,7 +72,7 @@ Typically, these will be `.js` or `.ts` files, depending on your project. Like p
     }
 
     export async function GET(context, next) {
-      // do something before calling `next`
+      // `next` を呼び出す前に何かをする
       const response = await next();
       return response;
     }
@@ -80,21 +80,21 @@ Typically, these will be `.js` or `.ts` files, depending on your project. Like p
 
 ### `+middleware.*`
 
-These files are like layouts, but for handlers. Middleware files are called before handlers and let you perform arbitrary work before and after.
+これらのファイルはレイアウトに似ていますが、ハンドラー用です。ミドルウェアファイルはハンドラーの前に呼び出され、前後に任意の作業を実行できます。
 
 > [!NOTE]
-> Unlike handlers, middleware runs for all HTTP methods.
+> ハンドラーとは異なり、ミドルウェアはすべての HTTP メソッドで実行されます。
 
-- Expects a `default` export that can be one of the following
-  - Handler function (see below)
-  - Array of handler functions - will be composed by calling them in order
-  - Promise that resolves to a handler function or an array of handler functions
-- Handler functions are synchronous or asynchronous functions that
+- `default` エクスポートが必要で、以下のいずれかになります
+  - ハンドラー関数（下記参照）
+  - ハンドラー関数の配列 - 順番に呼び出されて構成されます
+  - ハンドラー関数またはハンドラー関数の配列に解決される Promise
+- ハンドラー関数は同期または非同期関数で
 
-  - Receives a `context` and `next` argument,
-    - The `context` argument contains the WHATWG request object, path parameters, URL, and route metadata.
-    - The `next` argument will call the page for `GET` requests where applicable or return a `204` response.
-  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined, the `next` argument will be automatically called and used as the response.
+  - `context` と `next` 引数を受け取ります
+    - `context` 引数には、WHATWG リクエストオブジェクト、パスパラメータ、URL、ルートメタデータが含まれます
+    - `next` 引数は、該当する場合は `GET` リクエストのページを呼び出すか、`204` レスポンスを返します
+  - WHATWG レスポンスを返すか、WHATWG レスポンスをスローするか、undefined を返します。関数が undefined を返す場合、`next` 引数が自動的に呼び出され、レスポンスとして使用されます
 
     ```ts
     /* +middleware.ts */
@@ -103,7 +103,7 @@ These files are like layouts, but for handlers. Middleware files are called befo
       let success = true;
       console.log(`${requestName} request started`);
       try {
-        return await next(); // Wait for subsequent middleware, handler, and page
+        return await next(); // 後続のミドルウェア、ハンドラー、ページを待機
       } catch (err) {
         success = false;
         throw err;
@@ -117,35 +117,35 @@ These files are like layouts, but for handlers. Middleware files are called befo
 
 ### `+meta.*`
 
-These files represent static metadata to attach to the route. This metadata will be automatically provided on the route `context` when invoking a route.
+これらのファイルは、ルートに添付する静的メタデータを表します。このメタデータは、ルートを呼び出すときにルート `context` で自動的に提供されます。
 
-## Special Files
+## 特別なファイル
 
-In addition to the files above, which can be defined in any directory under the [routes directory](#routes-directory), some special files can only be defined at its top level. <!-- TODO: do we want to keep this restriction? Having nested 404s would be handy for disambiguating things like “there’s no user with that name” or “that promotion wasn’t found, it may have expired” -->
+[ルートディレクトリ](#ルートディレクトリ) 下の任意のディレクトリで定義できる上記のファイルに加えて、一部の特別なファイルはそのトップレベルでのみ定義できます。<!-- TODO: do we want to keep this restriction? Having nested 404s would be handy for disambiguating things like "there's no user with that name" or "that promotion wasn't found, it may have expired" -->
 
-These special pages are subject to a root layout file (`pages/+layout.marko` in the default configuration).
+これらの特別なページは、ルートレイアウトファイル（デフォルト設定では `pages/+layout.marko`）の対象となります。
 
 ### `+404.marko`
 
-This special page responds to any request where:
+この特別なページは、以下の条件のリクエストに応答します：
 
-- The `Accept` request header includes `text/html`
-- _And_ no other handler or page rendered the request
+- `Accept` リクエストヘッダーに `text/html` が含まれている
+- _かつ_ 他のハンドラーまたはページがリクエストをレンダリングしなかった
 
-Responses with this page will have a `404` status code.
+このページでのレスポンスは `404` ステータスコードになります。
 
 ### `+500.marko`
 
-This special page responds to any request where:
+この特別なページは、以下の条件のリクエストに応答します：
 
-- The `Accept` request header includes `text/html`
-- _And_ an uncaught error occurs while serving the request
+- `Accept` リクエストヘッダーに `text/html` が含まれている
+- _かつ_ リクエストの処理中にキャッチされないエラーが発生した
 
-Responses with this page will have a `500` status code.
+このページでのレスポンスは `500` ステータスコードになります。
 
-## Execution Order
+## 実行順序
 
-Given the following routes directory structure
+次のようなルートディレクトリ構造が与えられた場合
 
 ```
 routes/
@@ -159,22 +159,22 @@ routes/
   +page.marko
 ```
 
-When the path `/about` is requested, the routable files execute in the following order:
+パス `/about` がリクエストされると、ルーティング可能なファイルは次の順序で実行されます：
 
-1. Middlewares from root-most to leaf-most
-2. Handler
-3. Layouts from root-most to leaf-most
-4. Page
+1. ルートから最も近いものから葉に最も近いものまでのミドルウェア
+2. ハンドラー
+3. ルートから最も近いものから葉に最も近いものまでのレイアウト
+4. ページ
 
 <!-- mermaid diagram from README -->
 
-## Path Structure
+## パス構造
 
-Within the [routes directory](#routes-directory), the directory structure determines the path from which the route is served. There are four types of directory names: **static**, **pathless**, **dynamic**, and **catch-all**.
+[ルートディレクトリ](#ルートディレクトリ) 内では、ディレクトリ構造によってルートが提供されるパスが決まります。ディレクトリ名には、**静的**、**パスレス**、**動的**、**キャッチオール** の 4 つのタイプがあります。
 
-1. **Static directories** - The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, similar to a traditional file server. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
+1. **静的ディレクトリ** - 最も一般的なタイプであり、デフォルトの動作です。各静的ディレクトリは、従来のファイルサーバーと同様に、ルートの提供パスにセグメントとしてその名前を提供します。ディレクトリ名が以下のタイプのいずれかの要件に一致しない限り、静的ディレクトリと見なされます。
 
-   Examples:
+   例：
 
    ```
    /foo
@@ -182,18 +182,18 @@ Within the [routes directory](#routes-directory), the directory structure determ
    /projects
    ```
 
-2. **Pathless directories** - These directories do **not** contribute their name to the route's served path. Directory names that start with an underscore (`_`) will be ignored when parsing the route.
+2. **パスレスディレクトリ** - これらのディレクトリは、ルートの提供パスにその名前を提供 **しません**。アンダースコア（`_`）で始まるディレクトリ名は、ルートを解析する際に無視されます。
 
-   Examples:
+   例：
 
    ```
    /_users
    /_public
    ```
 
-3. **Dynamic directories** - These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured, but it will be matched.
+3. **動的ディレクトリ** - これらのディレクトリは、ルートの提供パスに動的パラメータを導入し、そのセグメントの任意の値と一致します。1 つのドル記号（`$`）で始まるディレクトリ名は動的ディレクトリになり、残りのディレクトリ名が実行時のパラメータになります。ディレクトリ名が正確に `$` の場合、パラメータはキャプチャされませんが、一致します。
 
-   Examples:
+   例：
 
    ```
    /$id
@@ -201,11 +201,11 @@ Within the [routes directory](#routes-directory), the directory structure determ
    /$
    ```
 
-4. **Catch-all directories** - These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured, but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
+4. **キャッチオールディレクトリ** - これらのディレクトリは動的ディレクトリに似ており、動的パラメータを導入しますが、単一のパスセグメントと一致するのではなく、パスの最後まで一致します。2 つのドル記号（`$$`）で始まるディレクトリはキャッチオールディレクトリになり、残りのディレクトリ名が実行時のパラメータになります。`$$` という名前のディレクトリの場合、パラメータ名はキャプチャされませんが、一致します。キャッチオールディレクトリは、ルートを含む任意のレベルで `404` Not Found ルートを作成するために使用できます。
 
-   Because catch-all directories match any path segment and consume the rest of the path, you cannot nest route files in them, and no further directories will be traversed.
+   キャッチオールディレクトリは任意のパスセグメントと一致し、パスの残りを消費するため、その中にルートファイルをネストすることはできず、それ以上のディレクトリは走査されません。
 
-   Examples:
+   例：
 
    ```
    /$$all
@@ -213,15 +213,15 @@ Within the [routes directory](#routes-directory), the directory structure determ
    /$$
    ```
 
-## Flat Routes
+## フラットルート
 
-Flat routes let you define paths without needing additional directories. Instead, the directory structure can be defined either in the file or directory name. This allows you to decouple your routes from your directory structure or co-locate them as needed. To define a flat route, use periods (`.`) to delineate each path segment. This behaves exactly like creating a new directory, and each segment will be parsed using the rules described above for static, dynamic, and pathless routes.
+フラットルートを使用すると、追加のディレクトリを必要とせずにパスを定義できます。代わりに、ディレクトリ構造をファイル名またはディレクトリ名で定義できます。これにより、ルートをディレクトリ構造から切り離したり、必要に応じて配置したりできます。フラットルートを定義するには、ピリオド（`.`）を使用して各パスセグメントを区切ります。これは新しいディレクトリを作成するのと全く同じように動作し、各セグメントは上記で説明した静的、動的、パスレスルートのルールを使用して解析されます。
 
-Flat routes syntax can be used for both directories and routable files (eg. pages, handlers, middleware, etc.). For these files, anything preceding the plus (`+`) will be treated as the flat route.
+フラットルート構文は、ディレクトリとルーティング可能なファイル（ページ、ハンドラー、ミドルウェアなど）の両方に使用できます。これらのファイルの場合、プラス（`+`）の前にあるものはすべてフラットルートとして扱われます。
 
-For example, to define a page at `/projects/$projectId/members` with a root layout and a project layout:
+たとえば、ルートレイアウトとプロジェクトレイアウトを使用して `/projects/$projectId/members` にページを定義するには：
 
-Without flat routes, you would have a file structure like:
+フラットルートを使用しない場合、次のようなファイル構造になります：
 
 ```
 routes/
@@ -233,7 +233,7 @@ routes/
         +layout.marko
 ```
 
-With flat routes, move the path defined by the directories into the files and separate with a period
+フラットルートを使用すると、ディレクトリで定義されたパスをファイルに移動し、ピリオドで区切ります
 
 ```
 routes/
@@ -242,7 +242,7 @@ routes/
   projects.$projectId.members+page.marko
 ```
 
-Additionally, you can continue to organize files under directories to decrease duplication and use flat route syntax in the folder name
+さらに、フォルダー名でフラットルート構文を使用して、重複を減らすためにディレクトリの下にファイルを整理し続けることができます
 
 ```
 routes/
@@ -252,7 +252,7 @@ routes/
   +layout.marko
 ```
 
-Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have layout
+最後に、フラットルートとディレクトリで定義されたルートはすべて同等に扱われ、マージされます。たとえば、このページにはレイアウトが適用されます
 
 ```
 routes/
@@ -262,18 +262,18 @@ routes/
   projects.$projectId+page.marko
 ```
 
-## Multiple Paths, Groups and Optional Segments
+## 複数のパス、グループ、オプショナルセグメント
 
-Along with describing multiple segments, flat route syntax supports defining routes that match more than one path and segments that are optional. To describe a route that matches multiple paths, use a comma (`,`) and define each route.
+複数のセグメントを記述するだけでなく、フラットルート構文は、複数のパスと一致するルートとオプショナルなセグメントの定義をサポートしています。複数のパスと一致するルートを記述するには、カンマ（`,`）を使用して各ルートを定義します。
 
-For example the following page matches `/projects/$projectId/members` and `/projects/$projectId/people`
+たとえば、次のページは `/projects/$projectId/members` と `/projects/$projectId/people` に一致します
 
 ```
 routes/
   projects.$projectId.members,projects.$projectId.people+page.marko
 ```
 
-This file name is a bit long, so you might do something like this
+このファイル名は少し長いので、次のようにすることもできます
 
 ```
 routes/
@@ -281,27 +281,27 @@ routes/
   members,people+page.marko
 ```
 
-We can simplify this by introducing another concept: **grouping**. Groups allow you to define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). For the example, this means you can do the following:
+別の概念を導入することで、これを簡素化できます：**グループ化**。グループを使用すると、括弧（`(` と `)`）で囲むことで、複数のサブパスと一致するフラットルート内のセグメントを定義できます。この例では、次のようにできます：
 
 ```
 routes/
   projects.$projectId.(members,people)+page.marko
 ```
 
-This is a simple example of grouping, but you can nest groups and make them as complicated as you want.
+これはグループ化の簡単な例ですが、グループをネストして、必要なだけ複雑にすることができます。
 
-The last concept is **optionality**. By introducing an empty segment or pathless segment along with another value, you can make that segment optional. For example, if we want a page that matches `/projects` and `/projects/home`, you can create a flat route that optionally matches `home`
+最後の概念は **オプショナリティ** です。空のセグメントまたはパスレスセグメントを別の値と一緒に導入することで、そのセグメントをオプショナルにすることができます。たとえば、`/projects` と `/projects/home` に一致するページが必要な場合、`home` をオプショナルに一致させるフラットルートを作成できます
 
 ```
 routes/
   projects.(home,)+page.marko
 ```
 
-or
+または
 
 ```
 routes/
   projects.(home,_pathless)+page.marko
 ```
 
-While both of these create a route which matches the paths, they have slightly different semantics. Using a pathless segment is the same as creating a pathless directory, which allows you to isolate middleware and layouts. Using an empty segment is the same as defining a file at the current location.
+これらはどちらもパスに一致するルートを作成しますが、セマンティクスが少し異なります。パスレスセグメントを使用することは、パスレスディレクトリを作成することと同じで、ミドルウェアとレイアウトを分離できます。空のセグメントを使用することは、現在の場所にファイルを定義することと同じです。

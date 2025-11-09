@@ -1,15 +1,15 @@
-# Optimizing Performance
+# パフォーマンスの最適化
 
-## Profiling
+## プロファイリング
 
-### Server-side
+### サーバーサイド
 
-### Client-side
+### クライアントサイド
 
-## Client-side JS Size
+## クライアントサイド JS サイズ
 
-## Promise Passing
+## Promise の受け渡し
 
 ## NODE_ENV
 
-## Reducing Hydration Data
+## ハイドレーションデータの削減

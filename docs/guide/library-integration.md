@@ -1,8 +1,8 @@
-# Library Integration
+# ライブラリ統合
 
-## Framework-agnostic Libraries
+## フレームワークに依存しないライブラリ
 
-Use `<lifecycle>` tag
+`<lifecycle>`タグを使用します
 
 ```marko
 import Map from "map"
@@ -20,12 +20,12 @@ import Map from "map"
 />
 ```
 
-## Marko Libraries
+## Markoライブラリ
 
-## Web Component Libraries
+## Web Componentライブラリ
 
-### Consuming in Marko
+### Markoでの使用
 
-### Using Marko in a Web Component
+### Web ComponentでのMarkoの使用
 
-### Wrapping Imperative APIs
+### 命令型APIのラップ

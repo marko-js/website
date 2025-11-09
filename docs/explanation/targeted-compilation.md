@@ -1,20 +1,19 @@
-# Targeted Compilation
+# ターゲット コンパイル
 
 > [!TLDR]
-> - Marko chooses what to compile to based on the environment
-> - String concatenation on the server
-> - DOM manipulation on the client
+> - Marko は環境に基づいて何をコンパイルするかを選択する
+> - サーバー上での文字列連結
+> - クライアント上での DOM 操作
 
-Marko's compiler intelligently generates different code based on the target environment, optimizing templates for their specific runtime constraints. This dual-target approach ensures maximum performance on both server and client without compromising developer experience or forcing architectural decisions.
+Marko のコンパイラは、ターゲット環境に基づいて異なるコードをインテリジェントに生成し、特定のランタイム制約に合わせてテンプレートを最適化します。このデュアルターゲットアプローチにより、開発者体験を損なったり、アーキテクチャの決定を強制したりすることなく、サーバーとクライアントの両方で最大のパフォーマンスを保証します。
 
-Instead of using a one-size-fits-all compilation strategy, Marko recognizes that server-side rendering and client-side interactions have fundamentally different
-performance characteristics and optimization opportunities.
+万能のコンパイル戦略を使用する代わりに、Marko はサーバーサイドレンダリングとクライアントサイドのインタラクションが根本的に異なるパフォーマンス特性と最適化の機会を持っていることを認識しています。
 
-## Server Compilation
+## サーバーコンパイル
 
-On the server, templates compile to string concatenation operations that build HTML through efficient string manipulation, avoiding DOM creation overhead entirely.
+サーバー上では、テンプレートは効率的な文字列操作を通じて HTML を構築する文字列連結操作にコンパイルされ、DOM 作成のオーバーヘッドを完全に回避します。
 
-Consider this Marko template:
+この Marko テンプレートを考えてみましょう：
 
 ```marko
 /* article.marko */
@@ -26,20 +25,20 @@ Consider this Marko template:
 </article>
 ```
 
-The compiler pre-computes static markup, escapes and inserts dynamic values, and translates conditional logic to minimal branching that writes the appropriate HTML segments. Advanced optimizations include pre-evaluating static portions and ensuring server code works seamlessly with Marko's [HTML streaming](./streaming.md) capabilities.
+コンパイラは静的マークアップを事前計算し、動的値をエスケープして挿入し、条件ロジックを適切な HTML セグメントを書き込む最小限の分岐に変換します。高度な最適化には、静的部分の事前評価と、サーバーコードが Marko の [HTML ストリーミング](./streaming.md) 機能とシームレスに連携することの保証が含まれます。
 
-## Client Compilation
+## クライアントコンパイル
 
-When templates need interactivity, client compilation takes a different approach. Instead of generating full HTML rendering code, it produces minimal JavaScript for targeted DOM updates.
+テンプレートがインタラクティビティを必要とする場合、クライアントコンパイルは異なるアプローチを取ります。完全な HTML レンダリングコードを生成する代わりに、ターゲット DOM 更新のための最小限の JavaScript を生成します。
 
-Consider this interactive version of the previous example:
+前の例のインタラクティブバージョンを考えてみましょう：
 
 ```marko
 /* article.marko */
 <article>
   <h2>${input.title}</h2>
 
-  // Interactive like toggle
+  // インタラクティブなライクトグル
   <let/liked:=input.liked>
   <button class=liked && 'liked' onClick() { liked = !liked }>
     ${liked ? '❤️ liked' : '🤍 like'}
@@ -47,22 +46,22 @@ Consider this interactive version of the previous example:
 </article>
 ```
 
-The compiler generates minimal JavaScript focused exclusively on interactive portions: reactive state for declared variables, targeted update functions that modify only affected DOM nodes, and event handlers that trigger necessary updates.
+コンパイラは、インタラクティブな部分に専念する最小限の JavaScript を生成します：宣言された変数のリアクティブ状態、影響を受ける DOM ノードのみを変更するターゲット更新関数、必要な更新をトリガーするイベントハンドラ。
 
-Static content such as `${input.title}` produces no client-side JavaScript because it does not change after initial render.
+`${input.title}` のような静的コンテンツは、初期レンダリング後に変更されないため、クライアント側の JavaScript を生成しません。
 
-## Environment Coordination
+## 環境の調整
 
-Server and client compilation work together seamlessly. The server renders complete initial HTML while the client receives only the minimal JavaScript needed for interactivity. This pattern aligns with [fine-grained bundling](./fine-grained-bundling.md).
+サーバーとクライアントのコンパイルはシームレスに連携します。サーバーは完全な初期 HTML をレンダリングし、クライアントはインタラクティビティに必要な最小限の JavaScript のみを受け取ります。このパターンは[細粒度バンドリング](./fine-grained-bundling.md)と整合します。
 
-Consider a tabs component that mixes static and interactive content:
+静的コンテンツとインタラクティブコンテンツを混在させたタブコンポーネントを考えてみましょう：
 
 ```marko
 /* tabs.marko */
-// Static
+// 静的
 <h1>${input.title}</h1>
 
-// Interactive
+// インタラクティブ
 <let/active=0>
 <div>
   <for|section, i| of=input.section>
@@ -75,22 +74,22 @@ Consider a tabs component that mixes static and interactive content:
   </for>
 </div>
 
-// Static content dependent on interactive state
+// インタラクティブ状態に依存する静的コンテンツ
 <for|section, i| of=input.section>
   <div hidden=(i !== active)>${section.content}</div>
 </for>
 ```
 
-Server compilation renders the initial HTML, including the header and initial tab state. Client compilation generates JavaScript only for tab switching and visibility updates. The bundle includes no code for rendering the static header or static tab content.
+サーバーコンパイルは、ヘッダーと初期タブ状態を含む初期 HTML をレンダリングします。クライアントコンパイルは、タブの切り替えと可視性の更新のためだけに JavaScript を生成します。バンドルには、静的ヘッダーや静的タブコンテンツをレンダリングするためのコードは含まれません。
 
-## Benefits
+## メリット
 
-Targeted compilation delivers compound performance benefits that improve as applications scale.
+ターゲットコンパイルは、アプリケーションがスケールするにつれて改善される複合的なパフォーマンスメリットを提供します。
 
-Components are written once using natural syntax, while the compiler handles environment-specific optimizations automatically. There is no need to maintain separate server and client implementations or coordinate between different rendering approaches.
+コンポーネントは自然な構文を使用して一度だけ記述され、コンパイラが環境固有の最適化を自動的に処理します。別々のサーバーとクライアントの実装を維持したり、異なるレンダリングアプローチ間で調整したりする必要はありません。
 
-Server-side rendering achieves maximum throughput through string operations, while client-side updates achieve minimum overhead through targeted DOM manipulation. Each environment gets code optimized for its specific constraints.
+サーバーサイドレンダリングは文字列操作を通じて最大のスループットを達成し、クライアントサイドの更新はターゲット DOM 操作を通じて最小限のオーバーヘッドを達成します。各環境は、その特定の制約に最適化されたコードを取得します。
 
-Only interactive portions of applications generate client-side JavaScript, creating naturally optimal bundle sizes that scale with actual interactivity rather than codebase size. Applications function completely without JavaScript and enhance progressively, supporting diverse user environments while maintaining full functionality for all users.
+アプリケーションのインタラクティブな部分のみがクライアント側の JavaScript を生成するため、コードベースのサイズではなく実際のインタラクティビティに応じてスケールする自然に最適なバンドルサイズが作成されます。アプリケーションは JavaScript なしで完全に機能し、段階的に拡張されるため、すべてのユーザーに完全な機能を維持しながら、多様なユーザー環境をサポートします。
 
-This compilation strategy exemplifies Marko's philosophy of shifting complexity from runtime to build time, allowing developers to focus on features while the compiler automatically handles performance optimization across execution environments.
+このコンパイル戦略は、ランタイムからビルド時に複雑さをシフトするという Marko の哲学を体現しており、開発者が機能に集中できるようにしながら、コンパイラが実行環境全体でパフォーマンスの最適化を自動的に処理します。

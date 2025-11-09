@@ -1,22 +1,22 @@
-# Components and Reactivity
+# コンポーネントとリアクティビティ
 
 > [!TLDR]
 >
-> We build a simple example which introduces tag variables, conditionals, and components
+> タグ変数、条件分岐、コンポーネントを紹介する簡単な例を構築します
 
-In this tutorial, we're going to build an app for converting temperature between fahrenheit and celsius.
+このチュートリアルでは、華氏と摂氏の間で温度を変換するアプリを構築します。
 
-## Introducing a Tag
+## タグの導入
 
-As with many user interfaces, our first step is to gather input from the user. We can do so with HTML's `<input>` tag:
+多くのユーザーインターフェースと同様に、最初のステップはユーザーから入力を収集することです。HTMLの`<input>`タグを使用してこれを行うことができます：
 
 ```marko
 <input type="number">
 ```
 
-## Adding State
+## 状態の追加
 
-Of course, right now we aren't keeping track of the value that this input contains. To do this, we need to introduce state. In Marko, the most common way to do this is with [tag variables](../reference/language.md#tag-variables). Here, we will use [Marko's `<let>` tag](../reference/core-tag.md#let):
+もちろん、現時点ではこの入力に含まれる値を追跡していません。これを行うには、状態を導入する必要があります。Markoでは、これを行う最も一般的な方法は[タグ変数](../reference/language.md#tag-variables)を使用することです。ここでは、[Markoの`<let>`タグ](../reference/core-tag.md#let)を使用します：
 
 ```marko
 <let/degF=80>
@@ -25,9 +25,9 @@ Of course, right now we aren't keeping track of the value that this input contai
 <div>It's ${degF}°F</div>
 ```
 
-## Syncing State
+## 状態の同期
 
-Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
+これで`<input>`に初期値が設定されましたが、変更時にそれを追跡していません。これを行う1つの方法は、[イベントハンドラ](../reference/native-tag.md#event-handlers)で[`input`イベント](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event)をリッスンすることです：
 
 ```marko
 <let/degF=80>
@@ -38,14 +38,14 @@ Now the `<input>` has an initial value, but we still aren't keeping track of it 
 <div>It's ${degF}°F</div>
 ```
 
-Aha! Now we have a [reactive variable](../reference/reactivity.md) that keeps track of our value for degrees (in fahrenheit). Let's convert it to celsius!
+これで、度数（華氏）の値を追跡する[リアクティブ変数](../reference/reactivity.md)ができました。摂氏に変換しましょう！
 
 > [!NOTE]
-> For more control over the `<input>` value, we could have used Marko's [controllable](../reference/native-tag.md#change-handlers) pattern.
+> `<input>`の値をより細かく制御するには、Markoの[controllable](../reference/native-tag.md#change-handlers)パターンを使用できます。
 
-## Adding Computed Values
+## 計算値の追加
 
-To do this, we can use a `<const>` tag:
+これを行うには、`<const>`タグを使用できます：
 
 ```marko
 <let/degF=80>
@@ -59,9 +59,9 @@ To do this, we can use a `<const>` tag:
 </div>
 ```
 
-## Using Conditionals
+## 条件分岐の使用
 
-Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
+リアクティブ変数ができたので、他に何ができるか見てみましょう！[条件タグ](../reference/core-tag.md#if--else)を使用して、温度に関するメモを追加してみましょうか？
 
 ```marko
 <let/degF=80>
@@ -85,9 +85,9 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 </else>
 ```
 
-## Adding Styles and Visualization
+## スタイルとビジュアライゼーションの追加
 
-Or what about a temperature gauge, with some fancy CSS?
+または、派手なCSSを使った温度計はどうでしょうか？
 
 ```marko
 <let/degF=80>
@@ -127,9 +127,9 @@ Or what about a temperature gauge, with some fancy CSS?
 </style>
 ```
 
-## Creating Reusable Components
+## 再利用可能なコンポーネントの作成
 
-Actually, this is getting a little bit too complex to all put in one place. Maybe we should pull that temperature gauge out into a component:
+実際、これは1つの場所にまとめるには少し複雑すぎます。温度計をコンポーネントに抽出しましょう：
 
 ```marko
 /* index.marko */
@@ -186,21 +186,21 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 ```
 
 > [!IMPORTANT]
-> Make sure your `<gauge>` component file is in a `tags/` directory! Marko [auto-discovers](../reference/custom-tag.md#custom-tag-discovery) custom tags based on directory structure.
+> `<gauge>`コンポーネントファイルが`tags/`ディレクトリにあることを確認してください！Markoはディレクトリ構造に基づいてカスタムタグを[自動検出](../reference/custom-tag.md#custom-tag-discovery)します。
 
 <!-- markdownlint-disable MD026 allow exclamation point -->
 
-## Your Turn!
+## あなたの番！
 
-That's all we're going to build for now, but feel free to add more! Here are some ideas:
+今回構築するのはここまでですが、自由に追加してください！以下にいくつかのアイデアを示します：
 
-- How about a new temperature unit? Maybe Kelvin or [Delisle](https://en.wikipedia.org/wiki/Delisle_scale)?
-- Most of the world actually uses celsius 😅, maybe users should be able to pick which unit to start with
-- What about wind chill? Apparently there are [standard formulas](https://en.wikipedia.org/wiki/Wind_chill) if "wind velocity" is known
-- Converting between temperatures is cool, but this system _could_ be generalized. What if it converted between weights, volumes, or distances?
-- Anything else! The opportunities are limitless!
+- 新しい温度単位はどうでしょうか？ケルビンや[ドリール度](https://en.wikipedia.org/wiki/Delisle_scale)などは？
+- 世界のほとんどの地域では実際に摂氏を使用しています😅、おそらくユーザーは開始する単位を選択できるべきです
+- 体感温度はどうでしょうか？「風速」がわかっていれば、[標準的な公式](https://en.wikipedia.org/wiki/Wind_chill)があるようです
+- 温度間の変換はクールですが、このシステムは_汎用化_できます。重量、容量、距離の間で変換するとしたら？
+- その他何でも！可能性は無限大です！
 
-## Next Steps
+## 次のステップ
 
-- [Nested Reactivity](../explanation/nested-reactivity.md)
-- [Language Reference](../reference/language.md)
+- [ネストされたリアクティビティ](../explanation/nested-reactivity.md)
+- [言語リファレンス](../reference/language.md)

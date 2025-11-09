@@ -1,15 +1,15 @@
-# Nested Reactivity
+# ネストされたリアクティビティ
 
 > [!TLDR]
-> Three approaches are explored for managing nested state
+> ネストされた状態を管理するための3つのアプローチを探る
 
-It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.
+アプリケーション開発では、状態がトップレベルのオブジェクトに格納され、コンポーネントツリー全体で表現および変更されることがよくあります。このガイドでは、To-Do リストの例をベースとして、このタイプのパターンを処理する3つの方法を概説します。
 
-Each method in this guide is more complex and has more overhead than those before it. Generally, you should use the _least_ complex method that still addresses the needs of your application.
+このガイドの各メソッドは、前のメソッドよりも複雑で、オーバーヘッドが大きくなります。一般的に、アプリケーションのニーズに対応できる_最も_複雑でないメソッドを使用する必要があります。
 
-## Core Example: To-Do List
+## コア例: To-Do リスト
 
-Each example in this guide will build on the following client-side To-Do list application.
+このガイドの各例は、次のクライアント側 To-Do リストアプリケーションをベースにします。
 
 ```marko
 <let/todos=[
@@ -43,11 +43,11 @@ Each example in this guide will build on the following client-side To-Do list ap
 </form>
 ```
 
-## Case 1: Local State
+## ケース 1: ローカル状態
 
-The first rule of nested reactivity is that you should try to avoid nested reactivity. Generally, **state should be managed as close to its uses as possible**. Before jumping right into hoisting state into a global object, _please_ consider whether it actually makes sense to do so.
+ネストされたリアクティビティの最初のルールは、ネストされたリアクティビティを避けるべきだということです。一般的に、**状態は可能な限りその使用場所に近い場所で管理すべきです**。グローバルオブジェクトに状態を引き上げる前に、実際にそうする意味があるかどうかを_必ず_検討してください。
 
-In most cases, it makes more sense to create local state than to add a value to some global store. For example, maybe we want to disable deleting items that haven't yet been completed. For this, we need to hoist state out of the input.
+ほとんどの場合、グローバルストアに値を追加するよりも、ローカル状態を作成する方が理にかなっています。たとえば、まだ完了していない項目の削除を無効にしたい場合があります。このためには、入力から状態を引き上げる必要があります。
 
 ```marko
 <let/todos=[
@@ -74,11 +74,11 @@ In most cases, it makes more sense to create local state than to add a value to 
 </ul>
 ```
 
-Notice that for this feature, there is _no need_ to modify the `todos` object at the top level. State can stay local, so nested reactivity on that object is unnecessary.
+この機能では、トップレベルの `todos` オブジェクトを変更する_必要がない_ことに注意してください。状態はローカルのままでよいため、そのオブジェクトのネストされたリアクティビティは不要です。
 
-## Case 2: Simple Hoisted State
+## ケース 2: シンプルな引き上げられた状態
 
-Sometimes, it _does_ make sense to hoist state up to a global object. Suppose we want to add a feature where clicking a button shows the first item in the list that isn't done yet. For that information to be known, we need to include the state in the `todos` object:
+時には、状態をグローバルオブジェクトに引き上げることが理にかなっている場合_も_あります。ボタンをクリックすると、リスト内でまだ完了していない最初の項目を表示する機能を追加したいとします。その情報を知るには、`todos` オブジェクトに状態を含める必要があります：
 
 ```marko
 <let/todos=[
@@ -107,7 +107,7 @@ Sometimes, it _does_ make sense to hoist state up to a global object. Suppose we
 </ul>
 ```
 
-Modifying state trees directly like this is often tedious and hard to follow, so we could also use a library like [immer](https://immerjs.github.io/immer/) to handle state updates:
+このように状態ツリーを直接変更することは、しばしば面倒で理解しにくいため、[immer](https://immerjs.github.io/immer/) のようなライブラリを使用して状態の更新を処理することもできます：
 
 ```marko
 import { produce } from "immer"
@@ -119,6 +119,6 @@ import { produce } from "immer"
 }>
 ```
 
-## Case 3: Complex Hoisted State
+## ケース 3: 複雑な引き上げられた状態
 
 <!-- TODO: discuss `<mut>` tag -->

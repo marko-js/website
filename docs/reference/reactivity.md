@@ -1,22 +1,22 @@
-# Reactivity Reference
+# リアクティビティリファレンス
 
-Marko's goal is to make it easy to represent performant experiences with rich client interactions. This is enabled through its **reactivity system**. The reactive system is how Marko determines what needs to update and when.
+Markoの目標は、豊富なクライアントインタラクションを持つパフォーマンスの高いエクスペリエンスを簡単に表現できるようにすることです。これは、その**リアクティビティシステム**を通じて実現されます。リアクティブシステムは、Markoが何をいつ更新する必要があるかを決定する方法です。
 
-The core of Marko's reactive system is [the `<let>` tag](./core-tag.md#let).
+Markoのリアクティブシステムの核心は、[`<let>`タグ](./core-tag.md#let)です。
 
-## Reactive Variables
+## リアクティブ変数
 
-In Marko, [Tag Variables](./language.md#tag-variables), [Tag Parameters](./language.md#tag-parameters), and [`input`](./language.md#input) are all reactive. This means they are tracked by the Marko compiler and when these values are caused to update any dependent [render expressions](#render-expressions) are also updated.
+Markoでは、[タグ変数](./language.md#tag-variables)、[タグパラメータ](./language.md#tag-parameters)、および[`input`](./language.md#input)はすべてリアクティブです。これは、Markoコンパイラによって追跡され、これらの値が更新されると、依存する[レンダリング式](#render-expressions)も更新されることを意味します。
 
-## Render Expressions
+## レンダリング式
 
-Any expression within a `.marko` template that references a [reactive variable](#reactive-variables) is considered reactive and will be updated alongside that variable.
+`.marko`テンプレート内で[リアクティブ変数](#reactive-variables)を参照する式はすべて、リアクティブと見なされ、その変数とともに更新されます。
 
-These reactive expressions may exist throughout the template in [attributes](./language.md#attributes), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), and [script content](./core-tag.md#script).
+これらのリアクティブ式は、テンプレート全体の[属性](./language.md#attributes)、[動的テキスト](./language.md#dynamic-text)、[動的タグ名](./language.md#dynamic-tags)、および[スクリプトコンテンツ](./core-tag.md#script)に存在する可能性があります。
 
 > [!NOTE]
-> All JavaScript expressions withing the Marko template may be reactive with the exception of
-> [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server` and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
+> Markoテンプレート内のすべてのJavaScript式はリアクティブになる可能性がありますが、例外として
+> [staticステートメント](./language.md#static)（[`import`](./language.md#import)、[`export`](./language.md#export)、[`static`](./language.md#static)、[`server`と`client`](./language.md#server-and-client)を含む）があり、これらはテンプレートがロードされたときに_一度_評価されます。
 
 ```marko
 <let/count=0>
@@ -26,22 +26,22 @@ These reactive expressions may exist throughout the template in [attributes](./l
 </button>
 ```
 
-Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically be kept in sync with the new value.
+ここでは、`count`タグ変数がボタンクリックによって変更されます。ボタンのテキストコンテンツが`count`を参照しているため、新しい値と自動的に同期されます。
 
 > [!CAUTION]
-> In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.
+> 場合によっては、Markoがいくつかの式を一緒に評価させることがあります。これが、[レンダリング式](#render-expressions)が純粋であるべき理由です。
 
 > [!TIP]
-> Marko is a **compiled language**, and its reactive graph is discovered at compile time instead of during runtime. This is in contrast with many of the other leading approaches, such as [Signals in SolidJS](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity) and [Hooks in React](https://react.dev/reference/react/hooks).
+> Markoは**コンパイル言語**であり、そのリアクティブグラフは実行時ではなくコンパイル時に発見されます。これは、[SolidJSのSignals](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity)や[ReactのHooks](https://react.dev/reference/react/hooks)など、他の多くの主要なアプローチとは対照的です。
 
-## Scheduling Updates
+## 更新のスケジューリング
 
-Marko automatically batches work to ensure optimal performance. Any time a [reactive variable](#reactive-variables) is changed, its update is queued to ensure that multiple changes will be applied efficiently together.
+Markoは、最適なパフォーマンスを確保するために作業を自動的にバッチ処理します。[リアクティブ変数](#reactive-variables)が変更されるたびに、その更新がキューに入れられ、複数の変更が一緒に効率的に適用されることが保証されます。
 
-This update queue is typically scheduled after a [microtask](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide).
+この更新キューは、通常、[マイクロタスク](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)の後にスケジュールされます。
 
-If additional updates are scheduled after the queue is consumed but _before the update is painted_, they are deferred until the next frame. This accomplishes a few things:
+キューが消費された後、_更新がペイントされる前_に追加の更新がスケジュールされた場合、それらは次のフレームまで延期されます。これにより、いくつかのことが達成されます:
 
-- Content ready to display to the user is not blocked.
-- It is not possible to lock up the application in an infinite update loop.
-- The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).
+- ユーザーに表示する準備ができたコンテンツがブロックされません。
+- 無限の更新ループでアプリケーションをロックアップすることはできません。
+- 更新ループを使用してアニメーションを駆動できます（ただし、ほとんどの場合、CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation)と[Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)が推奨されます）。

@@ -1,34 +1,34 @@
-# Concise syntax
+# 簡潔構文
 
-Marko's concise syntax is very similar to the HTML syntax, except it's more... concise. Angle brackets are removed, and nesting is indentation-based.
+Markoの簡潔構文は、HTML構文に非常に似ていますが、より...簡潔です。山括弧が削除され、ネストはインデントベースになります。
 
-All Marko files are in concise mode by default, and switch to HTML mode once there is a tag that uses the HTML syntax.
+すべてのMarkoファイルはデフォルトで簡潔モードになっており、HTML構文を使用するタグがある場合にHTMLモードに切り替わります。
 
 ```marko no-format
 div class="thumbnail"
     img src="https://example.com/thumb.png"
 
-// identical to
+// これと同じ
 
 <div class="thumbnail"><img src="https://example.com/thumb.png" /></div>
 ```
 
-## Attributes on multiple lines
+## 複数行の属性
 
-Attributes may be comma-separated in all Marko tags.
+すべてのMarkoタグで、属性はカンマ区切りにできます。
 
 ```marko no-format
 div id="hello", class=["class1", "class2", "class3"], style={ border: "1px solid red" }
 ```
 
-Since commas indicate that another attribute is expected, they may be used to spread attributes across multiple lines.
+カンマは別の属性が続くことを示すため、複数行にわたって属性を広げるために使用できます。
 
 ```marko no-format
 div id="hello" class="world",
   style={ border: "1px solid red" }
 ```
 
-By convention, readability is improved if commas are organized at the _beginning_ of each line with attributes.
+慣例として、カンマを属性のある各行の_先頭_に配置すると、可読性が向上します。
 
 ```marko no-format
 div
@@ -38,18 +38,18 @@ div
   -- hello
 ```
 
-## Text
+## テキスト
 
-Two or more hyphens (`--`) followed by whitespace may be used to begin [content](./language.md#tag-content).
+2つ以上のハイフン（`--`）の後に空白を続けることで、[コンテンツ](./language.md#tag-content)を開始できます。
 
-If text immediately follows the hyphens, the content is terminated at the end of the line.
+ハイフンの直後にテキストが続く場合、コンテンツは行の終わりで終了します。
 
 ```marko no-format
 -- Hello world
 div -- Hello world
 ```
 
-If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedentation.
+ハイフンの後に改行が続く場合、コンテンツは同じ数のハイフンまたは次のデデンテーションで終了します。
 
 ```marko no-format
 --
@@ -71,7 +71,7 @@ details
 ```
 
 > [!TIP]
-> There may be _more_ than two hyphens if necessary, but the number hyphens in the open and close must match.
+> 必要に応じて2つ_以上_のハイフンを使用できますが、開始と終了のハイフンの数は一致する必要があります。
 >
 > ```marko no-format
 > pre
@@ -84,22 +84,22 @@ details
 >   ---------------------
 > ```
 
-### Root level text
+### ルートレベルのテキスト
 
-The Marko parser starts out in the concise mode. Therefore, given the following template:
+Markoパーサーは簡潔モードで開始します。したがって、次のテンプレートが与えられた場合:
 
 ```marko no-format
 Hello World
 Welcome to Marko
 ```
 
-The output is:
+出力は次のようになります:
 
 ```html
 <Hello World></Hello> <Welcome to Marko></Welcome>
 ```
 
-The proper way to include root level text is with [code fences](#text).
+ルートレベルのテキストを含める適切な方法は、[コードフェンス](#text)を使用することです。
 
 ```marko no-format
 -- Welcome to Marko

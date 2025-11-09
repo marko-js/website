@@ -1,17 +1,17 @@
-# Immutable Data in State
+# 状態における不変データ
 
 > [!TLDR]
-> - Immutable updates prevent hidden side effects
-> - UI as a function of state requires immutability
-> - Server-to-client handoff needs serializable state
+> - 不変更新は隠れた副作用を防ぐ
+> - 状態の関数としての UI には不変性が必要
+> - サーバーからクライアントへの引き渡しにはシリアライズ可能な状態が必要
 
-Marko encourages treating application state as immutable, plain data. This aligns the render model with functional programming: the UI is a deterministic function of inputs and state. It also allows the compiler and runtime to optimize updates and safely hand work between server and client.
+Marko は、アプリケーションの状態を不変のプレーンデータとして扱うことを推奨しています。これにより、レンダリングモデルが関数型プログラミングと整合します：UI は入力と状態の決定論的な関数です。また、コンパイラとランタイムが更新を最適化し、サーバーとクライアント間で安全に作業を引き渡すことができます。
 
-## Immutability
+## 不変性
 
-Immutable updates replace data instead of mutating it in place. This avoids hidden coupling, makes changes easier to reason about, and ensures updates are detected.
+不変更新は、データをその場で変更するのではなく、置き換えます。これにより、隠れた結合を避け、変更を理解しやすくし、更新が確実に検出されるようにします。
 
-Consider this Marko template. Reassigning the array triggers an update; mutating in place does not.
+この Marko テンプレートを考えてみましょう。配列を再割り当てすると更新がトリガーされますが、その場で変更してもトリガーされません。
 
 ```marko
 /* list.marko */
@@ -22,20 +22,20 @@ Consider this Marko template. Reassigning the array triggers an update; mutating
     <li>${item}</li>
   </for>
   <button onClick() {
-    // ❌ BAD: in-place mutation
+    // ❌ 悪い例: その場での変更
     items.push("gamma")
 
-    // ✅ GOOD: immutable update
+    // ✅ 良い例: 不変更新
     items = items.concat("gamma");
   }>Add</button>
 </ul>
 ```
 
-Immutable updates work naturally with Marko's assignment-based reactivity. Replacing a value (object, array, map-like structure) makes change propagation explicit and reliable.
+不変更新は、Marko の代入ベースのリアクティビティと自然に連携します。値（オブジェクト、配列、マップのような構造）を置き換えることで、変更の伝播が明示的で信頼性の高いものになります。
 
-## Functional UI
+## 関数型 UI
 
-In modern UI frameworks, developers are encouraged to view the **rendered output** as a **function of state**. This works when state changes are visible and do not carry implicit side effects. In-place mutation breaks that mental model and can hide when and where the view should update.
+現代の UI フレームワークでは、開発者は**レンダリングされた出力**を**状態の関数**として見るように推奨されています。これは、状態の変更が可視化され、暗黙的な副作用を持たない場合に機能します。その場での変更はそのメンタルモデルを壊し、ビューをいつどこで更新すべきかを隠してしまう可能性があります。
 
 ```marko
 /* profile.marko */
@@ -44,36 +44,36 @@ In modern UI frameworks, developers are encouraged to view the **rendered output
 <p>Hello, ${user.name}! (${user.clicks} clicks)</p>
 
 <button onClick() {
-  // ❌ BAD: in-place mutation
+  // ❌ 悪い例: その場での変更
   user.clicks++;
 
-  // ✅ GOOD: immutable update
+  // ✅ 良い例: 不変更新
   user = { ...user, clicks: user.clicks + 1 };
 }>Visit</button>
 ```
 
-By replacing `user`, the view updates deterministically as a function of the new state.
+`user` を置き換えることで、ビューは新しい状態の関数として決定論的に更新されます。
 
-## Serialization
+## シリアライゼーション
 
-To pass work from server to client, state must be serialized. Only serializable data can be reliably embedded into HTML and later hydrated. Class instances, DOM nodes, and some types of closures cannot be serialized and should not be stored in state.
+サーバーからクライアントに作業を引き渡すには、状態をシリアライズする必要があります。シリアライズ可能なデータのみが、HTML に確実に埋め込まれ、後でハイドレートできます。クラスインスタンス、DOM ノード、一部のタイプのクロージャはシリアライズできないため、状態に保存すべきではありません。
 
 ```marko
 /* cart.marko */
-// ✅ GOOD: serializable data
+// ✅ 良い例: シリアライズ可能なデータ
 <let/cart={ items: [{ id: 1, qty: 2 }] }>
 
-// ❌ BAD: unserializable in state (class/function/DOM)
+// ❌ 悪い例: 状態内でシリアライズ不可能（クラス/関数/DOM）
 <let/cart=new Cart([{ id: 1, qty: 2 }])>
 ```
 
-Keeping state serializable enables streaming HTML on the server and interactive handoff in the browser without brittle custom hydration logic.
+状態をシリアライズ可能に保つことで、サーバー上での HTML のストリーミングと、脆弱なカスタムハイドレーションロジックなしでブラウザでのインタラクティブな引き渡しが可能になります。
 
 > [!TIP]
-> For details on what data is supported and patterns to avoid, see [serializable state](./serializable-state.md)
+> サポートされているデータと避けるべきパターンの詳細については、[シリアライズ可能な状態](./serializable-state.md)を参照してください
 
-## Further Reading
+## さらに読む
 
-- [Reactivity](../reference/reactivity.md)
-- [Nested Reactivity](./nested-reactivity.md)
-- [Fine-Grained Bundling](./fine-grained-bundling.md)
+- [リアクティビティ](../reference/reactivity.md)
+- [ネストされたリアクティビティ](./nested-reactivity.md)
+- [細粒度バンドリング](./fine-grained-bundling.md)

@@ -1,16 +1,16 @@
-# Styling
+# スタイリング
 
-This section explains some different ways to style HTML within Marko. From simple inline styles to powerful techniques like CSS Modules for organized and maintainable stylesheets.
+このセクションでは、Marko 内で HTML をスタイリングするためのいくつかの異なる方法を説明します。シンプルなインラインスタイルから、整理された保守可能なスタイルシートのための CSS モジュールのような強力な手法まで。
 
-## Inline Styles
+## インラインスタイル
 
-Marko [enhances the HTML `<style>` tag](../reference/core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
+Marko は[HTML `<style>` タグを拡張](../reference/core-tag.md#style)して、[プロジェクトで使用されているバンドラー](TODO)によって処理および最適化されるようにします。テンプレートは任意の数の `<style>` タグを指定できます。
 
-By default, all styles defined in the template are **globally scoped**. As such, many Marko projects use patterns like [BEM](https://getbem.com/introduction/) to avoid name conflicts.
+デフォルトでは、テンプレートで定義されたすべてのスタイルは**グローバルスコープ**です。そのため、多くの Marko プロジェクトは[BEM](https://getbem.com/introduction/)のようなパターンを使用して名前の競合を回避しています。
 
 ```marko
 <style>
-  /* Bundled and loaded once */
+  /* 一度バンドルされ、読み込まれる */
   .fancy {
     color: green;
   }
@@ -19,7 +19,7 @@ By default, all styles defined in the template are **globally scoped**. As such,
 <div class="fancy">Hello!</div>
 ```
 
-The `<style>` may include a file extension to enable css preprocessors such as [scss](https://sass-lang.com/documentation/syntax/#scss) and [less](https://lesscss.org/).
+`<style>` には、[scss](https://sass-lang.com/documentation/syntax/#scss) や [less](https://lesscss.org/) などの CSS プリプロセッサを有効にするためのファイル拡張子を含めることができます。
 
 ```marko
 <style.scss>
@@ -43,9 +43,9 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 <div class="fancy-less">Hello!</div>
 ```
 
-### Inline CSS Modules
+### インライン CSS モジュール
 
-If the `<style>` tag has a [Tag Variable](../reference/language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+`<style>` タグに[タグ変数](../reference/language.md#tag-variables)がある場合、[CSS モジュール](https://github.com/css-modules/css-modules)を活用して、そのクラスをオブジェクトとして公開します。
 
 ```marko
 <style/styles>
@@ -59,9 +59,9 @@ If the `<style>` tag has a [Tag Variable](../reference/language.md#tag-variables
 <div.${styles.foo} />
 ```
 
-This approach allows for scoping of CSS class names without needing to follow naming conventions such as [BEM](https://getbem.com/introduction/).
+このアプローチにより、[BEM](https://getbem.com/introduction/)のような命名規則に従う必要なく、CSS クラス名のスコープを設定できます。
 
-You may still provide a custom file extension to enable to use of preprocessors.
+プリプロセッサを使用するために、カスタムファイル拡張子を提供することもできます。
 
 ```marko
 <style.scss/styles>
@@ -75,9 +75,9 @@ You may still provide a custom file extension to enable to use of preprocessors.
 <div class=styles.fancy>Hello</div>
 ```
 
-## Auto-Discovered Styles
+## 自動検出されるスタイル
 
-Styling files adjacent a [custom tag are automatically discovered](../reference/custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
+[カスタムタグに隣接するスタイリングファイルは自動的に検出されます](../reference/custom-tag.md#supporting-files)。これらのファイルは、[インラインスタイル](#inline-styles)と同じようにインポートおよび処理されます。
 
 ```css
 /* style.css */
@@ -92,11 +92,11 @@ Styling files adjacent a [custom tag are automatically discovered](../reference/
 ```
 
 > [!TIP]
-> When a template is becoming too large it can be helpful to pull its styling into an associated style file such as this.
+> テンプレートが大きくなりすぎた場合、このようにスタイリングを関連するスタイルファイルに抽出すると便利です。
 
-## Imported Styles
+## インポートされたスタイル
 
-Styles may also be [imported](../reference/language.md#import).
+スタイルは[インポート](../reference/language.md#import)することもできます。
 
 ```css
 /* fancy.css */
@@ -113,11 +113,11 @@ import "./fancy.css";
 ```
 
 > [!TIP]
-> Although generally [inline](#inline-styles) or [auto-discovered](#auto-discovered-styles) styles are preferred, importing styles can be helpful when sharing across templates.
+> 一般的には[インライン](#inline-styles)または[自動検出](#auto-discovered-styles)スタイルが好まれますが、テンプレート間で共有する場合は、スタイルをインポートすると便利です。
 
-### Imported CSS Modules
+### インポートされた CSS モジュール
 
-[CSS Module files](https://github.com/css-modules/css-modules) may also be imported.
+[CSS モジュールファイル](https://github.com/css-modules/css-modules)もインポートできます。
 
 ```css
 /* something.module.css */
@@ -133,4 +133,4 @@ import * as styles from "./something.module.css";
 ```
 
 > [!CAUTION]
-> Since most bundlers are configured by default to support css modules for `*.module.css` files, this should work out of the box. If it is not supported by a bundler there is almost certainly a plugin.
+> ほとんどのバンドラーは、デフォルトで `*.module.css` ファイルに対して CSS モジュールをサポートするように設定されているため、これはそのまま動作するはずです。バンドラーでサポートされていない場合でも、ほぼ確実にプラグインがあります。

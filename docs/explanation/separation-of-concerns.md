@@ -1,15 +1,15 @@
-# What About Separation of Concerns?
+# 関心の分離について
 
 > [!TLDR]
-> Marko's approach doesn't violate separation of concerns, it applies the principle more correctly than traditional technology-based separation.
+> Marko のアプローチは関心の分離に違反するものではなく、従来の技術ベースの分離よりも正しくこの原則を適用しています。
 
-When developers first encounter Marko's Tags API, which allows tight coupling of component logic with structure and styling, a common concern arises: "Isn't this a violation of separation of concerns?"
+開発者が Marko の Tags API に初めて遭遇したとき、コンポーネントロジックを構造とスタイリングと密接に結合できることから、よくある懸念が生じます：「これは関心の分離に違反しているのではないか？」
 
-This question touches on one of the most fundamental principles in software engineering, but it also reveals a fundamental misunderstanding about what "concerns" actually are.
+この質問は、ソフトウェアエンジニアリングにおける最も基本的な原則の1つに触れていますが、「関心」が実際に何であるかについての根本的な誤解も明らかにしています。
 
-## The Actual Concerns
+## 実際の関心
 
-Consider a simple user interface component: a modal dialog. In traditional file-based separation, we organize it like this:
+シンプルなユーザーインターフェースコンポーネントを考えてみましょう：モーダルダイアログ。従来のファイルベースの分離では、次のように整理します：
 
 ```html
 /* modal.html */
@@ -47,45 +47,45 @@ document.getElementById("open-modal").addEventListener("click", openModal);
 document.getElementById("close-modal").addEventListener("click", closeModal);
 ```
 
-This organization seems to follow separation of concerns, but let's think about what the **_actual concerns_** should be:
+この整理は関心の分離に従っているように見えますが、**_実際の関心_**は何であるべきかを考えてみましょう：
 
-1. **Modal behavior**: Opening, closing, and managing modal state
-2. **Visual presentation**: How the modal appears and animates
-3. **User interaction**: Button clicks, keyboard navigation
-4. **Accessibility**: Focus management, screen reader support
+1. **モーダルの動作**: 開く、閉じる、モーダルの状態を管理する
+2. **視覚的なプレゼンテーション**: モーダルがどのように表示され、アニメーションするか
+3. **ユーザーインタラクション**: ボタンクリック、キーボードナビゲーション
+4. **アクセシビリティ**: フォーカス管理、スクリーンリーダーサポート
 
-Notice something important: **every single concern spans across HTML, CSS, and JavaScript**.
+重要なことに気づきましょう：**すべての関心が HTML、CSS、JavaScript にまたがっています**。
 
-- The modal's opening behavior needs JavaScript logic, CSS display properties, and HTML structure changes
-- Adding a feature like "close on escape key" touches HTML (focus management), CSS (styling), and JavaScript (event handling)
+- モーダルの開く動作には、JavaScript ロジック、CSS display プロパティ、HTML 構造の変更が必要です
+- 「Escape キーで閉じる」などの機能を追加すると、HTML（フォーカス管理）、CSS（スタイリング）、JavaScript（イベント処理）に触れます
 
-**The fundamental problem**: Traditional separation splits by _technology_ (HTML/CSS/JS files), while intent is to split by _functional concerns_.
+**根本的な問題**: 従来の分離は_技術_（HTML/CSS/JS ファイル）で分割しますが、意図は_機能的な関心_で分割することです。
 
-## The Fundamental Problem
+## 根本的な問題
 
-When we separate by technology instead of by concern, we create several serious issues:
+技術で分離する代わりに関心で分離する場合、いくつかの深刻な問題が生じます：
 
-1. **Fragmented Mental Models**
+1. **断片化されたメンタルモデル**
 
-   When you need to understand how the modal works, you must mentally piece together information from three different files. The cognitive overhead increases exponentially with application complexity.
+   モーダルがどのように機能するかを理解する必要がある場合、3つの異なるファイルから情報を精神的につなぎ合わせる必要があります。認知的オーバーヘッドは、アプリケーションの複雑さとともに指数関数的に増加します。
 
-1. **Change Amplification**
+1. **変更の増幅**
 
-   Adding a simple feature like "auto-close modal when clicking outside" requires changes in HTML (event handling structure), CSS (overlay styling), and JavaScript (event listeners). A single logical change becomes scattered across multiple files.
+   「モーダルの外側をクリックしたときに自動的に閉じる」などのシンプルな機能を追加するには、HTML（イベント処理構造）、CSS（オーバーレイスタイリング）、JavaScript（イベントリスナー）の変更が必要です。単一の論理的変更が複数のファイルに分散します。
 
-1. **Broken Encapsulation**
+1. **壊れたカプセル化**
 
-   Components cannot be truly self-contained when their definition is spread across multiple files. Moving or reusing a modal component requires careful coordination of HTML, CSS, and JavaScript files.
+   コンポーネントの定義が複数のファイルに分散している場合、コンポーネントは真に自己完結できません。モーダルコンポーネントを移動または再利用するには、HTML、CSS、JavaScript ファイルの慎重な調整が必要です。
 
-1. **Maintenance Overhead**
+1. **メンテナンスオーバーヘッド**
 
-   When technologies are separated, it becomes difficult to ensure consistency. CSS classes can become orphaned when HTML changes, JavaScript can reference DOM elements that no longer exist, and refactoring becomes a cross-file archaeological expedition.
+   技術が分離されている場合、一貫性を確保することが困難になります。HTML が変更されると CSS クラスが孤立する可能性があり、JavaScript は存在しなくなった DOM 要素を参照する可能性があり、リファクタリングはファイル間の考古学的な探検になります。
 
-## Organize by Functionality
+## 機能性で整理する
 
-Marko's Tags API embraces a different philosophy: **organize code by feature and functionality, not by technology**.
+Marko の Tags API は異なる哲学を受け入れています：**技術ではなく、機能と機能性でコードを整理する**。
 
-Here's how the same modal component looks in Marko:
+同じモーダルコンポーネントが Marko でどのように見えるかを以下に示します：
 
 ```marko
 /* modal.marko */
@@ -113,36 +113,36 @@ Here's how the same modal component looks in Marko:
 </style>
 ```
 
-Notice how everything related to the modal (state management, DOM structure, event handling, styling) is co-located in a single file. This isn't a violation of separation of concerns; it's **better separation of concerns**.
+モーダルに関連するすべて（状態管理、DOM 構造、イベント処理、スタイリング）が単一のファイルに共同配置されていることに注目してください。これは関心の分離に違反するものではありません。**より良い関心の分離**です。
 
-## Separation Boundaries
+## 分離の境界
 
-Instead of separating by technology, Marko encourages separation by actual business concerns:
+技術で分離する代わりに、Marko は実際のビジネス上の関心で分離することを推奨しています：
 
-- **Component boundaries**: Each `.marko` file represents a cohesive piece of functionality
-- **Feature boundaries**: Related components are grouped together
-- **Domain boundaries**: Different parts of your application are logically separated
-- **Abstraction levels**: Lower-level utilities are separated from higher-level components
+- **コンポーネントの境界**: 各 `.marko` ファイルは、まとまりのある機能の一部を表します
+- **機能の境界**: 関連するコンポーネントはグループ化されます
+- **ドメインの境界**: アプリケーションの異なる部分は論理的に分離されます
+- **抽象化レベル**: 低レベルのユーティリティは、高レベルのコンポーネントから分離されます
 
-This approach delivers measurable improvements:
+このアプローチは、測定可能な改善をもたらします：
 
-1. Cognitive Load Reduction
+1. 認知的負荷の削減
 
-   When developers need to understand or modify a feature, everything they need is in one place. There's no mental overhead of tracking relationships across multiple files.
+   開発者が機能を理解または変更する必要がある場合、必要なものはすべて1か所にあります。複数のファイル間の関係を追跡する精神的なオーバーヘッドはありません。
 
-1. Better Encapsulation
+1. より良いカプセル化
 
-   Each component is truly self-contained. You can move a `.marko` file to a different project, and it brings all its dependencies with it.
+   各コンポーネントは真に自己完結しています。`.marko` ファイルを別のプロジェクトに移動でき、すべての依存関係を持ち込みます。
 
-1. Easier Refactoring
+1. より簡単なリファクタリング
 
-   When a component needs to change, all the related code is co-located. There's no risk of forgetting to update a related CSS rule or JavaScript handler in a distant file.
+   コンポーネントを変更する必要がある場合、関連するすべてのコードが共同配置されています。遠くのファイルで関連する CSS ルールや JavaScript ハンドラを更新し忘れるリスクはありません。
 
-1. Natural Scoping
+1. 自然なスコープ
 
-   Styles and behavior are naturally scoped to their component. This eliminates the global scope pollution that plagues traditional approaches.
+   スタイルと動作は、自然にコンポーネントにスコープされます。これにより、従来のアプローチに悩まされるグローバルスコープの汚染が排除されます。
 
-Marko doesn't prescribe where the boundaries should be, it empowers you to define appropriate separations based on your application's needs. For example, if some functionality like the phone input in this form feels like it is becoming too large:
+Marko は境界がどこにあるべきかを規定するのではなく、アプリケーションのニーズに基づいて適切な分離を定義する力を与えます。たとえば、このフォームの電話番号入力のような機能が大きくなりすぎていると感じる場合：
 
 ```marko
 <form>
@@ -162,7 +162,7 @@ Marko doesn't prescribe where the boundaries should be, it empowers you to defin
 </form>
 ```
 
-You can extract it into a separate component:
+別のコンポーネントに抽出できます：
 
 ```marko
 /* index.marko */
@@ -187,23 +187,23 @@ You can extract it into a separate component:
 />
 ```
 
-The framework doesn't force artificial separations. Instead, it provides the tools to separate concerns at the **logical boundaries** that make sense for your specific application.
+フレームワークは人為的な分離を強制しません。代わりに、特定のアプリケーションにとって意味のある**論理的な境界**で関心を分離するためのツールを提供します。
 
-## Common Objections
+## 一般的な異議
 
-At this point, you might have some concerns. Let's address the most common ones:
+この時点で、いくつかの懸念があるかもしれません。最も一般的なものに対処しましょう：
 
-### "This Violates Single Responsibility Principle"
+### 「これは単一責任の原則に違反する」
 
-The Single Responsibility Principle states that a class should have only one reason to change. A Marko component typically _does_ have a single responsibility, which is that it implements one piece of user-facing functionality. The fact that it includes HTML, CSS, and JavaScript doesn't violate SRP any more than a class having both data and methods violates it.
+単一責任の原則は、クラスが変更する理由を1つだけ持つべきだと述べています。Marko コンポーネントは通常、_単一の責任_を持っており、それはユーザー向け機能の1つを実装することです。HTML、CSS、JavaScript を含むという事実は、クラスがデータとメソッドの両方を持つことが SRP に違反しないのと同様に、SRP に違反しません。
 
-A modal component has one responsibility— being a modal. All the HTML structure, CSS styling, and JavaScript behavior serve that single purpose. Splitting these across files doesn't create better separation; it fragments the implementation of a single concern.
+モーダルコンポーネントには1つの責任があります—モーダルであること。すべての HTML 構造、CSS スタイリング、JavaScript の動作は、その単一の目的に役立ちます。これらをファイル間で分割しても、より良い分離は作成されません。単一の関心の実装を断片化するだけです。
 
-### "What About Reusability?"
+### 「再利用性はどうですか？」
 
-Co-location of concerns actually _improves_ reusability. When you want to reuse a component, you get everything it needs in one package. There's no need to hunt down associated CSS files or JavaScript dependencies.
+関心の共同配置は、実際には再利用性を_改善_します。コンポーネントを再利用したい場合、必要なすべてのものを1つのパッケージで取得できます。関連する CSS ファイルや JavaScript の依存関係を探す必要はありません。
 
-Traditional approach:
+従来のアプローチ：
 
 ```sh
 ├── modal.html
@@ -212,64 +212,64 @@ Traditional approach:
 └── modal-theme.css
 ```
 
-Marko approach:
+Marko アプローチ：
 
 ```sh
 └── modal.marko
 ```
 
-### "Large Components Are Unwieldy"
+### 「大きなコンポーネントは扱いにくい」
 
-This is a valid concern, but the solution isn't to separate by technology. It's to break large components into smaller, more focused components. This is exactly the kind of logical separation that Marko encourages.
+これは正当な懸念ですが、解決策は技術で分離することではありません。大きなコンポーネントをより小さく、より焦点を絞ったコンポーネントに分割することです。これはまさに Marko が推奨する種類の論理的分離です。
 
-If your component is getting too large, extract logical sub-components:
+コンポーネントが大きくなりすぎている場合は、論理的なサブコンポーネントを抽出します：
 
 ```marko
-<!-- Instead of one giant user-profile.marko, break it down into multiple components -->
+<!-- 1つの巨大な user-profile.marko の代わりに、複数のコンポーネントに分割します -->
 <user-avatar user=input.user/>
 <user-details user=input.user/>
 <user-actions user=input.user/>
 <user-preferences user=input.user/>
 ```
 
-This maintains component boundaries based on functionality, not technology.
+これは、技術ではなく機能性に基づいてコンポーネントの境界を維持します。
 
-### "This Defies Web Standards"
+### 「これはウェブ標準に逆らう」
 
-Web standards define the technologies (HTML, CSS, JavaScript) but don't dictate how they should be organized in source code. The separation was a limitation of the tools, not a requirement of the standards.
+ウェブ標準は技術（HTML、CSS、JavaScript）を定義しますが、ソースコードでそれらをどのように整理すべきかは規定していません。分離はツールの制限であり、標準の要件ではありませんでした。
 
-Consider that:
+次のことを考えてください：
 
-- **Web Components** co-locate HTML, CSS, and JavaScript in a single custom element
-- **CSS-in-JS** brings styling into JavaScript
-- **Style attributes** have always mixed HTML and CSS
+- **Web Components** は、HTML、CSS、JavaScript を単一のカスタム要素に共同配置します
+- **CSS-in-JS** は、スタイリングを JavaScript に持ち込みます
+- **スタイル属性**は、常に HTML と CSS を混在させてきました
 
-The web platform itself has been moving toward more integrated approaches.
+ウェブプラットフォーム自体が、より統合されたアプローチに向かって進んでいます。
 
-## Industry Trends
+## 業界のトレンド
 
-Marko isn't alone in this approach. The frontend industry has been moving in this direction for years:
+Marko はこのアプローチで孤立していません。フロントエンド業界は何年もこの方向に進んでいます：
 
-- **Vue.js**: Single File Components (SFCs) co-locate template, script, and style
-- **React**: JSX mixes HTML and JavaScript; CSS-in-JS solutions bring styling closer to components
-- **Svelte**: Components include markup, styling, and logic in single files
-- **Angular**: Component decorator co-locates template and styles with the class
+- **Vue.js**: 単一ファイルコンポーネント（SFC）は、テンプレート、スクリプト、スタイルを共同配置します
+- **React**: JSX は HTML と JavaScript を混在させます。CSS-in-JS ソリューションは、スタイリングをコンポーネントに近づけます
+- **Svelte**: コンポーネントは、マークアップ、スタイリング、ロジックを単一のファイルに含めます
+- **Angular**: コンポーネントデコレーターは、テンプレートとスタイルをクラスと共同配置します
 
-Even in other technology stacks, we see similar patterns:
+他の技術スタックでも、同様のパターンが見られます：
 
-- **iOS**: SwiftUI combines layout and behavior
-- **Android**: Jetpack Compose merges UI and logic
-- **Desktop**: Many modern UI frameworks favor component-based approaches
+- **iOS**: SwiftUI はレイアウトと動作を組み合わせます
+- **Android**: Jetpack Compose は UI とロジックを統合します
+- **デスクトップ**: 多くの最新 UI フレームワークは、コンポーネントベースのアプローチを支持します
 
-## Conclusion
+## 結論
 
-Marko's approach isn't about abandoning separation of concerns, it's about applying that principle more thoughtfully. Instead of separating by arbitrary technological boundaries, we separate by logical, functional boundaries that align with how developers actually think about and build user interfaces.
+Marko のアプローチは、関心の分離を放棄することではなく、その原則をより慎重に適用することです。任意の技術的な境界で分離する代わりに、開発者が実際にユーザーインターフェースを考え、構築する方法と一致する論理的で機能的な境界で分離します。
 
-The result is code that's easier to understand, modify, and maintain. Components become true units of functionality rather than fragmented pieces scattered across multiple files. This approach respects the principle that **related things should be close together**, while still maintaining clear separations where they actually matter.
+その結果、理解、変更、維持が容易なコードになります。コンポーネントは、複数のファイルに散在する断片化された部分ではなく、真の機能の単位になります。このアプローチは、**関連するものは近くにあるべき**という原則を尊重しながら、実際に重要な場所で明確な分離を維持します。
 
-The question isn't whether to separate concerns, but **which concerns to separate** and **where to draw the boundaries**. Marko's Tags API gives you the flexibility to make those decisions based on your application's actual needs, not on outdated assumptions about web technology separation.
+問題は、関心を分離するかどうかではなく、**どの関心を分離するか**、**どこに境界を引くか**です。Marko の Tags API は、ウェブ技術の分離に関する時代遅れの仮定ではなく、アプリケーションの実際のニーズに基づいてこれらの決定を行う柔軟性を提供します。
 
-## Further Reading
+## さらに読む
 
-- [Nested Reactivity](./nested-reactivity.md)
-- [Optimizing Performance](./optimizing-performance.md)
+- [ネストされたリアクティビティ](./nested-reactivity.md)
+- [パフォーマンスの最適化](./optimizing-performance.md)

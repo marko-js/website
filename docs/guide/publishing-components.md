@@ -1,5 +1,5 @@
-# Publishing Components
+# コンポーネントの公開
 
-## Best Practices
+## ベストプラクティス
 
-## Storybook Integration
+## Storybook統合

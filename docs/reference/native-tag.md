@@ -1,10 +1,10 @@
-# Native Tags
+# ネイティブタグ
 
-Native tags are the [built-in HTML elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements). In Marko they behave like standard HTML with a few ergonomic enhancements.
+ネイティブタグは、[組み込みHTML要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements)です。Markoでは、いくつかの人間工学的な機能強化を備えた標準HTMLのように動作します。
 
-## Element References
+## 要素参照
 
-All native tags expose a [Tag Variable](./language.md#tag-variables) that provides a getter to the reference of the DOM node.
+すべてのネイティブタグは、DOMノードへの参照のゲッターを提供する[タグ変数](./language.md#tag-variables)を公開します。
 
 ```marko
 <div/ref/>
@@ -15,26 +15,26 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 ```
 
 > [!CAUTION]
-> The node reference is only available in the browser. Attempting to access a DOM node from the server will result in an error.
+> ノード参照はブラウザでのみ利用できます。サーバーからDOMノードにアクセスしようとするとエラーになります。
 
-## Enhanced Attributes
+## 拡張属性
 
 ### `class=`
 
-In addition to strings, Marko supports passing arrays and objects to the `class=` attribute.
+文字列に加えて、Markoは`class=`属性に配列とオブジェクトを渡すことをサポートしています。
 
 ```marko
-<!-- String -->
+<!-- 文字列 -->
 <div class="a c"/>
 
-<!-- Object -->
+<!-- オブジェクト -->
 <div class={ a: true, b: false, c: true }/>
 
-<!-- Array -->
+<!-- 配列 -->
 <div class=["a", null, { c: true }]/>
 ```
 
-All examples above result in the same HTML:
+上記のすべての例は、同じHTMLになります:
 
 ```html
 <div class="a c"></div>
@@ -42,30 +42,30 @@ All examples above result in the same HTML:
 
 ### `style=`
 
-In addition to strings, Marko supports passing arrays and objects to the `style=` attribute.
+文字列に加えて、Markoは`style=`属性に配列とオブジェクトを渡すことをサポートしています。
 
 ```marko
-<!-- String -->
+<!-- 文字列 -->
 <div style="display:block;margin-right:16px"/>
 
-<!-- Object -->
+<!-- オブジェクト -->
 <div style={ display: "block", color: false, "margin-right": 16 }/>
 
-<!-- Array -->
+<!-- 配列 -->
 <div style=["display:block", null, { "margin-right": 16 }]/>
 ```
 
-All examples above result in the same HTML:
+上記のすべての例は、同じHTMLになります:
 
 ```html
 <div style="display:block;margin-right:16px;"></div>
 ```
 
-### Event Handlers
+### イベントハンドラ
 
-Attributes on native tags that begin with `on` followed by `-` or a capital letter are attached as [event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+`on`で始まり、その後に`-`または大文字が続くネイティブタグの属性は、[イベントハンドラ](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)として添付されます。
 
-When the attribute starts with `on-` the event name casing is preserved, otherwise the event name is all lowercased.
+属性が`on-`で始まる場合、イベント名の大文字小文字は保持されます。それ以外の場合、イベント名はすべて小文字になります。
 
 - `onDblClick` → `dblclick`
 - `on-DblClick` → `DblClick`
@@ -75,7 +75,7 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
   Say Hi
 </button>
 
-// equivalent to
+// これと同等
 
 <button on-click() { alert("Hi!") }>
   Say Hi
@@ -83,9 +83,9 @@ When the attribute starts with `on-` the event name casing is preserved, otherwi
 ```
 
 > [!NOTE]
-> Event handlers are typically written using the [method shorthand](./language.md#shorthand-methods) for readability.
+> イベントハンドラは、可読性のために通常、[メソッド省略記法](./language.md#shorthand-methods)を使用して記述されます。
 
-The value for the attribute must be either a function or a [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) value, allowing for conditional event handlers:
+属性の値は、関数または[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)値のいずれかである必要があり、条件付きイベントハンドラを可能にします:
 
 ```marko
 <let/clicked=false>
@@ -98,56 +98,56 @@ The value for the attribute must be either a function or a [falsy](https://devel
 ```
 
 > [!TIP]
-> Since native events are all lowercase, the `onCamelCase` event naming can help with readability of multi-word events:
+> ネイティブイベントはすべて小文字であるため、`onCamelCase`イベント命名は、複数語のイベントの可読性を向上させるのに役立ちます:
 >
 > ```marko
 > <canvas onContentVisibilityAutoStateChange() {  }/>
 > ```
 >
-> Some [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) may emit non lowercase event names, in which case (pun intended 😏) you should use `on-` which preserves the casing.
+> 一部の[カスタム要素](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)は、小文字でないイベント名を発行する場合があります。その場合（ダジャレです😏）、大文字小文字を保持する`on-`を使用する必要があります。
 
 > [!CAUTION]
-> Even though Marko _does_ support [native HTML inline event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes), it's recommended to avoid them since they're detached from Marko's reactivity system and may lead to [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) / [XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) issues.
+> Markoは[ネイティブHTMLインラインイベントハンドラ属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes)を_サポート_していますが、Markoのリアクティビティシステムから切り離されており、[CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) / [XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting)の問題につながる可能性があるため、避けることをお勧めします。
 >
 > ```marko
 > <button onclick="this.innerHTML++">0</button>
 > ```
 
-### Tags with Enhanced `value` Attributes
+### 拡張された`value`属性を持つタグ
 
-The HTML `<input>` tag has a `value=` attribute that reflects the state of the `<input>`. Marko adds this attribute to a few other tags that hold internal state.
+HTML `<input>`タグには、`<input>`の状態を反映する`value=`属性があります。Markoは、内部状態を保持する他のいくつかのタグにこの属性を追加します。
 
-#### `<input type="radio">` and `<input type="checkbox">`
+#### `<input type="radio">`と`<input type="checkbox">`
 
-Radio and checkbox inputs support a `checkedValue=` attribute. When this attribute matches the input's `value=` attribute, it will be `checked`.
+ラジオとチェックボックスの入力は、`checkedValue=`属性をサポートします。この属性が入力の`value=`属性と一致すると、`checked`になります。
 
-`checkedValue=` may be set to a string, in which case only one value will match (for use with `type="radio"`), or an array of strings, in which case multiple values may match (for use with `type="checkbox"`).
+`checkedValue=`は文字列に設定でき、この場合、1つの値のみが一致します（`type="radio"`で使用）。または文字列の配列に設定でき、この場合、複数の値が一致する可能性があります（`type="checkbox"`で使用）。
 
 #### `<select>`
 
-The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
+`<select>`タグは、その状態がボディ内の`<option>`タグと内部的に同期されるという点で独特です。Markoは、`value=`属性を介してこの状態を公開します。
 
-`value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with`<select multiple>`).
+`value=`は文字列に設定でき、この場合、`<select>`の`.value`プロパティ（選択された`<option>`の値）をミラーリングします。文字列の配列にも設定でき、この場合、複数の`<option>`を選択できます（`<select multiple>`で使用）。
 
 #### `<textarea>`
 
-In HTML, `<textarea>` holds its value inside its body. In Marko, this state can also be held in the `value=` attribute, which is useful for the textarea change handler.
+HTMLでは、`<textarea>`はその値をボディ内に保持します。Markoでは、この状態は`value=`属性にも保持でき、これはtextareaの変更ハンドラに役立ちます。
 
-### Change Handlers
+### 変更ハンドラ
 
-Some native tags in Marko have additional attributes that make them **controllable**. These attributes end with `Change` and are designed to work with the [bind shorthand](./language.md#shorthand-change-handlers-two-way-binding).
+Markoの一部のネイティブタグには、それらを**制御可能**にする追加の属性があります。これらの属性は`Change`で終わり、[バインド省略記法](./language.md#shorthand-change-handlers-two-way-binding)と連携するように設計されています。
 
-For DOM elements that maintain internal state separate from an associated attribute, Marko uses "uncontrolled" attributes by default, meaning it only sets the attribute value and not the internal value.
+関連する属性とは別の内部状態を維持するDOM要素の場合、Markoはデフォルトで「非制御」属性を使用します。つまり、属性値のみを設定し、内部値は設定しません。
 
 ```marko
 <input value="hello">
 ```
 
-Above is among the simplest of examples, but interestingly its behavior is different across frameworks in subtle ways.
+上記は最も単純な例の1つですが、興味深いことに、フレームワーク間で微妙に異なる動作をします。
 
-In some frameworks, like React, this would be a "read-only" `<input>`. Marko takes a different approach, allowing the input's state to be managed natively by the browser.
+Reactなどの一部のフレームワークでは、これは「読み取り専用」の`<input>`になります。Markoは異なるアプローチを取り、ブラウザによってネイティブに入力の状態を管理できるようにします。
 
-Adding state introduces some nuances in behavior.
+状態を追加すると、動作にいくつかのニュアンスが導入されます。
 
 ```marko
 <let/message="hello">
@@ -159,14 +159,14 @@ Adding state introduces some nuances in behavior.
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-In this example, typing in the `<input>` and then clicking the `<button>` might not behave as expected. The `<div>` text updates only when the button is clicked, and the `<input>` doesn't reflect the new "goodbye" value.
+この例では、`<input>`に入力してから`<button>`をクリックしても、期待どおりに動作しない可能性があります。`<div>`のテキストはボタンがクリックされたときにのみ更新され、`<input>`は新しい「goodbye」値を反映しません。
 
-This occurs because there are two separate states, which update independently:
+これは、独立して更新される2つの別々の状態があるために発生します:
 
-1. The Marko-managed state in `<let/message>`
-2. The internal state of the `<input>` value
+1. `<let/message>`のMarko管理状態
+2. `<input>`値の内部状態
 
-To synchronize these two states and their updates, Marko includes a special `valueChange` attribute on `<input>`.
+これら2つの状態とその更新を同期するために、Markoは`<input>`に特別な`valueChange`属性を含めています。
 
 ```marko
 <let/message = "hello">
@@ -178,17 +178,17 @@ To synchronize these two states and their updates, Marko includes a special `val
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-The `valueChange` attribute transforms the behavior:
+`valueChange`属性は動作を変換します:
 
-- Typing in the `<input>` updates both the `<input>` and the `<div>`
-- Clicking the `<button>` updates both the `<input>` and the `<div>`
+- `<input>`への入力は、`<input>`と`<div>`の両方を更新します
+- `<button>`のクリックは、`<input>`と`<div>`の両方を更新します
 
-There is now only one state! This synchronization occurs because `valueChange`:
+これで状態は1つだけになりました! この同期は、`valueChange`が次のことを行うため発生します:
 
-1. Captures internal `<input>` changes
-2. Updates the `message` variable, which then updates the `value=` attribute
+1. 内部`<input>`の変更をキャプチャ
+2. `message`変数を更新し、次に`value=`属性を更新
 
-The `valueChange` function is called whenever the `<input>` would normally update, allowing a parent component to synchronize its state with the input's internal state.
+`valueChange`関数は、`<input>`が通常更新されるたびに呼び出され、親コンポーネントがその状態を入力の内部状態と同期できるようにします。
 
 ```marko
 <let/message = "hello">
@@ -200,9 +200,9 @@ The `valueChange` function is called whenever the `<input>` would normally updat
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-In this example, there is a single state _and_ updates from both sources are handled. Typing in the `<input>` and clicking the `<button>` cause changes to both the `<div>` and the `<input>` itself. Everything is in sync!
+この例では、単一の状態があり、_かつ_両方のソースからの更新が処理されます。`<input>`への入力と`<button>`のクリックは、`<div>`と`<input>`自体の両方に変更を引き起こします。すべてが同期しています!
 
-Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding) for simple reflective change handlers like this, allowing the example to be simplified to:
+Markoには、このような単純な反射的変更ハンドラのための[省略記法](./language.md#shorthand-change-handlers-two-way-binding)があり、例を次のように簡略化できます:
 
 ```marko
 <let/message="Hello">
@@ -214,9 +214,9 @@ Marko has [a shorthand](./language.md#shorthand-change-handlers-two-way-binding)
 <button onClick() { message = "Goodbye" }>Click Me</>
 ```
 
-With this shorthand all that is needed to go from "uncontrolled" to "controlled" for the `value` attribute was to swap from `value=` to `value:=`.
+この省略記法では、`value`属性を「非制御」から「制御」に変更するために必要なのは、`value=`から`value:=`に切り替えることだけです。
 
-For cases besides the most simple, manual `valueChange` handlers are required.
+最も単純なケース以外では、手動の`valueChange`ハンドラが必要です。
 
 ```marko
 <let/message = "hello">
@@ -228,17 +228,17 @@ For cases besides the most simple, manual `valueChange` handlers are required.
 <button onClick() { message = "goodbye" }>Click Me</>
 ```
 
-All changes to this `<input>` are intercepted _and manipulated_. In this example, all UPPERCASE characters are automatically converted to lowercase. This pattern is useful for [input masking](https://css-tricks.com/input-masking/) and more - and it's built in!
+この`<input>`へのすべての変更は、傍受され_操作されます_。この例では、すべての大文字が自動的に小文字に変換されます。このパターンは、[入力マスキング](https://css-tricks.com/input-masking/)などに役立ち、組み込まれています!
 
 ```marko
-// uncontrolled - The browser owns the state
+// 非制御 - ブラウザが状態を所有
 <input value="hello">
 
-// controlled - The `inputValue` tag variable owns the state
+// 制御 - `inputValue`タグ変数が状態を所有
 <let/inputValue="hello">
 <input value:=inputValue>
 
-// controlled - Modifications to `<input>` are transformed
+// 制御 - `<input>`への変更が変換される
 <let/creditCardNumber="5555 5555 555">
 <input
   value=creditCardNumber
@@ -250,9 +250,9 @@ All changes to this `<input>` are intercepted _and manipulated_. In this example
 
 #### `<input>` (`valueChange=`, `checkedChange=`, `checkedValueChange=`)
 
-The `<input>` tag has 3 change handlers, which are each related to an input type.
+`<input>`タグには、それぞれ入力タイプに関連する3つの変更ハンドラがあります。
 
-The `value=` attribute may be controlled with `valueChange=`
+`value=`属性は`valueChange=`で制御できます
 
 ```marko
 <let/text="">
@@ -261,19 +261,19 @@ The `value=` attribute may be controlled with `valueChange=`
 ```
 
 > [!CAUTION]
-> The value of `<input>` is _always_ a string, so numbers need to be casted.
+> `<input>`の値は_常に_文字列であるため、数値はキャストする必要があります。
 >
 > ```marko
 > <let/number=0>
 >
-> // ❌ (INCORRECT) this will set number to a string when updated
+> // ❌ (不正解) これは更新時にnumberを文字列に設定します
 > <input type="number" value:=number>
 >
-> // ✅ cast the string value to a number during the change handler
+> // ✅ 変更ハンドラ中に文字列値を数値にキャストします
 > <input type="number" value=number valueChange(value) { number = +value }>
 > ```
 
-The `checked=` attribute may be controlled with `checkedChange=`
+`checked=`属性は`checkedChange=`で制御できます
 
 ```marko
 <let/checked=false>
@@ -281,7 +281,7 @@ The `checked=` attribute may be controlled with `checkedChange=`
 <input type="checkbox" checked=checked checkedChange(value) { checked = value }>
 ```
 
-The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.
+[追加された`checkedValue=`属性](#input-typeradio-and-input-typecheckbox)にも変更ハンドラがあります。
 
 ```marko
 <let/checked="foo">
@@ -290,7 +290,7 @@ The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) a
 
 #### `<select>` (`valueChange=`)
 
-Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#select), which is also controllable with a `Change` handler.
+従来、`<select>`の値は、その`<option>`タグの`selected=`属性を介して制御されます。Markoは、[新しい`value=`属性](#select)を使用して`<select>`を制御する追加の方法を追加しており、これも`Change`ハンドラで制御できます。
 
 ```marko
 <let/selected="en">
@@ -303,7 +303,7 @@ Traditionally, the value of a `<select>` is controlled via the `selected=` attri
 
 #### `<textarea>` (`valueChange=`)
 
-The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#textarea).
+`<textarea>`タグには、[Markoが追加した`value=`属性](#textarea)の変更ハンドラがあります。
 
 ```marko
 <let/text="">
@@ -312,7 +312,7 @@ The `<textarea>` tag has a change handler for [Marko's added `value=` attribute]
 
 #### `<details>` (`openChange=`)
 
-The `<details>` tag has a change handler for its `open=` attribute.
+`<details>`タグには、その`open=`属性の変更ハンドラがあります。
 
 ```marko
 <let/open=false>
@@ -325,7 +325,7 @@ The `<details>` tag has a change handler for its `open=` attribute.
 
 #### `<dialog>` (`openChange=`)
 
-The `<dialog>` tag has a change handler for its `open=` attribute.
+`<dialog>`タグには、その`open=`属性の変更ハンドラがあります。
 
 ```marko
 <let/open=false>
@@ -337,17 +337,17 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
 ```
 
 > [!Warning]
-> The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
+> `<dialog>`タグの`open`属性は、非モーダルダイアログを制御するために使用できます。ただし、モーダルダイアログが必要な場合は、[`.showModal()`メソッド](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal)を直接使用する必要があります。このメソッドを呼び出しても、HTML `<dialog>`は`close`時にのみイベントを発火するため、`openChange`は発火_しません_。
 
-## Enhanced Tags
+## 拡張タグ
 
-Some native tags have special meaning in Marko, and don't behave exactly like their HTML counterpart.
+一部のネイティブタグはMarkoで特別な意味を持ち、HTMLの対応するものとまったく同じように動作しません。
 
 ### `<script>`
 
-Marko's [`<script>` tag](./core-tag.md#script) is used for browser effects.
+Markoの[`<script>`タグ](./core-tag.md#script)は、ブラウザエフェクトに使用されます。
 
-A native HTML `<script>` may be included with `<html-script>`.
+ネイティブHTML `<script>`は、`<html-script>`で含めることができます。
 
 ```marko
 <html-script type="application/json">
@@ -357,12 +357,12 @@ A native HTML `<script>` may be included with `<html-script>`.
 
 ### `<style>`
 
-Marko's [`<style>` tag](./core-tag.md#style) generates `.css` files.
+Markoの[`<style>`タグ](./core-tag.md#style)は、`.css`ファイルを生成します。
 
-Though almost never recommended, a native HTML `<style>` may be included with `<html-style>`.
+ほとんど推奨されませんが、ネイティブHTML `<style>`は`<html-style>`で含めることができます。
 
 ### `<!-- comment -->`
 
-By default, Marko strips [comments](./language.md#comments) from the output.
+デフォルトでは、Markoは出力から[コメント](./language.md#comments)を除外します。
 
-A native HTML `<!-- comment -->` may be included with [`<html-comment>`](./core-tag.md#html-comment)
+ネイティブHTML `<!-- comment -->`は、[`<html-comment>`](./core-tag.md#html-comment)で含めることができます
