@@ -11,7 +11,7 @@
 
 ## Marko Run Setup (Recommended)
 
-[Marko Run](https://github.com/marko-js/run) makes it easy to get started with little to no config and is the recommended starting point for a new Marko project. It's the official application framework from the Marko team and powered by [Vite](https://vite.dev/).
+[Marko Run](https://github.com/marko-js/run) makes it easy to get started with minimal configuration and is the recommended starting point for a new Marko project. It's the official application framework from the Marko team and powered by [Vite](https://vite.dev/).
 
 To set up your project:
 
@@ -25,7 +25,7 @@ Open `src/routes/+page.marko` in your editor to modify the index page. See the [
 
 ## Manual Setup
 
-If you prefer to create your own application structure, you can set up your project with your bundler of choice. The Marko team maintains the plugins for [Vite](https://github.com/marko-js/vite), [Webpack](https://github.com/marko-js/webpack) and [Rollup](https://github.com/marko-js/rollup). The following guide will help you setup Vite.
+If you prefer to create your own application structure, you can set up your project using your preferred bundler. The Marko team maintains the plugins for [Vite](https://github.com/marko-js/vite), [Webpack](https://github.com/marko-js/webpack), and [Rollup](https://github.com/marko-js/rollup). The following guide will help you set up Vite.
 
 1. **Create your project directory**
 
@@ -44,7 +44,7 @@ If you prefer to create your own application structure, you can set up your proj
 
 1. **Install Marko**
 
-   Lets install the dependencies required for Marko.
+   Let's install the dependencies required for Marko.
 
    First, install `marko` 6 as your dependency.
 
@@ -138,7 +138,7 @@ Marko’s TypeScript support offers in-editor error checking, makes refactoring 
 
 Or perhaps you simply want more autocomplete in VS Code—that works too!
 
-To add TypeScript support to your Marko application, add a `tsconfig.json` file in the project's root directory. You can you use the following `tsconfig.json` as a starting point:
+To add TypeScript support to your Marko application, add a `tsconfig.json` file in the project's root directory. You can use the following `tsconfig.json` as a starting point:
 
 ```json
 {
