@@ -26,7 +26,7 @@ The router only recognizes certain filenames, all prefixed with `+`. The followi
 
 ### `+page.marko`
 
-These files establish a route at the current directory path which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
+These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
 
 ### `+layout.marko`
 
@@ -48,21 +48,21 @@ export interface Input {
 
 ### `+handler.*`
 
-These files establish a route at the current directory path which can handle requests for `GET`, `POST`, `PUT`, and `DELETE` HTTP methods. <!-- TODO: what about HEAD? -->
+These files establish a route at the current directory path that can handle requests for `GET`, `POST`, `PUT`, and `DELETE` HTTP methods. <!-- TODO: what about HEAD? -->
 
-Typically, these will be `.js` or `.ts` files depending on your project. Like pages, only one handler for each method may exist for any served path. A handler should export functions
+Typically, these will be `.js` or `.ts` files, depending on your project. Like pages, only one handler for each method may exist for any served path. A handler should export functions
 
 - Valid exports are functions named `GET`, `POST`, `PUT`, or `DELETE`.
 - Exports can be one of the following
   - Handler function (see below)
   - Array of handler functions - will be composed by calling them in order
-  - Promise that resolves to a handler function or array of handler functions
+  - Promise that resolves to a handler function or an array of handler functions
 - Handler functions are synchronous or asynchronous functions that
 
   - Receives a `context` and `next` argument,
     - The `context` argument contains the WHATWG request object, path parameters, URL, and route metadata.
     - The `next` argument will call the page for `GET` requests where applicable or return a `204` response.
-  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined the `next` argument with be automatically called and used as the response.
+  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined, the `next` argument will be automatically called and used as the response.
 
     ```ts
     /* +handler.ts */
@@ -83,18 +83,18 @@ Typically, these will be `.js` or `.ts` files depending on your project. Like pa
 These files are like layouts, but for handlers. Middleware files are called before handlers and let you perform arbitrary work before and after.
 
 > [!NOTE]
-> Unlike handlers, middleware run for all HTTP methods.
+> Unlike handlers, middleware runs for all HTTP methods.
 
 - Expects a `default` export that can be one of the following
   - Handler function (see below)
   - Array of handler functions - will be composed by calling them in order
-  - Promise that resolves to a handler function or array of handler functions
+  - Promise that resolves to a handler function or an array of handler functions
 - Handler functions are synchronous or asynchronous functions that
 
   - Receives a `context` and `next` argument,
     - The `context` argument contains the WHATWG request object, path parameters, URL, and route metadata.
     - The `next` argument will call the page for `GET` requests where applicable or return a `204` response.
-  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined the `next` argument with be automatically called and used as the response.
+  - Return a WHATWG response, throw a WHATWG response, and return undefined. If the function returns undefined, the `next` argument will be automatically called and used as the response.
 
     ```ts
     /* +middleware.ts */
@@ -121,7 +121,7 @@ These files represent static metadata to attach to the route. This metadata will
 
 ## Special Files
 
-In addition to the files above which can be defined in any directory under the [routes directory](#routes-directory), some special files can only be defined at its top level. <!-- TODO: do we want to keep this restriction? Having nested 404s would be handy for disambiguating things like “there’s no user with that name” or “that promotion wasn’t found, it may have expired” -->
+In addition to the files above, which can be defined in any directory under the [routes directory](#routes-directory), some special files can only be defined at its top level. <!-- TODO: do we want to keep this restriction? Having nested 404s would be handy for disambiguating things like “there’s no user with that name” or “that promotion wasn’t found, it may have expired” -->
 
 These special pages are subject to a root layout file (`pages/+layout.marko` in the default configuration).
 
@@ -172,7 +172,7 @@ When the path `/about` is requested, the routable files execute in the following
 
 Within the [routes directory](#routes-directory), the directory structure determines the path from which the route is served. There are four types of directory names: **static**, **pathless**, **dynamic**, and **catch-all**.
 
-1. **Static directories** - The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, like a traditional fileserver. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
+1. **Static directories** - The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, similar to a traditional file server. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
 
    Examples:
 
@@ -191,7 +191,7 @@ Within the [routes directory](#routes-directory), the directory structure determ
    /_public
    ```
 
-3. **Dynamic directories** - These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured but it will be matched.
+3. **Dynamic directories** - These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured, but it will be matched.
 
    Examples:
 
@@ -201,9 +201,9 @@ Within the [routes directory](#routes-directory), the directory structure determ
    /$
    ```
 
-4. **Catch-all directories** - These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
+4. **Catch-all directories** - These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured, but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
 
-   Because catch-all directories match any path segment and consume the rest of the path, you cannot nest route files in them and no further directories will be traversed.
+   Because catch-all directories match any path segment and consume the rest of the path, you cannot nest route files in them, and no further directories will be traversed.
 
    Examples:
 
@@ -215,13 +215,13 @@ Within the [routes directory](#routes-directory), the directory structure determ
 
 ## Flat Routes
 
-Flat routes let you define paths without needing additional directories. Instead the directory structure can be defined either in the file or directory name. This allows you to decouple your routes from your directory structure or co-locate them as needed. To define a flat route, use periods (`.`) to delineate each path segment. This behaves exactly like creating a new directory and each segment will be parsed using the rules described above for static, dynamic and pathless routes.
+Flat routes let you define paths without needing additional directories. Instead, the directory structure can be defined either in the file or directory name. This allows you to decouple your routes from your directory structure or co-locate them as needed. To define a flat route, use periods (`.`) to delineate each path segment. This behaves exactly like creating a new directory, and each segment will be parsed using the rules described above for static, dynamic, and pathless routes.
 
-Flat routes syntax can be used for both directories and routable files (eg. pages, handlers, middleware, etc.). For these files, anything proceeding the plus (`+`) will be treated as the flat route.
+Flat routes syntax can be used for both directories and routable files (eg. pages, handlers, middleware, etc.). For these files, anything preceding the plus (`+`) will be treated as the flat route.
 
-For example to define a page at `/projects/$projectId/members` with a root layout and a project layout:
+For example, to define a page at `/projects/$projectId/members` with a root layout and a project layout:
 
-Without flat routes you would have a file structure like:
+Without flat routes, you would have a file structure like:
 
 ```
 routes/
@@ -233,7 +233,7 @@ routes/
         +layout.marko
 ```
 
-With flat routes move the path defined by the directories into the files and separate with a period
+With flat routes, move the path defined by the directories into the files and separate with a period
 
 ```
 routes/
@@ -252,7 +252,7 @@ routes/
   +layout.marko
 ```
 
-Finally, flat routes and routes defined with directories are all treated equally and merged together. For example this page will have layout
+Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have layout
 
 ```
 routes/
@@ -273,7 +273,7 @@ routes/
   projects.$projectId.members,projects.$projectId.people+page.marko
 ```
 
-This file name is a bit long so you might do something like this
+This file name is a bit long, so you might do something like this
 
 ```
 routes/
@@ -281,16 +281,16 @@ routes/
   members,people+page.marko
 ```
 
-We can simplify this by introducing another concept: **grouping**. Groups allows you to define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). For the example, this means you can do the following:
+We can simplify this by introducing another concept: **grouping**. Groups allow you to define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). For the example, this means you can do the following:
 
 ```
 routes/
   projects.$projectId.(members,people)+page.marko
 ```
 
-This is a simple example of grouping but you can nest groups and make them as complicated as you want.
+This is a simple example of grouping, but you can nest groups and make them as complicated as you want.
 
-The last concept is **optionality**. By introducing an empty segment or pathless segment along with another value you can make that segment optional. For example, If we want a page that matches `/projects` and `/projects/home`, you can create a flat route that optionally matches `home`
+The last concept is **optionality**. By introducing an empty segment or pathless segment along with another value, you can make that segment optional. For example, if we want a page that matches `/projects` and `/projects/home`, you can create a flat route that optionally matches `home`
 
 ```
 routes/
@@ -304,4 +304,4 @@ routes/
   projects.(home,_pathless)+page.marko
 ```
 
-While both of these create a route which matches the paths, they have slightly different semantics. Using a pathless segment is the same as creating a pathless directory which allows you to isolate middleware and layouts. Using an empty segment is the same as defining a file at the current location.
+While both of these create a route which matches the paths, they have slightly different semantics. Using a pathless segment is the same as creating a pathless directory, which allows you to isolate middleware and layouts. Using an empty segment is the same as defining a file at the current location.
