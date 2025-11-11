@@ -1,7 +1,6 @@
 import * as text from "app/styles/text.module.scss";
 import * as colors from "app/styles/section-colors.module.scss";
 import * as styles from "./+page.style.module.scss";
-import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 static interface AssetInput {
   title: string;
@@ -21,12 +20,10 @@ define/Asset|{ content, colorScheme, title, download }: AssetInput|
           -- ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
 
 h1 class=styles.title
-  span class=text.blueGradient -- Brand
-  span class=text.yellowGradient -- ${" "}&${" "}
-  span class=text.redGradient -- Assets
+  span class=text.yellowGradient -- Brand & Assets
 p class=styles.subtitle -- Download the logo and learn about our mascots!
 
-section#logo class=colors.yellowSection
+section#logo class=colors.blueSection
   div class=styles.logos
     Asset title="Logomark"
       @download src="/assets/logomark.svg"
@@ -53,7 +50,6 @@ section#logo class=colors.yellowSection
       -- Logo for light backgrounds
   a href="/assets/logos.zip" download class=styles.downloadButton
     span -- Download All
-    fa-icon=faFileArrowDown
 
 static interface Widget {
   name: string;
@@ -109,7 +105,7 @@ static const widgets: Widget[] = [
 ];
 
 section#widgets class=colors.greenSection
-  h2 -- Meet The Widgets
+  h2 -- Meet the Widgets
 
   let/_selected=0
   let/selected=_selected valueChange(v) {
@@ -188,4 +184,3 @@ section#widgets class=colors.greenSection
               -- PNG (dark)
   a href="/assets/widgets.zip" download class=styles.downloadButton
     span -- Download All
-    fa-icon=faFileArrowDown
