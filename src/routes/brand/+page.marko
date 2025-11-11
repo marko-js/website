@@ -1,5 +1,8 @@
 import * as text from "app/styles/text.module.scss";
+import * as colors from "app/styles/section-colors.module.scss";
 import * as styles from "./+page.style.module.scss";
+import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
+
 static interface AssetInput {
   title: string;
   colorScheme?: "light" | "dark";
@@ -18,41 +21,43 @@ define/Asset|{ content, colorScheme, title, download }: AssetInput|
           -- ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
 
 h1 class=styles.title
-  span class=text.redGradient -- Brand
-  -- ${" "}&${" "}
-  span class=text.blueGradient -- Assets
+  span class=text.blueGradient -- Brand
+  span class=text.yellowGradient -- ${" "}&${" "}
+  span class=text.redGradient -- Assets
 p class=styles.subtitle -- Download the logo and learn about our mascots!
 
-section#logo
-  h2
-    a href="#logo" -- Marko Logo
-
+section#logo class=colors.yellowSection
   div class=styles.logos
-    Asset title="Adaptive"
+    Asset title="Logomark"
+      @download src="/assets/logomark.svg"
+      @download src="/assets/logomark.png"
+      -- Full-color, use anywhere
+    Asset title="White Logomark" colorScheme="dark"
+      @download src="/assets/logomark-white.svg"
+      @download src="/assets/logomark-white.png"
+      -- Solid white for dark backgrounds
+    Asset title="Black Logomark" colorScheme="light"
+      @download src="/assets/logomark-black.svg"
+      @download src="/assets/logomark-black.png"
+      -- Solid black for light backgrounds
+    Asset title="Adaptive Lockup"
       @download src="/assets/logo.svg"
       -- SVG that adapts to the color theme
-    Asset title="Dark" colorScheme="dark"
+    Asset title="Dark Lockup" colorScheme="dark"
       @download src="/assets/logo-dark.svg"
       @download src="/assets/logo-dark.png"
       -- Logo for dark backgrounds
-    Asset title="Light" colorScheme="light"
+    Asset title="Light Lockup" colorScheme="light"
       @download src="/assets/logo-light.svg"
       @download src="/assets/logo-light.png"
       -- Logo for light backgrounds
-
-section#logomark
-  h2
-    a href="#logomark" -- Logomark (No text)
-
-  div class=styles.logos
-    Asset title="Standard"
-      @download src="/assets/logomark.svg"
-      @download src="/assets/logomark.png"
-      -- Use this for your presentations, marketing material, or cake decorating
+  a href="/assets/logos.zip" download class=styles.downloadButton
+    span -- Download All
+    fa-icon=faFileArrowDown
 
 static interface Widget {
   name: string;
-  color: string;
+  color: "blue" | "green" | "yellow" | "red" | "gray";
   description: string;
 }
 static const widgets: Widget[] = [
@@ -103,9 +108,8 @@ static const widgets: Widget[] = [
   }
 ];
 
-section#widgets
-  h2
-    a href="#widgets" -- The Widgets!
+section#widgets class=colors.greenSection
+  h2 -- Meet The Widgets
 
   let/_selected=0
   let/selected=_selected valueChange(v) {
@@ -149,14 +153,7 @@ section#widgets
         ,role="tabpanel"
         ,aria-labelledby=`${tabId}-${i}`
         ,hidden=i !== selected
-        ,class=styles.widgetPanel
-        ,style={
-          display: i !== selected && "none",
-          "--section-color": `var(--color-${widget.color})`,
-          "--section-color-dim": `var(--color-${widget.color}-dim)`,
-          "--section-color-alt": `var(--color-${widget.color}-alt)`,
-          "--section-color-alt-dim": `var(--color-${widget.color}-alt-dim)`,
-        }
+        ,class=[styles.widgetPanel, colors[`${widget.color}Section`]]
         img
           ,src=`/assets/widget/${widget.name}-legs.svg`
           ,alt=`The "${widget.name}" widget, a puzzle piece with legs`
@@ -177,7 +174,7 @@ section#widgets
             a href=`/assets/widget/${widget.name}-dark.png` download
               -- PNG (dark)
 
-          strong -- Head & Legs
+          strong -- Full
           div class=styles.downloadPills
             a href=`/assets/widget/${widget.name}-legs.svg` download
               -- SVG
@@ -189,3 +186,6 @@ section#widgets
               -- PNG (light)
             a href=`/assets/widget/${widget.name}-legs-dark.png` download
               -- PNG (dark)
+  a href="/assets/widgets.zip" download class=styles.downloadButton
+    span -- Download All
+    fa-icon=faFileArrowDown
