@@ -358,7 +358,7 @@ main {
     .admonition-#{$name} {
       @include colors.section($color, true);
       &::before {
-        --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline");
+        --widget-image: url("/assets/widget/#{$widget}.svg");
       }
     }
   }
@@ -366,7 +366,7 @@ main {
   @media (prefers-color-scheme: dark) {
     @each $name, $widget, $color in $admonition-types {
       .admonition-#{$name}::before {
-        --widget-image: url("../../tags/widget/#{$widget}.svg?no-inline#dark");
+        --widget-image: url("/assets/widget/#{$widget}.svg#dark");
       }
     }
   }
@@ -383,14 +383,14 @@ main {
 
     @each $name, $widget in $admonition-types {
       .admonition-#{$name}::before {
-        --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline");
+        --widget-image: url("/assets/widget/#{$widget}-legs.svg");
       }
     }
 
     @media (prefers-color-scheme: dark) {
       @each $name, $widget, $color in $admonition-types {
         .admonition-#{$name}::before {
-          --widget-image: url("../../tags/widget/#{$widget}-legs.svg?no-inline#dark");
+          --widget-image: url("/assets/widget/#{$widget}-legs.svg#dark");
         }
       }
     }

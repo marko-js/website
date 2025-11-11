@@ -1,0 +1,7 @@
+@use "app/styles/colors" as colors;
+
+@each $name, $_ in colors.$colors {
+  .#{$name}Section {
+    @include colors.section($name);
+  }
+}

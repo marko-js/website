@@ -90,43 +90,43 @@
 .trusted::before {
   rotate: -5deg;
   background-position: top center;
-  background-image: url("../../../../tags/widget/doc.svg?no-inline");
+  background-image: url("/assets/widget/doc.svg");
 }
 
 .familiar::before {
   rotate: 5deg;
   background-position: top 12px center;
-  background-image: url("../../../../tags/widget/cookie.svg?no-inline");
+  background-image: url("/assets/widget/cookie.svg");
 }
 
 .performant::before {
   rotate: -5deg;
   scale: -1 1;
   background-position: top 14px center;
-  background-image: url("../../../../tags/widget/link.svg?no-inline");
+  background-image: url("/assets/widget/link.svg");
 }
 
 .scalable::before {
   rotate: 5deg;
   background-position: top center;
-  background-image: url("../../../../tags/widget/pixel.svg?no-inline");
+  background-image: url("/assets/widget/pixel.svg");
 }
 
 @media (prefers-color-scheme: dark) {
   .trusted::before {
-    background-image: url("../../../../tags/widget/doc.svg?no-inline#dark");
+    background-image: url("/assets/widget/doc.svg#dark");
   }
 
   .familiar::before {
-    background-image: url("../../../../tags/widget/cookie.svg?no-inline#dark");
+    background-image: url("/assets/widget/cookie.svg#dark");
   }
 
   .performant::before {
-    background-image: url("../../../../tags/widget/link.svg?no-inline#dark");
+    background-image: url("/assets/widget/link.svg#dark");
   }
 
   .scalable::before {
-    background-image: url("../../../../tags/widget/pixel.svg?no-inline#dark");
+    background-image: url("/assets/widget/pixel.svg#dark");
   }
 }
 
