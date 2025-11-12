@@ -110,13 +110,13 @@ section#widgets class=colors.greenSection
   let/_selected=0
   let/selected=_selected valueChange(v) {
     _selected = ((v % 9) + 9) % 9;
+    [...$btn][_selected]().focus()
   }
   id/tabId
   div class=styles.widgetTabs
     div role="tablist" class=styles.widgetGrid
       for|widget, i| of=widgets
         const/isSelected=i === selected
-        script -- isSelected && $btn().focus();
         button/$btn
           ,id=`${tabId}-${i}`
           ,role="tab"
