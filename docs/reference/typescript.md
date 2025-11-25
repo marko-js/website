@@ -195,7 +195,7 @@ All attribute tags are typed as iterable with a `[Symbol.iterator]`, regardless 
 ```marko
 /* my-select.marko */
 export interface Input {
-  option: Marko.AttrTag<Marko.Input<"option">>
+  option: Marko.AttrTag<Marko.HTML.Option>
 }
 
 <select>
@@ -207,21 +207,27 @@ export interface Input {
 
 ### Extending native tag types within a Marko tag
 
-The types for native tags are accessed via the global `Marko.Input` type. Here's an example of a component that extends the `button` html tag:
+The types for native tags are accessed via the global `Marko.HTML` namespace. Here's an example of a component that extends the `button` html tag:
 
 ```marko
 /* color-button.marko */
-export interface Input extends Marko.Input<"button"> {
+export interface Input extends Marko.HTML.Button {
   color: string;
-  content?: Marko.Body;
 }
 
-$ const { color, ...attrs } = input;
+<const/{ color, ...attrs }=input>
 
-<button style=`color: ${color}` ...attrs>
-  <content/>
-</button>
+<button style=`color: ${color}` ...attrs/>
 ```
+
+> [!TIP]
+> Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+> ```marko
+> <button style=`color: ${color}` ...attrs>
+>   // no longer required!
+>   <${input.content}/>
+> </button>
+> ```
 
 ### Registering a new native tag (e.g. for custom elements)
 
