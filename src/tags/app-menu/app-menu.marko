@@ -14,7 +14,7 @@ div#site-menu class=styles.menu
       a href=value aria-current=($global.url.pathname === value && "true")
         ${content}
 
-  nav class=styles.nav id=styles.siteNav
+  nav/$nav class=styles.nav id=styles.siteNav
     ul
       li
         strong -- Introduction
@@ -86,3 +86,15 @@ div#site-menu class=styles.menu
       ,off="HTML"
       ,on="Concise"
     app-switch aria-label="Toggle TS mode" checked:=tsMode off="JS" on="TS"
+
+html-script -- ${`document.getElementById("${styles.siteNav}").scrollTop = +(sessionStorage.getItem("menu-scroll-position") || 0)`}
+script --
+  addEventListener(
+    "beforeunload",
+    () => {
+      sessionStorage.setItem("menu-scroll-position", $nav().scrollTop + "");
+    },
+    {
+      signal: $signal,
+    },
+  );

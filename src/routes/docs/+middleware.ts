@@ -8,6 +8,7 @@ interface GithubProfile {
   url: string;
   photo: string;
   username: string;
+  contributions: number;
 }
 
 export default ((ctx) => {
@@ -29,13 +30,20 @@ export default ((ctx) => {
       }
       for (const contribution of await res.json()) {
         const author = contribution.author || contribution.commit.author;
-        contributors[author.login] ??= {
-          username: author.login,
-          photo: author.avatar_url,
-          url: author.html_url,
-        };
+        if (contributors[author.login]) {
+          contributors[author.login].contributions++;
+        } else {
+          contributors[author.login] = {
+            username: author.login,
+            photo: author.avatar_url,
+            url: author.html_url,
+            contributions: 1,
+          };
+        }
       }
-      return Object.values(contributors);
+      return Object.values(contributors).sort(
+        (a, b) => b.contributions - a.contributions,
+      );
     })
     .catch((e) => {
       return [];
