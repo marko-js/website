@@ -11,29 +11,56 @@ Marko's key features include:
 - Zero-JS-by-default with sub-component partial hydration
 
 ## Full Documentation
-- [Reference Documentation](/docs/reference-full.md): Official documentation site for Marko
+- [Reference Documentation](/docs/reference-full.md): Complete reference documentation
 
-## Reference Documentation
+## Introduction
 
-- [Why Choose Marko](/docs/explanation/why-marko.md): Performance benefits, developer experience, and core principles
-- [Language Reference](/docs/reference/language.md): Complete language syntax and features documentation
-- [Core Tags](/docs/reference/core-tag.md): Built-in Marko tags and their functionality
-- [Native Tags](/docs/reference/native-tag.md): How HTML tags work in Marko
-- [Custom Tags](/docs/reference/custom-tag.md): Creating and using custom components
-- [Reactivity](/docs/reference/reactivity.md): Understanding Marko's reactive system
-- [TypeScript Support](/docs/reference/typescript.md): Using TypeScript with Marko
-- [Template API](/docs/reference/template.md): API reference for Marko templates
-- [Concise Syntax](/docs/reference/concise-syntax.md): Alternative compact syntax for Marko templates
-- [TypeScript](/docs/reference/typescript.md): Detailed TypeScript setup and configuration
+- [Getting Started](/docs/introduction/getting-started.md): Quick start guide for new projects
+- [Welcome to Marko](/docs/introduction/welcome-to-marko.md): Introduction to the framework
+- [Installation](/docs/introduction/installation.md): Installation and setup
+- [Why Marko](/docs/introduction/why-marko.md): Performance benefits and core principles
+- [Integrations](/docs/introduction/integrations.md): Integration with other tools
+
+## Tutorials
+
+- [Fundamentals](/docs/tutorial/fundamentals.md): Core concepts and syntax
+- [Components and Reactivity](/docs/tutorial/components-and-reactivity.md): Building interactive components
 
 ## Guides
 
-- [Getting Started](/docs/introduction/getting-started.md): Quick start guide for new projects
-- [Styling](/docs/guide/styling.md): Guide to styling in Marko applications
-- [File-based Routing](/docs/marko-run/file-based-routing.md): How routing works in Marko applications
+- [Styling](/docs/guide/styling.md): Styling in Marko applications
+- [Library Integration](/docs/guide/library-integration.md): Using third-party libraries
+- [Publishing Components](/docs/guide/publishing-components.md): Publishing reusable components
+- [Low-level APIs](/docs/guide/low-level-apis.md): Advanced low-level APIs
+- [Duplicate Form Submissions](/docs/guide/duplicate-form-submissions.md): Preventing duplicate submissions
+- [Marko 5 Interop](/docs/guide/marko-5-interop.md): Interoperability with Marko 5
+
+## Explanation
+
+- [Streaming](/docs/explanation/streaming.md): Streaming server-side rendering
+- [Targeted Compilation](/docs/explanation/targeted-compilation.md): Compilation strategy
+- [Fine-grained Bundling](/docs/explanation/fine-grained-bundling.md): Automatic code splitting
+- [Separation of Concerns](/docs/explanation/separation-of-concerns.md): Architectural patterns
+- [Controllable Components](/docs/explanation/controllable-components.md): Controllable component patterns
+- [Nested Reactivity](/docs/explanation/nested-reactivity.md): Nested reactive data
+- [Immutable State](/docs/explanation/immutable-state.md): Immutability in reactivity
+- [Serializable State](/docs/explanation/serializable-state.md): State serialization
+- [Let vs Const](/docs/explanation/let-vs-const.md): Reactive declarations
+- [Optimizing Performance](/docs/explanation/optimizing-performance.md): Performance optimization
+
+## Reference
+
+- [Language](/docs/reference/language.md): Complete language syntax and features
+- [Custom Tags](/docs/reference/custom-tag.md): Creating custom components
+- [Reactivity](/docs/reference/reactivity.md): Reactive system API
+- [Core Tags](/docs/reference/core-tag.md): Built-in Marko tags
+- [Native Tags](/docs/reference/native-tag.md): HTML tags in Marko
+- [TypeScript](/docs/reference/typescript.md): TypeScript integration
+- [Concise Syntax](/docs/reference/concise-syntax.md): Alternative compact syntax
+- [Template API](/docs/reference/template.md): Template rendering API
 
 ## Marko Run
 
-- [Getting Started](/docs/run/getting-started.md): Quick start guide for Marko Run
-- [File-based Routing](/docs/run/file-based-routing.md): How routing works in Marko Run
-- [Concise Syntax](/docs/run/typescript.md): Using TypeScript with Marko Run
+- [Getting Started](/docs/marko-run/getting-started.md): Quick start for Marko Run
+- [File-based Routing](/docs/marko-run/file-based-routing.md): Routing in Marko Run
+- [TypeScript](/docs/marko-run/typescript.md): TypeScript with Marko Run
