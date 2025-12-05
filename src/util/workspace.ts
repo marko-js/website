@@ -144,7 +144,9 @@ export async function update(
         toAssetURL(
           file,
           "application/javascript",
-          code + "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" + getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+          code +
+            "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" +
+            getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
         ),
         {
           name: file,

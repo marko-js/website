@@ -6,10 +6,14 @@ script --
   document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
 
 header#header
-  a title="Home" href="/" id=styles.logo onContextMenu(e) {
-    e.preventDefault();
-    window.location.href = "/brand";
-  }
+  a
+    ,title="Home"
+    ,href="/"
+    ,id=styles.logo
+    ,onContextMenu(e) {
+      e.preventDefault();
+      window.location.href = "/brand";
+    }
     picture
       source srcset="/assets/logo.svg#dark" media="(prefers-color-scheme:dark)"
       img alt="Marko Logo" src="/assets/logo.svg"
@@ -42,10 +46,10 @@ script --
     const docsearch = (await import("./docsearch")).default;
     docsearch({
       container: document.getElementById(styles.docsearch)!,
-      indexName: 'markojs',
+      indexName: "markojs",
       placeholder: "",
-      appId: 'GB0QQV5RQM',
-      apiKey: '82f1b630f11e1afa4767f051af953a28',
+      appId: "GB0QQV5RQM",
+      apiKey: "82f1b630f11e1afa4767f051af953a28",
     });
   });
 static function onLoad(cb: () => void) {

@@ -1,7 +1,6 @@
 import * as text from "app/styles/text.module.scss";
 import * as colors from "app/styles/section-colors.module.scss";
 import * as styles from "./+page.style.module.scss";
-
 static interface AssetInput {
   title: string;
   colorScheme?: "light" | "dark";
@@ -50,58 +49,66 @@ section#logo class=colors.blueSection
       -- Logo for light backgrounds
   a href="/assets/logos.zip" download class=styles.downloadButton
     span -- Download All
-
 static interface Widget {
   name: string;
   color: "blue" | "green" | "yellow" | "red" | "gray";
   description: string;
 }
 static const widgets: Widget[] = [
-  { 
-    name: "doc", 
-    color: "blue", 
-    description: "The brainiac of the bunch! Always wears glasses, always has the answer, and probably corrected your syntax before you even saved the file." 
+  {
+    name: "doc",
+    color: "blue",
+    description:
+      "The brainiac of the bunch! Always wears glasses, always has the answer, and probably corrected your syntax before you even saved the file.",
   },
-  { 
-    name: "leak", 
-    color: "blue", 
-    description: "A little emotional and prone to memory lapses. Always crying over unclosed tags and lost data. Keep a tissue and a garbage collector nearby!" 
+  {
+    name: "leak",
+    color: "blue",
+    description:
+      "A little emotional and prone to memory lapses. Always crying over unclosed tags and lost data. Keep a tissue and a garbage collector nearby!",
   },
-  { 
-    name: "button", 
-    color: "green", 
-    description: "Click-happy and full of energy. Loves being pushed and lights up whenever someone takes action. Just don't double-click too hard." 
+  {
+    name: "button",
+    color: "green",
+    description:
+      "Click-happy and full of energy. Loves being pushed and lights up whenever someone takes action. Just don't double-click too hard.",
   },
-  { 
-    name: "link", 
-    color: "yellow", 
-    description: "A nomadic eccentric who carries a magic wand for CSS animations. Forever guiding friends to new adventures (and sometimes 404s)." 
+  {
+    name: "link",
+    color: "yellow",
+    description:
+      "A nomadic eccentric who carries a magic wand for CSS animations. Forever guiding friends to new adventures (and sometimes 404s).",
   },
-  { 
-    name: "pixel", 
-    color: "yellow", 
-    description: "Sparkly-eyed and full of creative magic, Pixel adds the finishing flair to every page. Lives for crisp borders and perfect drop shadows." 
+  {
+    name: "pixel",
+    color: "yellow",
+    description:
+      "Sparkly-eyed and full of creative magic, Pixel adds the finishing flair to every page. Lives for crisp borders and perfect drop shadows.",
   },
-  { 
-    name: "fetch", 
-    color: "green", 
-    description: "The speedy one! Fetch loves bringing back whatever you ask for—JSON, HTML, or the occasional surprise 500 error. Loyal but sometimes a little too fast." 
+  {
+    name: "fetch",
+    color: "green",
+    description:
+      "The speedy one! Fetch loves bringing back whatever you ask for—JSON, HTML, or the occasional surprise 500 error. Loyal but sometimes a little too fast.",
   },
-  { 
-    name: "cookie", 
-    color: "red", 
-    description: "Sweet and lovable, but dangerously clingy. Cookie remembers everything about you, especially the things you thought you cleared." 
+  {
+    name: "cookie",
+    color: "red",
+    description:
+      "Sweet and lovable, but dangerously clingy. Cookie remembers everything about you, especially the things you thought you cleared.",
   },
-  { 
-    name: "throw", 
-    color: "red", 
-    description: 'Fiery and dramatic, Throw never misses a chance to make a scene. Loves shouting "Error!" and rocking a villainous mustache while doing it.' 
+  {
+    name: "throw",
+    color: "red",
+    description:
+      'Fiery and dramatic, Throw never misses a chance to make a scene. Loves shouting "Error!" and rocking a villainous mustache while doing it.',
   },
-  { 
-    name: "crash", 
-    color: "gray", 
-    description: "Perpetually dizzy with stars spinning overhead. Crashes the app in style, then wakes up pretending nothing happened." 
-  }
+  {
+    name: "crash",
+    color: "gray",
+    description:
+      "Perpetually dizzy with stars spinning overhead. Crashes the app in style, then wakes up pretending nothing happened.",
+  },
 ];
 
 section#widgets class=colors.greenSection
@@ -110,7 +117,7 @@ section#widgets class=colors.greenSection
   let/_selected=0
   let/selected=_selected valueChange(v) {
     _selected = ((v % 9) + 9) % 9;
-    [...$btn][_selected]().focus()
+    [...$btn][_selected]().focus();
   }
   id/tabId
   div class=styles.widgetTabs
@@ -154,7 +161,8 @@ section#widgets class=colors.greenSection
           ,src=`/assets/widget/${widget.name}-legs.svg`
           ,alt=`The "${widget.name}" widget, a puzzle piece with legs`
         article
-          strong -- ${widget.name.charAt(0).toUpperCase() + widget.name.slice(1)}
+          strong --
+            ${widget.name.charAt(0).toUpperCase() + widget.name.slice(1)}
           p -- ${widget.description}
 
           strong -- Head Only
