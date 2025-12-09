@@ -28,7 +28,7 @@ Consider this template:
 <button onClick() { quantity++ }>+</button>
 ```
 
-When this `<listing>` component is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else
+When this `<listing>` component is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else is static and requires no client-side code.
 
 Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the expression level. Within a single component, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity means architectural decisions can focus on maintainability rather than bundle optimization.
 
@@ -46,6 +46,9 @@ Compared to frameworks that use virtual DOM, Marko has a significant advantage f
 2. Second pass to serialize the virtual DOM tree to an HTML string that can be sent over the wire
 
 In contrast, Marko renders directly to an HTML stream in a single pass. There is no intermediate tree data structure. The server compilation of a Marko application is essentially a series of string concatenations that build up an HTML document. A server render requires no DOM representation.
+
+> [!TIP]
+> This single-pass rendering eliminates the memory overhead of building an intermediate tree structure, making Marko particularly efficient for server-side rendering at scale.
 
 ### Client Compilation
 
@@ -74,6 +77,9 @@ Marko supports HTML streaming, allowing content to be sent to the browser as soo
 ```
 
 Marko flushes the heading and overview immediately. When `fetchRecommendations()` resolves, the recommendations section streams to the client. The browser starts parsing and rendering content, downloading CSS and other resources before the full HTML arrives.
+
+> [!NOTE]
+> The browser begins rendering immediately as content arrives, rather than waiting for the complete HTML document. This improves perceived performance, especially for pages with slow data dependencies.
 
 Marko has supported streaming [since 2014](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/), predating React Server Components by nearly a decade. See [HTML Streaming](./streaming.md) for more details.
 
