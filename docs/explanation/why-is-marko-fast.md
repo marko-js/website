@@ -64,7 +64,7 @@ Marko flushes the heading and main section immediately. When `fetchRecommendatio
 > [!NOTE]
 > The browser begins rendering immediately as content arrives, rather than waiting for the complete HTML document. This improves perceived performance, especially for pages with slow data dependencies.
 
-Marko has supported streaming [since 2014](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/), predating React Server Components by nearly a decade. See [HTML Streaming](./streaming.md) for more details.
+Marko has supported streaming [since 2013](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/), predating other frontend frameworks by nearly a decade. See [HTML Streaming](./streaming.md) for more details.
 
 ## JS Scales from Zero
 
