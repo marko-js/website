@@ -68,7 +68,11 @@ Marko has supported streaming [since 2014](https://innovation.ebayinc.com/storie
 
 ## JS Scales from Zero
 
-A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript, _even when it is in the same component as interactive content_.
+A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript _even when it is in the same component as interactive content_, and work that happens on the server is never re-executed by browser JS unless necessary.
+
+### Fine-Grained Bundling
+
+Marko's compiler looks at each component and determines which _parts_ of it will update after state changes on the client.
 
 ```marko
 /* listing.marko */
@@ -91,6 +95,12 @@ When this `<listing>` component is rendered in a server context, the _only_ Java
 Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the _expression level_. Within a single component, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity helps to significantly reduce the amount of static content that ends up in the client bundle.
 
 See [Fine-Grained Bundling](./fine-grained-bundling.md) for more details.
+
+### Resumability
+
+Most frameworks with SSR will _re-execute_ portions of the application on the client after HTML has been sent from the server in a process called [hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)). Not only does this process require that work is doubled (once on the server and once on the client), but it also necessitates that client rendering logic is included for each interactive component.
+
+Marko's client-side code doesn't re-render components during initialization. Instead it hooks up event listeners, deserializes stateful data, and determines which DOM nodes it will need to update once state changes. Notably, state is _not_ re-created by client-side JavaScript.
 
 ## Tree-Shakeable Runtime
 
