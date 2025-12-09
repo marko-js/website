@@ -6,39 +6,13 @@
 > - First-class HTML streaming capabilities
 > - Compile-time reactivity
 
-Marko is heavily optimized for small bundles, fast server renders, and efficient client updates. Independent benchmarks show Marko Run generating [far smaller bundles than similar frameworks](https://www.lorenstew.art/blog/10-kanban-boards), and Marko has [topped the charts](https://github.com/BuilderIO/framework-benchmarks?tab=readme-ov-file#ssr-times) on [JS framework SSR comparisons](https://github.com/eknkc/ssr-benchmark?tab=readme-ov-file#renderers) for [nearly a decade](https://github.com/raxjs/server-side-rendering-comparison?tab=readme-ov-file). These wins are fueled by Marko's _obsession_ with bundle size and performance, both in micro-optimizations and larger architectural decisions.
+Marko is heavily optimized for small bundles, fast server renders, and efficient client updates. Independent benchmarks show Marko generating [far smaller bundles than similar frameworks](https://www.lorenstew.art/blog/10-kanban-boards), and Marko has [topped the charts](https://github.com/BuilderIO/framework-benchmarks?tab=readme-ov-file#ssr-times) on [JS framework SSR comparisons](https://github.com/eknkc/ssr-benchmark?tab=readme-ov-file#renderers) for [nearly a decade](https://github.com/raxjs/server-side-rendering-comparison?tab=readme-ov-file). These wins are fueled by Marko's _obsession_ with bundle size and performance, both in micro-optimizations and larger architectural decisions.
 
 This article focuses on the details of optimizations applied to Marko, rather than comparing benchmark numbers. Our mission is to move as much complexity as we can out of your code and into the compiler, and we've come a long way since the first version of this page [in 2017](https://medium.com/hackernoon/why-is-marko-fast-a20796cb8ae3)!
 
-## Zero JS by Default
-
-A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript, _even when it is in the same component as interactive content_.
-
-```marko
-/* listing.marko */
-export interface Input {
-  product: Marko.AttrTag<{ name: string; content: Marko.Body; price: number }>
-}
-
-<h1>${input.product.name}</h1>
-<p>${input.product.description}</p>
-<div>Price: $${input.product.price}</div>
-
-<let/quantity=1>
-<button onClick() { quantity-- }>-</button>
-<span>${quantity}</span>
-<button onClick() { quantity++ }>+</button>
-```
-
-When this `<listing>` component is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else is static and requires no client-side code.
-
-Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the _expression level_. Within a single component, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity helps to significantly reduce the amount of static content that ends up in the client bundle.
-
-See [Fine-Grained Bundling](./fine-grained-bundling.md) for more details.
-
 ## Targeted Compilation
 
-Marko compiles templates twice: once for the server, and once for the browser. Each compilation produces code optimized for its specific environment. To get a feel for this, visit [our playground](/playground) and select "Client JS" or "Server JS" in the preview menu.
+The Marko compiler produces two outputs: one for the server, and one for the browser. Each compilation produces code optimized for its specific environment. To get a feel for this, visit [our playground](/playground) and select "Client JS" or "Server JS" in the preview menu.
 
 ### Server Compilation
 
@@ -91,6 +65,32 @@ Marko flushes the heading and main section immediately. When `fetchRecommendatio
 > The browser begins rendering immediately as content arrives, rather than waiting for the complete HTML document. This improves perceived performance, especially for pages with slow data dependencies.
 
 Marko has supported streaming [since 2014](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/), predating React Server Components by nearly a decade. See [HTML Streaming](./streaming.md) for more details.
+
+## JS Scales from Zero
+
+A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript, _even when it is in the same component as interactive content_.
+
+```marko
+/* listing.marko */
+export interface Input {
+  product: Marko.AttrTag<{ name: string; content: Marko.Body; price: number }>
+}
+
+<h1>${input.product.name}</h1>
+<p>${input.product.description}</p>
+<div>Price: $${input.product.price}</div>
+
+<let/quantity=1>
+<button onClick() { quantity-- }>-</button>
+<span>${quantity}</span>
+<button onClick() { quantity++ }>+</button>
+```
+
+When this `<listing>` component is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else is static and requires no client-side code.
+
+Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the _expression level_. Within a single component, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity helps to significantly reduce the amount of static content that ends up in the client bundle.
+
+See [Fine-Grained Bundling](./fine-grained-bundling.md) for more details.
 
 ## Tree-Shakeable Runtime
 
