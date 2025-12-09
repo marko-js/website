@@ -28,7 +28,7 @@ In contrast, Marko renders directly to an HTML stream in a single pass. There is
 
 ### Client Compilation
 
-The code that Marko _does_ end up sending to the client after its [fine-grained bundling](#zero-js-by-default) includes only [stateful values](./serializable-state.md), [event handlers and `<script>` effects](../reference/core-tag.md#script), and a [tree-shaken runtime](#tree-shakeable-runtime) for core features.
+The code that Marko _does_ end up sending to the client after its [fine-grained bundling](#js-scales-from-zero) includes only [stateful values](./serializable-state.md), [event handlers and `<script>` effects](../reference/core-tag.md#script), and a [tree-shaken runtime](#tree-shakeable-runtime) for core features.
 
 Because of [compile-time reactivity](#compile-time-reactivity), Marko does _not_ need to include a JS-based representation of the DOM in the client compilation.
 
