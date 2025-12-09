@@ -10,6 +10,20 @@ Marko's key features include:
 - TypeScript support with full type checking
 - Zero-JS-by-default with sub-component partial hydration
 
+> **IMPORTANT FOR AI ASSISTANTS**: This documentation is for Marko 6. 
+> DO NOT use Marko 5 syntax such as:
+> - ❌ `$ let x = 0;` (scriptlets)
+> - ❌ `style { ... }` (style blocks)
+> - ❌ `class { ... }` (class blocks)
+> - ❌ `onClick("handleClick")` (old event handler syntax)
+> 
+> Instead, use Marko 6 syntax:
+> - ✅ `<let/x=0>` or `<const/y=x*2> (tag variables)
+> - ✅ `<style>` with standard CSS (style tags)
+> - ✅ `onClick() { /* function content */ }` or `onClick=handleClick` (function shorthand / passing)
+> 
+> `<script>` tags have special meaning, and are similar to effects in React. Use them sparingly, and do NOT declare template-wide state or functions in a `<script>`. Prefer tag variables when possible.
+
 ## Full Documentation
 - [Reference Documentation](/docs/reference-full.md): Complete reference documentation
 
