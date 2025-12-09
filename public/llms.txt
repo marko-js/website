@@ -37,6 +37,7 @@ Marko's key features include:
 
 ## Explanation
 
+- [Why is Marko Fast?](/docs/explanation/why-is-marko-fast.md): Architectural performance characteristics
 - [Streaming](/docs/explanation/streaming.md): Streaming server-side rendering
 - [Targeted Compilation](/docs/explanation/targeted-compilation.md): Compilation strategy
 - [Fine-grained Bundling](/docs/explanation/fine-grained-bundling.md): Automatic code splitting
