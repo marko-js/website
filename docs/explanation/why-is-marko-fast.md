@@ -6,7 +6,7 @@
 > - First-class HTML streaming capabilities
 > - Compile-time reactivity
 
-Marko is heavily optimized for small bundles, fast server renders, and efficient client updates. Independent benchmarks show Marko generating [far smaller bundles than similar frameworks](https://www.lorenstew.art/blog/10-kanban-boards), and Marko has [topped the charts](https://github.com/BuilderIO/framework-benchmarks?tab=readme-ov-file#ssr-times) on [JS framework SSR comparisons](https://github.com/eknkc/ssr-benchmark?tab=readme-ov-file#renderers) for [nearly a decade](https://github.com/raxjs/server-side-rendering-comparison?tab=readme-ov-file). These wins are fueled by Marko's _obsession_ with bundle size and performance, both in micro-optimizations and larger architectural decisions.
+Marko is heavily optimized for small bundles, fast server renders, and [efficient client updates](https://github.com/krausest/js-framework-benchmark). Independent benchmarks show Marko generating [far smaller bundles than similar frameworks](https://www.lorenstew.art/blog/10-kanban-boards), and Marko has [topped the charts](https://github.com/BuilderIO/framework-benchmarks?tab=readme-ov-file#ssr-times) on [JS framework SSR comparisons](https://github.com/eknkc/ssr-benchmark?tab=readme-ov-file#renderers) for [nearly a decade](https://github.com/raxjs/server-side-rendering-comparison?tab=readme-ov-file). These wins are fueled by Marko's _obsession_ with bundle size and performance, both in micro-optimizations and larger architectural decisions.
 
 This article focuses on the details of optimizations applied to Marko, rather than comparing benchmark numbers. Our mission is to move as much complexity as we can out of your code and into the compiler, and we've come a long way since the first version of this page [in 2017](https://medium.com/hackernoon/why-is-marko-fast-a20796cb8ae3)!
 
@@ -106,22 +106,21 @@ Marko's client-side code doesn't re-render components during initialization. Ins
 
 The Marko runtime is not distributed as a single JavaScript file. The compiler generates code that imports only the specific runtime helpers needed by each template.
 
-Consider this template with a dynamic style attribute:
-
 ```marko
+/* template.marko */
 <let/color="red">
 <div style={ "background-color": color }>
   Content
 </div>
 ```
 
-The compiled code imports a style helper to handle the object-to-CSS conversion:
+The compiled code imports a helper for applying the style:
 
 ```js
-/* compiled-template.marko */
-import { styleAttr } from "marko/runtime/dom/helpers";
+/* compiled-template.js */
+import { _attr_style_item } from "marko/dom";
 
-// ... template code that uses styleAttr
+// ...rest of compiled output
 ```
 
 Templates only import the helpers they use, and bundlers tree-shake the rest. This means if a Marko feature isn't used in an app, no code for it is included in the bundle.
@@ -138,6 +137,14 @@ Reactivity analysis happens entirely at compile time:
 ```
 
 Before generating runtime code, the compiler determines that `count` is mutable state, `doubled` depends on `count`, and the text nodes in the button depend on `count` and `doubled`. When `count` changes, the runtime executes a pre-computed sequence: recalculate `doubled`, and update two text nodes inside the button. No dependency tracking happens at runtime.
+
+## What is a Fast Framework?
+
+A fast framework needs more than performance optimizations. The wins in this page mean little if developers write inefficient code or create request waterfalls. A truly fast framework provides a language design that guides developers toward efficient patterns by default.
+
+Marko is a performance [pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/). HTML streaming is built in and works naturally with async operations, static content remains static without manual optimization, and reactivity happens at compile time. The framework handles these concerns automatically when developers write straightforward component code.
+
+Over 12 years of development, Marko has accumulated lessons about what matters for real-world performance and evolved accordingly. These architectural decisions, combined with hundreds of smaller optimizations, make Marko the fastest SSR framework with the smallest client bundles and an effective tool for building efficient websites.
 
 ## Further Reading
 
