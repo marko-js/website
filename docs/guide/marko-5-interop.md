@@ -35,7 +35,7 @@ Files can be explicitly marked to use a specific API with a comment. Any comment
 ```
 
 > [!TIP]
-> These explicit opt-ins are only necessary if a `.marko` file _isn't_ an [auto-discovered tag](#components-vs-tags) and its contents are ambiguous (i. e. none of the following heuristics apply) so in practice they are rarely needed except for sometimes in [Marko Run](../marko-run/file-based-routing.md)'s `+page.marko` and `+layout.marko`.
+> These explicit opt-ins are only necessary if a `.marko` file _isn't_ an [auto-discovered tag](#directory-name) and its contents are ambiguous (i. e. none of the following heuristics apply) so in practice they are rarely needed except for sometimes in [Marko Run](../marko-run/file-based-routing.md)'s `+page.marko` and `+layout.marko`.
 
 ### Class API Syntax
 
