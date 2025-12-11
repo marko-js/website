@@ -6,12 +6,10 @@ Custom Tags in Marko allow for reusing markup across the application.
 
 When you use a `<Tag>` in Marko it is resolved in the following order:
 
-- [Custom Tag Discovery](#custom-tag-discovery)
-  - [Priority](#priority)
-  - [Local Variable Custom Tags](#local-variable-custom-tags)
-  - [Relative Custom Tags](#relative-custom-tags)
-  - [Installed Custom Tags](#installed-custom-tags)
-  - [Supporting Files](#supporting-files)
+- [Local Variable Custom Tags](#local-variable-custom-tags) <!-- this isn't a table of contents, prettier 😠 -->
+- [Relative Custom Tags](#relative-custom-tags)
+- [Installed Custom Tags](#installed-custom-tags)
+- [Supporting Files](#supporting-files)
 
 ## Local Variable Custom Tags
 
@@ -82,7 +80,10 @@ And the file `pages/about/page.marko` can resolve:
 - `<app-footer>`
 - `<team-members>`
 
-The `home` page can't resolve `<team-members>` and the `about` page can't resolve `<home-banner>`. By using nested `tag/` directories, we've scoped our page-specific tags to their respective pages.
+The `home` page can't resolve `<team-members>` and the `about` page can't resolve `<home-banner>`. By using nested `tags/` directories, we've scoped our page-specific tags to their respective pages.
+
+> [!NOTE]
+> In previous versions, relative tags were discovered in `components/` directories instead of `tags/`. These directories are now used as a heuristic for [runtime interoperability](../guide/marko-5-interop.md).
 
 ## Installed Custom Tags
 
