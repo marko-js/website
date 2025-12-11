@@ -18,37 +18,10 @@ The Marko 5 compiler uses a set of heuristics to determine which runtime a templ
 
 ### Directory Name
 
-In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. All `.marko` files in `/components` **must** use the Class API, and `.marko` files in `/tags` must use the Tags API.
+In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. Tags under `/components` are ambiguous so the following heuristics are considered, but tags under `/tags` **must** use the Tags API.
 
-- `components/*.marko` → `marko@5`
-- `tags/*.marko` → `marko@6`
-
-### Exclusive Tag Library
-
-If a file is otherwise ambiguous but _all_ tags found by the [tag discovery mechanism](../reference/custom-tag.md#relative-custom-tags) are in a `tags/` directory and no `components/` directories are discovered, the file is opted into Tags API.
-
-All ambiguous files here use the tags API, because there are no `components/`.
-
-```
-src/
-  +page.marko // Tags API
-  tags/
-    some-tag.marko
-```
-
-Even _one_ `components/` directory will default all ambiguous files to prefer Class API if there are no [`// use tags` comments](#-use-api) or [tag syntax heuristics](#tags-api-syntax).
-
-```
-src/
-  components/
-    some-component.marko
-  some-page/
-    +page.marko // Class API
-    tags/
-      another-tag.marko
-  tags/
-    some-tag.marko
-```
+- `components/*.marko` → fall back to `marko@5`
+- `tags/*.marko` → **force** `marko@6`
 
 ### `use [api]` comments
 
@@ -91,4 +64,31 @@ If an otherwise ambiguous file contains any of the following syntax, it is detec
 ```marko
 <let/count=0>
 <button onClick() { count++ }>${count}</button>
+```
+
+### Exclusive Tag Library
+
+If a file is otherwise ambiguous but _all_ tags found by the [tag discovery mechanism](../reference/custom-tag.md#relative-custom-tags) are in a `tags/` directory and no `components/` directories are discovered, the file falls back into Tags API.
+
+All ambiguous files here use the tags API, because there are no `components/`.
+
+```
+src/
+  +page.marko // Tags API
+  tags/
+    some-tag.marko
+```
+
+Even _one_ `components/` directory will default all ambiguous files to prefer Class API if there are no [`// use tags` comments](#-use-api) or [tag syntax heuristics](#tags-api-syntax).
+
+```
+src/
+  components/
+    some-component.marko
+  some-page/
+    +page.marko // Class API
+    tags/
+      another-tag.marko
+  tags/
+    some-tag.marko
 ```
