@@ -47,7 +47,7 @@ Marko's key features include:
 - [Publishing Components](/docs/guide/publishing-components.md): Publishing reusable components
 - [Low-level APIs](/docs/guide/low-level-apis.md): Advanced low-level APIs
 - [Duplicate Form Submissions](/docs/guide/duplicate-form-submissions.md): Preventing duplicate submissions
-- [Marko 5 Interop](/docs/guide/marko-5-interop.md): Interoperability with Marko 5
+- [Using Multiple Marko Versions](/docs/guide/marko-5-interop.md): Interoperability with Marko 5
 
 ## Explanation
 
