@@ -18,10 +18,7 @@ The Marko 5 compiler uses a set of heuristics to determine which runtime a templ
 
 ### Directory Name
 
-In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. Tags under `/components` are ambiguous so the following heuristics are considered, but tags under `/tags` **must** use the Tags API.
-
-- `components/*.marko` → fall back to `marko@5`
-- `tags/*.marko` → **force** `marko@6`
+In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. Since `/tags` is new to Marko 6, `.marko` files under `/tags` **must** use the Tags API.
 
 ### `use [api]` comments
 
