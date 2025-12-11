@@ -22,7 +22,7 @@ In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.
 
 ### Comment Opt-In
 
-Files can be explicitly marked to use a specific API with a comment. Any comment type is acceptable, and the comment can be anywhere in the file.
+Files can be explicitly marked to use a specific API with a `/* use [api] */`comment. Any comment type is acceptable, and the comment can be anywhere in the file.
 
 ```marko
 // use class
