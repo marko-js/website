@@ -20,7 +20,7 @@ The Marko 5 compiler uses a set of heuristics to determine which runtime a templ
 
 In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. Since `/tags` is new to Marko 6, `.marko` files under `/tags` **must** use the Tags API.
 
-### `use [api]` comments
+### Comment Opt-In
 
 Files can be explicitly marked to use a specific API with a comment. Any comment type is acceptable, and the comment can be anywhere in the file.
 
