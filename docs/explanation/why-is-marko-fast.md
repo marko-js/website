@@ -23,7 +23,7 @@ Compared to frameworks that use virtual DOM, Marko has a significant advantage f
 
 In contrast, Marko renders directly to an HTML stream in a single pass. There is no intermediate tree data structure. The server compilation of a Marko application is essentially a series of string concatenations that build up an HTML document, and server render requires no DOM representation.
 
-> [!TIP]
+> [!NOTE]
 > This single-pass approach naturally enables [HTML streaming](#html-streaming), allowing content to be sent to the browser progressively as it's rendered.
 
 ### Client Compilation
@@ -31,6 +31,10 @@ In contrast, Marko renders directly to an HTML stream in a single pass. There is
 The code that Marko _does_ end up sending to the client after its [fine-grained bundling](#js-scales-from-zero) includes only [stateful values](./serializable-state.md), [event handlers and `<script>` effects](../reference/core-tag.md#script), and a [tree-shaken runtime](#tree-shakeable-runtime) for core features.
 
 Because of [compile-time reactivity](#compile-time-reactivity), Marko does _not_ need to include a JS-based representation of the DOM in the client compilation.
+
+### Runtime Coordination
+
+Each runtime is optimized for server-client handoff. When the server renders a template, it embeds comment markers and [serialized state](./serializable-state.md) directly in the HTML output. The client compilation includes information about where to look for these markers and how to deserialize the state, allowing it to [resume execution](#resumability) without re-executing work that was done on the server.
 
 Read more about this in [Targeted Compilation](./targeted-compilation.md).
 
@@ -61,18 +65,18 @@ export interface Input {
 
 Marko flushes the heading and main section immediately. When `fetchRecommendations()` resolves, the recommendations section streams to the client.
 
-> [!NOTE]
+> [!TIP]
 > The browser begins rendering immediately as content arrives, rather than waiting for the complete HTML document. This improves perceived performance, especially for pages with slow data dependencies.
 
 Marko has supported streaming [since 2013](https://innovation.ebayinc.com/stories/async-fragments-rediscovering-progressive-html-rendering-with-marko/), predating other frontend frameworks by nearly a decade. See [HTML Streaming](./streaming.md) for more details.
 
 ## JS Scales from Zero
 
-A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript _even when it is in the same component as interactive content_, and work that happens on the server is never re-executed by browser JS unless necessary.
+A key difference between Marko 6 and other frameworks is what it doesn't need to include in the client bundle. Static content compiles to zero client-side JavaScript _even when it is in the same template as interactive content_, and work that happens on the server is never re-executed by browser JS unless necessary.
 
 ### Fine-Grained Bundling
 
-Marko's compiler looks at each component and determines which _parts_ of it will update after state changes on the client.
+Marko's compiler looks at each template and determines which _parts_ of it will update after state changes on the client.
 
 ```marko
 /* listing.marko */
@@ -90,17 +94,17 @@ export interface Input {
 <button onClick() { quantity++ }>+</button>
 ```
 
-When this `<listing>` component is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else is static and requires no client-side code.
+When this `<listing>` tag is rendered in a server context, the _only_ JavaScript sent to the browser is an event listener for each button and the logic for updating text in the `<span>`. Since Marko analyzes the entire codebase at compile time, it is able to determine that everything else is static and requires no client-side code.
 
-Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the _expression level_. Within a single component, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity helps to significantly reduce the amount of static content that ends up in the client bundle.
+Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to achieve similar results. Islands operate at component boundaries, but Marko analyzes at the _expression level_. Within a single template, static expressions generate no JavaScript while interactive expressions generate targeted update code. This granularity helps to significantly reduce the amount of static content that ends up in the client bundle.
 
 See [Fine-Grained Bundling](./fine-grained-bundling.md) for more details.
 
 ### Resumability
 
-Most frameworks with SSR will _re-execute_ portions of the application on the client after HTML has been sent from the server in a process called [hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)). Not only does this process require that work is doubled (once on the server and once on the client), but it also necessitates that client rendering logic is included for each interactive component.
+Most frameworks with SSR will _re-execute_ portions of the application on the client after HTML has been sent from the server in a process called [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>). Not only does this process require that work is doubled (once on the server and once on the client), but it also necessitates that client rendering logic is included for each interactive component.
 
-Marko's client-side code doesn't re-render components during initialization. Instead it hooks up event listeners, deserializes stateful data, and determines which DOM nodes it will need to update once state changes. Notably, state is _not_ re-created by client-side JavaScript.
+Marko's client-side code doesn't re-render templates during initialization. Instead it hooks up event listeners, deserializes stateful data, and determines which DOM nodes it will need to update once state changes. Notably, state is _not_ re-created by client-side JavaScript.
 
 ## Tree-Shakeable Runtime
 
