@@ -1,6 +1,7 @@
 # Why is Marko Fast?
 
 > [!TLDR]
+>
 > - Zero-JS by default with fine-grained bundling
 > - Targeted compilation for server and client
 > - First-class HTML streaming capabilities

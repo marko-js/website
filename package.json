@@ -17,7 +17,11 @@
     "deploy": "marko-run build && gh-pages --cname markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
+    "lint": "markdownlint \"docs/**/*.md\"",
     "preview": "marko-run preview"
+  },
+  "dependencies": {
+    "@ebay/browserslist-config": "^2.13.0"
   },
   "devDependencies": {
     "@codemirror/autocomplete": "^6.20.0",
@@ -48,6 +52,7 @@
     "hastscript": "^9.0.1",
     "lightningcss-wasm": "^1.31.1",
     "lz-string": "^1.5.0",
+    "markdownlint-cli": "^0.45.0",
     "marked": "^17.0.3",
     "marko": "^6.0.147",
     "path": "./shim/path",
@@ -66,8 +71,5 @@
     "util": "./shim/util",
     "vite-css-modules": "^1.13.0",
     "writable-dom": "^1.0.6"
-  },
-  "dependencies": {
-    "@ebay/browserslist-config": "^2.13.0"
   }
 }

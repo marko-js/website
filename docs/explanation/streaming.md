@@ -141,7 +141,7 @@ Even though streaming has been supported on the web for decades and more tools a
 
 Most of NGiNX’s relevant parameters are inside [its builtin `http_proxy` module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering):
 
-```
+```sh
 proxy_http_version 1.1; # 1.0 by default
 proxy_buffering off; # on by default
 ```
@@ -170,7 +170,7 @@ For Fastly or another provider that uses VCL configuration, check [if backend re
 
 Some [Akamai features designed to mitigate slow backends can ironically slow down fast chunked responses](https://community.akamai.com/customers/s/question/0D50f00006n975d/enabling-chunked-transfer-encoding-responses). Try toggling off Adaptive Acceleration, Ion, mPulse, Prefetch, and/or similar performance features. Also check for the following in the configuration:
 
-```
+```xml
 <network:http.buffer-response-v2>off</network:http.buffer-response-v2>
 ```
 
