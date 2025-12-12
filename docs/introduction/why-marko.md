@@ -4,7 +4,7 @@ Marko delivers fast, scalable, robust, and maintainable applications without sac
 
 ## Three Problems
 
-Modern web development faces a series of interconnected challenges that have shaped the evolution of frontend frameworks. Understanding these problems is essential to evaluating whether current solutions have overcorrected and created new issues.
+Modern web development faces a series of interconnected challenges that have shaped the evolution of frontend frameworks. Understanding these problems is essential to evaluating whether current solutions have over-corrected and created new issues.
 
 ### HTML Can't Scale
 

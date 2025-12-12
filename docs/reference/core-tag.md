@@ -253,7 +253,7 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 ```marko
 <uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
-<div>${value}</div> // value is always uppercased
+<div>${value}</div> // value is always transformed to uppercase
 ```
 
 ## `<script>`
@@ -554,7 +554,7 @@ This tag also exposes a [tag variable](./language.md#tag-variables) which contai
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common footguns.
+The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common foot guns.
 
 Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
 

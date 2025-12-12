@@ -131,7 +131,7 @@ Even though streaming has been supported on the web for decades and more tools a
 - Make sure the “upstream” HTTP version is 1.1 or higher; HTTP/1.0 and lower do not support streaming.
 - Some software doesn’t support HTTP/2 or higher “upstream” connections at all or very well — if your Node server uses HTTP/2, you may need to downgrade.
 - Check if “upstream” connections are `keep-alive`: overhead from closing and reopening connections may delay responses.
-- For typical modern webpage filesizes, the following bullet points probably won’t matter. But if you want to stream **small chunks of data with the lowest latency**, investigate these sources of buffering:
+- For typical modern webpage file sizes, the following bullet points probably won’t matter. But if you want to stream **small chunks of data with the lowest latency**, investigate these sources of buffering:
   - Automatic gzip/brotli compression may have their buffer sizes set too high; you can tune their buffers to be smaller for faster streaming in exchange for slightly worse compression.
   - You can [tune HTTPS record sizes for lower latency, as described in High Performance Browser Networking](https://hpbn.co/transport-layer-security-tls/#optimize-tls-record-size).
   - Turning off MIME sniffing with [the `X-Content-Type-Options`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options) header eliminates browser buffering at the very beginning of HTTP responses
