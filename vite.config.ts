@@ -11,6 +11,7 @@ export default defineConfig({
         __dirname: "'/'",
         global: "globalThis",
         "process.browser": true,
+        "process.env": {},
         "process.env.BUNDLE": true,
         "process.env.BABEL_TYPES_8_BREAKING": false,
         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),

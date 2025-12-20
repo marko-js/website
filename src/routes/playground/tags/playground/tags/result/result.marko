@@ -163,7 +163,7 @@ div class=styles.result
           ,title="Reload preview"
           ,class=styles.previewControl
           ,onClick() {
-            ($frame as any)().replaceWith(($frame as any)());
+            $frame().replaceWith($frame());
             spinning = true;
           }
           fa-icon=faRotateRight
