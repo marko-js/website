@@ -73,6 +73,10 @@ p {
 ::selection {
   color: var(--section-color-dim-alt, var(--color-red-dim-alt));
   background-color: var(--section-color-alt, var(--color-red-alt));
+  -webkit-text-fill-color: var(
+    --section-color-dim-alt,
+    var(--color-red-dim-alt)
+  );
 }
 
 body {

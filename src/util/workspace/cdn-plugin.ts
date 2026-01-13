@@ -14,7 +14,10 @@ export function cdnPlugin(): Plugin {
       }
 
       if (/^[^\0.\/]/.test(id)) {
-        return { id: `https://esm.sh/${id}`, external: true };
+        return {
+          id: `https://esm.sh/${id}?bundle`,
+          external: true,
+        };
       }
     },
   };
