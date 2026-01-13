@@ -89,8 +89,8 @@ div class=styles.tabs
 
       if (filename) {
         if (!filename.includes(".")) filename += ".marko";
+        selected = tabs.length;
         tabs = [...tabs, { path: filename, content: "" }];
-        selected = tabs.length - 1;
       }
     }
     ,class=styles.add
