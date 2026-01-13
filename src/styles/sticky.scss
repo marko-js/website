@@ -23,7 +23,17 @@ $pageLinksHeight: 3.5rem;
 }
 
 @mixin supported {
+  // On large screens, exclude Safari because of a rendering bug with scaleY
+  @supports (animation-timeline: scroll()) and (not (-webkit-hyphens: none)) {
+    @media (width >= 48rem) and (height >= 38rem) {
+      @content;
+    }
+  }
+
+  // On small screens, include Safari
   @supports (animation-timeline: scroll()) {
-    @content;
+    @media (width < 48rem) or (height < 38rem) {
+      @content;
+    }
   }
 }
