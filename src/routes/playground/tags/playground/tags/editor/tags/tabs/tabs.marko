@@ -1,7 +1,7 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import type { File } from "app/util/workspace";
 import * as styles from "./tabs.style.module.scss";
-import EXAMPLE_TEMPLATES from "./examples"
+import EXAMPLE_TEMPLATES from "./examples";
 export interface Input {
   files: File[];
   filesChange: (files: File[]) => void;
@@ -31,7 +31,7 @@ div class=styles.tabs
             selected = i;
           }
         }
-        ,onKeyPress(e, el) {
+        ,onKeyDown(e, el) {
           if (e.target === el && (e.key === " " || e.key === "Enter")) {
             if (isSelected && !isEditing) {
               editingIndex = i;
@@ -83,7 +83,7 @@ div class=styles.tabs
             -- ×
 
   id/popoverId
-  
+
   button
     ,title="Add file"
     ,popovertarget=popoverId
@@ -105,30 +105,40 @@ div class=styles.tabs
         $popover().hidePopover();
       }
     }
-    
+
     button
       ,role="menuitem"
       ,autofocus
       ,onClick() {
         const newIndex = tabs.length;
-        tabs = [...tabs, { 
-          path: `Tag${tabs.filter(t => /^Tag\d*\.marko$/.test(t.path)).length || ""}.marko`, 
-          content: "" 
-        }];
+        let path = "Tag.marko";
+        for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
+          path = "Tag" + i + ".marko";
+        }
+        tabs = [
+          ...tabs,
+          {
+            path,
+            content: "",
+          },
+        ];
         selected = newIndex;
         editingIndex = newIndex;
       }
       ,class=styles.templateButton
-      -- Blank
-    
-    for|template| of=EXAMPLE_TEMPLATES
-      if=!tabs.some(({ path }) => path === template.name + ".marko")
-        button
-          ,role="menuitem"
-          ,onClick() {
-            selected = tabs.length;
-            tabs = [...tabs, { path: template.name + ".marko", content: template.content }];
-            document.querySelector<HTMLElement>(".cm-content")?.focus();
+      -- New Blank File
+
+    for|{ name, content }| of=EXAMPLE_TEMPLATES
+      button
+        ,role="menuitem"
+        ,onClick() {
+          selected = tabs.length;
+          let path = name + ".marko";
+          for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
+            path = name + "-" + i + ".marko";
           }
-          ,class=styles.templateButton
-          -- ${`<${template.name}>`}
+          tabs = [...tabs, { path, content }];
+          document.querySelector<HTMLElement>(".cm-content")?.focus();
+        }
+        ,class=styles.templateButton
+        -- ${`<${name}>`}

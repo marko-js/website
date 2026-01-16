@@ -38,14 +38,13 @@ export default [
   if (existingValue) {
     internalValue = JSON.parse(existingValue);
   }
-  const handleStorageChange = (e) => {
-    if (e.key === input.key) {
-      internalValue = JSON.parse(e.newValue ?? "");
-    }
-  };
   window.addEventListener(
     "local-storage-update",
-    (e) => handleStorageChange(e.detail),
+    ({ detail }) => {
+      if (detail.key === input.key) {
+        internalValue = JSON.parse(detail.value ?? "null");
+      }
+    },
     {
       signal: $signal,
     },
@@ -59,12 +58,38 @@ export default [
     new CustomEvent("local-storage-update", {
       detail: {
         key: input.key,
-        newValue: stringified,
-        storageArea: localStorage,
+        value: stringified,
       },
     }),
   );
 }>
+`,
+  },
+  {
+    name: "pointer-down",
+    content: `/**
+ * Uses reactive scripts and $signal to wire up document-wide
+ * event listeners with automatic clean-up
+ * 
+ * Example usage:
+ * \`\`\`
+ * <pointer-down/clicking/>
+ * <if=clicking>Clicking!</if>
+ * \`\`\`
+ */
+
+<let/down=false>
+
+<script>
+  document.addEventListener("pointerdown", () => {
+    down = true;
+  }, { signal: $signal });
+  document.addEventListener("pointerup", () => {
+    down = false;
+  }, { signal: $signal });
+</script>
+
+<return=down>
 `,
   },
 ];
