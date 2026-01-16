@@ -43,10 +43,9 @@
   color: var(--color-blue);
   background-color: var(--color-gray-dim);
   align-items: center;
-  border: 1px solid transparent;
+
   &:hover {
     background-color: var(--color-gray-alt-dim);
-    // color: var(--color-gray-dim);
   }
 
   svg {
@@ -54,5 +53,26 @@
     path {
       fill: currentColor;
     }
+  }
+}
+
+.popover {
+  inset: unset;
+  max-width: 95vw;
+  background-color: var(--color-gray-alt-dim);
+  border: 1px solid var(--color-gray-alt);
+  border-radius: 0.25rem;
+}
+
+.templateButton {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background-color: transparent;
+  border: none;
+  text-align: left;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-gray-dim);
   }
 }
