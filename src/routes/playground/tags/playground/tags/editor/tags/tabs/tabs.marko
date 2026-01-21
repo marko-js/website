@@ -1,6 +1,7 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import type { File } from "app/util/workspace";
 import * as styles from "./tabs.style.module.scss";
+import EXAMPLE_TEMPLATES from "./examples";
 export interface Input {
   files: File[];
   filesChange: (files: File[]) => void;
@@ -10,53 +11,53 @@ export interface Input {
 
 let/tabs:=input.files
 let/selected:=input.selected
+let/editingIndex=-1
 
 div class=styles.tabs
   div class=styles.files
     for|tab, i| of=tabs
       const/isSelected=selected === i
       const/isEditable=i !== 0
-      let/editing=false valueChange=(isEditable ? undefined : () => {})
+      const/isEditing=editingIndex === i
 
       div
         ,aria-selected=isSelected && "true"
         ,tabindex=0
         ,role="button"
         ,onClick() {
-          if (isSelected) {
-            editing = true;
-          } else {
+          if (isSelected && !isEditing) {
+            editingIndex = i;
+          } else if (!isEditing) {
             selected = i;
           }
         }
-        ,onKeyPress(e, el) {
+        ,onKeyDown(e, el) {
           if (e.target === el && (e.key === " " || e.key === "Enter")) {
-            if (isSelected) {
-              editing = true;
-            } else {
+            if (isSelected && !isEditing) {
+              editingIndex = i;
+            } else if (!isEditing) {
               selected = i;
             }
           }
         }
         ,class=styles.tab
-        if=editing
+        if=isEditing
           let/length=(tab.path.length)
           input/$input
             ,value=tab.path
             ,size=length
-            ,onInput() {
-              length = $input().value.length;
+            ,onInput(_, el) {
+              length = el.value.length;
             }
-            ,onBlur() {
-              tabs = tabs.toSpliced(i, 1, { ...tab, path: $input().value });
-              editing = false;
+            ,onBlur(_, el) {
+              tabs = tabs.toSpliced(i, 1, { ...tab, path: el.value });
+              editingIndex = -1;
             }
             ,onKeyPress(e) {
               if (e.key === "Enter") {
-                $input().blur();
-                editing = false;
+                document.querySelector<HTMLElement>(".cm-content")?.focus();
               } else if (e.key === "Escape") {
-                editing = false;
+                editingIndex = -1;
               }
             }
           script --
@@ -67,6 +68,10 @@ div class=styles.tabs
         if=isEditable
           button
             ,title="Delete file"
+            ,onMouseDown(e) {
+              // prevent button from stealing focus, so it doesn't move out underneath the mouse
+              e.preventDefault();
+            }
             ,onClick(e) {
               e.stopPropagation();
               if (selected >= i) {
@@ -77,21 +82,63 @@ div class=styles.tabs
             ,class=styles.close
             -- ×
 
+  id/popoverId
+
   button
     ,title="Add file"
-    ,onClick() {
-      let filename = prompt(
-        "What filename (extension optional)?",
-        tabs.some((tab) => tab.path === "Tag.marko")
-          ? `Tag${tabs.length}`
-          : "Tag",
-      );
+    ,popovertarget=popoverId
+    ,class=styles.add
+    ,onClick(_, btn) {
+      const { top, right } = btn.getBoundingClientRect();
+      $popover().style.top = `${top}px`;
+      $popover().style.right = `${innerWidth - right}px`;
+    }
+    fa-icon=faPlus
 
-      if (filename) {
-        if (!filename.includes(".")) filename += ".marko";
-        selected = tabs.length;
-        tabs = [...tabs, { path: filename, content: "" }];
+  div/$popover
+    ,id=popoverId
+    ,class=styles.popover
+    ,popover
+    ,role="menu"
+    ,onFocusOut(e) {
+      if (!$popover().contains(e.relatedTarget as Node)) {
+        $popover().hidePopover();
       }
     }
-    ,class=styles.add
-    fa-icon=faPlus
+
+    button
+      ,role="menuitem"
+      ,autofocus
+      ,onClick() {
+        const newIndex = tabs.length;
+        let path = "Tag.marko";
+        for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
+          path = "Tag" + i + ".marko";
+        }
+        tabs = [
+          ...tabs,
+          {
+            path,
+            content: "",
+          },
+        ];
+        selected = newIndex;
+        editingIndex = newIndex;
+      }
+      ,class=styles.templateButton
+      -- New Blank File
+
+    for|{ name, content }| of=EXAMPLE_TEMPLATES
+      button
+        ,role="menuitem"
+        ,onClick() {
+          selected = tabs.length;
+          let path = name + ".marko";
+          for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
+            path = name + "-" + i + ".marko";
+          }
+          tabs = [...tabs, { path, content }];
+          document.querySelector<HTMLElement>(".cm-content")?.focus();
+        }
+        ,class=styles.templateButton
+        -- ${`<${name}>`}
