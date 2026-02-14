@@ -16,33 +16,44 @@ section class=styles.section
 
   div class=styles.cards
     div class=styles.discord
-      a href="https://discord.gg/marko" class=styles.logo
+      a href="https://discord.gg/marko" target="_blank" class=styles.logo
         fa-icon=faDiscord
       span
         -- Hang out in our${" "}
-        a href="https://discord.gg/marko" -- Discord server
+        a href="https://discord.gg/marko" target="_blank" -- Discord server
         -- ${" "}to ask questions & discuss marko
     div class=styles.twitter
       a
         ,href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
         ,class=styles.logo
+        ,target="_blank"
         fa-icon=faXTwitter
       span
         -- Tweet to${" "}
-        a href="https://twitter.com/MarkoDevTeam" -- @MarkoDevTeam
+        a href="https://twitter.com/MarkoDevTeam" target="_blank"
+          -- @MarkoDevTeam
         -- ${" "}or use the${" "}
-        a href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+        a
+          ,href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+          ,target="_blank"
           -- #markojs
         -- ${" "}hashtag
     div class=styles.bluesky
-      a href="https://bsky.app/profile/markojs.com" class=styles.logo
+      a
+        ,href="https://bsky.app/profile/markojs.com"
+        ,target="_blank"
+        ,class=styles.logo
         fa-icon=faBluesky
       span
         -- Keep up with the community on Bluesky at${" "}
-        a href="https://bsky.app/profile/markojs.com" -- @markojs.com
+        a href="https://bsky.app/profile/markojs.com" target="_blank"
+          -- @markojs.com
     div class=styles.github
-      a href="https://github.com/marko-js/marko" class=styles.logo
+      a
+        ,href="https://github.com/marko-js/marko"
+        ,target="_blank"
+        ,class=styles.logo
         fa-icon=faGithub
       span
         -- Browse the code, open issues, & make pull requests on${" "}
-        a href="https://github.com/marko-js/marko" -- GitHub
+        a href="https://github.com/marko-js/marko" target="_blank" -- GitHub
