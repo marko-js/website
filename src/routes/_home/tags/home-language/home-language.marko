@@ -1,15 +1,17 @@
 import * as styles from "./home-language.style.module.scss";
-static const EXAMPLE_HTML = `// HTML + JavaScript = 💜
+static {
+  const EXAMPLE_HTML = `// HTML + JavaScript = 💜
 <let/count=0>
 <button onClick() { count++ }>
   Clicked \${count} times
 </button>
 `;
-static const EXAMPLE_CONCISE = `// HTML + JavaScript = 💜
+  const EXAMPLE_CONCISE = `// HTML + JavaScript = 💜
 let/count=0
 button onClick() { count++ }
   -- Clicked \${count} times
 `;
+}
 
 section class=styles.section
   div class=styles.content
@@ -21,8 +23,8 @@ section class=styles.section
     p --
       Just about any valid HTML is valid Marko, but Marko extends the HTML
       language to allow building modern applications in a declarative way.
-    home-cta-button class=styles.cta href="/docs/tutorial/fundamentals"
-      -- Check it out!
+    home-cta-button class=styles.cta href="/docs/tutorial/fundamentals" --
+      Check it out!
 
   figure class=styles.example
     div class=styles.menuBar
@@ -38,8 +40,7 @@ section class=styles.section
       let/count=0
       button/inc onClick() {
         count++;
-      }
-        -- Clicked ${count} times
+      } -- Clicked ${count} times
 
       let/autoclick=true
       if=autoclick

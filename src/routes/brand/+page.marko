@@ -15,8 +15,8 @@ define/Asset|{ content, colorScheme, title, download }: AssetInput|
       ${content}
     div class=styles.downloadPills
       for|{ src }| of=download
-        a href=src download
-          -- ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
+        a href=src download --
+          ${src.substring(src.lastIndexOf(".") + 1).toUpperCase()}
 
 h1 class=styles.title
   span class=text.yellowGradient -- Brand & Assets
@@ -115,10 +115,11 @@ section#widgets class=colors.greenSection
   h2 -- Meet the Widgets
 
   let/_selected=0
-  let/selected=_selected valueChange(v) {
-    _selected = ((v % 9) + 9) % 9;
-    [...$btn][_selected]().focus();
-  }
+  let/selected=_selected
+    ,valueChange(v) {
+      _selected = ((v % 9) + 9) % 9;
+      [...$btn][_selected].focus();
+    }
   id/tabId
   div class=styles.widgetTabs
     div role="tablist" class=styles.widgetGrid
@@ -167,28 +168,26 @@ section#widgets class=colors.greenSection
 
           strong -- Head Only
           div class=styles.downloadPills
-            a href=`/assets/widget/${widget.name}.svg` download
-              -- SVG
-            a href=`/assets/widget/${widget.name}-light.svg` download
-              -- SVG (light)
-            a href=`/assets/widget/${widget.name}-dark.svg` download
-              -- SVG (dark)
-            a href=`/assets/widget/${widget.name}-light.png` download
-              -- PNG (light)
-            a href=`/assets/widget/${widget.name}-dark.png` download
-              -- PNG (dark)
+            a href=`/assets/widget/${widget.name}.svg` download -- SVG
+            a href=`/assets/widget/${widget.name}-light.svg` download --
+              SVG (light)
+            a href=`/assets/widget/${widget.name}-dark.svg` download --
+              SVG (dark)
+            a href=`/assets/widget/${widget.name}-light.png` download --
+              PNG (light)
+            a href=`/assets/widget/${widget.name}-dark.png` download --
+              PNG (dark)
 
           strong -- Full
           div class=styles.downloadPills
-            a href=`/assets/widget/${widget.name}-legs.svg` download
-              -- SVG
-            a href=`/assets/widget/${widget.name}-legs-light.svg` download
-              -- SVG (light)
-            a href=`/assets/widget/${widget.name}-legs-dark.svg` download
-              -- SVG (dark)
-            a href=`/assets/widget/${widget.name}-legs-light.png` download
-              -- PNG (light)
-            a href=`/assets/widget/${widget.name}-legs-dark.png` download
-              -- PNG (dark)
+            a href=`/assets/widget/${widget.name}-legs.svg` download -- SVG
+            a href=`/assets/widget/${widget.name}-legs-light.svg` download --
+              SVG (light)
+            a href=`/assets/widget/${widget.name}-legs-dark.svg` download --
+              SVG (dark)
+            a href=`/assets/widget/${widget.name}-legs-light.png` download --
+              PNG (light)
+            a href=`/assets/widget/${widget.name}-legs-dark.png` download --
+              PNG (dark)
   a href="/assets/widgets.zip" download class=styles.downloadButton
     span -- Download All

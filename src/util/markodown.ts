@@ -160,40 +160,49 @@ function markoDocs(): MarkedExtension {
 
           if (!modifiers.includes("no-format")) {
             const unlock = await acquireMutexLock();
+            const text = (() => {
+              try {
+                return compiler.compileSync(
+                  token.text,
+                  token.filename || "temp.marko",
+                  {
+                    output: "source",
+                    stripTypes: true,
+                    sourceMaps: false,
+                  },
+                ).code;
+              } catch {
+                return token.text;
+              }
+            })();
 
-            prettierMarko.setCompiler(compiler, {
-              stripTypes: true,
-            });
-            token.html = (
-              await format(token.text, {
-                parser: "marko",
-                plugins: [prettierMarko],
-                markoSyntax: "html",
-              })
-            ).trim();
-            token.concise = (
-              await format(token.text, {
-                parser: "marko",
-                plugins: [prettierMarko],
-                markoSyntax: "concise",
-              })
-            ).trim();
-
-            prettierMarko.setCompiler(compiler, {});
-            token.htmlTS = (
-              await format(token.text, {
-                parser: "marko",
-                plugins: [prettierMarko],
-                markoSyntax: "html",
-              })
-            ).trim();
-            token.conciseTS = (
-              await format(token.text, {
-                parser: "marko",
-                plugins: [prettierMarko],
-                markoSyntax: "concise",
-              })
-            ).trim();
+            const [htmlFormat, conciseFormat, htmlTSFormat, conciseTSFormat] =
+              await Promise.all([
+                format(text, {
+                  parser: "marko",
+                  plugins: [prettierMarko],
+                  markoSyntax: "html",
+                }),
+                format(text, {
+                  parser: "marko",
+                  plugins: [prettierMarko],
+                  markoSyntax: "concise",
+                }),
+                format(token.text, {
+                  parser: "marko",
+                  plugins: [prettierMarko],
+                  markoSyntax: "html",
+                }),
+                format(token.text, {
+                  parser: "marko",
+                  plugins: [prettierMarko],
+                  markoSyntax: "concise",
+                }),
+              ]);
+            token.html = htmlFormat.trim();
+            token.concise = conciseFormat.trim();
+            token.htmlTS = htmlTSFormat.trim();
+            token.conciseTS = conciseTSFormat.trim();
 
             unlock();
           }

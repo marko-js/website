@@ -1,14 +1,16 @@
 import * as styles from "./home-tooling.style.module.scss";
-server const EXAMPLE_HTML = `<div/$el>
+server {
+  const EXAMPLE_HTML = `<div/$el>
   Hop in, we've got tags
 </div>
 
 <script>
   $el().
 </script>`;
-server const EXAMPLE_CONCISE = `div/$el -- Hop in, we've got tags
+  const EXAMPLE_CONCISE = `div/$el -- Hop in, we've got tags
 script -- $el().
 `;
+}
 
 section class=styles.section
   div class=styles.content
@@ -18,8 +20,8 @@ section class=styles.section
       -- Marko has built-in${" "}
       a href="/docs/reference/typescript" -- TypeScript support
       --
-      , with strong type inference that works across templates and
-      components. Editors get full language features like autocompletion,
+      , with strong type inference that works across templates and components.
+      Editors get full language features like autocompletion,
       jump-to-definition, syntax highlighting, and clean formatting.
       --
     p -- Build confidently. Catch errors early. Write better code, faster.

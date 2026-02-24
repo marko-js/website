@@ -68,16 +68,21 @@ const/showPreview=!(
   ws.runtimeErrors
 )
 let-search-param/debugParam key="debug"
-let/debug=!!debugParam valueChange(debug) {
-  debugParam = debug ? "1" : null;
-}
+let/debug=!!debugParam
+  ,valueChange(debug) {
+    debugParam = debug ? "1" : null;
+  }
 
 let-search-param/fullscreenParam key="fullscreen"
-let/fullscreen=!!fullscreenParam valueChange(fullscreen) {
-  fullscreenParam = fullscreen ? "1" : null;
-}
+let/fullscreen=!!fullscreenParam
+  ,valueChange(fullscreen) {
+    fullscreenParam = fullscreen ? "1" : null;
+  }
 script -- document.documentElement.classList.toggle("fullscreen", fullscreen);
-html-script -- ${`document.documentElement.classList.toggle("fullscreen",new URLSearchParams(location.search).get("fullscreen")=="1");`}
+html-script --
+  ${
+    `document.documentElement.classList.toggle("fullscreen",new URLSearchParams(location.search).get("fullscreen")=="1");`
+  };
 
 const/outputLang=(
   outputType === "previewCSS"
@@ -130,15 +135,19 @@ div class=styles.result
         p -- ${ws.buildErrors.join("\n")}
         p -- Check the devtools console for more information.
     else if=outputType !== "preview"
-      div id=styles.compiled contenteditable="true" onbeforeinput="return false"
-        --
-          $!{highlighter.codeToHtml(
+      div
+        ,id=styles.compiled
+        ,contenteditable="true"
+        ,onbeforeinput="return false" --
+        ${" "}$!{
+          highlighter.codeToHtml(
             compiledCode || (outputLang === "html" ? "" : "/* empty */"),
             {
               ...compiledHighlightOpts,
               lang: outputLang,
             },
-          )}
+          )
+        }
     else if=ws.runtimeErrors
       div class=styles.error
         p -- ${ws.runtimeErrors.join("\n")}

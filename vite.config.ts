@@ -20,8 +20,8 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["browserslist"]
-    }
+      external: ["browserslist"],
+    },
   },
   optimizeDeps: {
     exclude: ["@rollup/browser", "lightningcss-wasm"],

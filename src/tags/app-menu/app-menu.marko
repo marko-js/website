@@ -2,11 +2,17 @@ import * as styles from "./app-menu.style.module.scss";
 let-local-storage/conciseMode=false key="concise-mode"
 script --
   document.documentElement.classList.toggle("concise-mode", conciseMode);
-html-script -- ${`document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');`}
+html-script --
+  ${
+    `document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');`
+  };
 
 let-local-storage/tsMode=false key="ts-mode"
 script -- document.documentElement.classList.toggle("ts-mode", tsMode);
-html-script -- ${`document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');`}
+html-script --
+  ${
+    `document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');`
+  };
 
 div#site-menu class=styles.menu
   define/Page|{ value, content }: { value: string; content: Marko.Body }|
@@ -28,8 +34,8 @@ div#site-menu class=styles.menu
         strong -- Tutorials
         ul
           Page="/docs/tutorial/fundamentals" -- Fundamentals
-          Page="/docs/tutorial/components-and-reactivity"
-            -- Components and Reactivity
+          Page="/docs/tutorial/components-and-reactivity" --
+            Components and Reactivity
       li
         strong -- Guides
         ul
@@ -41,12 +47,12 @@ div#site-menu class=styles.menu
           Page="/docs/explanation/why-is-marko-fast" -- Why is Marko Fast?
           Page="/docs/explanation/streaming" -- Streaming
           Page="/docs/explanation/targeted-compilation" -- Targeted Compilation
-          Page="/docs/explanation/fine-grained-bundling"
-            -- Fine-Grained Bundling
-          Page="/docs/explanation/separation-of-concerns"
-            -- Separation of Concerns
-          Page="/docs/explanation/controllable-components"
-            -- Controllable Components
+          Page="/docs/explanation/fine-grained-bundling" --
+            Fine-Grained Bundling
+          Page="/docs/explanation/separation-of-concerns" --
+            Separation of Concerns
+          Page="/docs/explanation/controllable-components" --
+            Controllable Components
           Page="/docs/explanation/nested-reactivity" -- Nested Reactivity
           Page="/docs/explanation/immutable-state" -- Immutable State
           Page="/docs/explanation/serializable-state" -- Serializable State
@@ -89,7 +95,10 @@ div#site-menu class=styles.menu
       ,on="Concise"
     app-switch aria-label="Toggle TS mode" checked:=tsMode off="JS" on="TS"
 
-html-script -- ${`document.getElementById("${styles.siteNav}").scrollTop = +(sessionStorage.getItem("menu-scroll-position") || 0)`}
+html-script --
+  ${
+    `document.getElementById("${styles.siteNav}").scrollTop = +(sessionStorage.getItem("menu-scroll-position") || 0)`
+  };
 script --
   addEventListener(
     "beforeunload",

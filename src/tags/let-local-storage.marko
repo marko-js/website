@@ -8,9 +8,9 @@ static declare global {
   }
 }
 
-<let/internalValue=input.value>
+let/internalValue=input.value
 
-<script>
+script --
   const existingValue = localStorage.getItem(input.key);
   if (existingValue) {
     internalValue = JSON.parse(existingValue);
@@ -30,18 +30,18 @@ static declare global {
       signal: $signal,
     },
   );
-</script>
 
-<return=internalValue valueChange(newValue: T) {
-  const stringified = JSON.stringify(newValue);
-  localStorage.setItem(input.key, stringified);
-  window.dispatchEvent(
-    new CustomEvent("local-storage-update", {
-      detail: {
-        key: input.key,
-        newValue: stringified,
-        storageArea: localStorage,
-      },
-    }),
-  );
-}>
+return=internalValue
+  ,valueChange(newValue: T) {
+    const stringified = JSON.stringify(newValue);
+    localStorage.setItem(input.key, stringified);
+    window.dispatchEvent(
+      new CustomEvent("local-storage-update", {
+        detail: {
+          key: input.key,
+          newValue: stringified,
+          storageArea: localStorage,
+        },
+      }),
+    );
+  }

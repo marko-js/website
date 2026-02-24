@@ -11,9 +11,10 @@ export interface Input {
 
 let/files:=input.files
 let/selected:=input.tab
-let/file=files[selected] valueChange(newValue) {
-  files = files.toSpliced(selected, 1, newValue);
-}
+let/file=files[selected]
+  ,valueChange(newValue) {
+    files = files.toSpliced(selected, 1, newValue);
+  }
 
 tabs files:=files selected:=selected
 div.shiki/$editor id=styles.editor

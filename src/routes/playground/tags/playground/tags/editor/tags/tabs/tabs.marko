@@ -79,8 +79,7 @@ div class=styles.tabs
               }
               tabs = tabs.toSpliced(i, 1);
             }
-            ,class=styles.close
-            -- ×
+            ,class=styles.close -- ×
 
   id/popoverId
 
@@ -105,7 +104,6 @@ div class=styles.tabs
         $popover().hidePopover();
       }
     }
-
     button
       ,role="menuitem"
       ,autofocus
@@ -125,8 +123,7 @@ div class=styles.tabs
         selected = newIndex;
         editingIndex = newIndex;
       }
-      ,class=styles.templateButton
-      -- New Blank File
+      ,class=styles.templateButton -- New Blank File
 
     for|{ name, content }| of=EXAMPLE_TEMPLATES
       button
@@ -140,5 +137,4 @@ div class=styles.tabs
           tabs = [...tabs, { path, content }];
           document.querySelector<HTMLElement>(".cm-content")?.focus();
         }
-        ,class=styles.templateButton
-        -- ${`<${name}>`}
+        ,class=styles.templateButton -- ${`<${name}>`}

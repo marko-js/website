@@ -1,20 +1,21 @@
 export interface Input {
   key: string;
 }
-<let/internalValue=$global.url.searchParams.get(input.key)>
-<lifecycle onMount() {
+let/internalValue=$global.url.searchParams.get(input.key)
+lifecycle onMount() {
   const initialValue = new URLSearchParams(location.search).get(input.key);
   if (initialValue !== $global.url.searchParams.get(input.key)) {
     internalValue = initialValue;
   }
-}>
-<return=internalValue valueChange(newValue: string | null) {
-  const newUrl = new URL(location.href);
-  if (newValue == null) {
-    newUrl.searchParams.delete(input.key);
-  } else {
-    newUrl.searchParams.set(input.key, newValue);
+}
+return=internalValue
+  ,valueChange(newValue: string | null) {
+    const newUrl = new URL(location.href);
+    if (newValue == null) {
+      newUrl.searchParams.delete(input.key);
+    } else {
+      newUrl.searchParams.set(input.key, newValue);
+    }
+    history.replaceState(null, "", newUrl.toString());
+    internalValue = newValue;
   }
-  history.replaceState(null, "", newUrl.toString());
-  internalValue = newValue;
-}>
