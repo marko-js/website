@@ -66,5 +66,8 @@
     "util": "./shim/util",
     "vite-css-modules": "^1.13.0",
     "writable-dom": "^1.0.6"
+  },
+  "dependencies": {
+    "@ebay/browserslist-config": "^2.13.0"
   }
 }

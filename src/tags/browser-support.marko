@@ -1,0 +1,7 @@
+import browsers from "@ebay/browserslist-config";
+
+app-code-block lang="json" text=JSON.stringify(browsers, null, 2)
+
+a href=`https://browsersl.ist/?results#q=${encodeURIComponent(browsers.join("\n"))}`
+  -- View in${" "}
+  code -- browsersl.ist
