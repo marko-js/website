@@ -173,7 +173,7 @@ All tags can be [self closed](https://developer.mozilla.org/en-US/docs/Glossary/
 
 In all closing tags, the tag name may be omitted.
 
-```marko
+```marko no-format
 <div>Hello World</>
 ```
 
