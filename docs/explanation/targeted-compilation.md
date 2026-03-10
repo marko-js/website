@@ -1,6 +1,7 @@
 # Targeted Compilation
 
 > [!TLDR]
+>
 > - Marko chooses what to compile to based on the environment
 > - String concatenation on the server
 > - DOM manipulation on the client

@@ -606,7 +606,7 @@ In this case `myDiv` will be a variable which can be called to get the `myDiv` e
 
 Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return a value into it's parents scope as a tag variable.
 
-### Scope
+### Tag Var Scope
 
 Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
 
@@ -694,7 +694,7 @@ This example passes three arguments back to its parent.
 > <my-tag({ a: 1, b: 2, c: 3 })/>
 > ```
 
-### Scope
+### Tag Param Scope
 
 Tag parameters are scoped to the [tag content](#tag-content) only.
 This means you cannot access the tag parameters outside the body of the tag.
@@ -751,6 +751,8 @@ import MyTagB from "<my-tag-b>"
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
 > ```
+
+<!---->
 
 > [!NOTE]
 > If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.

@@ -147,7 +147,7 @@ Responses with this page will have a `500` status code.
 
 Given the following routes directory structure
 
-```
+```text
 routes/
   about/
     +handler.js
@@ -176,7 +176,7 @@ Within the [routes directory](#routes-directory), the directory structure determ
 
    Examples:
 
-   ```
+   ```text
    /foo
    /users
    /projects
@@ -186,7 +186,7 @@ Within the [routes directory](#routes-directory), the directory structure determ
 
    Examples:
 
-   ```
+   ```text
    /_users
    /_public
    ```
@@ -195,7 +195,7 @@ Within the [routes directory](#routes-directory), the directory structure determ
 
    Examples:
 
-   ```
+   ```text
    /$id
      /$name
    /$
@@ -207,7 +207,7 @@ Within the [routes directory](#routes-directory), the directory structure determ
 
    Examples:
 
-   ```
+   ```text
    /$$all
      /$$rest
    /$$
@@ -223,7 +223,7 @@ For example, to define a page at `/projects/$projectId/members` with a root layo
 
 Without flat routes, you would have a file structure like:
 
-```
+```text
 routes/
   projects/
     $projectId/
@@ -235,7 +235,7 @@ routes/
 
 With flat routes, move the path defined by the directories into the files and separate with a period
 
-```
+```text
 routes/
   +layout.marko
   projects+layout.marko
@@ -244,7 +244,7 @@ routes/
 
 Additionally, you can continue to organize files under directories to decrease duplication and use flat route syntax in the folder name
 
-```
+```text
 routes/
   projects.$projectId/
   +layout.marko
@@ -254,7 +254,7 @@ routes/
 
 Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have layout
 
-```
+```text
 routes/
   projects/
     $projectId/
@@ -268,14 +268,14 @@ Along with describing multiple segments, flat route syntax supports defining rou
 
 For example the following page matches `/projects/$projectId/members` and `/projects/$projectId/people`
 
-```
+```text
 routes/
   projects.$projectId.members,projects.$projectId.people+page.marko
 ```
 
 This file name is a bit long, so you might do something like this
 
-```
+```text
 routes/
   projects.$projectId
   members,people+page.marko
@@ -283,7 +283,7 @@ routes/
 
 We can simplify this by introducing another concept: **grouping**. Groups allow you to define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). For the example, this means you can do the following:
 
-```
+```text
 routes/
   projects.$projectId.(members,people)+page.marko
 ```
@@ -292,14 +292,14 @@ This is a simple example of grouping, but you can nest groups and make them as c
 
 The last concept is **optionality**. By introducing an empty segment or pathless segment along with another value, you can make that segment optional. For example, if we want a page that matches `/projects` and `/projects/home`, you can create a flat route that optionally matches `home`
 
-```
+```text
 routes/
   projects.(home,)+page.marko
 ```
 
 or
 
-```
+```text
 routes/
   projects.(home,_pathless)+page.marko
 ```

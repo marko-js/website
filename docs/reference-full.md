@@ -612,7 +612,7 @@ In this case `myDiv` will be a variable which can be called to get the `myDiv` e
 
 Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return a value into it's parents scope as a tag variable.
 
-### Scope
+### Tag Var Scope
 
 Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
 
@@ -700,7 +700,7 @@ This example passes three arguments back to its parent.
 > <my-tag({ a: 1, b: 2, c: 3 })/>
 > ```
 
-### Scope
+### Tag Param Scope
 
 Tag parameters are scoped to the [tag content](#tag-content) only.
 This means you cannot access the tag parameters outside the body of the tag.
@@ -757,6 +757,8 @@ import MyTagB from "<my-tag-b>"
 > ```marko
 > <${Math.random() > 0.5 ? "my-tag-a" : "my-tag-b"}/>
 > ```
+
+<!---->
 
 > [!NOTE]
 > If an object is provided with a `content` property, the `content` value will become the dynamic tag name. This is how the [define](./core-tag.md#define) tag works under the hood 🤯.
@@ -861,7 +863,7 @@ If Marko did not resolve a [local variable tag name](#local-variable-custom-tags
 
 Let's take a look at an example directory structure to understand this better:
 
-```
+```text
 tags/
     app-header.marko
     app-footer.marko
@@ -913,6 +915,8 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 >
 > For example, when exporting `dist/tags`, `dist/tags/tags/` could contain private components only available _within_ the library.
 
+<!---->
+
 > [!CAUTION]
 > If two packages export the tag name, Marko will choose the one it finds first. To prevent collisions, tag libraries are encouraged to prefix all exported tag names, e.g. `ebay-`. If you must use tags with conflicting names, you can import by path to disambiguate.
 
@@ -920,7 +924,7 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
 
-```
+```text
 foo.marko
 foo.style.css
 foo.marko-tag.json
@@ -930,7 +934,7 @@ Here, the `<foo>` tag has associated styles and metadata.
 
 When the file is named `index.marko` the prefix is optional.
 
-```
+```text
 tags/
   bar/
     index.marko
@@ -944,7 +948,7 @@ Here, the `<bar>` tag has an associated `style.css` and the `<baz>` tag has an a
 
 For `style` files any extension may be used allowing for CSS preprocessors.
 
-```
+```text
 tags/
   less/
     index.marko
@@ -991,6 +995,8 @@ Here, a `count` Tag Variable is mutated by a button click. Because the text cont
 
 > [!CAUTION]
 > In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.
+
+<!---->
 
 > [!TIP]
 > Marko is a **compiled language**, and its reactive graph is discovered at compile time instead of during runtime. This is in contrast with many of the other leading approaches, such as [Signals in SolidJS](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity) and [Hooks in React](https://react.dev/reference/react/hooks).
@@ -1210,6 +1216,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 
+<!---->
+
 > [!TIP]
 > The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
 >
@@ -1265,7 +1273,7 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 ```marko
 <uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
-<div>${value}</div> // value is always uppercased
+<div>${value}</div> // value is always transformed to uppercase
 ```
 
 ## `<script>`
@@ -1566,7 +1574,7 @@ This tag also exposes a [tag variable](./language.md#tag-variables) which contai
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common footguns.
+The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common foot guns.
 
 Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
 
@@ -1697,6 +1705,8 @@ The value for the attribute must be either a function or a [falsy](https://devel
 > ```
 >
 > Some [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) may emit non lowercase event names, in which case (pun intended 😏) you should use `on-` which preserves the casing.
+
+<!---->
 
 > [!CAUTION]
 > Even though Marko _does_ support [native HTML inline event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#event_handler_attributes), it's recommended to avoid them since they're detached from Marko's reactivity system and may lead to [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) / [XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) issues.
@@ -1974,7 +1984,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
 
 - **For sites and web apps**, [a `tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root is the only requirement:
 
-  ```
+  ```text
   src/
   package.json
   tsconfig.json
@@ -2188,6 +2198,7 @@ export interface Input extends Marko.HTML.Button {
 
 > [!TIP]
 > Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+>
 > ```marko
 > <button style=`color: ${color}` ...attrs>
 >   // no longer required!
@@ -2385,7 +2396,7 @@ If text immediately follows the hyphens, the content is terminated at the end of
 div -- Hello world
 ```
 
-If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedentation.
+If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedent.
 
 ```marko no-format
 --

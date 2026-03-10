@@ -49,7 +49,7 @@ If text immediately follows the hyphens, the content is terminated at the end of
 div -- Hello world
 ```
 
-If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedentation.
+If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedent.
 
 ```marko no-format
 --

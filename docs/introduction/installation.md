@@ -77,9 +77,9 @@ If you prefer to create your own application structure, you can set up your proj
 
    ```marko
    <html lang="en">
-       <body>
-           <h1>Hello Marko!</h1>
-       </body>
+     <body>
+       <h1>Hello Marko!</h1>
+     </body>
    </html>
    ```
 
@@ -126,7 +126,7 @@ If you prefer to create your own application structure, you can set up your proj
 
 1. **Start the application**
 
-   You can now start the application using the command below and access http://localhost:3000 to see the preview of your code while you build your app!
+   You can now start the application using the command below and access <http://localhost:3000> to see the preview of your code while you build your app!
 
    ```bash
    node index.js

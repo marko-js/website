@@ -8,7 +8,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
 
 - **For sites and web apps**, [a `tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root is the only requirement:
 
-  ```
+  ```text
   src/
   package.json
   tsconfig.json
@@ -222,6 +222,7 @@ export interface Input extends Marko.HTML.Button {
 
 > [!TIP]
 > Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+>
 > ```marko
 > <button style=`color: ${color}` ...attrs>
 >   // no longer required!
