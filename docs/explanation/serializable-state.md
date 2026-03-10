@@ -21,6 +21,7 @@ Most standard data types can be serialized, including:
 Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.
 
 Examples of unserializable data include:
+
 - Closures (top level functions are fine!)
 - Functions that come from arbitrary javascript code or imports
 - Class instances (except built-ins explicitly supported by the runtime)
@@ -28,7 +29,7 @@ Examples of unserializable data include:
 
 > [!NOTE]
 > Most functions and closures _are_ serializable.
-> 
+>
 > ```marko
 > <let/handler=null>
 > <const/onSecondClick() { 

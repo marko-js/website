@@ -1,6 +1,7 @@
 # Immutable Data in State
 
 > [!TLDR]
+>
 > - Immutable updates prevent hidden side effects
 > - UI as a function of state requires immutability
 > - Server-to-client handoff needs serializable state

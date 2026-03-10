@@ -1,6 +1,7 @@
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
+import xml from "@shikijs/langs/xml";
 import css from "@shikijs/langs/css";
 import html from "@shikijs/langs/html";
 import js from "@shikijs/langs/javascript";
@@ -13,5 +14,5 @@ import { dark, light } from "./shiki-theme";
 export default await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/wasm")),
   themes: [dark, light],
-  langs: [css, html, js, json, marko, sh, ts],
+  langs: [css, html, xml, js, json, marko, sh, ts],
 });

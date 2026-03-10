@@ -1,13 +1,14 @@
 # Using Multiple Marko Versions
 
 > [!TLDR]
+>
 > - `marko@6` is _not_ backward compatible
 > - `marko@5` is **forward compatible**
 > - In Marko 5, heuristics determine runtime version per-tag
 
 [Marko 5](https://v5.markojs.com/) uses the [Class API](https://v5.markojs.com/docs/class-components/), and current versions use the [Tags API](../reference/language.md). Marko 6 is _not_ backwards compatible, so if `marko@6` is installed an application cannot use class components out of the box. Instead, Marko 5 is **forward compatible**. To use multiple versions of Marko together, ensure that Marko 5 is installed at the project root.
 
-Marko 5 and 6 use runtimes which are **interoperable** but **distinct**. As such, the compiler determines which runtime to use based on a set of heuristics. Switching _between_ the two runtimes should be avoided as often as possible, so it is preferable to ensure that Tags API components mostly reference other Tags API components. 
+Marko 5 and 6 use runtimes which are **interoperable** but **distinct**. As such, the compiler determines which runtime to use based on a set of heuristics. Switching _between_ the two runtimes should be avoided as often as possible, so it is preferable to ensure that Tags API components mostly reference other Tags API components.
 
 ## Tags/Class API Heuristics
 
@@ -69,16 +70,16 @@ If a file is otherwise ambiguous but _all_ tags found by the [tag discovery mech
 
 All ambiguous files here use the tags API, because there are no `components/`.
 
-```
+```text
 src/
   +page.marko // Tags API
   tags/
     some-tag.marko
 ```
 
-Even _one_ `components/` directory will default all ambiguous files to prefer Class API if there are no [`// use tags` comments](#-use-api) or [tag syntax heuristics](#tags-api-syntax).
+Even _one_ `components/` directory will default all ambiguous files to prefer Class API if there are no [`// use tags` comments](#comment-opt-in) or [tag syntax heuristics](#tags-api-syntax).
 
-```
+```text
 src/
   components/
     some-component.marko

@@ -1,5 +1,5 @@
 import path from "node:path";
-import prepareLlmsTxt from "./prepare-llmstxt";
+import prepareLlmsTxt from "./prepare-llms-txt";
 
 const referenceDir = path.join(process.cwd(), "docs", "reference");
 const referenceDocs = prepareLlmsTxt(

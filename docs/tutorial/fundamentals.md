@@ -30,7 +30,6 @@ Almost all valid JavaScript expressions can be written as attribute values.
 > [!NOTE]
 > The Reference Docs explain [more about Attributes](../reference/language.md#attributes) including how they support [`...spreads`](../reference/language.md#spread-attributes) and [`methods()`](../reference/language.md#shorthand-methods).
 
-
 ## Dynamic Content
 
 Tag content in Marko is similar to [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript, so dynamic text can be added with [interpolated `${expressions}`](../reference/language.md#dynamic-text)
@@ -64,6 +63,8 @@ This `<card>` component can now be used anywhere in the page:
 
 > [!NOTE]
 > Components in the `tags/` directory are [automatically discovered](../reference/custom-tag.md#custom-tag-discovery). No need to `import` them.
+
+<!---->
 
 > [!TIP]
 > We can also write multiple "components" in a single file using the [`<define>` tag](../reference/core-tag.md#define).

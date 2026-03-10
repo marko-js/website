@@ -13,11 +13,16 @@
     }
   },
   "scripts": {
+    "prepare": "husky",
     "build": "marko-run build",
     "deploy": "marko-run build && gh-pages --cname markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
+    "lint": "markdownlint \"docs/**/*.md\" && cspell \"**/*.{md,ts,marko}\"",
     "preview": "marko-run preview"
+  },
+  "dependencies": {
+    "@ebay/browserslist-config": "^2.13.0"
   },
   "devDependencies": {
     "@codemirror/autocomplete": "^6.20.0",
@@ -35,19 +40,22 @@
     "@jridgewell/source-map": "^0.3.11",
     "@marko/run": "^0.9.6",
     "@marko/run-adapter-static": "^2.0.4",
-    "@marko/type-check": "^2.1.27",
+    "@marko/type-check": "^2.1.28",
     "@rollup/browser": "^4.59.0",
     "@shikijs/langs": "^3.23.0",
     "@types/node": "^25.3.0",
     "assert": "./shim/assert",
     "autoprefixer": "^10.4.27",
     "codemirror": "^6.0.2",
+    "cspell": "^9.7.0",
     "events": "^3.3.0",
     "gh-pages": "^6.3.0",
+    "husky": "^9.1.7",
     "github-slugger": "^2.0.0",
     "hastscript": "^9.0.1",
     "lightningcss-wasm": "^1.31.1",
     "lz-string": "^1.5.0",
+    "markdownlint-cli": "^0.48.0",
     "marked": "^17.0.3",
     "marko": "^6.0.147",
     "path": "./shim/path",
@@ -66,8 +74,5 @@
     "util": "./shim/util",
     "vite-css-modules": "^1.13.0",
     "writable-dom": "^1.0.6"
-  },
-  "dependencies": {
-    "@ebay/browserslist-config": "^2.13.0"
   }
 }

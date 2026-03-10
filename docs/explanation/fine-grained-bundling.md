@@ -1,6 +1,7 @@
 # Fine-Grained Bundling
 
 > [!TLDR]
+>
 > - Marko bundles only interactive JavaScript at compile time
 > - Static content requires zero client-side JavaScript
 > - Bundle size depends on interactivity, not architecture
@@ -37,4 +38,3 @@ Marko's compiler automatically determines what needs JavaScript without manual c
 Whether an application is structured as one large component or split into many small ones, the bundle size remains the same—determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
 
 This creates a development experience where good performance emerges naturally from the compilation process. Architectural decisions become about maintainability and developer experience, while the compiler handles optimization automatically.
-
