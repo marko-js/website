@@ -27,9 +27,10 @@ Of course, right now we aren't keeping track of the value that this input contai
 
 ## Syncing State
 
-Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
+Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way you may think to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
 
 ```marko
+// Warning: There's a better way to do this!
 <let/degF=80>
 
 <input type="number" value=degF onInput(e) {
@@ -38,22 +39,44 @@ Now the `<input>` has an initial value, but we still aren't keeping track of it 
 <div>It's ${degF}°F</div>
 ```
 
-Aha! Now we have a [reactive variable](../reference/reactivity.md) that keeps track of our value for degrees (in fahrenheit). Let's convert it to celsius!
-
-> [!NOTE]
-> For more control over the `<input>` value, we could have used Marko's [controllable](../reference/native-tag.md#change-handlers) pattern.
-
-## Adding Computed Values
-
-To do this, we can use a `<const>` tag:
+This _seems_ to work at first glance, but you'll find out quickly that the value of the input isn't fully synchronized. This is because in HTML, `value=` actually refers to the [_default_ value](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#value) of the input and not its current value. This is why instead, we should leverage the [controllable](../reference/native-tag.md#change-handlers) pattern with `Change` handlers.
 
 ```marko
 <let/degF=80>
+
+<input type="number" value=degF valueChange(value) { degF = value }>
+<div>It's ${degF}°F</div>
+```
+
+Because this is such a common pattern, Marko provides a [shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) for it!
+
+```marko
+<let/degF=80>
+
+<input type="number" value:=degF>
+<div>It's ${degF}°F</div>
+```
+
+## Adding Computed Values
+
+The `input` tag contains a _string_, so let's convert it to a number using [the `<const>` tag](../reference/core-tag.md#const).
+
+```marko
+<let/degFString="80">
+<const/degF=parseFloat(degFString)>
+
+<input type="number" value:=degFString>
+<div>It's ${degF}°F</div>
+```
+
+Now we can use another `<const>` to convert to celsius!
+
+```marko
+<let/degFString="80">
+<const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value=degF onInput(e) {
-  degF = +e.target.value;
-}>
+<input type="number" value:=degFString>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -64,12 +87,11 @@ To do this, we can use a `<const>` tag:
 Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
 
 ```marko
-<let/degF=80>
+<let/degFString="80">
+<const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value=degF onInput(e) {
-  degF = +e.target.value;
-}>
+<input type="number" value:=degFString>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -90,12 +112,11 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 Or what about a temperature gauge, with some fancy CSS?
 
 ```marko
-<let/degF=80>
+<let/degFString="80">
+<const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value=degF onInput(e) {
-  degF = +e.target.value;
-}>
+<input type="number" value:=degFString>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -133,12 +154,11 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 
 ```marko
 /* index.marko */
-<let/degF=80>
+<let/degFString="80">
+<const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value=degF onInput(e) {
-  degF = +e.target.value;
-}>
+<input type="number" value:=degFString>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
