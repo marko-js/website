@@ -59,16 +59,7 @@ Because this is such a common pattern, Marko provides a [shorthand](../reference
 
 ## Adding Computed Values
 
-The `input` tag contains a _string_, so let's convert it to a number using [the `<const>` tag](../reference/core-tag.md#const).
-
-```marko
-<let/degF=80>
-
-<input type="number" value:parseFloat:=degF>
-<div>It's ${degF}°F</div>
-```
-
-Now we can use another `<const>` to convert to celsius!
+Now we can use [the `<const>` tag](../reference/core-tag.md#const) to convert to celsius!
 
 ```marko
 <let/degF=80>
@@ -79,6 +70,8 @@ Now we can use another `<const>` to convert to celsius!
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
 ```
+
+Since `degC` is a [tag variable](../reference/language.md#tag-variables), its changes also propagate every time `degF` is updated.
 
 ## Using Conditionals
 
