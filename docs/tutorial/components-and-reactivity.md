@@ -44,11 +44,24 @@ This _seems_ to work at first glance, but you'll find out quickly that the value
 ```marko
 <let/degF=80>
 
-<input type="number" value=degF valueChange(value) { degF = value }>
+<input type="number" value=degF valueChange(value) { degF = parseFloat(value) }>
 <div>It's ${degF}°F</div>
 ```
 
 Because this is such a common pattern, Marko provides a [shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) for it!
+
+```marko
+<let/degF=80>
+
+<input type="number" value:parseFloat:=degF>
+<div>It's ${degF}°F</div>
+```
+
+<input type="number" value=degF valueChange(value) { degF = value }>
+<div>It's ${degF}°F</div>
+```
+
+Now we can use [the `<const>` tag](../reference/core-tag.md#const) to convert to celsius!
 
 ```marko
 <let/degF=80>
@@ -76,11 +89,13 @@ Now we can use another `<const>` to convert to celsius!
 <const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
 ```
+
+Since `degC` is a [tag variable](../reference/language.md#tag-variables), its changes also propagate every time `degF` is updated.
 
 ## Using Conditionals
 
@@ -91,7 +106,7 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 <const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -116,7 +131,7 @@ Or what about a temperature gauge, with some fancy CSS?
 <const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -158,7 +173,7 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 <const/degF=(+degFString)>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
