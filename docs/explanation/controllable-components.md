@@ -211,7 +211,7 @@ export interface Input {
 
 ### Refining Functions
 
-The shorthand may include a [refining function](../reference/language.md#refining-function) that transforms the value before assignment. This is useful when the child component receives a broad type (e. g. native tag attributes may receive `number | string`) but the parent requires something more narrow.
+The shorthand may include a [refining function](../reference/language.md#refining-function) that transforms the value before assignment. This is useful when the child component receives a broad type (e.g. native tag attributes may receive `number | string`) but the parent requires something more narrow.
 
 ```marko
 <let/num=0/>
