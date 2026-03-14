@@ -146,7 +146,7 @@ Because this is a common pattern, Marko provides a [binding shorthand](../refere
 ```
 
 > [!NOTE]
-> The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) acts differently when used with an _identifier_ versus a _member expression_. Above is the identifier behavior; we'll see the member expression behavior next.
+> The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) acts differently when used with an _identifier_ versus a _member expression_.
 
 ### Controllable `<let>`
 
@@ -207,6 +207,36 @@ export interface Input {
 <counter count:=parentCount/>
 
 <output>${count}</output>
+```
+
+### Refining Functions
+
+The shorthand may include a [refining function](../reference/language.md#refining-function) that transforms the value before assignment. This is useful when the child component receives a broad type (e. g. native tag attributes may receive `number | string`) but the parent requires something more narrow.
+
+```marko
+<let/num=0/>
+
+<input type="range" value:parseFloat:=num>
+```
+
+This example desugars to include `parseFloat` in its setter.
+
+```marko
+<let/num=0/>
+
+<input type="range" value=num valueChange(v) { num = parseFloat(v)}>
+```
+
+This shorthand takes _any_ function, including custom ones.
+
+```marko
+<let/text="HELLO">
+
+<input value:uppercase:=text>
+
+static function uppercase(str: string) {
+  return str.toUpperCase()
+}
 ```
 
 ## More Power

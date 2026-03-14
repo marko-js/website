@@ -44,7 +44,7 @@ This _seems_ to work at first glance, but you'll find out quickly that the value
 ```marko
 <let/degF=80>
 
-<input type="number" value=degF valueChange(value) { degF = value }>
+<input type="number" value=degF valueChange(value) { degF = parseFloat(value) }>
 <div>It's ${degF}°F</div>
 ```
 
@@ -53,7 +53,7 @@ Because this is such a common pattern, Marko provides a [shorthand](../reference
 ```marko
 <let/degF=80>
 
-<input type="number" value:=degF>
+<input type="number" value:parseFloat:=degF>
 <div>It's ${degF}°F</div>
 ```
 
@@ -62,21 +62,19 @@ Because this is such a common pattern, Marko provides a [shorthand](../reference
 The `input` tag contains a _string_, so let's convert it to a number using [the `<const>` tag](../reference/core-tag.md#const).
 
 ```marko
-<let/degFString="80">
-<const/degF=parseFloat(degFString)>
+<let/degF=80>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>It's ${degF}°F</div>
 ```
 
 Now we can use another `<const>` to convert to celsius!
 
 ```marko
-<let/degFString="80">
-<const/degF=(+degFString)>
+<let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -87,11 +85,10 @@ Now we can use another `<const>` to convert to celsius!
 Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
 
 ```marko
-<let/degFString="80">
-<const/degF=(+degFString)>
+<let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -112,11 +109,10 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 Or what about a temperature gauge, with some fancy CSS?
 
 ```marko
-<let/degFString="80">
-<const/degF=(+degFString)>
+<let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>
@@ -154,11 +150,10 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 
 ```marko
 /* index.marko */
-<let/degFString="80">
-<const/degF=(+degFString)>
+<let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
-<input type="number" value:=degFString>
+<input type="number" value:parseFloat:=degF>
 <div>
   ${degF}°F ↔ ${degC.toFixed(1)}°C
 </div>

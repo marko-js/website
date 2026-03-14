@@ -286,6 +286,28 @@ For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 <counter value=input.count valueChange=input.countChange/>
 ```
 
+#### Refining function
+
+The [change handler shorthand](#shorthand-change-handlers-two-way-binding) may optionally include a function that transforms the value before assignment. The function name appears between colons (`:refiningFunction:=`).
+
+```marko
+<input type="number" value:parseFloat:=num>
+
+// desugars to
+
+<input type="number" value=num valueChange(newValue) { num = parseFloat(newValue) }>
+```
+
+For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the desugared handler includes a boolean expression.
+
+```marko
+<input type="number" value:parseFloat:=input.num>
+
+// desugars to
+
+<input type="number" value=input.num valueChange=(input.num && (newValue) => { input.numChange(parseFloat(newValue)) })>
+```
+
 ### Shorthand `class` and `id`
 
 [Emmet style](https://docs.emmet.io/abbreviations/syntax/#id-and-class) `class` and `id` attribute shorthands are supported.
