@@ -46,7 +46,6 @@ If an otherwise ambiguous file contains any of the following syntax, it is detec
 - A [`style {}` block](https://v5.markojs.com/docs/class-components/#styles)
 - Inline JS in a [`$ scriptlet;`](https://v5.markojs.com/docs/syntax/#inline-javascript)
 - An [Attribute argument](https://v5.markojs.com/docs/syntax/#arguments) (`<button onClick("handleClick")>`)
-- An attribute modifier ([`:scoped`](https://v5.markojs.com/docs/class-components/#scoped) or [`:no-update`](https://v5.markojs.com/docs/class-components/#no-update_1))
 - Any of [these tags](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/translator/interop/feature-detection.ts#L182-L190):
   - `<await-reorderer>` `<class>` `<include-html>` `<include-text>` `<init-components>` `<macro>` `<module-code>` `<while>`
 
