@@ -649,6 +649,27 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
 </script>
 ```
 
+### Repeated Tag Vars
+
+When a tag variable is referenced in a hoisted context, it also implements the [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol). This enables access to a list of variables in loops or other nested scope.
+
+```marko
+<for until=10>
+  <div/$el/>
+</for>
+
+<script>
+  // access the first element with a getter
+  $el().style.color = "red";
+
+  // access other elements using the built-in `[Symbol.iterator]`
+  let i = 0;
+  for (const el of $el) {
+    el.innerHTML = i++;
+  }
+</script>
+```
+
 ## Tag Parameters
 
 While rendering [content](#tag-content), child may pass information _back_ to its parent using tag parameters.
