@@ -7,7 +7,7 @@ html-script --
     `document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');`
   };
 
-let-local-storage/tsMode=false key="ts-mode"
+let-local-storage/tsMode=true key="ts-mode"
 script -- document.documentElement.classList.toggle("ts-mode", tsMode);
 html-script --
   ${

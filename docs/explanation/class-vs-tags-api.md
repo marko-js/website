@@ -6,7 +6,7 @@
 > - `class`, `state`, `out`, `component`, and other class component-specific APIs have been removed
 > - Event handling is function-based instead of event-based
 
-Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner, easier to write & read, and more concise.
+Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner and easier to write & read, and it increases Marko's capabilities and optimization potential.
 
 This page will discuss some of the differences in mental model between the Class API and the Tags API.
 
@@ -109,8 +109,8 @@ Since component-level operations no longer exist in the Tags API, [`getComponent
 
 ```marko
 /* parent.marko */
-<child/child>
-<child/{ changeColor }>
+<child/child/>
+<child/{ changeColor }/>
 
 <button onClick() {
   child.changeColor("blue");
