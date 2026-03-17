@@ -6,15 +6,15 @@
 > - `class`, `state`, `out`, `component`, and other class component-specific APIs have been removed
 > - Event handling is function-based instead of event-based
 
-Marko versions 4 and 5 were built on top of the [Class API](https://v5.markojs.com/docs/class-components/). Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that this syntax is cleaner, easier to write/read, and more concise.
+Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner, easier to write & read, and more concise.
 
-This page will discuss some of the differences in mental model between Class and Tags API.
+This page will discuss some of the differences in mental model between the Class API and the Tags API.
 
 ## Components Melt Away
 
-The first idea to get used to when adopting the Tags API is that component boundaries have much less conceptual meaning than in the Class API, and component-level methods no longer exist.
+The first idea to get used to when adopting the Tags API is that component boundaries have much less importance than they do in the Class API, and component-level methods no longer exist.
 
-In the Class API, state and lifecycle are maintained at the _component_ level. Each single-file component has its own `state`, `onMount`, `onDestroy`, and other lifecycle methods. The Tags API abandons this idea in favor of granular, compiled reactivity. State is declared with [tag variables](../reference/language.md#tag-variables) where necessary, including inside conditionals and loops, and lifecycle is attached to individual tags.
+In the Class API, state and lifecycle are maintained at the _component_ level. Each single-file component has its own `state`, `onInput`, `onDestroy`, and other lifecycle methods. The Tags API abandons this idea in favor of granular, compiled reactivity. State is declared with [tag variables](../reference/language.md#tag-variables) where necessary, including inside conditionals and loops, and lifecycle is attached to individual tags.
 
 Patterns that depend on the component instance like `getComponent` have been removed and are replaced with [local, declarative alternatives](#component-refs).
 
@@ -39,13 +39,13 @@ Attribute arguments like `onClick("handleClick")` have been removed. Event handl
 <let/color="blue">
 <button onClick() { color = "red" }>Red</button>
 
-<const/makeGreen() {
+<const/yellowOrGreen() {
   color = Math.random() > 0.5 ? "yellow" : "green";
 }>
-<button onClick=makeGreen>Random</button>
+<button onClick=yellowOrGreen>Random</button>
 ```
 
-This _drastically_ simplifies custom tag communication, as function-based [event handlers](../reference/native-tag#event-handlers) can be passed and called directly instead of curried as events. This means they're [spreadable](../reference/language.md#spread-attributes) and [`this.emit`](https://v5.markojs.com/docs/events/#emitting-custom-events) is no longer necessary.
+This _drastically_ simplifies custom tag communication, as function-based [event handlers](../reference/native-tag#event-handlers) can be passed and called directly instead of curried as events. This means they're [spreadable](../reference/language.md#spread-attributes), and [`this.emit`](https://v5.markojs.com/docs/events/#emitting-custom-events) is no longer necessary.
 
 ```marko
 /* two-buttons.marko */
@@ -62,7 +62,7 @@ export interface Input extends Marko.HTML.Button {}
 }/>
 ```
 
-Information is passed to parents as standard function parameters.
+Information is passed to the parent via standard function parameters.
 
 ```marko
 export interface Input {
@@ -76,7 +76,7 @@ export interface Input {
 
 ## Element Refs
 
-Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), use element references from [tag variables on native tags](../reference/native-tag.md#element-references). The tag variable contains a getter to the DOM node, and since it is a function it can be usd anywhere in the template.
+Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), native tags [expose a tag variable](../reference/native-tag.md#element-references) with a getter to the DOM node. Since it is a function it can be used anywhere in the template.
 
 ```marko
 <input/$el/>
@@ -85,9 +85,9 @@ Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-inde
 ```
 
 > [!NOTE]
-> We use `$el` by convention. The leading `$` is strictly a convention and not necessarily required, but optimizations _may_ be added that only apply if the convention is followed.
+> We use `$el` by convention. The leading `$` is not necessarily required, but optimizations _may_ be added that only apply if the convention is followed.
 
-When references for multiple elements are required (like `getEls` in Marko 5), hoisted tag variables can be [iterated](../reference/language.md#repeated-tag-vars).
+When references for multiple elements are required (like [`getEls`](https://v5.markojs.com/docs/class-components/#getelskey) in Marko 5), hoisted tag variables can be [iterated](../reference/language.md#repeated-tag-vars).
 
 ```marko
 <let/focus=0>
@@ -105,7 +105,7 @@ When references for multiple elements are required (like `getEls` in Marko 5), h
 
 ## Component Refs
 
-Since component-level operations no longer exist in the Tags API, `getComponent` has been removed. Information should be passed between parent and child using [event handlers](#event-handling), the [controllable pattern](./controllable-components.md), and methods exposed by [the `<return>` tag](../reference/core-tag.md#return).
+Since component-level operations no longer exist in the Tags API, [`getComponent`](https://v5.markojs.com/docs/class-components/#getcomponentkey-index) has been removed. Information should be passed between parent and child using [event handlers](#event-handling), the [controllable pattern](./controllable-components.md), and methods exposed by [the `<return>` tag](../reference/core-tag.md#return).
 
 ```marko
 /* parent.marko */
@@ -128,7 +128,7 @@ Since component-level operations no longer exist in the Tags API, `getComponent`
 
 ## Lifecycle
 
-In the Class API, running code whens something mounts inside a loop requires a child component.
+In the Class API, running code when something mounts inside a loop requires a child component.
 
 ```marko
 // use class
@@ -174,7 +174,7 @@ The [`<script>` tag](../reference/core-tag.md#script) is used in the Tags API to
 
 The [`<lifecycle>` tag](../reference/core-tag.md#lifecycle) is for escaping the reactive system to work with imperative APIs (maps, charts, etc.). Each `<lifecycle>` tag manages its own `onMount`, `onUpdate`, and `onDestroy`, and `this` is stable across the tag's lifetime.
 
-This tag should also be used sparingly.
+This tag should be used sparingly, usually `<script>` or regular state via `<let>`/`<const>` is a better option.
 
 ```marko
 <let/latitude=0>
@@ -232,5 +232,11 @@ export interface Input {
   num: number | string;
 }
 <const/num=parseInt(input.num)>
-<div>${input.num}</div>
+<div>${num}</div>
 ```
+
+## Further Reading
+
+- [Controllable Components](./controllable-components.md)
+- [Reactivity](../reference/reactivity.md)
+- [Fine-Grained Bundling](./fine-grained-bundling.md)
