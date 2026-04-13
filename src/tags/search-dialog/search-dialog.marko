@@ -1,0 +1,112 @@
+import * as styles from "./search-dialog.style.module.scss";
+client import { sendQuery } from "./search-worker-client";
+import type { SearchHit } from "../../util/search-worker";
+
+static function highlightSegments(text: string, query: string) {
+  const q = query.trim();
+  if (!q) return [{ text, hl: false }];
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  const lower = q.toLowerCase();
+  return parts.filter(Boolean).map((p) => ({ text: p, hl: p.toLowerCase() === lower }));
+}
+
+export interface Input {
+  open?: boolean;
+  openChange?: (open: boolean) => void;
+}
+
+let/open:=input.open
+let/query=""
+let/results=undefined as SearchHit[] | undefined
+let/activeIndex=-1
+
+script --
+  if (open) {
+    if (!$dialog().open) {
+      $dialog().showModal();
+      $input().focus();
+      $input().select();
+    }
+  } else if ($dialog().open) {
+    $dialog().close();
+  }
+
+script --
+  if (query.trim()) {
+    const hits = await sendQuery(query);
+    if ($signal.aborted) return;
+    results = hits;
+    activeIndex = hits.length > 0 ? 0 : -1;
+  } else {
+    results = undefined;
+    activeIndex = -1;
+  }
+
+dialog/$dialog
+  ,class=styles.dialog
+  ,onCancel(e) {
+    e.preventDefault();
+    open = false;
+  }
+  ,onClick(e) {
+    if (e.target === $dialog()) open = false;
+  }
+  ,onKeyDown(e) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (results && results.length > 0) activeIndex = (activeIndex + 1) % results.length;
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (results && results.length > 0) activeIndex = (activeIndex - 1 + results.length) % results.length;
+    }
+  }
+  form
+    ,class=styles.panel
+    ,onSubmit(e) {
+      e.preventDefault();
+      if (results && results[activeIndex]) {
+        window.location.href = results[activeIndex].href;
+        open = false;
+        query = "";
+      }
+    }
+    input/$input
+      ,class=styles.input
+      ,type="text"
+      ,placeholder="Search docs..."
+      ,value:=query
+    if=(results && results.length > 0)
+      div class=styles.results
+        for|result, i| of=results
+          a/$el
+            ,href=result.href
+            ,class=[styles.result, i === activeIndex && styles.active]
+            ,onClick() {
+              const url = new URL(result.href, window.location.origin);
+              if (url.pathname === window.location.pathname) {
+                open = false;
+                query = "";
+              }
+            }
+            ,onPointerMove() {
+              activeIndex = i;
+            }
+            ,onPointerDown() {
+              activeIndex = i;
+            }
+            script --
+              if (i === activeIndex) {
+                $el().scrollIntoView({ block: "nearest" });
+              }
+            const/titleMatch = query.trim() && result.title.toLowerCase().includes(query.trim().toLowerCase())
+            const/displayText = titleMatch ? result.title : (result.snippet || result.title)
+            span class=styles.displayText
+              for|seg| of=highlightSegments(displayText, query)
+                if=(seg.hl)
+                  mark class=styles.highlight -- ${seg.text}
+                else
+                  -- ${seg.text}
+            span class=styles.breadcrumbs -- ${result.breadcrumbs.join(" · ")}
+    else if=(query.trim() && results)
+      div class=styles.empty -- No results found.

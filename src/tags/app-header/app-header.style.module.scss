@@ -157,7 +157,7 @@
   margin-right: auto;
 }
 
-#docsearch {
+#search {
   display: flex;
   place-items: center;
   place-content: center;
@@ -174,6 +174,7 @@
 
   button {
     display: flex;
+    justify-content: space-between;
     height: 4rem;
     width: 100%;
     padding: 1rem;
@@ -187,9 +188,15 @@
     -webkit-tap-highlight-color: transparent;
     @media (pointer: fine) {
       &:not(:disabled):is(:hover, :active, :focus) {
-        color: var(--color-blue-dark);
+        color: var(--color-blue);
         border-color: transparent;
       }
+    }
+    & > kbd {
+      font-family: inherit;
+      font-size: 0.7rem;
+
+      display: none;
     }
     &::before {
       content: "";
@@ -202,12 +209,15 @@
       background-color: var(--color-foreground);
     }
     @media (min-width: 64rem) and (min-height: 38rem) {
+      & > kbd {
+        display: inline-block;
+      }
       border: 2px solid var(--color-foreground);
       height: 2.5rem;
       background:
         linear-gradient(var(--color-background), var(--color-background))
           padding-box,
-        linear-gradient(120deg, var(--color-blue-dark), var(--color-blue-light))
+        linear-gradient(120deg, var(--color-blue-alt), var(--color-blue))
           border-box !important;
     }
   }

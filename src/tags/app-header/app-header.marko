@@ -2,8 +2,18 @@ import * as footerStyles from "../app-footer/app-footer.style.module.scss";
 import * as styles from "./app-header.style.module.scss";
 
 let/mobileMenu=false
+let/searchOpen=false
 script --
   document.documentElement.classList.toggle("show-mobile-menu", mobileMenu);
+
+// Global Cmd+K shortcut
+script --
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      searchOpen = !searchOpen;
+    }
+  }, { signal: $signal });
 
 header#header
   a
@@ -35,22 +45,22 @@ header#header
     ,onClick() {
       mobileMenu = false;
     }
-    ,id=styles.docsearch
-    button disabled aria-hidden="true"
+    ,id=styles.search
+    button
+      ,aria-label="Search docs (Cmd+K)"
+      ,onClick() {
+        searchOpen = true;
+      }
+      kbd -- K
+      html-script -- ${`document.currentScript.previousElementSibling.prepend(navigator.platform.startsWith("Mac")?"\u2318":"ctrl+")`}
+
+search-dialog open:=searchOpen
 
 script --
-  onLoad(async () => {
+  onLoad(() => {
     if ("ScrollTimeline" in window) {
       setupStickyScroll();
     }
-    const docsearch = (await import("./docsearch")).default;
-    docsearch({
-      container: document.getElementById(styles.docsearch)!,
-      indexName: "markojs",
-      placeholder: "",
-      appId: "GB0QQV5RQM",
-      apiKey: "82f1b630f11e1afa4767f051af953a28",
-    });
   });
 static function onLoad(cb: () => void) {
   if (document.readyState === "interactive") {

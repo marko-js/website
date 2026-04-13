@@ -13,6 +13,7 @@ import * as prettierMarko from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
 import { glob } from "glob";
 import type { HeadingList } from "../types";
+import { buildSearchIndex } from "./search-index-builder";
 
 export default function markodownPlugin(): PluginOption {
   return {
@@ -35,8 +36,8 @@ export default function markodownPlugin(): PluginOption {
         cwd: docsPath,
       });
 
-      await Promise.all(
-        mdFiles.map(async (file) => {
+      await Promise.all([
+        ...mdFiles.map(async (file) => {
           const content = await fs.readFile(path.join(docsPath, file), "utf-8");
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
             recursive: true,
@@ -56,7 +57,8 @@ export default function markodownPlugin(): PluginOption {
             ),
           ]);
         }),
-      );
+        buildSearchIndex(docsPath),
+      ]);
     },
   };
 }
