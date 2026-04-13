@@ -1242,7 +1242,7 @@ This creates two possible behaviors:
 
 ## `<const>`
 
-The `<const>` exposes its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) through its [Tag Variable](./language.md#tag-variables).
+The `<const>` tag exposes its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) through its [Tag Variable](./language.md#tag-variables).
 
 Extending the [`<let>`](#let) example we could derive data from the `count` state like so:
 
