@@ -20,8 +20,10 @@
     "desugars",
     "Fastly",
     "figcaption",
+    "flexsearch",
     "fortawesome",
     "hastscript",
+    "hrefs",
     "importmap",
     "Jetpack",
     "jridgewell",
@@ -39,6 +41,7 @@
     "openjsf",
     "optgroup",
     "popovertarget",
+    "recents",
     "renderable",
     "reorder",
     "reorderer",
@@ -55,6 +58,13 @@
     "WHATWG"
   ],
   "ignoreRegExpList": [],
-  "files": ["*", "docs/**/*", "src/**/*"],
-  "ignorePaths": ["**/_compiled-docs", "dist"]
+  "files": [
+    "*",
+    "docs/**/*",
+    "src/**/*"
+  ],
+  "ignorePaths": [
+    "**/_compiled-docs",
+    "dist"
+  ]
 }

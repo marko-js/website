@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "marko-best-practices": {
+      "source": "marko-js/marko",
+      "sourceType": "github",
+      "computedHash": "a3efd14e770fa7dcfe21da12d47f9e3c7e4147bcc178fe4a526687fab46e9f81"
+    }
+  }
+}
