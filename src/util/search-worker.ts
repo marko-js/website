@@ -80,8 +80,14 @@ function buildSnippet(content: string, query: string): string | undefined {
   let start = Math.max(0, pos - radius);
   let end = Math.min(content.length, pos + query.length + radius);
 
-  if (start > 0) start = content.lastIndexOf(" ", start) + 1 || start;
-  if (end < content.length) end = content.indexOf(" ", end) || end;
+  if (start > 0) {
+    const prevSpace = content.lastIndexOf(" ", start);
+    start = prevSpace !== -1 ? prevSpace + 1 : start;
+  }
+  if (end < content.length) {
+    const nextSpace = content.indexOf(" ", end);
+    end = nextSpace !== -1 ? nextSpace : content.length;
+  }
 
   return (
     (start > 0 ? "\u2026" : "") +
@@ -152,10 +158,14 @@ self.onmessage = async (e: MessageEvent) => {
 
   switch (type) {
     case "init": {
-      const res = await fetch("/search-index.json");
-      const blocks: SearchBlock[] = await res.json();
-      init(blocks);
-      self.postMessage({ type: "ready" });
+      try {
+        const res = await fetch("/search-index.json");
+        const blocks: SearchBlock[] = await res.json();
+        init(blocks);
+        self.postMessage({ type: "ready" });
+      } catch (err) {
+        self.postMessage({ type: "init-error", error: String(err) });
+      }
       break;
     }
 

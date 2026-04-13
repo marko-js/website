@@ -8,14 +8,17 @@ function ensureWorker(): Promise<void> {
   worker = new Worker(new URL("../../util/search-worker", import.meta.url), {
     type: "module",
   });
-  ready = new Promise<void>((resolve) => {
-    worker!.addEventListener(
-      "message",
-      (e: MessageEvent) => {
-        if (e.data.type === "ready") resolve();
-      },
-      { once: true },
-    );
+  ready = new Promise<void>((resolve, reject) => {
+    function onMessage(e: MessageEvent) {
+      if (e.data.type === "ready") {
+        worker!.removeEventListener("message", onMessage);
+        resolve();
+      } else if (e.data.type === "init-error") {
+        worker!.removeEventListener("message", onMessage);
+        reject(new Error(e.data.error));
+      }
+    }
+    worker!.addEventListener("message", onMessage);
   });
   worker.postMessage({ type: "init" });
   return ready;
