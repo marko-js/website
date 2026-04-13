@@ -1,5 +1,8 @@
 html:has(.dialog[open]) {
   overflow: hidden;
+}
+
+html {
   scrollbar-gutter: stable;
 }
 
