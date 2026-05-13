@@ -57,7 +57,7 @@
     "lz-string": "^1.5.0",
     "markdownlint-cli": "^0.48.0",
     "marked": "^17.0.4",
-    "marko": "^6.0.147",
+    "marko": "^6.0.171",
     "path": "./shim/path",
     "path-browserify": "^1.0.1",
     "postcss": "^8.5.8",
