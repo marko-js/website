@@ -23,22 +23,16 @@ export default defineConfig({
       external: ["browserslist"],
     },
   },
+  resolve: {
+    alias: {
+      // marko/translator uses `node:path` which must be shimmed for browser environments.
+      // The shim re-exports from path-browserify. Named exports are bound from the default
+      // so they work in both Rollup (build) and Vite's SSR module runner (dev).
+      "node:path": path.resolve("./shim/path/browser.js"),
+    },
+  },
   optimizeDeps: {
     exclude: ["@rollup/browser", "lightningcss-wasm"],
-    esbuildOptions: {
-      plugins: [
-        {
-          name: "node-builtins-browser-shim",
-          setup(build) {
-            // marko/translator uses `node:path` which esbuild externalizes on
-            // platform:browser. Redirect it to the local path-browserify shim.
-            build.onResolve({ filter: /^node:path$/ }, () => ({
-              path: path.resolve("./shim/path/browser.js"),
-            }));
-          },
-        },
-      ],
-    },
   },
   plugins: [
     patchCssModules({
