@@ -25,6 +25,20 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ["@rollup/browser", "lightningcss-wasm"],
+    esbuildOptions: {
+      plugins: [
+        {
+          name: "node-builtins-browser-shim",
+          setup(build) {
+            // marko/translator uses `node:path` which esbuild externalizes on
+            // platform:browser. Redirect it to the local path-browserify shim.
+            build.onResolve({ filter: /^node:path$/ }, () => ({
+              path: path.resolve("./shim/path/browser.js"),
+            }));
+          },
+        },
+      ],
+    },
   },
   plugins: [
     patchCssModules({
