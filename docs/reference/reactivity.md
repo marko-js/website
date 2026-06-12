@@ -15,7 +15,7 @@ Any expression within a `.marko` template that references a [reactive variable](
 These reactive expressions may exist throughout the template in [attributes](./language.md#attributes), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), and [script content](./core-tag.md#script).
 
 > [!NOTE]
-> All JavaScript expressions withing the Marko template may be reactive with the exception of
+> All JavaScript expressions within the Marko template may be reactive with the exception of
 > [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server` and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
 
 ```marko
@@ -26,7 +26,7 @@ These reactive expressions may exist throughout the template in [attributes](./l
 </button>
 ```
 
-Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically be kept in sync with the new value.
+Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically kept in sync with the new value.
 
 > [!CAUTION]
 > In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.

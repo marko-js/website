@@ -14,7 +14,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   tsconfig.json
   ```
 
-- **For [packages of Marko tags](https://markojs.com/docs/custom-tags/#publishing-tags-to-npm)**, the `"script-lang"` attribute must be set to `"ts"` in [the `marko.json`](./marko-json.md):
+- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, the `"script-lang"` attribute must be set to `"ts"` in the `marko.json`:
 
   ```json
   /* marko.json */
@@ -97,7 +97,7 @@ static function staticFn() {
 
 ## Built-in Marko Types
 
-Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/marko/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
+Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
 
 - **`Marko.Template<Input, Return>`**
   - The type of a `.marko` file
@@ -108,13 +108,15 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - Used to type [tag content](./language.md#tag-content)
 - **`Marko.Renderable`**
   - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tags)
-  - `string | Marko.Template | Marko.Body | { content: Marko.Body}`
+  - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
-- **`Marko.RenderResult`**
+- **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
-  - `ReturnType<template.renderSync>`
-  - `Awaited<ReturnType<template.render>>`
+  - `ReturnType<Marko.Template["render"]>`
+- **`Marko.MountedTemplate<Input, Return>`**
+  - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
+  - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
   - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
@@ -125,15 +127,9 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - Used to represent types for [attributes tags](./language.md#attribute-tags)
   - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
 
-### Deprecated
+### Class API Types
 
-- **`Marko.Component<Input, State>`**
-  - The base class for a [class component](https://markojs.com/v5/docs/class-components/#class-components)
-- **`Marko.Out`**
-  - The render context with methods like `write`, `beginAsync`, etc.
-  - `ReturnType<template.render>`
-- **`Marko.Emitter`**
-  - `EventEmitter` from `@types/node`
+Types for the [Class API](https://v5.markojs.com/docs/typescript/#built-in-marko-types), such as `Marko.Component`, `Marko.Out`, and `Marko.Emitter`, are no longer included in Marko 6. They remain available through the `marko@5` package when [using multiple Marko versions](../guide/marko-5-interop.md).
 
 ### Typing `content`
 

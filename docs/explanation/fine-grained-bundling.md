@@ -35,6 +35,8 @@ Only the JavaScript for toggling `watching` and updating the button text is incl
 
 Marko's compiler automatically determines what needs JavaScript without manual configuration.
 
-Whether an application is structured as one large component or split into many small ones, the bundle size remains the same—determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
+Whether an application is structured as one large component or split into many small ones, the bundle size remains the same, determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
 
 This creates a development experience where good performance emerges naturally from the compilation process. Architectural decisions become about maintainability and developer experience, while the compiler handles optimization automatically.
+
+When even the interactive JavaScript should be deferred, such as for a heavy component below the fold, tags can be [lazily loaded](../reference/lazy-loading.md) into their own bundles with declarative triggers.

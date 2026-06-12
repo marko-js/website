@@ -94,6 +94,20 @@ import MyTag from "<my-tag>"
 <MyTag/>
 ```
 
+#### Lazy Tag `import`
+
+Tag imports may include a `load` [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) which splits the tag into its own bundle and defers loading its JavaScript until it is needed in the browser.
+
+```marko
+import HeavyChart from "<heavy-chart>" with { load: "visible#chart" }
+
+<div#chart>
+  <HeavyChart data=input.data/>
+</div>
+```
+
+See [Lazy Loading](./lazy-loading.md) for the available triggers.
+
 ### `export`
 
 JavaScript [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export) statements are allowed at the root of the template.
@@ -165,7 +179,7 @@ server {
 
 ## Tags
 
-Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tags.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
+Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tag.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
 
 All of these types of tags use the same syntax:
 
@@ -304,14 +318,14 @@ The [change handler shorthand](#shorthand-change-handlers-two-way-binding) may o
 <input type="number" value=num valueChange(newValue) { num = parseFloat(newValue) }>
 ```
 
-For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the desugared handler includes a boolean expression.
+For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the desugared handler is guarded so it is only installed when a change handler was provided.
 
 ```marko
 <input type="number" value:parseFloat:=input.num>
 
 // desugars to
 
-<input type="number" value=input.num valueChange=(input.num && (newValue) => { input.numChange(parseFloat(newValue)) })>
+<input type="number" value=input.num valueChange=(input.numChange && (newValue) => { input.numChange(parseFloat(newValue)) })>
 ```
 
 ### Shorthand `class` and `id`
@@ -965,7 +979,7 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 ## Supporting Files
 
-Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
+Marko discovers [`style`](../guide/styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
 
 ```text
 foo.marko
@@ -1023,7 +1037,7 @@ Any expression within a `.marko` template that references a [reactive variable](
 These reactive expressions may exist throughout the template in [attributes](./language.md#attributes), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), and [script content](./core-tag.md#script).
 
 > [!NOTE]
-> All JavaScript expressions withing the Marko template may be reactive with the exception of
+> All JavaScript expressions within the Marko template may be reactive with the exception of
 > [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server` and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
 
 ```marko
@@ -1034,7 +1048,7 @@ These reactive expressions may exist throughout the template in [attributes](./l
 </button>
 ```
 
-Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically be kept in sync with the new value.
+Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically kept in sync with the new value.
 
 > [!CAUTION]
 > In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.
@@ -1599,7 +1613,7 @@ The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](.
 
 ## `<html-comment>`
 
-By default, [html comments](./language.md#Comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
+By default, [html comments](./language.md#comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
 
 ```marko
 <html-comment>Hello, view source</html-comment>
@@ -2015,6 +2029,155 @@ A native HTML `<!-- comment -->` may be included with [`<html-comment>`](./core-
 
 ----------
 
+<!-- lazy-loading.md -->
+
+# Lazy Loading
+
+By default the JavaScript for every [custom tag](./custom-tag.md) used on a page is included in that page's bundle. The `load` [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) instead splits the tag into its own bundle, which is fetched in the browser only after a [trigger](#triggers) has fired.
+
+```marko
+import VideoPlayer from "<video-player>" with { load: "visible#hero" }
+
+<section#hero>
+  <VideoPlayer src=input.src/>
+</section>
+```
+
+When rendered on the server, a lazily loaded tag writes its HTML immediately like any other tag. Only its client-side JavaScript is deferred, and the tag becomes interactive once the trigger has fired and its bundle has loaded.
+
+When rendered in the browser, nothing is displayed in the tag's place until the trigger has fired and its bundle has loaded. The [`<try>` tag](./core-tag.md#try) can be used to show [placeholder content](#placeholders--errors) in the meantime.
+
+Attributes passed to a lazily loaded tag remain reactive while it loads. Once its JavaScript arrives, the tag picks up the latest values.
+
+> [!NOTE]
+> The `load` attribute may only be used when importing a [custom tag](./custom-tag.md) as a [default import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#default_import). It works with both relative paths and the [tag `import` shorthand](./language.md#tag-import-shorthand).
+
+## Triggers
+
+The value of the `load` attribute is either [`"render"`](#render) or one or more triggers which determine when the tag's JavaScript is loaded.
+
+Most triggers accept a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) for an element to watch, and some accept additional options using a query string syntax.
+
+> [!NOTE]
+> If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately (with a warning in development).
+
+### `render`
+
+Loads the tag's JavaScript as soon as the tag is rendered.
+
+```marko
+import MarkdownEditor from "<markdown-editor>" with { load: "render" }
+
+<MarkdownEditor value=input.draft/>
+```
+
+The `render` trigger does not wait for any user interaction. It splits the tag into its own bundle that is only loaded on pages which actually render the tag, which is useful for tags that are rendered conditionally or are heavy enough to be worth splitting out of the main bundle.
+
+The `render` trigger must be used alone and cannot be combined with [multiple triggers](#multiple-triggers).
+
+### `visible`
+
+Loads the tag's JavaScript once the element matching the selector becomes visible in the viewport (via an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver)).
+
+```marko
+import Comments from "<comments>" with { load: "visible#comments" }
+
+<section#comments>
+  <Comments post=input.post/>
+</section>
+```
+
+The observer's [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) may be configured to begin loading before the element actually enters the viewport.
+
+```marko
+import Comments from "<comments>" with { load: "visible#comments?rootMargin=100px" }
+```
+
+### `idle`
+
+Loads the tag's JavaScript when the browser is idle (via [`requestIdleCallback`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback)). In browsers without `requestIdleCallback`, loading begins immediately.
+
+```marko
+import Recommendations from "<recommendations>" with { load: "idle" }
+
+<Recommendations/>
+```
+
+A `timeout` (in milliseconds) may be provided to ensure loading begins even if the browser never becomes idle.
+
+```marko
+import Recommendations from "<recommendations>" with { load: "idle?timeout=2000" }
+```
+
+The `idle` trigger does not accept a selector.
+
+### `media`
+
+Loads the tag's JavaScript once the [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries) in parentheses matches. Loading begins immediately if the query already matches, otherwise as soon as it first does.
+
+```marko
+import MobileNav from "<mobile-nav>" with { load: "media(max-width: 768px)" }
+
+<MobileNav/>
+```
+
+This pairs well with tags hidden by CSS breakpoints, so that (for example) desktop users never download mobile-only UI.
+
+### Events
+
+A trigger beginning with `on` loads the tag's JavaScript the first time the matching event fires on the element matching the selector.
+
+```marko
+import EmojiPicker from "<emoji-picker>" with { load: "on-focus#message" }
+
+<input#message placeholder="Say something nice">
+<EmojiPicker/>
+```
+
+The event name follows the same casing rules as [event handler attributes](./native-tag.md#event-handlers): with `on-` the event name casing is preserved, otherwise the event name is all lowercased (so `on-click` and `onClick` are equivalent).
+
+### Multiple Triggers
+
+Multiple triggers may be combined with `|`. The tag's JavaScript is loaded when the first of them fires.
+
+```marko
+import ChatWidget from "<chat-widget>" with { load: "on-mouseover#chat | idle?timeout=5000" }
+
+<button#chat>Chat with us</button>
+<ChatWidget/>
+```
+
+## Placeholders & Errors
+
+In the browser, a lazily loaded tag behaves like [async content](./core-tag.md#await): while its JavaScript is loading, a [`<try>`](./core-tag.md#try) ancestor displays its [`@placeholder`](./core-tag.md#placeholder) content, and if loading fails the error is handled by the nearest [`@catch`](./core-tag.md#catch).
+
+```marko
+import Comments from "<comments>" with { load: "on-click#show-comments" }
+
+<let/show=false/>
+<button#show-comments onClick() { show = true }>Show Comments</button>
+<try>
+  <if=show>
+    <Comments post=input.post/>
+  </if>
+
+  <@placeholder>
+    Loading comments...
+  </@placeholder>
+
+  <@catch|err|>
+    Failed to load comments: ${err.message}
+  </@catch>
+</try>
+```
+
+## Bundler Support
+
+Lazy loading is coordinated with the bundler through the `linkAssets` compiler option. [`@marko/vite`](https://github.com/marko-js/vite) (and therefore [Marko Run](../marko-run/getting-started.md)) configures this automatically, so no setup is required.
+
+
+----------
+
 <!-- typescript.md -->
 
 # TypeScript
@@ -2033,7 +2196,7 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   tsconfig.json
   ```
 
-- **For [packages of Marko tags](https://markojs.com/docs/custom-tags/#publishing-tags-to-npm)**, the `"script-lang"` attribute must be set to `"ts"` in [the `marko.json`](./marko-json.md):
+- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, the `"script-lang"` attribute must be set to `"ts"` in the `marko.json`:
 
   ```json
   /* marko.json */
@@ -2116,7 +2279,7 @@ static function staticFn() {
 
 ## Built-in Marko Types
 
-Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/marko/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
+Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
 
 - **`Marko.Template<Input, Return>`**
   - The type of a `.marko` file
@@ -2127,13 +2290,15 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - Used to type [tag content](./language.md#tag-content)
 - **`Marko.Renderable`**
   - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tags)
-  - `string | Marko.Template | Marko.Body | { content: Marko.Body}`
+  - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
-- **`Marko.RenderResult`**
+- **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
-  - `ReturnType<template.renderSync>`
-  - `Awaited<ReturnType<template.render>>`
+  - `ReturnType<Marko.Template["render"]>`
+- **`Marko.MountedTemplate<Input, Return>`**
+  - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
+  - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
   - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
@@ -2144,15 +2309,9 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - Used to represent types for [attributes tags](./language.md#attribute-tags)
   - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
 
-### Deprecated
+### Class API Types
 
-- **`Marko.Component<Input, State>`**
-  - The base class for a [class component](https://markojs.com/v5/docs/class-components/#class-components)
-- **`Marko.Out`**
-  - The render context with methods like `write`, `beginAsync`, etc.
-  - `ReturnType<template.render>`
-- **`Marko.Emitter`**
-  - `EventEmitter` from `@types/node`
+Types for the [Class API](https://v5.markojs.com/docs/typescript/#built-in-marko-types), such as `Marko.Component`, `Marko.Out`, and `Marko.Emitter`, are no longer included in Marko 6. They remain available through the `marko@5` package when [using multiple Marko versions](../guide/marko-5-interop.md).
 
 ### Typing `content`
 
@@ -2659,7 +2818,7 @@ template.mount({}, document.body, "afterbegin"); // prepended to the body
 
 ### Render Result
 
-The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used update and destroy the instance of the template and DOM that was built.
+The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used to update and destroy the instance of the template and DOM that was built, and to access its [return value](#instancevalue).
 
 ```js
 const instance = template.mount({ name: "foo" }, document.body);
@@ -2686,6 +2845,31 @@ The `.destroy()` method causes every [`$signal`](./language.md#signal) to be abo
 instance.destroy();
 ```
 
+#### instance.value
+
+The `.value` property reflects the [tag variable](./language.md#tag-variables) exposed by the template's [`<return>` tag](./core-tag.md#return).
+
+```marko
+/* color-picker.marko */
+<let/color="#ff8000">
+<input type="color" value:=color>
+<return=color valueChange(newColor) { color = newColor }/>
+```
+
+```js
+import ColorPicker from "./color-picker.marko";
+
+const instance = ColorPicker.mount({}, document.body);
+
+instance.value; // The currently selected color
+```
+
+When the `<return>` has an [assignable value](./core-tag.md#assignable-return-value), assigning to `.value` updates the template through its `valueChange`.
+
+```js
+instance.value = "#0080ff";
+```
+
 ## `input.$global`
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
@@ -2710,10 +2894,10 @@ This value should be a string that represents a valid [csp nonce](https://develo
 
 > `string | undefined`
 
-The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
+The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
+The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.

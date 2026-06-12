@@ -88,6 +88,20 @@ import MyTag from "<my-tag>"
 <MyTag/>
 ```
 
+#### Lazy Tag `import`
+
+Tag imports may include a `load` [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) which splits the tag into its own bundle and defers loading its JavaScript until it is needed in the browser.
+
+```marko
+import HeavyChart from "<heavy-chart>" with { load: "visible#chart" }
+
+<div#chart>
+  <HeavyChart data=input.data/>
+</div>
+```
+
+See [Lazy Loading](./lazy-loading.md) for the available triggers.
+
 ### `export`
 
 JavaScript [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export) statements are allowed at the root of the template.
@@ -159,7 +173,7 @@ server {
 
 ## Tags
 
-Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tags.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
+Marko supports all native HTML/SVG/whatever tags and attributes. In addition to these, a set of useful [core tags](./core-tag.md) are provided. Each project may have its own [custom tags](./custom-tag.md), and third-party tags may be included through `node_modules`.
 
 All of these types of tags use the same syntax:
 
@@ -298,14 +312,14 @@ The [change handler shorthand](#shorthand-change-handlers-two-way-binding) may o
 <input type="number" value=num valueChange(newValue) { num = parseFloat(newValue) }>
 ```
 
-For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the desugared handler includes a boolean expression.
+For [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors), the desugared handler is guarded so it is only installed when a change handler was provided.
 
 ```marko
 <input type="number" value:parseFloat:=input.num>
 
 // desugars to
 
-<input type="number" value=input.num valueChange=(input.num && (newValue) => { input.numChange(parseFloat(newValue)) })>
+<input type="number" value=input.num valueChange=(input.numChange && (newValue) => { input.numChange(parseFloat(newValue)) })>
 ```
 
 ### Shorthand `class` and `id`
