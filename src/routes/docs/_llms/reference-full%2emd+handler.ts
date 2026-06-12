@@ -10,6 +10,7 @@ const referenceDocs = prepareLlmsTxt(
     "reactivity",
     "core-tag",
     "native-tag",
+    "lazy-loading",
     "typescript",
     "concise-syntax",
     "template",
