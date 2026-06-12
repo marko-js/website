@@ -112,7 +112,7 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 ## Supporting Files
 
-Marko discovers [`style`](./styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
+Marko discovers [`style`](../guide/styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
 
 ```text
 foo.marko

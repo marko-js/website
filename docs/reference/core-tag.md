@@ -536,7 +536,7 @@ The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](.
 
 ## `<html-comment>`
 
-By default, [html comments](./language.md#Comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
+By default, [html comments](./language.md#comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
 
 ```marko
 <html-comment>Hello, view source</html-comment>

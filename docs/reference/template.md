@@ -113,7 +113,7 @@ template.mount({}, document.body, "afterbegin"); // prepended to the body
 
 ### Render Result
 
-The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used update and destroy the instance of the template and DOM that was built.
+The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used to update and destroy the instance of the template and DOM that was built, and to access its [return value](#instancevalue).
 
 ```js
 const instance = template.mount({ name: "foo" }, document.body);
@@ -140,6 +140,31 @@ The `.destroy()` method causes every [`$signal`](./language.md#signal) to be abo
 instance.destroy();
 ```
 
+#### instance.value
+
+The `.value` property reflects the [tag variable](./language.md#tag-variables) exposed by the template's [`<return>` tag](./core-tag.md#return).
+
+```marko
+/* color-picker.marko */
+<let/color="#ff8000">
+<input type="color" value:=color>
+<return=color valueChange(newColor) { color = newColor }/>
+```
+
+```js
+import ColorPicker from "./color-picker.marko";
+
+const instance = ColorPicker.mount({}, document.body);
+
+instance.value; // The currently selected color
+```
+
+When the `<return>` has an [assignable value](./core-tag.md#assignable-return-value), assigning to `.value` updates the template through its `valueChange`.
+
+```js
+instance.value = "#0080ff";
+```
+
 ## `input.$global`
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
@@ -164,10 +189,10 @@ This value should be a string that represents a valid [csp nonce](https://develo
 
 > `string | undefined`
 
-The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
+The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
+The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
