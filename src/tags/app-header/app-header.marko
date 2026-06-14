@@ -8,12 +8,16 @@ script --
 
 // Global Cmd+K shortcut
 script --
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      e.preventDefault();
-      searchOpen = !searchOpen;
-    }
-  }, { signal: $signal });
+  document.addEventListener(
+    "keydown",
+    (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchOpen = !searchOpen;
+      }
+    },
+    { signal: $signal },
+  );
 
 header#header
   a
@@ -52,7 +56,10 @@ header#header
         searchOpen = true;
       }
       kbd -- K
-      html-script -- ${`document.currentScript.previousElementSibling.prepend(navigator.platform.startsWith("Mac")?"\u2318":"ctrl+")`}
+      html-script --
+        ${
+          `document.currentScript.previousElementSibling.prepend(navigator.platform.startsWith("Mac")?"\u2318":"ctrl+")`
+        };
 
 search-dialog open:=searchOpen
 

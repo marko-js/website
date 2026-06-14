@@ -8,7 +8,9 @@ static function highlightSegments(text: string, query: string) {
   const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const parts = text.split(new RegExp(`(${escaped})`, "gi"));
   const lower = q.toLowerCase();
-  return parts.filter(Boolean).map((p) => ({ text: p, hl: p.toLowerCase() === lower }));
+  return parts
+    .filter(Boolean)
+    .map((p) => ({ text: p, hl: p.toLowerCase() === lower }));
 }
 
 export interface Input {
@@ -18,7 +20,7 @@ export interface Input {
 
 let/open:=input.open
 let/query=""
-let/results=undefined as SearchHit[] | undefined
+let/results=(undefined as SearchHit[] | undefined)
 let/activeIndex=-1
 
 script --
@@ -55,10 +57,14 @@ dialog/$dialog
   ,onKeyDown(e) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (results && results.length > 0) activeIndex = (activeIndex + 1) % results.length;
+      if (results && results.length > 0) {
+        activeIndex = (activeIndex + 1) % results.length;
+      }
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (results && results.length > 0) activeIndex = (activeIndex - 1 + results.length) % results.length;
+      if (results && results.length > 0) {
+        activeIndex = (activeIndex - 1 + results.length) % results.length;
+      }
     }
   }
   form
@@ -76,7 +82,7 @@ dialog/$dialog
       ,type="text"
       ,placeholder="Search docs..."
       ,value:=query
-    if=(results && results.length > 0)
+    if=results && results.length > 0
       div class=styles.results
         for|result, i| of=results
           a/$el
@@ -99,14 +105,18 @@ dialog/$dialog
               if (i === activeIndex) {
                 $el().scrollIntoView({ block: "nearest" });
               }
-            const/titleMatch = query.trim() && result.title.toLowerCase().includes(query.trim().toLowerCase())
-            const/displayText = titleMatch ? result.title : (result.snippet || result.title)
+            const/titleMatch=(
+              query.trim() &&
+              result.title.toLowerCase().includes(query.trim().toLowerCase())
+            )
+            const/displayText=(
+              titleMatch ? result.title : result.snippet || result.title
+            )
             span class=styles.displayText
               for|seg| of=highlightSegments(displayText, query)
-                if=(seg.hl)
+                if=seg.hl
                   mark class=styles.highlight -- ${seg.text}
-                else
-                  -- ${seg.text}
+                else -- ${seg.text}
             span class=styles.breadcrumbs -- ${result.breadcrumbs.join(" · ")}
-    else if=(query.trim() && results)
+    else if=query.trim() && results
       div class=styles.empty -- No results found.
