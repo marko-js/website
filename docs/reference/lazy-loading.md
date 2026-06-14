@@ -23,7 +23,12 @@ Attributes passed to a lazily loaded tag remain reactive while it loads. Once it
 
 The value of the `load` attribute is either [`"render"`](#render) or one or more triggers which determine when the tag's JavaScript is loaded.
 
+> [!NOTE]
+> The `load` value is read at build time, so it must be a static string and cannot reference reactive variables or other runtime values. A trigger controls only when a tag's JavaScript is fetched, independent of the rendering logic that decides whether the tag is shown.
+
 Most triggers accept a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) for an element to watch, and some accept additional options using a query string syntax.
+
+The selector is matched with [`document.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector), so any selector works, not only IDs: `visible#hero`, `visible.hero`, and `visible[data-hero]` each watch their matching element. Because the selector follows immediately after the trigger name, a bare type selector like `section` must be separated from it with a space, as in `visible section`.
 
 > [!NOTE]
 > If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately (with a warning in development).
@@ -47,9 +52,9 @@ The `render` trigger must be used alone and cannot be combined with [multiple tr
 Loads the tag's JavaScript once the element matching the selector becomes visible in the viewport (via an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver)).
 
 ```marko
-import Comments from "<comments>" with { load: "visible#comments" }
+import Comments from "<comments>" with { load: "visible.comments" }
 
-<section#comments>
+<section.comments>
   <Comments post=input.post/>
 </section>
 ```
@@ -57,7 +62,7 @@ import Comments from "<comments>" with { load: "visible#comments" }
 The observer's [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) may be configured to begin loading before the element actually enters the viewport.
 
 ```marko
-import Comments from "<comments>" with { load: "visible#comments?rootMargin=100px" }
+import Comments from "<comments>" with { load: "visible.comments?rootMargin=100px" }
 ```
 
 ### `idle`
@@ -90,14 +95,17 @@ import MobileNav from "<mobile-nav>" with { load: "media(max-width: 768px)" }
 
 This pairs well with tags hidden by CSS breakpoints, so that (for example) desktop users never download mobile-only UI.
 
+> [!TIP]
+> To apply a media trigger everywhere a tag is used rather than repeating it at each import, wrap the tag in a [facade](#facade-tags).
+
 ### Events
 
 A trigger beginning with `on` loads the tag's JavaScript the first time the matching event fires on the element matching the selector.
 
 ```marko
-import EmojiPicker from "<emoji-picker>" with { load: "on-focus#message" }
+import EmojiPicker from "<emoji-picker>" with { load: "on-focus[name=message]" }
 
-<input#message placeholder="Say something nice">
+<input name="message" placeholder="Say something nice">
 <EmojiPicker/>
 ```
 
@@ -114,28 +122,51 @@ import ChatWidget from "<chat-widget>" with { load: "on-mouseover#chat | idle?ti
 <ChatWidget/>
 ```
 
+## Facade Tags
+
+A `load` import applies only at the import site, so every consumer of a tag must opt in to lazy loading individually. A tag can instead be made _always_ lazy by wrapping it in a facade: a small tag that lazily imports the real implementation and forwards its input.
+
+Placing that implementation in a nested [`tags/` directory](./custom-tag.md#relative-custom-tags) keeps it private to the facade, so the rest of the application can only reach the lazy version.
+
+```text
+tags/
+    location-map/
+        index.marko
+        tags/
+            map-impl.marko
+```
+
+The facade is discovered as `<location-map>`, while `<map-impl>` lives in its own nested `tags/` directory and is only resolvable from within the facade.
+
+```marko
+/* tags/location-map/index.marko */
+import MapImpl from "<map-impl>" with { load: "render" }
+
+<MapImpl ...input/>
+```
+
+`<location-map>` can now be used anywhere in the application and its JavaScript is always split into a separate bundle, with no `load` attribute required at the call site. Any [trigger](#triggers) may be used in the facade, so a heavy below-the-fold widget might default to `visible` rather than `render`.
+
 ## Placeholders & Errors
 
 In the browser, a lazily loaded tag behaves like [async content](./core-tag.md#await): while its JavaScript is loading, a [`<try>`](./core-tag.md#try) ancestor displays its [`@placeholder`](./core-tag.md#placeholder) content, and if loading fails the error is handled by the nearest [`@catch`](./core-tag.md#catch).
 
 ```marko
-import Comments from "<comments>" with { load: "on-click#show-comments" }
+import PriceChart from "<price-chart>" with { load: "visible.chart" }
 
-<let/show=false/>
-<button#show-comments onClick() { show = true }>Show Comments</button>
-<try>
-  <if=show>
-    <Comments post=input.post/>
-  </if>
+<figure.chart>
+  <try>
+    <PriceChart symbol=input.symbol/>
 
-  <@placeholder>
-    Loading comments...
-  </@placeholder>
+    <@placeholder>
+      Loading chart...
+    </@placeholder>
 
-  <@catch|err|>
-    Failed to load comments: ${err.message}
-  </@catch>
-</try>
+    <@catch|err|>
+      Failed to load chart: ${err.message}
+    </@catch>
+  </try>
+</figure>
 ```
 
 ## Bundler Support
