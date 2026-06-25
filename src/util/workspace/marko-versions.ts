@@ -1,5 +1,6 @@
 import type * as Compiler from "@marko/compiler";
-import { version as defaultVersion } from "marko/package.json";
+import { version as currentVersion } from "marko/package.json";
+import frozenVersions from "./playground-versions.json";
 
 /**
  * Everything the playground needs to compile and run a given Marko version:
@@ -12,30 +13,34 @@ export interface MarkoToolchain {
   runtimeModules: Record<string, string>;
 }
 
-/** The Marko version the website itself is built with. */
-export const DEFAULT_MARKO_VERSION: string = defaultVersion;
+/** The Marko version the website is currently built with (selected by default). */
+export const DEFAULT_MARKO_VERSION: string = currentVersion;
 
-// Each version is a separate dynamic import so Vite code-splits it into its own
-// chunk at build time. Only the selected version's toolchain is fetched, and
-// nothing here pulls a compiler into the initial/server bundle. To add a
-// version: install it under an alias (see package.json), drop a module in
-// ./versions, and register its loader below.
-const loaders: Record<string, () => Promise<{ default: MarkoToolchain }>> = {
-  [defaultVersion]: () => import("./versions/default"),
-  "6.1.18": () => import("./versions/v6_1_18"),
-};
-
-/** Selectable versions, newest config order, default first. */
-export const MARKO_VERSIONS: readonly string[] = Object.keys(loaders);
+// Every selectable version — including the current one — is a frozen, pre-built
+// artifact under public/playground/versions/<version>/index.js, snapshotted once
+// (see scripts/build-playground-version.mjs) and loaded on demand. The website
+// build bundles no compiler and never rebuilds these, so its cost stays flat as
+// versions accumulate. Each release just snapshots the current version if it
+// isn't already present.
+export const MARKO_VERSIONS: readonly string[] = [
+  currentVersion,
+  ...frozenVersions.filter((v) => v !== currentVersion),
+];
 
 const cache = new Map<string, Promise<MarkoToolchain>>();
 
-/** Load (and memoize) the toolchain for a version, falling back to the default. */
+/** Load (and memoize) the toolchain artifact for a version, falling back to the default. */
 export function loadMarkoToolchain(version: string): Promise<MarkoToolchain> {
   let toolchain = cache.get(version);
   if (!toolchain) {
-    const load = loaders[version] ?? loaders[DEFAULT_MARKO_VERSION];
-    toolchain = load().then((m) => m.default);
+    const v = MARKO_VERSIONS.includes(version)
+      ? version
+      : DEFAULT_MARKO_VERSION;
+    toolchain = (
+      import(
+        /* @vite-ignore */ `${import.meta.env.BASE_URL}playground/versions/${v}/index.js`
+      ) as Promise<{ default: MarkoToolchain }>
+    ).then((m) => m.default);
     cache.set(version, toolchain);
   }
   return toolchain;

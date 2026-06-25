@@ -10,3 +10,4 @@ dist
 
 **/_compiled-docs
 public/search-index.json
+.playground-version-tmp
