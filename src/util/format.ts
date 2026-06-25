@@ -1,4 +1,4 @@
-import { formatWithCursor } from "prettier/standalone";
+import { format, formatWithCursor } from "prettier/standalone";
 import prettierBabel from "prettier/plugins/babel";
 import prettierEstree from "prettier/plugins/estree";
 import prettierCSS from "prettier/plugins/postcss";
@@ -30,5 +30,19 @@ function optionsFor(ext: string) {
 export function formatCode(content: string, cursorOffset: number, ext: string) {
   const options = optionsFor(ext);
   if (!options) return;
-  return formatWithCursor(content, { ...options, cursorOffset });
+  return formatStable(content, cursorOffset, options);
+}
+
+async function formatStable(
+  content: string,
+  cursorOffset: number,
+  options: NonNullable<ReturnType<typeof optionsFor>>,
+) {
+  const [withCursor, formatted] = await Promise.all([
+    formatWithCursor(content, { ...options, cursorOffset }),
+    format(content, options),
+  ]);
+  return withCursor.formatted === formatted
+    ? withCursor
+    : { formatted, cursorOffset: withCursor.cursorOffset };
 }
