@@ -5,9 +5,12 @@ export interface Input {
 }
 
 let/tab=0
+// Source line range the editor caret covers; drives the output source-map
+// highlight in the result pane.
+let/focusLines=null as [number, number] | null
 
 split-panes
   @first
-    editor files:=input.files tab:=tab
+    editor files:=input.files tab:=tab focusLines:=focusLines
   @second
-    result files=input.files selected=tab
+    result files=input.files selected=tab focusLines=focusLines

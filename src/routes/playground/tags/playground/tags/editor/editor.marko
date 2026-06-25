@@ -10,6 +10,11 @@ export interface Input {
   filesChange?: (files: File[]) => void;
   tab: number;
   tabChange?: (tab: number) => void;
+  // Reports the source line range (1-based, inclusive) the caret/selection
+  // currently covers, so the result pane can light up the matching output via
+  // the source map. Null when there is no editor yet.
+  focusLines?: [number, number] | null;
+  focusLinesChange?: (lines: [number, number] | null) => void;
 }
 
 static const ext = (path: string) => path.slice(path.lastIndexOf(".") + 1);
@@ -47,8 +52,15 @@ lifecycle<{
   change?: boolean;
   set(content: string): void;
   format(): void;
+  reportFocus(state: EditorState): void;
   stateFor(f: File | undefined): EditorState;
 }>
+  ,reportFocus(state) {
+    const report = input.focusLinesChange;
+    if (!report) return;
+    const { from, to } = state.selection.main;
+    report([state.doc.lineAt(from).number, state.doc.lineAt(to).number]);
+  }
   ,set(content) {
     this.change = content !== file.content;
     if (this.change) {
@@ -108,6 +120,9 @@ lifecycle<{
       if (update.docChanged) {
         this.set(update.state.doc.toString());
       }
+      if (update.docChanged || update.selectionSet) {
+        this.reportFocus(update.state);
+      }
     });
     this.currentPath = file?.path;
     this.editor = new EditorView({
@@ -118,6 +133,7 @@ lifecycle<{
     if (file) {
       update(this.editor, file.content, ext(file.path));
     }
+    this.reportFocus(this.editor.state);
   }
   ,onUpdate() {
     if (this.change) {
@@ -128,6 +144,7 @@ lifecycle<{
         // history and selection don't bleed across files.
         this.currentPath = file.path;
         this.editor!.setState(this.stateFor(file));
+        this.reportFocus(this.editor!.state);
       }
       update(this.editor!, file.content, ext(file.path));
     }

@@ -227,6 +227,16 @@
   }
 }
 
+// Source-map visualizer: compiled lines that map back to the editor's current
+// source line(s). Shares the editor's selection tint (--color-blue-dim) so the
+// source <-> output link reads as one gesture. The left box-shadow band extends
+// the tint through the gutter padding for a continuous highlight.
+.mapHighlight {
+  background-color: var(--color-blue-dim);
+  box-shadow: -0.75rem 0 0 var(--color-blue-dim);
+  transition: background-color 0.1s ease;
+}
+
 .hide {
   display: none;
 }

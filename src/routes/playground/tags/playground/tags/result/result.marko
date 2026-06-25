@@ -13,12 +13,20 @@ import type { CodeToHastOptions } from "shiki";
 import { version as markoVersion } from "marko/package.json";
 client import highlighter from "app/util/shiki";
 client import { clearLogs, update, type File } from "app/util/workspace";
+client import {
+  buildLineMap,
+  generatedLinesFor,
+  type LineMap,
+} from "app/util/source-map-lines";
 import { bytesToUnits } from "app/util/sizes";
 import { styleToClass } from "app/util/style-to-class";
 import * as styles from "./result.style.module.scss";
 export interface Input {
   files: File[];
   selected: number;
+  // Source line range (1-based, inclusive) the editor caret covers. Used to
+  // highlight the matching lines in the compiled output via its source map.
+  focusLines?: [number, number] | null;
 }
 static const compiledHighlightOpts: CodeToHastOptions = {
   lang: "js",
@@ -120,6 +128,21 @@ const/compiledCode=(() => {
   }
 })()
 
+// The compiled panels whose displayed code is the Marko compiler's direct,
+// unbundled output -- the only views whose per-file source map lines up with
+// what's on screen. (Non-debug "Client JS" shows the rollup-bundled module, so
+// there's no clean per-file mapping; preview/bundled panels have none either.)
+const/sourceMapEntry=((): { code: string; map: unknown } | undefined => {
+  if (!selectedFile) return undefined;
+  const key = `/tags/${selectedFile}`;
+  switch (outputType) {
+    case "html":
+      return ws.markoCompiled?.html?.[key];
+    case "dom":
+      return debug ? ws.markoCompiled?.dom?.[key] : undefined;
+  }
+})()
+
 div class=styles.result
   div class=styles.controls
     div class=styles.control
@@ -144,7 +167,7 @@ div class=styles.result
         p -- ${ws.buildErrors.join("\n")}
         p -- Check the devtools console for more information.
     else if=outputType !== "preview"
-      div
+      div/$compiled
         ,id=styles.compiled
         ,contenteditable="true"
         ,onbeforeinput="return false" --
@@ -259,3 +282,89 @@ div class=styles.result
               span class=styles.logText -- ${log.text}
         else
           div class=styles.consoleEmpty -- No console output yet.
+
+// Source -> output visualizer: marks the compiled lines that originate from the
+// editor's current source line(s) and scrolls the first into view. Runs only
+// for the directly-compiled panels (see sourceMapEntry); a no-op otherwise.
+lifecycle<{
+  focus: [number, number] | null | undefined;
+  entry: { code: string; map: unknown } | undefined;
+  sourcePath: string | undefined;
+  view: string;
+  rawMap?: unknown;
+  lineMap?: LineMap;
+  marked?: Element[];
+  lastScrollKey?: string;
+  sync(): void;
+  clear(): void;
+}>
+  ,focus=input.focusLines
+  ,entry=sourceMapEntry
+  ,sourcePath=selectedFile
+  ,view=outputType
+  ,onMount() {
+    this.sync();
+  }
+  ,onUpdate() {
+    this.sync();
+  }
+  ,onDestroy() {
+    this.clear();
+  }
+  ,clear() {
+    if (this.marked) {
+      for (const el of this.marked) {
+        el.classList.remove(styles.mapHighlight);
+      }
+      this.marked = undefined;
+    }
+  }
+  ,sync() {
+    const container = $compiled();
+    const entry = this.entry;
+    this.clear();
+
+    if (!container || !entry?.map) {
+      this.lastScrollKey = undefined;
+      return;
+    }
+
+    // Rebuild the line index only when the underlying map changes -- not on
+    // every caret move.
+    if (this.rawMap !== entry.map) {
+      this.rawMap = entry.map;
+      this.lineMap = buildLineMap(entry.map, `/tags/${this.sourcePath}`);
+    }
+
+    const focus = this.focus;
+    if (!this.lineMap || !focus) {
+      this.lastScrollKey = undefined;
+      return;
+    }
+
+    const gens = generatedLinesFor(this.lineMap, focus[0], focus[1]);
+    if (!gens.size) {
+      this.lastScrollKey = undefined;
+      return;
+    }
+
+    // Shiki emits one `.line` span per generated line, in order.
+    const lines = container.querySelectorAll(".line");
+    const marked: Element[] = [];
+    for (const gen of gens) {
+      const el = lines[gen - 1];
+      if (el) {
+        el.classList.add(styles.mapHighlight);
+        marked.push(el);
+      }
+    }
+    this.marked = marked;
+
+    // Only scroll when the source focus actually moved; unrelated re-renders
+    // (stats, logs) must not yank the output around.
+    const scrollKey = `${this.view}|${this.sourcePath}|${focus[0]}|${focus[1]}`;
+    if (marked.length && scrollKey !== this.lastScrollKey) {
+      marked[0].scrollIntoView({ block: "nearest" });
+    }
+    this.lastScrollKey = scrollKey;
+  }
