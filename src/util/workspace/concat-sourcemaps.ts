@@ -52,7 +52,7 @@ export class ConcatSourceMap {
       for (let i = lines; i--; ) {
         this.sourceMap.addMapping({
           generated: {
-            line: this.line + i,
+            line: line + i,
             column: 0,
           },
           original: {
@@ -62,11 +62,6 @@ export class ConcatSourceMap {
           source,
           name: null as any,
         });
-      }
-
-      const sourceContent = sourceMap.sourcesContent?.[0];
-      if (sourceContent) {
-        this.sourceMap.setSourceContent(source, sourceContent);
       }
     }
   }
