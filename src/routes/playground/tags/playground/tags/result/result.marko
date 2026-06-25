@@ -95,9 +95,14 @@ const/compiledCode=(() => {
   if (selectedFile) {
     switch (outputType) {
       case "dom": {
-        return debug
-          ? ws.markoCompiled?.dom?.[`/tags/${selectedFile}`]?.code
-          : ws.previewModules?.[`/tags/${selectedFile}`]?.code;
+        if (debug) {
+          return ws.markoCompiled?.dom?.[`/tags/${selectedFile}`]?.code;
+        }
+        // The client entry imports the root template as `?hydrate`, so its
+        // bundled module is keyed with that suffix; child tags are bare.
+        const modules = ws.previewModules;
+        const id = `/tags/${selectedFile}`;
+        return (modules?.[id] ?? modules?.[`${id}?hydrate`])?.code;
       }
       case "html":
         return ws.markoCompiled?.html?.[`/tags/${selectedFile}`]?.code;
