@@ -1,15 +1,18 @@
 import {
   faCheck,
+  faChevronDown,
+  faChevronUp,
   faCompress,
   faCopy,
   faExpand,
   faLink,
   faRotateRight,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
 import { version as markoVersion } from "marko/package.json";
 client import highlighter from "app/util/shiki";
-client import { update, type File } from "app/util/workspace";
+client import { clearLogs, update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
 import { styleToClass } from "app/util/style-to-class";
 import * as styles from "./result.style.module.scss";
@@ -65,6 +68,7 @@ const/selectedFile=(input.files[input.selected]?.path as string | undefined)
 let/outputType="preview"
 let/linkCopied=false
 let/codeCopied=false
+let/consoleOpen=false
 workspace/ws
 let-debounce/files=input.files
 const/showPreview=!(
@@ -181,46 +185,77 @@ div class=styles.result
       script -- update($signal, $frame(), files, !debug);
 
     a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
-    div class=styles.stats
-      if=outputType === "preview"
-        Stat name="js" size=(ws.stats?.script?.gzip)
-        Stat name="css" size=(ws.stats?.style?.gzip)
-        Stat name="html" size=(ws.stats?.markup?.gzip)
-        let/spinning=false
+  div class=styles.console
+    div class=styles.consoleBar
+      button
+        ,type="button"
+        ,class=styles.consoleToggle
+        ,aria-expanded=(consoleOpen ? "true" : "false")
+        ,onClick() {
+          consoleOpen = !consoleOpen;
+        }
+        fa-icon=(consoleOpen ? faChevronDown : faChevronUp)
+        span -- Console
+        if=ws.logs?.length
+          span class=styles.consoleCount -- ${ws.logs.length}
+      if=ws.logs?.length
         button
-          ,title="Reload preview"
-          ,class=styles.previewControl
+          ,type="button"
+          ,title="Clear console"
+          ,class=styles.consoleClear
           ,onClick() {
-            $frame().replaceWith($frame());
-            spinning = true;
+            clearLogs();
           }
-          fa-icon=faRotateRight
-            ,class=spinning && styles.spin
-            ,onAnimationEnd() {
-              spinning = false;
+          fa-icon=faTrashCan
+      div class=styles.stats
+        if=outputType === "preview"
+          Stat name="js" size=(ws.stats?.script?.gzip)
+          Stat name="css" size=(ws.stats?.style?.gzip)
+          Stat name="html" size=(ws.stats?.markup?.gzip)
+          let/spinning=false
+          button
+            ,title=(linkCopied ? "Copied!" : "Copy share link")
+            ,class=[styles.previewControl, styles.shareControl]
+            ,onClick() {
+              navigator.clipboard?.writeText(location.href).catch(() => {});
+              linkCopied = true;
             }
-        button
-          ,title=(fullscreen ? "Leave fullscreen" : "Expand to fullscreen")
-          ,class=styles.previewControl
-          ,onClick() {
-            fullscreen = !fullscreen;
-          }
-          fa-icon=(fullscreen ? faCompress : faExpand)
-        button
-          ,title=(linkCopied ? "Copied!" : "Copy share link")
-          ,class=[styles.previewControl, styles.shareControl]
-          ,onClick() {
-            navigator.clipboard?.writeText(location.href).catch(() => {});
-            linkCopied = true;
-          }
-          fa-icon=(linkCopied ? faCheck : faLink)
-            ,class=linkCopied && styles.copied
-            ,onAnimationEnd() {
-              linkCopied = false;
+            fa-icon=(linkCopied ? faCheck : faLink)
+              ,class=linkCopied && styles.copied
+              ,onAnimationEnd() {
+                linkCopied = false;
+              }
+          button
+            ,title="Reload preview"
+            ,class=styles.previewControl
+            ,onClick() {
+              $frame().replaceWith($frame());
+              spinning = true;
             }
-      else if=outputType === "previewJS"
-        Stat name="size" size=(ws.stats?.script?.size)
-        Stat name="gzip" size=(ws.stats?.script?.gzip)
-      else if=outputType === "previewCSS"
-        Stat name="size" size=(ws.stats?.style?.size)
-        Stat name="gzip" size=(ws.stats?.style?.gzip)
+            fa-icon=faRotateRight
+              ,class=spinning && styles.spin
+              ,onAnimationEnd() {
+                spinning = false;
+              }
+          button
+            ,title=(fullscreen ? "Leave fullscreen" : "Expand to fullscreen")
+            ,class=styles.previewControl
+            ,onClick() {
+              fullscreen = !fullscreen;
+            }
+            fa-icon=(fullscreen ? faCompress : faExpand)
+        else if=outputType === "previewJS"
+          Stat name="size" size=(ws.stats?.script?.size)
+          Stat name="gzip" size=(ws.stats?.script?.gzip)
+        else if=outputType === "previewCSS"
+          Stat name="size" size=(ws.stats?.style?.size)
+          Stat name="gzip" size=(ws.stats?.style?.gzip)
+    if=consoleOpen
+      div class=styles.consoleBody
+        if=ws.logs?.length
+          for|log| of=ws.logs
+            div class=styles.logEntry data-method=log.method
+              span class=styles.logNs data-ns=log.ns -- ${log.ns}
+              span class=styles.logText -- ${log.text}
+        else
+          div class=styles.consoleEmpty -- No console output yet.

@@ -19,6 +19,11 @@ export interface File {
   path: string;
   content: string;
 }
+export interface LogEntry {
+  ns: "client" | "server";
+  method: string;
+  text: string;
+}
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
@@ -29,6 +34,7 @@ export interface Workspace {
   buildErrors: undefined | [Error, ...Error[]];
   runtimeErrors: undefined | [Error, ...Error[]];
   server: undefined | Worker;
+  logs: LogEntry[];
   stats:
     | undefined
     | {
@@ -42,7 +48,31 @@ let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
 const rootDir = "/tags/";
 const subs = new Set<(workspace: Workspace) => void>();
-const consoleInjection = (c: typeof console, ns: string, color: string) => {
+function formatLogArgs(args: unknown[]): string {
+  return args
+    .map((a) => {
+      if (typeof a === "string") return a;
+      if (a && typeof a === "object") {
+        const err = a as { stack?: unknown };
+        if (typeof err.stack === "string") return err.stack;
+        try {
+          const json = JSON.stringify(a);
+          if (json !== undefined) return json;
+        } catch {
+          // fall through to String()
+        }
+      }
+      return String(a);
+    })
+    .join(" ");
+}
+
+const consoleInjection = (
+  c: typeof console,
+  ns: string,
+  color: string,
+  sink?: (method: string, args: unknown[]) => void,
+) => {
   const label = `%c[${ns}]%c `;
   const style = `color:${color}; font-weight:bold;`;
   for (const method of [
@@ -54,12 +84,27 @@ const consoleInjection = (c: typeof console, ns: string, color: string) => {
     "trace",
   ] as (keyof typeof console)[]) {
     const f = c[method] as any;
-    c[method] = ((...args: unknown[]) =>
-      f.apply(c, [label, style, "", ...args])) as any;
+    c[method] = ((...args: unknown[]) => {
+      try {
+        sink?.(method, args);
+      } catch {
+        // ignore sink failures
+      }
+      return f.apply(c, [label, style, "", ...args]);
+    }) as any;
   }
 
   const f = c.assert as any;
-  c.assert = (cond, ...args) => f.apply(c, [cond, label, style, "", ...args]);
+  c.assert = (cond, ...args) => {
+    if (!cond) {
+      try {
+        sink?.("assert", args);
+      } catch {
+        // ignore sink failures
+      }
+    }
+    return f.apply(c, [cond, label, style, "", ...args]);
+  };
 };
 
 export function subscribe(
@@ -94,6 +139,7 @@ export async function update(
     runtimeErrors: undefined,
     stats: undefined,
     server: undefined,
+    logs: [],
   });
   for (const file of files) {
     fs.files[rootDir + file.path] = file.content;
@@ -107,7 +153,7 @@ export async function update(
           mainPlugin({
             ws,
             browser: false,
-            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n(${consoleInjection.toString()})(console, "server", "#00FFFF")`,
+            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n(${consoleInjection.toString()})(console, "server", "#00FFFF", (method, args) => postMessage({ __mlog: { method, text: (${formatLogArgs.toString()})(args) } }))`,
           }),
           markoPlugin({
             ws,
@@ -224,7 +270,9 @@ export async function update(
         async () => {
           const win = frame.contentWindow! as Window & typeof globalThis;
           if (typeof window.console === "object") {
-            consoleInjection(win.console, "client", "#c2185b");
+            consoleInjection(win.console, "client", "#c2185b", (method, args) =>
+              pushLog("client", method, formatLogArgs(args)),
+            );
           }
           win.addEventListener("error", onRuntimeError, { signal });
           win.addEventListener("unhandledrejection", onRuntimeError, {
@@ -239,11 +287,14 @@ export async function update(
           ws.runtimeErrors = undefined;
           server.onmessage = (ev) => {
             if (signal.aborted) return;
-            if (ev.data) {
-              rawHTML += ev.data;
+            const data = ev.data;
+            if (data && typeof data === "object" && "__mlog" in data) {
+              pushLog("server", data.__mlog.method, data.__mlog.text);
+            } else if (data) {
+              rawHTML += data;
               ws.previewHTML = prettyPrintHTML(rawHTML);
               emit();
-              domWriter.write(ev.data);
+              domWriter.write(data);
             } else {
               void toByteSizes(rawHTML).then((size) => {
                 ws.stats = { ...ws.stats, markup: size };
@@ -307,12 +358,28 @@ export async function update(
     }
   }
 
+  function pushLog(ns: LogEntry["ns"], method: string, text: string) {
+    if (signal.aborted) return;
+    ws.logs = [...ws.logs, { ns, method, text }];
+    emit();
+  }
+
   function emit() {
     if (!signal.aborted) {
       const copy = { ...ws };
       for (const sub of subs) {
         sub(copy);
       }
+    }
+  }
+}
+
+export function clearLogs() {
+  if (workspace) {
+    workspace.logs = [];
+    const copy = { ...workspace };
+    for (const sub of subs) {
+      sub(copy);
     }
   }
 }
