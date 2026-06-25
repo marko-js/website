@@ -1,6 +1,9 @@
 import {
+  faCheck,
   faCompress,
+  faCopy,
   faExpand,
+  faLink,
   faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
@@ -60,6 +63,8 @@ define/Stat|{ name, size }: { name: string; size: number | undefined }|
 
 const/selectedFile=(input.files[input.selected]?.path as string | undefined)
 let/outputType="preview"
+let/linkCopied=false
+let/codeCopied=false
 workspace/ws
 let-debounce/files=input.files
 const/showPreview=!(
@@ -127,6 +132,20 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
+    if=outputType !== "preview"
+      button
+        ,type="button"
+        ,class=styles.controlButton
+        ,title=(codeCopied ? "Copied!" : "Copy code")
+        ,onClick() {
+          navigator.clipboard?.writeText(compiledCode || "").catch(() => {});
+          codeCopied = true;
+        }
+        fa-icon=(codeCopied ? faCheck : faCopy)
+          ,class=codeCopied && styles.copied
+          ,onAnimationEnd() {
+            codeCopied = false;
+          }
     span class=styles.version -- v${markoVersion}
 
   div class=styles.output
@@ -187,6 +206,18 @@ div class=styles.result
             fullscreen = !fullscreen;
           }
           fa-icon=(fullscreen ? faCompress : faExpand)
+        button
+          ,title=(linkCopied ? "Copied!" : "Copy share link")
+          ,class=[styles.previewControl, styles.shareControl]
+          ,onClick() {
+            navigator.clipboard?.writeText(location.href).catch(() => {});
+            linkCopied = true;
+          }
+          fa-icon=(linkCopied ? faCheck : faLink)
+            ,class=linkCopied && styles.copied
+            ,onAnimationEnd() {
+              linkCopied = false;
+            }
       else if=outputType === "previewJS"
         Stat name="size" size=(ws.stats?.script?.size)
         Stat name="gzip" size=(ws.stats?.script?.gzip)
