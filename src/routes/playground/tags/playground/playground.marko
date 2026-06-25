@@ -5,9 +5,9 @@ export interface Input {
 }
 
 let/tab=0
-// Source line range the editor caret covers; drives the output source-map
-// highlight in the result pane.
-let/focusLines=null as [number, number] | null
+// Source position the editor caret covers ([startLine, startCol, endLine,
+// endCol]); drives the output source-map highlight in the result pane.
+let/focusLines=null as [number, number, number, number] | null
 
 split-panes
   @first

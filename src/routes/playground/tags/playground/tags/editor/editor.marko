@@ -10,11 +10,14 @@ export interface Input {
   filesChange?: (files: File[]) => void;
   tab: number;
   tabChange?: (tab: number) => void;
-  // Reports the source line range (1-based, inclusive) the caret/selection
-  // currently covers, so the result pane can light up the matching output via
-  // the source map. Null when there is no editor yet.
-  focusLines?: [number, number] | null;
-  focusLinesChange?: (lines: [number, number] | null) => void;
+  // Reports the source position the caret/selection currently covers, as
+  // [startLine, startCol, endLine, endCol] (1-based lines, 0-based columns), so
+  // the result pane can light up the matching output via the source map. Null
+  // when there is no editor yet.
+  focusLines?: [number, number, number, number] | null;
+  focusLinesChange?: (
+    lines: [number, number, number, number] | null,
+  ) => void;
 }
 
 static const ext = (path: string) => path.slice(path.lastIndexOf(".") + 1);
@@ -59,7 +62,9 @@ lifecycle<{
     const report = input.focusLinesChange;
     if (!report) return;
     const { from, to } = state.selection.main;
-    report([state.doc.lineAt(from).number, state.doc.lineAt(to).number]);
+    const a = state.doc.lineAt(from);
+    const b = state.doc.lineAt(to);
+    report([a.number, from - a.from, b.number, to - b.from]);
   }
   ,set(content) {
     this.change = content !== file.content;
