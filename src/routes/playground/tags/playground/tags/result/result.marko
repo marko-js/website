@@ -4,7 +4,10 @@ import {
   faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 import type { CodeToHastOptions } from "shiki";
-import { version as markoVersion } from "marko/package.json";
+import {
+  DEFAULT_MARKO_VERSION,
+  MARKO_VERSIONS,
+} from "app/util/workspace/marko-versions";
 client import highlighter from "app/util/shiki";
 client import { update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
@@ -73,6 +76,16 @@ let/debug=!!debugParam
     debugParam = debug ? "1" : null;
   }
 
+let-search-param/versionParam key="marko"
+let/version=(
+  versionParam && MARKO_VERSIONS.includes(versionParam)
+    ? versionParam
+    : DEFAULT_MARKO_VERSION
+)
+  ,valueChange(version) {
+    versionParam = version === DEFAULT_MARKO_VERSION ? null : version;
+  }
+
 let-search-param/fullscreenParam key="fullscreen"
 let/fullscreen=!!fullscreenParam
   ,valueChange(fullscreen) {
@@ -127,7 +140,11 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
-    span class=styles.version -- v${markoVersion}
+    label class=styles.version
+      span class=styles.versionLabel -- Marko
+      select value:=version
+        for|v| of=MARKO_VERSIONS
+          option value=v -- v${v}
 
   div class=styles.output
     if=ws.buildErrors
@@ -159,7 +176,7 @@ div class=styles.result
         [styles.hide]: !showPreview,
       }
     if=files.length
-      script -- update($signal, $frame(), files, !debug);
+      script -- update($signal, $frame(), files, !debug, version);
 
     a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
     div class=styles.stats

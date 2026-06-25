@@ -10,6 +10,10 @@ import { cssPlugin } from "./workspace/css-plugin";
 import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
+import {
+  DEFAULT_MARKO_VERSION,
+  loadMarkoToolchain,
+} from "./workspace/marko-versions";
 
 import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
@@ -22,6 +26,7 @@ export interface File {
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
+  version: string;
   previewJS: string;
   previewCSS: string;
   previewHTML: string;
@@ -83,11 +88,13 @@ export async function update(
   frame: HTMLIFrameElement,
   files: File[],
   optimize: boolean,
+  version: string = DEFAULT_MARKO_VERSION,
 ) {
   const fs = new FileSystem({});
   const ws: Workspace = (workspace = {
     fs,
     optimize,
+    version,
     previewJS: "",
     previewCSS: "",
     previewHTML: "",
@@ -102,6 +109,10 @@ export async function update(
   }
 
   try {
+    const toolchain = await loadMarkoToolchain(version);
+
+    if (signal.aborted) return;
+
     const serverBuild = (async function buildServer() {
       const file = "server.js";
       const build = await rollup({
@@ -114,6 +125,7 @@ export async function update(
           markoPlugin({
             ws,
             browser: false,
+            toolchain,
           }),
           cssPlugin({ browser: false }),
           cdnPlugin(),
@@ -165,7 +177,7 @@ export async function update(
             browser: true,
             code: `import "${rootDir}index.marko?hydrate"`,
           }),
-          markoPlugin({ ws, browser: true }),
+          markoPlugin({ ws, browser: true, toolchain }),
           cssPlugin({ browser: true }),
           cdnPlugin(),
           minifyScriptPlugin(),

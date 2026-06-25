@@ -58,6 +58,7 @@
     "markdownlint-cli": "^0.48.0",
     "marked": "^17.0.4",
     "marko": "^6.1.4",
+    "marko-6_1_18": "npm:marko@6.1.18",
     "path": "./shim/path",
     "path-browserify": "^1.0.1",
     "postcss": "^8.5.8",

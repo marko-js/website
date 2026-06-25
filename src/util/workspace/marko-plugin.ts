@@ -1,13 +1,9 @@
 import path from "path";
 import type { Plugin } from "@rollup/browser";
-import * as compiler from "@marko/compiler";
-import * as translator from "marko/translator";
-import runtimeDOM from "marko/dom?raw";
-import runtimeHTML from "marko/html?raw";
-import runtimeDebugDOM from "marko/debug/dom?raw";
-import runtimeDebugHTML from "marko/debug/html?raw";
+import type * as Compiler from "@marko/compiler";
 
 import type { Workspace } from "../workspace";
+import type { MarkoToolchain } from "./marko-versions";
 
 declare module "../workspace" {
   interface Workspace {
@@ -20,12 +16,6 @@ declare module "../workspace" {
 
 const cache = new Map();
 const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
-const runtimeModules: Record<string, string> = {
-  "marko/dom": runtimeDOM,
-  "marko/html": runtimeHTML,
-  "marko/debug/dom": runtimeDebugDOM,
-  "marko/debug/html": runtimeDebugHTML,
-};
 
 // Shim currently needed because @marko/compiler uses `lasso-package-root`.
 (globalThis as any).process = {
@@ -41,8 +31,14 @@ const runtimeModules: Record<string, string> = {
 export interface MarkoPluginOptions {
   ws: Workspace;
   browser: boolean;
+  toolchain: MarkoToolchain;
 }
-export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
+export function markoPlugin({
+  ws,
+  browser,
+  toolchain,
+}: MarkoPluginOptions): Plugin {
+  const { compiler, translator, runtimeModules } = toolchain;
   const { fs, optimize } = ws;
   let optimizeKnownTemplates = knownTemplatesForWS.get(ws);
   if (!optimizeKnownTemplates) {
@@ -58,7 +54,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   }
 
   const output = browser ? "dom" : "html";
-  const baseConfig: compiler.Config = {
+  const baseConfig: Compiler.Config = {
     cache,
     output,
     optimize,
@@ -76,7 +72,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
       return virtualPath;
     },
   };
-  const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
+  const hydrateConfig: Compiler.Config = { ...baseConfig, output: "hydrate" };
   const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
 
   for (const file of optimizeKnownTemplates) {

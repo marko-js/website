@@ -34,9 +34,20 @@
   font-family: "Ubuntu Mono", monospace;
   font-size: 0.9rem;
   flex-grow: 1;
-  text-align: right;
-  align-self: center;
-  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding: 0 0.25rem 0 0.5rem;
+  cursor: pointer;
+
+  select {
+    cursor: pointer;
+  }
+}
+
+.versionLabel {
+  color: var(--color-gray-alt);
 }
 
 .checkbox {
