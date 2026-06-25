@@ -1,4 +1,5 @@
 import {
+  faCircleNotch,
   faCompress,
   faExpand,
   faRotateRight,
@@ -60,6 +61,7 @@ define/Stat|{ name, size }: { name: string; size: number | undefined }|
 
 const/selectedFile=(input.files[input.selected]?.path as string | undefined)
 let/outputType="preview"
+let/building=false
 workspace/ws
 let-debounce/files=input.files
 const/showPreview=!(
@@ -127,6 +129,12 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
+    span
+      ,class=[styles.building, building && styles.buildingActive]
+      ,role="status"
+      ,aria-label="Building"
+      ,aria-hidden=!building && "true"
+      fa-icon=faCircleNotch
     span class=styles.version -- v${markoVersion}
 
   div class=styles.output
@@ -159,7 +167,13 @@ div class=styles.result
         [styles.hide]: !showPreview,
       }
     if=files.length
-      script -- update($signal, $frame(), files, !debug);
+      script --
+        building = true;
+        update($signal, $frame(), files, !debug).finally(() => {
+          if (!$signal.aborted) {
+            building = false;
+          }
+        });
 
     a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
     div class=styles.stats
