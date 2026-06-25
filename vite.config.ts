@@ -24,12 +24,22 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
+    alias: [
       // marko/translator uses `node:path` which must be shimmed for browser environments.
       // The shim re-exports from path-browserify. Named exports are bound from the default
       // so they work in both Rollup (build) and Vite's SSR module runner (dev).
-      "node:path": path.resolve("./shim/path/browser.js"),
-    },
+      {
+        find: "node:path",
+        replacement: path.resolve("./shim/path/browser.js"),
+      },
+      // prettier-plugin-marko (used by the playground formatter) imports `doc` from the
+      // full, node-only prettier build; map the bare specifier to the browser standalone
+      // build. Anchored so `prettier/standalone` and `prettier/plugins/*` are untouched.
+      {
+        find: /^prettier$/,
+        replacement: "prettier/standalone",
+      },
+    ],
   },
   optimizeDeps: {
     exclude: ["@rollup/browser", "lightningcss-wasm"],

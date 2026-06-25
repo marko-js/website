@@ -136,20 +136,6 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
-    if=outputType !== "preview"
-      button
-        ,type="button"
-        ,class=styles.controlButton
-        ,title=(codeCopied ? "Copied!" : "Copy code")
-        ,onClick() {
-          navigator.clipboard?.writeText(compiledCode || "").catch(() => {});
-          codeCopied = true;
-        }
-        fa-icon=(codeCopied ? faCheck : faCopy)
-          ,class=codeCopied && styles.copied
-          ,onAnimationEnd() {
-            codeCopied = false;
-          }
     span class=styles.version -- v${markoVersion}
 
   div class=styles.output
@@ -185,6 +171,20 @@ div class=styles.result
       script -- update($signal, $frame(), files, !debug);
 
     a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
+    if=outputType !== "preview"
+      button
+        ,type="button"
+        ,title=(codeCopied ? "Copied!" : "Copy code")
+        ,class=styles.action
+        ,onClick() {
+          navigator.clipboard?.writeText(compiledCode || "").catch(() => {});
+          codeCopied = true;
+        }
+        fa-icon=(codeCopied ? faCheck : faCopy)
+          ,class=codeCopied && styles.copied
+          ,onAnimationEnd() {
+            codeCopied = false;
+          }
   div class=styles.console
     div class=styles.consoleBar
       button

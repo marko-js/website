@@ -72,7 +72,9 @@
   position: relative;
   display: flex;
   flex: 1;
-  overflow-y: auto;
+  // The compiled-code view scrolls internally (see #compiled) so the pane
+  // itself stays put -- this keeps the absolute copy button pinned top-right.
+  overflow: hidden;
 
   :global(.fullscreen) & {
     visibility: visible;
@@ -131,17 +133,27 @@
   }
 }
 
-.controlButton {
+// Floating action button pinned to the top-right of the output pane;
+// matches the editor pane's format button (see editor.styles).
+.action {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0.75rem;
+  padding: 0.4rem 0.5rem;
   border: none;
-  border-radius: 0;
+  border-radius: 0.4rem;
   background-color: var(--color-gray-dim);
   cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
     background-color: var(--color-gray-alt-dim);
   }
 
@@ -188,6 +200,7 @@
   display: flex;
   flex: 1;
   max-width: 100%;
+  overflow: auto;
 
   > :global(.shiki) {
     flex: 1;
