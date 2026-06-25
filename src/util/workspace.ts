@@ -72,9 +72,7 @@ export function subscribe(
   });
 
   if (workspace) {
-    for (const sub of subs) {
-      sub(workspace);
-    }
+    handler(workspace);
   }
 }
 

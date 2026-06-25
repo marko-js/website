@@ -53,11 +53,15 @@ div class=styles.tabs
               tabs = tabs.toSpliced(i, 1, { ...tab, path: el.value });
               editingIndex = -1;
             }
-            ,onKeyPress(e) {
+            ,onKeyDown(e, el) {
               if (e.key === "Enter") {
                 document.querySelector<HTMLElement>(".cm-content")?.focus();
               } else if (e.key === "Escape") {
-                editingIndex = -1;
+                // Restore the original name and blur so the blur handler
+                // saves an unchanged path -- a cancel that doesn't depend
+                // on reactive update timing during the unmount.
+                el.value = tab.path;
+                el.blur();
               }
             }
           script --
