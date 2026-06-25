@@ -1,6 +1,8 @@
-client import { EditorView } from "@codemirror/view";
+client import { EditorView, keymap } from "@codemirror/view";
 client import { EditorState } from "@codemirror/state";
 client import extensions, { update } from "app/util/codemirror";
+client import { formatCode } from "app/util/format";
+import { faPaintbrush } from "@fortawesome/free-solid-svg-icons";
 import type { File } from "app/util/workspace";
 import * as styles from "./editor.styles.module.scss";
 export interface Input {
@@ -19,8 +21,24 @@ let/file=files[selected]
     files = files.toSpliced(selected, 1, newValue);
   }
 
+// Bridges the format button (markup) to the editor's lifecycle; set on mount.
+let/doFormat=(() => {})
+
 tabs files:=files selected:=selected
-div.shiki/$editor id=styles.editor
+div class=styles.editorWrap
+  div.shiki/$editor id=styles.editor
+  button
+    ,type="button"
+    ,title="Format (Shift+Alt+F)"
+    ,class=styles.action
+    ,onClick() {
+      doFormat();
+    }
+    fa-icon=faPaintbrush
+    html-script --
+      ${
+        `if(navigator.platform.startsWith("Mac"))document.currentScript.parentElement.title="Format (⇧⌘F)"`
+      };
 
 lifecycle<{
   editor?: EditorView;
@@ -28,6 +46,7 @@ lifecycle<{
   currentPath?: string;
   change?: boolean;
   set(content: string): void;
+  format(): void;
   stateFor(f: File | undefined): EditorState;
 }>
   ,set(content) {
@@ -36,10 +55,51 @@ lifecycle<{
       file = { ...file, content };
     }
   }
+  ,format() {
+    const view = this.editor;
+    if (!view || !file) return;
+    const content = view.state.doc.toString();
+    const cursorOffset = view.state.selection.main.head;
+    const pending = formatCode(content, cursorOffset, ext(file.path));
+    if (!pending) return;
+    void pending
+      .then((result) => {
+        // Skip if the doc changed while formatting, or is already formatted.
+        if (
+          result.formatted === content ||
+          view.state.doc.toString() !== content
+        ) {
+          return;
+        }
+        view.dispatch({
+          changes: { from: 0, to: content.length, insert: result.formatted },
+          selection: {
+            anchor: Math.min(result.cursorOffset, result.formatted.length),
+          },
+        });
+      })
+      .catch(() => {
+        // Ignore formatting errors (e.g. the file currently has a syntax error).
+      });
+  }
   ,stateFor(f) {
     return EditorState.create({
       doc: f?.content,
-      extensions: [this.listener, ...extensions],
+      extensions: [
+        this.listener,
+        keymap.of([
+          {
+            // Alt+letter is a dead key on macOS, so use Cmd there instead.
+            key: "Shift-Alt-f",
+            mac: "Shift-Cmd-f",
+            run: () => {
+              this.format();
+              return true;
+            },
+          },
+        ]),
+        ...extensions,
+      ],
     });
   }
   ,onMount() {
@@ -54,6 +114,7 @@ lifecycle<{
       state: this.stateFor(file),
       parent: $editor(),
     });
+    doFormat = () => this.format();
     if (file) {
       update(this.editor, file.content, ext(file.path));
     }

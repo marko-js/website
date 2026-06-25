@@ -1,6 +1,43 @@
+.editorWrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
 #editor {
   overflow: hidden;
   flex: 1;
+}
+
+// Floating action button pinned to the top-right of the pane (also used,
+// with matching styles, for the result pane's copy-code button).
+.action {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 0.4rem;
+  background-color: var(--color-gray-dim);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    background-color: var(--color-gray-alt-dim);
+  }
+
+  svg {
+    height: 1lh;
+    fill: var(--color-blue);
+  }
 }
 
 :global {
