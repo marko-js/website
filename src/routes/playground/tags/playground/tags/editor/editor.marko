@@ -1,4 +1,5 @@
 client import { EditorView } from "@codemirror/view";
+client import { EditorState } from "@codemirror/state";
 client import extensions, { update } from "app/util/codemirror";
 import type { File } from "app/util/workspace";
 import * as styles from "./editor.styles.module.scss";
@@ -8,6 +9,8 @@ export interface Input {
   tab: number;
   tabChange?: (tab: number) => void;
 }
+
+static const ext = (path: string) => path.slice(path.lastIndexOf(".") + 1);
 
 let/files:=input.files
 let/selected:=input.tab
@@ -19,37 +22,53 @@ let/file=files[selected]
 tabs files:=files selected:=selected
 div.shiki/$editor id=styles.editor
 
-lifecycle<{ editor?: EditorView; change?: boolean; set(v: string): void }>
+lifecycle<{
+  editor?: EditorView;
+  listener: ReturnType<typeof EditorView.updateListener.of>;
+  currentPath?: string;
+  change?: boolean;
+  set(content: string): void;
+  stateFor(f: File | undefined): EditorState;
+}>
   ,set(content) {
     this.change = content !== file.content;
     if (this.change) {
       file = { ...file, content };
     }
   }
+  ,stateFor(f) {
+    return EditorState.create({
+      doc: f?.content,
+      extensions: [this.listener, ...extensions],
+    });
+  }
   ,onMount() {
     this.change = false;
-    this.editor = new EditorView({
-      doc: file?.content,
-      parent: $editor(),
-      extensions: [
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
-            this.set(update.state.doc.toString());
-          }
-        }),
-        ...extensions,
-      ],
+    this.listener = EditorView.updateListener.of((update) => {
+      if (update.docChanged) {
+        this.set(update.state.doc.toString());
+      }
     });
+    this.currentPath = file?.path;
+    this.editor = new EditorView({
+      state: this.stateFor(file),
+      parent: $editor(),
+    });
+    if (file) {
+      update(this.editor, file.content, ext(file.path));
+    }
   }
   ,onUpdate() {
     if (this.change) {
       this.change = false;
     } else if (file) {
-      update(
-        this.editor!,
-        file.content,
-        file.path.slice(file.path.lastIndexOf(".") + 1),
-      );
+      if (file.path !== this.currentPath) {
+        // Switching tabs: give the new file its own editor state so undo
+        // history and selection don't bleed across files.
+        this.currentPath = file.path;
+        this.editor!.setState(this.stateFor(file));
+      }
+      update(this.editor!, file.content, ext(file.path));
     }
   }
   ,onDestroy() {
