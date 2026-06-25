@@ -13,7 +13,9 @@ lifecycle
   }
   ,onUpdate() {
     compress(JSON.stringify(value)).then((compressed) => {
-      window.location.hash = compressed;
+      // Replace the current entry instead of assigning location.hash, which
+      // would push a new history entry on every edit and flood the back button.
+      history.replaceState(history.state, "", "#" + compressed);
     });
   }
 
