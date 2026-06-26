@@ -918,6 +918,8 @@ If Marko did not resolve a [local variable tag name](#local-variable-custom-tags
 - `tags/TAG_NAME/index.marko`
 - `tags/TAG_NAME/TAG_NAME.marko`
 
+Any of these may also sit one level deep inside a [grouping folder](#grouping-folders).
+
 Let's take a look at an example directory structure to understand this better:
 
 ```text
@@ -951,6 +953,27 @@ The `home` page can't resolve `<team-members>` and the `about` page can't resolv
 
 > [!NOTE]
 > In previous versions, relative tags were discovered in `components/` directories instead of `tags/`. These directories are now used as a heuristic for [runtime interoperability](../guide/marko-5-interop.md).
+
+### Grouping Folders
+
+Related tags can be grouped one level deep inside a folder that is not itself a tag. The folder name organizes files on disk but never becomes part of the tag name.
+
+```text
+tags/
+    menu-button.marko
+    icons/
+        icon-chevron.marko
+        icon-plus.marko
+```
+
+This resolves `<menu-button>`, `<icon-chevron>`, and `<icon-plus>`. There is no `<icons>` tag; that folder only groups.
+
+A few rules keep discovery predictable:
+
+- Grouping is one level deep, so `tags/icons/outline/icon-star.marko` is not found.
+- A folder that is itself a tag (it has `index.marko` or a matching `FOLDER_NAME.marko`) becomes that one tag; its other files are not crawled, so examples or helpers can sit beside it.
+- `tags` and `components` folders are never grouped, preserving the nested [private tags](#installed-custom-tags) pattern.
+- Dot-prefixed folders are skipped. Only a leading dot counts, so `legacy.v1` still groups.
 
 ## Installed Custom Tags
 
