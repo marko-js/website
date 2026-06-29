@@ -3,15 +3,12 @@ import path from "node:path";
 
 const newsletterDir = path.join(process.cwd(), "docs", "newsletter");
 
-// The production domain is defined once, by the `--cname` flag in the
-// `deploy` script, so read it from there to keep the feed in lockstep with
-// wherever the site is actually published. Falls back for local dev/preview.
-const pkg = JSON.parse(
-  fs.readFileSync(path.join(process.cwd(), "package.json"), "utf-8"),
-);
-const site = `https://${
-  pkg.scripts?.deploy?.match(/--cname (\S+)/)?.[1] ?? "markojs.com"
-}`;
+// `public/CNAME` is the GitHub Pages custom-domain file: it ships verbatim in
+// the build and is what Pages itself reads to serve the site, making it the
+// canonical source for the production origin.
+const site = `https://${fs
+  .readFileSync(path.join(process.cwd(), "public", "CNAME"), "utf-8")
+  .trim()}`;
 
 function escapeXml(value: string) {
   return value.replace(
