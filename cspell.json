@@ -25,6 +25,7 @@
     "fortawesome",
     "hastscript",
     "hrefs",
+    "htmljs",
     "importmap",
     "Jetpack",
     "jridgewell",
@@ -67,6 +68,8 @@
   ],
   "ignorePaths": [
     "**/_compiled-docs",
-    "dist"
+    "dist",
+    "skills",
+    ".claude"
   ]
 }
