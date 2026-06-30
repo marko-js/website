@@ -19,6 +19,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # The gh-pages push below authenticates with an explicit token URL, and
+          # the fetch is a public read, so the checkout credential is not needed.
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -54,6 +58,19 @@ jobs:
           cd /tmp/gh-pages-deploy
           git add -A
           git commit -m "deploy: main @ ${GITHUB_SHA}" || echo "No changes to deploy."
-          git push "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          # Retry on non-fast-forward in case a concurrent preview deploy or cleanup
+          # writes to gh-pages first. Our commit only touches root files, so replaying
+          # it onto the latest previews/ changes rebases cleanly.
+          pushed=false
+          for attempt in 1 2 3; do
+            if git push "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages; then
+              pushed=true
+              break
+            fi
+            echo "Push rejected, refreshing gh-pages (attempt ${attempt})."
+            git fetch origin gh-pages
+            git rebase origin/gh-pages
+          done
+          $pushed || { echo "Failed to push after 3 attempts."; exit 1; }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

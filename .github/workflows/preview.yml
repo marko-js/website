@@ -45,6 +45,10 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # The deploy below authenticates with an explicit token URL, so the
+          # checkout credential is unused and best not persisted before npm ci.
+          persist-credentials: false
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -63,16 +67,31 @@ jobs:
 
       - name: Deploy to gh-pages branch (preview subdirectory)
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          npx gh-pages \
-            --dist dist/public \
-            --dest previews/pr-${{ github.event.pull_request.number }} \
-            --branch gh-pages \
-            --nojekyll \
-            --add \
-            --message "preview: pr-${{ github.event.pull_request.number }} @ ${{ github.sha }}" \
-            --repo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          set -euo pipefail
+          # gh-pages commits in its own temporary clone, so the committer identity
+          # must be passed via --user (local git config is not inherited). Retry on a
+          # non-fast-forward rejection in case a concurrent gh-pages write (another
+          # preview, the cleanup job, or the production deploy) lands first; each run
+          # re-clones the branch, so clear the cache between attempts.
+          pushed=false
+          for attempt in 1 2 3; do
+            rm -rf node_modules/.cache/gh-pages
+            if npx gh-pages \
+              --dist dist/public \
+              --dest previews/pr-${{ github.event.pull_request.number }} \
+              --branch gh-pages \
+              --nojekyll \
+              --add \
+              --user "github-actions[bot] <github-actions[bot]@users.noreply.github.com>" \
+              --message "preview: pr-${{ github.event.pull_request.number }} @ ${{ github.sha }}" \
+              --repo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"; then
+              pushed=true
+              break
+            fi
+            echo "gh-pages push failed (attempt ${attempt}); retrying."
+            sleep $((attempt * 3))
+          done
+          $pushed || { echo "Failed to deploy preview after 3 attempts."; exit 1; }
 
       - name: Post preview URL to PR
         uses: actions/github-script@v7

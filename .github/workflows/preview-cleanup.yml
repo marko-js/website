@@ -17,16 +17,32 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: gh-pages
+          # The push below uses an explicit token URL, so the checkout credential
+          # is redundant and need not be persisted.
+          persist-credentials: false
 
       - name: Remove preview directory and push
         run: |
+          set -euo pipefail
           PR=${{ github.event.pull_request.number }}
           if [ -d "previews/pr-${PR}" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git rm -rf "previews/pr-${PR}"
             git commit -m "cleanup: remove preview for pr-${PR}"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+            REMOTE="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            # Retry on non-fast-forward in case a concurrent gh-pages write lands first.
+            pushed=false
+            for attempt in 1 2 3; do
+              if git push "$REMOTE" gh-pages; then
+                pushed=true
+                break
+              fi
+              echo "Push rejected, refreshing gh-pages (attempt ${attempt})."
+              git fetch origin gh-pages
+              git rebase origin/gh-pages
+            done
+            $pushed || { echo "Failed to push cleanup after 3 attempts."; exit 1; }
           else
             echo "No preview directory found for pr-${PR}, nothing to clean up."
           fi
