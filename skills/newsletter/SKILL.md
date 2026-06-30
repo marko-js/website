@@ -132,7 +132,20 @@ npm run build
   `grep -oE 'href="[^"]*\.md[^"]*"' src/routes/docs/_compiled-docs/newsletter/<slug>+page.marko` (should print nothing).
 - The build can fail nondeterministically on an unrelated doc (e.g. `docs/guide/low-level-apis` with `Cannot read properties of undefined (reading 'ast')`) because docs compile in parallel. If the newsletter page itself generated fine, rerun a clean build: `rm -rf dist && npm run build`.
 
-## Step 8 — Confirm and hand off
+## Step 8 — Publish to standard.site
+
+Once an issue is live, mirror it to the ATmosphere as [standard.site](https://standard.site) records so AT Protocol indexers and readers can discover it. The `publish-standard-site.js` script beside this skill reads the same `docs/newsletter/*.md` files and upserts one `site.standard.publication` record plus one `site.standard.document` per issue into the `markojs.com` repository on its Bluesky PDS.
+
+Auth uses an app password for the account (Bluesky Settings → Privacy and Security → App Passwords), supplied as `BLUESKY_APP_PASSWORD`. Preview the records first, then publish:
+
+```bash
+node skills/newsletter/publish-standard-site.js --dry-run   # print records, write nothing
+BLUESKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx node skills/newsletter/publish-standard-site.js
+```
+
+Re-running is idempotent: the publication uses rkey `self` and each document uses its slug, so a republish overwrites in place. The writes are independent of the site build, so this can run manually after a merge or from CI gated on `docs/newsletter/**`.
+
+## Step 9 — Confirm and hand off
 
 Surface judgment calls to the user rather than guessing: the `Task` type for a PR with no conventional-commit prefix, an ambiguous `Epic`, which performance number to quote, and how wide the scope should be. Do not commit unless asked.
 
