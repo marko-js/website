@@ -25,11 +25,17 @@ export async function buildSearchIndex(docsPath: string): Promise<void> {
   const mdFiles = glob.sync("**/*.md", { cwd: docsPath });
   const blocks: SearchBlock[] = [];
 
+  // Search results are rendered on the client from this JSON, so the post-build HTML
+  // rebase pass can't reach their links. Bake the deploy base into the hrefs here
+  // instead. Matches the Vite `base` (see vite.config.ts): "/" for production,
+  // "/previews/pr-N/" for PR preview deploys.
+  const base = (process.env.BASE_URL || "/").replace(/\/$/, "");
+
   for (const file of mdFiles) {
     const raw = await fs.readFile(path.join(docsPath, file), "utf-8");
     const category = file.split("/")[0];
     const slug = file.replace(/\.md$/, "");
-    const href = `/docs/${slug}`;
+    const href = `${base}/docs/${slug}`;
     const { weight, label: categoryLabel } = CATEGORIES[category] ?? {
       weight: 25,
       label: category,
