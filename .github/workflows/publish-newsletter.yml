@@ -1,0 +1,28 @@
+name: Publish Newsletter
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/newsletter/**"
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: "${{ github.repository_owner == 'marko-js' }}"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Publish to standard.site
+        run: node skills/newsletter/publish-standard-site.js
+        env:
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
