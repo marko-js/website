@@ -111,7 +111,8 @@
   margin-left: auto;
   font-family: "Ubuntu Mono", monospace;
   gap: 0.5rem;
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-width: thin;
   padding-inline: 0.5rem;
 }
 
