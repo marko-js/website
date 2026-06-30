@@ -63,6 +63,6 @@ The [playground](/playground) gained starter templates when adding a new tab, so
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
 
----
+## Further Reading
 
-[Marko in February 2026](february-2026.md) →
+- [February 2026](february-2026.md)

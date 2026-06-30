@@ -101,6 +101,7 @@ A new [Supported Environments](../reference/supported-environments.md) page docu
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
 
----
+## Further Reading
 
-← [Marko in January 2026](january-2026.md) | [Marko in May 2026](may-2026.md) →
+- [January 2026](january-2026.md)
+- [May 2026](may-2026.md)
