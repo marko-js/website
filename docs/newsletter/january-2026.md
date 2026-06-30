@@ -62,3 +62,7 @@ The Vite integration tracks optional watch files more accurately, so changes to 
 The [playground](/playground) gained starter templates when adding a new tab, so a new file can begin from an example instead of an empty editor, along with a handful of smaller editor refinements ([website#129](https://github.com/marko-js/website/pull/129)).
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
+
+---
+
+[Marko in February 2026](february-2026.md) →

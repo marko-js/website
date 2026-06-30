@@ -106,11 +106,17 @@ Links:
 - Link relevant existing docs with a relative path and the `.md` extension, e.g. `[Lazy Loading](../reference/lazy-loading.md#triggers)`. The build strips `.md` automatically. Confirm anchors against the target doc's headings (GitHub-style slugs).
 - Link the playground to `/playground` and "GitHub" to `https://github.com/marko-js`.
 
-## Step 6 — Link the new issue
+## Step 6 — Link the new edition
 
-Two places list the editions, newest first. Add the new month to both.
+The newsletter is wired together in three places. Update all of them when adding a month.
 
-The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section (below the `Overview` entry):
+The landing page archive in `docs/newsletter.md`, under `## Archive`, lists every edition ever, newest first. Add the new month to the top and never remove older ones:
+
+```markdown
+- [Marko in July 2026](newsletter/july-2026.md)
+```
+
+The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions below the `Overview` link. Add the new month at the top and drop the oldest so three remain:
 
 ```marko
 li
@@ -118,13 +124,27 @@ li
   ul
     Page="/docs/newsletter" -- Overview
     Page="/docs/newsletter/july-2026" -- July 2026
+    Page="/docs/newsletter/june-2026" -- June 2026
+    Page="/docs/newsletter/may-2026" -- May 2026
 ```
 
-The archive list on the landing page in `docs/newsletter.md`, under `## Archive`:
+Each edition ends with a thematic break and a footer linking the edition before it (older, on the left) and after it (newer, on the right). End the new page with a link back to the previous edition; it has no "next" yet:
 
 ```markdown
-- [Marko in July 2026](newsletter/july-2026.md)
+---
+
+← [Marko in June 2026](june-2026.md)
 ```
+
+Then edit what was the newest edition to append the forward link, so it points both ways:
+
+```markdown
+---
+
+← [Marko in May 2026](may-2026.md) | [Marko in July 2026](july-2026.md) →
+```
+
+The oldest edition has only a forward link, the newest has only a back link, and every edition in between has both.
 
 ## Step 7 — Verify
 
