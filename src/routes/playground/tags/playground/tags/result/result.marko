@@ -213,37 +213,38 @@ div class=styles.result
           Stat name="css" size=(ws.stats?.style?.gzip)
           Stat name="html" size=(ws.stats?.markup?.gzip)
           let/spinning=false
-          button
-            ,title=(linkCopied ? "Copied!" : "Copy share link")
-            ,class=[styles.previewControl, styles.shareControl]
-            ,onClick() {
-              navigator.clipboard?.writeText(location.href).catch(() => {});
-              linkCopied = true;
-            }
-            fa-icon=(linkCopied ? faCheck : faLink)
-              ,class=linkCopied && styles.copied
-              ,onAnimationEnd() {
-                linkCopied = false;
+          div class=styles.previewControls
+            button
+              ,title=(linkCopied ? "Copied!" : "Copy share link")
+              ,class=[styles.previewControl, styles.shareControl]
+              ,onClick() {
+                navigator.clipboard?.writeText(location.href).catch(() => {});
+                linkCopied = true;
               }
-          button
-            ,title="Reload preview"
-            ,class=styles.previewControl
-            ,onClick() {
-              $frame().replaceWith($frame());
-              spinning = true;
-            }
-            fa-icon=faRotateRight
-              ,class=spinning && styles.spin
-              ,onAnimationEnd() {
-                spinning = false;
+              fa-icon=(linkCopied ? faCheck : faLink)
+                ,class=linkCopied && styles.copied
+                ,onAnimationEnd() {
+                  linkCopied = false;
+                }
+            button
+              ,title="Reload preview"
+              ,class=styles.previewControl
+              ,onClick() {
+                $frame().replaceWith($frame());
+                spinning = true;
               }
-          button
-            ,title=(fullscreen ? "Leave fullscreen" : "Expand to fullscreen")
-            ,class=styles.previewControl
-            ,onClick() {
-              fullscreen = !fullscreen;
-            }
-            fa-icon=(fullscreen ? faCompress : faExpand)
+              fa-icon=faRotateRight
+                ,class=spinning && styles.spin
+                ,onAnimationEnd() {
+                  spinning = false;
+                }
+            button
+              ,title=(fullscreen ? "Leave fullscreen" : "Expand to fullscreen")
+              ,class=styles.previewControl
+              ,onClick() {
+                fullscreen = !fullscreen;
+              }
+              fa-icon=(fullscreen ? faCompress : faExpand)
         else if=outputType === "previewJS"
           Stat name="size" size=(ws.stats?.script?.size)
           Stat name="gzip" size=(ws.stats?.script?.gzip)

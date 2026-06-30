@@ -114,11 +114,22 @@
   font-family: "Ubuntu Mono", monospace;
 }
 
+// The preview buttons share link / reload / fullscreen) sit together in their
+// own cluster with a tighter gap than the 1rem used between stats items.
+.previewControls {
+  display: flex;
+  align-self: stretch;
+  gap: 0.25rem;
+}
+
 .previewControl {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0.5rem;
+  // Square buttons: the fixed width matches the bar height (min-height: 2rem)
+  // so each one is consistent and fills the available height.
+  width: 2rem;
+  padding: 0;
   border: none;
   background: none;
   cursor: pointer;
