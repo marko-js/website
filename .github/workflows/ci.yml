@@ -14,6 +14,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: "${{ github.repository_owner == 'marko-js' && github.event_name == 'push' }}"
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,10 +26,34 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Deploy
+      - name: Build site
+        run: npm run build
+        env:
+          REPO_GITHUB_API_TOKEN: ${{ secrets.REPO_GITHUB_API_TOKEN }}
+      # Deploy to the gh-pages branch root while preserving the previews/ directory so
+      # live PR previews survive production deploys (see preview.yml / preview-cleanup.yml).
+      - name: Deploy to gh-pages (preserving PR previews)
         run: |
-          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          npm run deploy
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin gh-pages
+          git worktree add /tmp/gh-pages-deploy gh-pages
+
+          # Wipe everything except the previews/ subdirectory and git internals.
+          find /tmp/gh-pages-deploy -mindepth 1 -maxdepth 1 \
+            ! -name '.git' ! -name 'previews' \
+            -exec rm -rf {} +
+
+          # Copy the freshly-built site in (previews/ is untouched). The custom-domain
+          # CNAME ships in public/CNAME, so it lands here via the build.
+          cp -r dist/public/. /tmp/gh-pages-deploy/
+          touch /tmp/gh-pages-deploy/.nojekyll
+
+          cd /tmp/gh-pages-deploy
+          git add -A
+          git commit -m "deploy: main @ ${GITHUB_SHA}" || echo "No changes to deploy."
+          git push "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_GITHUB_API_TOKEN: ${{ secrets.REPO_GITHUB_API_TOKEN }}

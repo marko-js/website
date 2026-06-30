@@ -13,8 +13,8 @@
     }
   },
   "scripts": {
-    "build": "marko-run build",
-    "deploy": "marko-run build && gh-pages --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
+    "build": "marko-run build && node scripts/rebase-html.mjs",
+    "deploy": "npm run build && gh-pages --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
     "lint": "markdownlint \"docs/**/*.md\" && cspell \"**/*.{md,ts,marko}\"",

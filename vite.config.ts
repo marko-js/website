@@ -5,6 +5,9 @@ import markodown from "./src/util/markodown";
 import { patchCssModules } from "vite-css-modules";
 
 export default defineConfig({
+  // BASE_URL is set to "/previews/pr-N/" by the PR Preview workflow so the site can be
+  // served from a subdirectory on GitHub Pages. Defaults to "/" for the production deploy.
+  base: process.env.BASE_URL || "/",
   environments: {
     client: {
       define: {
