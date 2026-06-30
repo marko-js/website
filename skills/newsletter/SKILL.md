@@ -108,7 +108,7 @@ Links:
 
 ## Step 6 — Link the new issue
 
-Two places list the issues, newest first. Add the new month to both.
+Two places list the editions, newest first. Add the new month to both.
 
 The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section (below the `Overview` entry):
 
@@ -120,7 +120,7 @@ li
     Page="/docs/newsletter/july-2026" -- July 2026
 ```
 
-The archive list on the landing page in `docs/newsletter.md`, under `## Issues`:
+The archive list on the landing page in `docs/newsletter.md`, under `## Archive`:
 
 ```markdown
 - [Marko in July 2026](newsletter/july-2026.md)
