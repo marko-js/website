@@ -106,15 +106,24 @@ Links:
 - Link relevant existing docs with a relative path and the `.md` extension, e.g. `[Lazy Loading](../reference/lazy-loading.md#triggers)`. The build strips `.md` automatically. Confirm anchors against the target doc's headings (GitHub-style slugs).
 - Link the playground to `/playground` and "GitHub" to `https://github.com/marko-js`.
 
-## Step 6 — Add to the menu
+## Step 6 — Link the new issue
 
-Add the page to the left nav in `src/tags/app-menu/app-menu.marko`. Newsletters live under a `Newsletter` section near the top, listed newest first:
+Two places list the issues, newest first. Add the new month to both.
+
+The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section (below the `Overview` entry):
 
 ```marko
 li
   strong -- Newsletter
   ul
+    Page="/docs/newsletter" -- Overview
     Page="/docs/newsletter/july-2026" -- July 2026
+```
+
+The archive list on the landing page in `docs/newsletter.md`, under `## Issues`:
+
+```markdown
+- [Marko in July 2026](newsletter/july-2026.md)
 ```
 
 ## Step 7 — Verify
