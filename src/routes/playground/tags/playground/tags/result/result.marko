@@ -197,9 +197,9 @@ div class=styles.result
         }
         fa-icon=(consoleOpen ? faChevronDown : faChevronUp)
         span -- Console
-        if=(ws.logs?.length)
+        if=ws.logs?.length
           span class=styles.consoleCount -- ${ws.logs.length}
-      if=(ws.logs?.length)
+      if=ws.logs?.length
         button
           ,type="button"
           ,title="Clear console"
@@ -255,7 +255,7 @@ div class=styles.result
           Stat name="gzip" size=(ws.stats?.style?.gzip)
     if=consoleOpen
       div class=styles.consoleBody
-        if=(ws.logs?.length)
+        if=ws.logs?.length
           for|log| of=ws.logs
             div class=styles.logEntry data-method=log.method
               span class=styles.logNs data-ns=log.ns -- ${log.ns}
