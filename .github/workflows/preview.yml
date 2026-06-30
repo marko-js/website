@@ -68,11 +68,13 @@ jobs:
       - name: Deploy to gh-pages branch (preview subdirectory)
         run: |
           set -euo pipefail
-          # gh-pages commits in its own temporary clone, so the committer identity
-          # must be passed via --user (local git config is not inherited). Retry on a
-          # non-fast-forward rejection in case a concurrent gh-pages write (another
-          # preview, the cleanup job, or the production deploy) lands first; each run
-          # re-clones the branch, so clear the cache between attempts.
+          # gh-pages commits in its own temporary clone, so set the identity globally
+          # rather than via --user (whose parser rejects the github-actions[bot]
+          # brackets). Retry on a non-fast-forward rejection in case a concurrent
+          # gh-pages write (another preview, the cleanup job, or the production deploy)
+          # lands first; each run re-clones the branch, so clear the cache between attempts.
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           pushed=false
           for attempt in 1 2 3; do
             rm -rf node_modules/.cache/gh-pages
@@ -82,7 +84,6 @@ jobs:
               --branch gh-pages \
               --nojekyll \
               --add \
-              --user "github-actions[bot] <github-actions[bot]@users.noreply.github.com>" \
               --message "preview: pr-${{ github.event.pull_request.number }} @ ${{ github.sha }}" \
               --repo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"; then
               pushed=true
