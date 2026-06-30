@@ -42,13 +42,31 @@ function rebaseSrcset(value) {
     .join(", ");
 }
 
-const ATTR = /\b(href|src|srcset)=("([^"]*)"|'([^']*)'|([^\s"'`=<>]+))/g;
+/**
+ * A meta-refresh redirect (`<meta http-equiv="refresh" content="0;url=/path">`)
+ * carries its target inside the content attribute. Server redirects (e.g. /docs)
+ * are emitted this way by the static adapter, so the url must be based too. The
+ * `<digits>;url=/` shape is unique to refresh redirects, so other content
+ * attributes (description, viewport, og:*) are left untouched.
+ */
+function rebaseMetaRefresh(value) {
+  return value.replace(
+    /^(\s*\d+\s*;\s*url=)(\/(?!\/)\S*)/i,
+    (_m, prefix, url) => prefix + rebaseUrl(url),
+  );
+}
+
+const ATTR = /\b(href|src|srcset|content)=("([^"]*)"|'([^']*)'|([^\s"'`=<>]+))/g;
 
 function rebaseHtml(html) {
   return html.replace(ATTR, (match, name, _raw, dq, sq, unq) => {
     const value = dq ?? sq ?? unq;
     const next =
-      name === "srcset" ? rebaseSrcset(value) : rebaseUrl(value);
+      name === "srcset"
+        ? rebaseSrcset(value)
+        : name === "content"
+          ? rebaseMetaRefresh(value)
+          : rebaseUrl(value);
     if (next === value) return match;
     const quote = dq !== undefined ? '"' : sq !== undefined ? "'" : "";
     return `${name}=${quote}${next}${quote}`;
