@@ -2,10 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 const newsletterDir = path.join(process.cwd(), "docs", "newsletter");
-
-// `public/CNAME` is the GitHub Pages custom-domain file: it ships verbatim in
-// the build and is what Pages itself reads to serve the site, making it the
-// canonical source for the production origin.
 const site = `https://${fs
   .readFileSync(path.join(process.cwd(), "public", "CNAME"), "utf-8")
   .trim()}`;
@@ -24,8 +20,6 @@ function escapeXml(value: string) {
   );
 }
 
-// Reduce the inline markdown found in TLDR bullets (code spans and links) to
-// plain text so feed readers don't show literal backticks and `[text](url)`.
 function stripMarkdown(value: string) {
   return value.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`/g, "");
 }
@@ -39,8 +33,6 @@ export const GET = (() => {
       const content = fs.readFileSync(path.join(newsletterDir, file), "utf-8");
       return {
         slug,
-        // Filenames are `month-year`; Date already parses the English month
-        // name, so no lookup table is needed.
         date: new Date(`${slug.replace("-", " ")} 1 UTC`),
         title: (content.match(/^#\s+(.+)$/m)?.[1] ?? slug).trim(),
         summary: stripMarkdown(
@@ -55,7 +47,6 @@ export const GET = (() => {
     .filter((item) => !Number.isNaN(+item.date))
     .sort((a, b) => +b.date - +a.date);
 
-  // The channel last changed when the most recent issue was published.
   const lastBuildDate = (items[0]?.date ?? new Date()).toUTCString();
 
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
