@@ -213,7 +213,6 @@ div class=styles.result
           Stat name="js" size=(ws.stats?.script?.gzip)
           Stat name="css" size=(ws.stats?.style?.gzip)
           Stat name="html" size=(ws.stats?.markup?.gzip)
-        let/spinning=false
         button
           ,title=(linkCopied ? "Copied!" : "Copy share link")
           ,class=[styles.previewControl, styles.shareControl]
@@ -226,6 +225,7 @@ div class=styles.result
             ,onAnimationEnd() {
               linkCopied = false;
             }
+        let/spinning=false
         button
           ,title="Reload preview"
           ,class=styles.previewControl
