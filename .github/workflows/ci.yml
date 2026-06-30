@@ -69,7 +69,7 @@ jobs:
             fi
             echo "Push rejected, refreshing gh-pages (attempt ${attempt})."
             git fetch origin gh-pages
-            git rebase origin/gh-pages
+            git rebase FETCH_HEAD
           done
           $pushed || { echo "Failed to push after 3 attempts."; exit 1; }
         env:

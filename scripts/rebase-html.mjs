@@ -7,8 +7,9 @@
 // can keep writing plain root-absolute paths.
 //
 // Runs only when BASE_URL points to a subdirectory (PR previews); it is a no-op for
-// the production deploy where the base is "/". Only `href`/`src`/`srcset` attribute
-// values are touched, so hydration markers and inline scripts are left byte-for-byte.
+// the production deploy where the base is "/". Only `href`/`src`/`srcset` and the
+// meta-refresh `content` redirect are touched, so hydration markers and inline
+// scripts are left byte-for-byte.
 
 import fs from "node:fs/promises";
 import path from "node:path";
