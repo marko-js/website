@@ -136,7 +136,7 @@ npm run build
 
 Once an issue is live, mirror it to the ATmosphere as [standard.site](https://standard.site) records so AT Protocol indexers and readers can discover it. The `publish-standard-site.js` script beside this skill reads the same `docs/newsletter/*.md` files and upserts one `site.standard.publication` record plus one `site.standard.document` per issue into the `markojs.com` repository on its Bluesky PDS.
 
-Auth uses an app password for the account (Bluesky Settings → Privacy and Security → App Passwords), supplied as `BLUESKY_APP_PASSWORD`. Preview the records first, then publish:
+Auth is a Bluesky app password for the account, read from the `BLUESKY_APP_PASSWORD` environment variable (a CI secret, or a local `.env`). The script bails if it is missing. Never inline or commit the value. Preview the records first, then publish:
 
 ```bash
 node skills/newsletter/publish-standard-site.js --dry-run   # print records, write nothing
