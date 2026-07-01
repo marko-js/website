@@ -78,11 +78,7 @@ Lists merged PRs that month whose author's association is `FIRST_TIME_CONTRIBUTO
 
 Not automatable: everything else. Showcases, conference talks, blog posts, Discord highlights, and noteworthy GitHub Discussions threads have no reliable API source, so do not guess at them or invent one to fill the section. Ask the user directly, for example: "Anything for a Community section this month, beyond new contributors? Looking for showcases, talks, Discord highlights, or shoutouts." If the user has nothing to add, drop the `## Community` section entirely rather than publishing an empty or generic one.
 
-Keep each attribution short and credit the handle, but do not force it into a single fill-in-the-blank template. "Thanks to X for contributing Y" is a fine default, yet it reads as a form letter when repeated verbatim for every entry. Where there is a concrete, checkable sign of what the contribution led to, such as the change now shipping in the project's own docs or a live site, prefer working that in over a generic thanks:
-
-```markdown
-Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for bringing first-class Marko support to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)); its [sortability docs](https://drag-and-drop.formkit.com/#sortability) now include a Marko example.
-```
+Keep each attribution short and credit the handle, but do not force it into a single fill-in-the-blank template repeated verbatim for every entry, which reads as a form letter. Where there is a concrete, checkable sign of what the contribution led to, such as the change now shipping in the project's own docs or a live site, prefer working that in over a generic thanks.
 
 Whatever the phrasing, this section is a shoutout, not a feature writeup, so skip the mechanism-and-benefit prose used elsewhere in the newsletter, and state only what the PR, a linked page, or the user directly confirms. Do not infer or add an employer, team, or motivation that is not stated outright. When a contributor's affiliation is genuinely relevant and confirmed, it can be worth a mention, but guessing at one from a bio or username is the kind of error that erodes trust in the newsletter.
 
