@@ -112,21 +112,23 @@ The newsletter is wired together in three places. Update all of them when adding
 
 Label every cross-link with the bare month and year, e.g. `June 2026`, never `Marko in June 2026`.
 
-The landing page archive in `docs/newsletter.md`, under `## Archive`, lists every edition ever, newest first. Add the new month to the top and never remove older ones:
+The landing page archive in `docs/newsletter.md`, under `## Archive`, lists every edition ever, grouped by year (newest year first, newest month first within a year). Add the new month to the top of its year's list, adding a new year heading if the month starts one, and never remove older ones:
 
 ```markdown
-- [July 2026](newsletter/july-2026.md)
+- 2026
+  - [July](newsletter/july-2026.md)
+  - [June](newsletter/june-2026.md)
 ```
 
-The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions, followed by a `...more` link to the landing page. Add the new month at the top and drop the oldest so three remain above the `...more` entry:
+The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions (bare month, no year), followed by a `...more` link to the landing page. Add the new month at the top and drop the oldest so three remain above the `...more` entry:
 
 ```marko
 li
   strong -- Newsletter
   ul
-    Page="/docs/newsletter/july-2026" -- July 2026
-    Page="/docs/newsletter/june-2026" -- June 2026
-    Page="/docs/newsletter/may-2026" -- May 2026
+    Page="/docs/newsletter/july-2026" -- July
+    Page="/docs/newsletter/june-2026" -- June
+    Page="/docs/newsletter/may-2026" -- May
     Page="/docs/newsletter" -- ...more
 ```
 
