@@ -118,7 +118,7 @@ The landing page archive in `docs/newsletter.md`, under `## Archive`, lists ever
 - [July 2026](newsletter/july-2026.md)
 ```
 
-The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions, followed by an `Archive` link to the landing page. Add the new month at the top and drop the oldest so three remain above the `Archive` entry:
+The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions, followed by a `...more` link to the landing page. Add the new month at the top and drop the oldest so three remain above the `...more` entry:
 
 ```marko
 li
@@ -127,7 +127,7 @@ li
     Page="/docs/newsletter/july-2026" -- July 2026
     Page="/docs/newsletter/june-2026" -- June 2026
     Page="/docs/newsletter/may-2026" -- May 2026
-    Page="/docs/newsletter" -- Archive
+    Page="/docs/newsletter" -- ...more
 ```
 
 Each edition ends with a `## Further Reading` section linking the adjacent editions, which the docs layout styles as cards. List the edition before it first, then the one after it. End the new page with a link back to the previous edition; it has no later edition yet:
