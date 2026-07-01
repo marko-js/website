@@ -106,16 +106,48 @@ Links:
 - Link relevant existing docs with a relative path and the `.md` extension, e.g. `[Lazy Loading](../reference/lazy-loading.md#triggers)`. The build strips `.md` automatically. Confirm anchors against the target doc's headings (GitHub-style slugs).
 - Link the playground to `/playground` and "GitHub" to `https://github.com/marko-js`.
 
-## Step 6 — Add to the menu
+## Step 6 — Link the new edition
 
-Add the page to the left nav in `src/tags/app-menu/app-menu.marko`. Newsletters live under a `Newsletter` section near the top, listed newest first:
+The newsletter is wired together in three places. Update all of them when adding a month.
+
+Label every cross-link with the bare month and year, e.g. `June 2026`, never `Marko in June 2026`.
+
+The landing page archive in `docs/newsletter.md`, under `## Archive`, lists every edition ever, newest first. Add the new month to the top and never remove older ones:
+
+```markdown
+- [July 2026](newsletter/july-2026.md)
+```
+
+The left nav in `src/tags/app-menu/app-menu.marko`, under the `Newsletter` section, shows only the three latest editions, followed by a `...more` link to the landing page. Add the new month at the top and drop the oldest so three remain above the `...more` entry:
 
 ```marko
 li
   strong -- Newsletter
   ul
     Page="/docs/newsletter/july-2026" -- July 2026
+    Page="/docs/newsletter/june-2026" -- June 2026
+    Page="/docs/newsletter/may-2026" -- May 2026
+    Page="/docs/newsletter" -- ...more
 ```
+
+Each edition ends with a `## Further Reading` section linking the adjacent editions, which the docs layout styles as cards. List the edition before it first, then the one after it. End the new page with a link back to the previous edition; it has no later edition yet:
+
+```markdown
+## Further Reading
+
+- [June 2026](june-2026.md)
+```
+
+Then edit what was the newest edition to add the forward link below its existing back link:
+
+```markdown
+## Further Reading
+
+- [May 2026](may-2026.md)
+- [July 2026](july-2026.md)
+```
+
+The oldest edition links only forward, the newest links only back, and every edition in between links both ways.
 
 ## Step 7 — Verify
 
