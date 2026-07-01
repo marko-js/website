@@ -105,25 +105,31 @@ jobs:
           set -uo pipefail
           sha="${{ steps.deploy.outputs.sha }}"
           for attempt in $(seq 1 30); do
-            # /pages/builds/latest only ever reflects the single most recent push to
-            # gh-pages across all previews, production, and cleanup, so a concurrent
-            # push can permanently bump our commit out of "latest" before we see it
-            # built. /pages/builds is the build history, so it still holds our entry.
-            builds=$(curl -s --max-time 15 \
+            # GitHub can coalesce rapid gh-pages pushes and only build the branch
+            # tip at the time it dequeues, skipping a dedicated build for our
+            # commit entirely. gh-pages history is strictly fast-forward (see the
+            # retry loop above and preview-cleanup.yml), so any built commit that
+            # descends from ours still contains our changes; check ancestry
+            # instead of requiring an exact commit match.
+            build=$(curl -s --max-time 15 \
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pages/builds?per_page=100")
-            status=$(echo "$builds" | jq -r --arg sha "$sha" '[.[] | select(.commit == $sha)][0].status // empty')
-            if [ "$status" = "built" ]; then
-              echo "GitHub Pages build for ${sha} is live."
-              exit 0
+              "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
+            commit=$(echo "$build" | jq -r '.commit // empty')
+            status=$(echo "$build" | jq -r '.status // empty')
+            if [ -n "$commit" ] && { [ "$status" = "built" ] || [ "$status" = "errored" ]; }; then
+              git -C node_modules/.cache/gh-pages fetch --quiet origin gh-pages
+              if git -C node_modules/.cache/gh-pages merge-base --is-ancestor "$sha" "$commit" 2>/dev/null; then
+                if [ "$status" = "built" ]; then
+                  echo "GitHub Pages built ${commit}, which includes our commit ${sha}."
+                  exit 0
+                fi
+                echo "GitHub Pages build of ${commit} (which includes our commit ${sha}) errored:"
+                echo "$build" | jq -r '.error.message // "unknown error"'
+                exit 1
+              fi
             fi
-            if [ "$status" = "errored" ]; then
-              echo "GitHub Pages build for ${sha} errored:"
-              echo "$builds" | jq -r --arg sha "$sha" '[.[] | select(.commit == $sha)][0].error.message // "unknown error"'
-              exit 1
-            fi
-            echo "Waiting on GitHub Pages build of ${sha} (status: ${status:-not yet recorded}), attempt ${attempt}/30..."
+            echo "Waiting on GitHub Pages build to include ${sha} (latest build: commit=${commit:-none}, status=${status:-unknown}), attempt ${attempt}/30..."
             sleep 10
           done
           echo "GitHub Pages build did not confirm within 5 minutes; posting the link anyway."
