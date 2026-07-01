@@ -22,6 +22,20 @@
 <description>Less over-serialization, so resumable pages ship smaller payloads Pages with no interactivity emit no client assets at all A smaller DOM runtime bundle Fixes for SVG class bindings, ${ in attribute values, and attribute tags</description>
 </item>
 <item>
+<title>Marko in April 2026</title>
+<link>https://markojs.com/docs/newsletter/april-2026</link>
+<guid>https://markojs.com/docs/newsletter/april-2026</guid>
+<pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+<description>Safer escaping inside &lt;script&gt;, &lt;style&gt;, and comment tags TypeScript 6 across the language tools Vite 8 support with dev-server hot-reload fixes Smaller serialized output and faster editor parsing</description>
+</item>
+<item>
+<title>Marko in March 2026</title>
+<link>https://markojs.com/docs/newsletter/march-2026</link>
+<guid>https://markojs.com/docs/newsletter/march-2026</guid>
+<pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+<description>Bound attribute modifiers like value:Number:=quantity &quot;Did you mean&quot; suggestions for unknown tags Full Rolldown support and initial Vite 8 compatibility Better support for apps embedded inside another app</description>
+</item>
+<item>
 <title>Marko in February 2026</title>
 <link>https://markojs.com/docs/newsletter/february-2026</link>
 <guid>https://markojs.com/docs/newsletter/february-2026</guid>

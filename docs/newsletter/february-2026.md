@@ -100,3 +100,8 @@ A round of correctness fixes landed across the runtime and compiler:
 A new [Supported Environments](../reference/supported-environments.md) page documents the browsers and Node versions Marko targets, giving a single place to check compatibility ([website#132](https://github.com/marko-js/website/pull/132)).
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
+
+## Further Reading
+
+- [January 2026](january-2026.md)
+- [March 2026](march-2026.md)
