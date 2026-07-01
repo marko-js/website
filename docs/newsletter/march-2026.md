@@ -35,27 +35,35 @@ The Vite integration gained full Rolldown support, replacing the previous esbuil
 
 Embedding a Marko app inside another page, such as a widget mounted into an existing document, works more smoothly. When a template is detected not to render `html`, `head`, or `body`, Marko now generates a unique `$global.renderId` automatically, and it cleans up scopes when the embedded DOM is removed ([marko#3124](https://github.com/marko-js/marko/pull/3124)).
 
-## Performance
+## Improvements
+
+Beyond the headlines, improvements trimmed server output and expanded type coverage.
+
+### Performance
 
 Server output got smaller. Duplicate section serialization guards are now emitted once instead of repeatedly ([marko#3141](https://github.com/marko-js/marko/pull/3141)). The list reconciliation code was rewritten with its logic inlined for a smaller bundle and additional fast paths for the common case where no items move between renders ([marko#3112](https://github.com/marko-js/marko/pull/3112)).
 
-## Concise Syntax
-
-Several concise-mode whitespace regressions were corrected. Newlines between nodes inside a concise HTML block are preserved again rather than collapsed, and trailing whitespace in those blocks is handled correctly ([htmljs-parser#216](https://github.com/marko-js/htmljs-parser/pull/216), [htmljs-parser#218](https://github.com/marko-js/htmljs-parser/pull/218)). The Tags API `<style>` translation was updated for the parser's revised text nodes, and the compiler no longer inserts a stray space between adjacent text and placeholders in a tag body ([marko#3108](https://github.com/marko-js/marko/pull/3108), [marko#3129](https://github.com/marko-js/marko/pull/3129)).
-
-## Type Definitions
+### Type Definitions
 
 Native attribute typings expanded, adding `webkitdirectory` on `<input>`, `media` on `<meta>`, and refined `<button>` attributes ([marko#3121](https://github.com/marko-js/marko/pull/3121), [marko#3137](https://github.com/marko-js/marko/pull/3137), [marko#3138](https://github.com/marko-js/marko/pull/3138)).
 
-## Interop
-
-Mixing the Class API and Tags API grew more reliable when legacy renderer APIs are involved, with dynamic tags routing correctly through the compatibility layer ([marko#3145](https://github.com/marko-js/marko/pull/3145)). A production-mode ordering bug in return-tag analysis was fixed, so intersecting state resolves in the correct order ([marko#3135](https://github.com/marko-js/marko/pull/3135)). The `@marko/express` middleware was updated for Marko 6 ([express#12](https://github.com/marko-js/express/pull/12)).
-
-## Marko Run
+### Marko Run
 
 Marko Run's file-based routing gained an interactive REPL at [marko.run/repl](https://marko.run/repl) that visualizes how a set of route files maps to matched routes ([marko.run#1](https://github.com/marko-js/marko.run/pull/1)).
 
 ## Fixes
+
+Correctness work concentrated on concise-mode whitespace and the Class API interop layer.
+
+### Concise Syntax
+
+Several concise-mode whitespace regressions were corrected. Newlines between nodes inside a concise HTML block are preserved again rather than collapsed, and trailing whitespace in those blocks is handled correctly ([htmljs-parser#216](https://github.com/marko-js/htmljs-parser/pull/216), [htmljs-parser#218](https://github.com/marko-js/htmljs-parser/pull/218)). The Tags API `<style>` translation was updated for the parser's revised text nodes, and the compiler no longer inserts a stray space between adjacent text and placeholders in a tag body ([marko#3108](https://github.com/marko-js/marko/pull/3108), [marko#3129](https://github.com/marko-js/marko/pull/3129)).
+
+### Interop
+
+Mixing the Class API and Tags API grew more reliable when legacy renderer APIs are involved, with dynamic tags routing correctly through the compatibility layer ([marko#3145](https://github.com/marko-js/marko/pull/3145)). A production-mode ordering bug in return-tag analysis was fixed, so intersecting state resolves in the correct order ([marko#3135](https://github.com/marko-js/marko/pull/3135)). The `@marko/express` middleware was updated for Marko 6 ([express#12](https://github.com/marko-js/express/pull/12)).
+
+### In Brief
 
 - Rendering no longer throws an uninitialized error when `input` is absent ([marko#3125](https://github.com/marko-js/marko/pull/3125)).
 - The compiler avoids loading Babel configuration when Babel is not installed ([marko#3118](https://github.com/marko-js/marko/pull/3118), [marko#3119](https://github.com/marko-js/marko/pull/3119)).
