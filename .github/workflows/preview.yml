@@ -75,6 +75,7 @@ jobs:
         id: deploy
         run: |
           set -euo pipefail
+          repo_url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           # gh-pages commits in its own temporary clone, so set the identity globally
           # rather than via --user (whose parser rejects the github-actions[bot]
           # brackets). Retry on a non-fast-forward rejection in case a concurrent
@@ -92,7 +93,7 @@ jobs:
               --nojekyll \
               --add \
               --message "preview: pr-${{ github.event.pull_request.number }} @ ${{ github.sha }}" \
-              --repo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"; then
+              --repo "$repo_url"; then
               pushed=true
               break
             fi
@@ -100,12 +101,10 @@ jobs:
             sleep $((attempt * 3))
           done
           $pushed || { echo "Failed to deploy preview after 3 attempts."; exit 1; }
-          # gh-pages (v6) nests its clone inside a subdirectory keyed by the repo
-          # URL under find-cache-dir's path, not directly at node_modules/.cache/gh-pages,
-          # so `git -C node_modules/.cache/gh-pages rev-parse HEAD` silently walked up to
-          # this job's own checkout and returned github.sha instead of the pushed commit.
-          # Read the real tip back from the remote instead of relying on that cache layout.
-          echo "sha=$(git ls-remote "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages | cut -f1)" >> "$GITHUB_OUTPUT"
+          # gh-pages nests its clone under find-cache-dir's path, not directly at
+          # node_modules/.cache/gh-pages, so read the pushed tip back from the
+          # remote rather than relying on that cache layout.
+          echo "sha=$(git ls-remote "$repo_url" gh-pages | cut -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Wait for GitHub Pages deployment
         run: |
@@ -113,23 +112,22 @@ jobs:
           sha="${{ steps.deploy.outputs.sha }}"
           api="https://api.github.com/repos/${{ github.repository }}"
           auth=(-H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json")
-          for attempt in $(seq 1 30); do
-            # The github-pages environment in the Deployments API is keyed by exact
-            # commit SHA and updates promptly; the legacy /pages/builds/latest
-            # endpoint reflects a single global "most recent" slot that can sit stale
-            # for many minutes, so it's not a reliable per-commit signal.
-            deployments=$(curl -s --max-time 15 "${auth[@]}" \
-              "${api}/deployments?sha=${sha}&environment=github-pages")
-            id=$(echo "$deployments" | jq -r '.[0].id // empty')
+          gh_api() { curl -s --max-time 15 "${auth[@]}" "$@"; }
 
+          id=""
+          for attempt in $(seq 1 30); do
             if [ -z "$id" ]; then
-              echo "No GitHub Pages deployment recorded yet for ${sha} (attempt ${attempt}/30)..."
-              sleep 10
-              continue
+              # Query by exact commit SHA; the legacy /pages/builds/latest endpoint
+              # isn't a reliable per-commit signal.
+              id=$(gh_api "${api}/deployments?sha=${sha}&environment=github-pages" | jq -r '.[0].id // empty')
+              if [ -z "$id" ]; then
+                echo "No GitHub Pages deployment recorded yet for ${sha} (attempt ${attempt}/30)..."
+                sleep 10
+                continue
+              fi
             fi
 
-            statuses=$(curl -s --max-time 15 "${auth[@]}" "${api}/deployments/${id}/statuses")
-            state=$(echo "$statuses" | jq -r '.[0].state // empty')
+            state=$(gh_api "${api}/deployments/${id}/statuses" | jq -r '.[0].state // empty')
 
             if [ "$state" = "success" ]; then
               echo "GitHub Pages deployment for ${sha} succeeded."
