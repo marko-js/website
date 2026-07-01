@@ -86,12 +86,17 @@ Whatever the phrasing, this section is a shoutout, not a feature writeup, so ski
 
 Create `docs/newsletter/<month>-<year>.md` (e.g. `july-2026.md`). The `markodown` Vite plugin globs `docs/**/*.md` and auto-generates the route `/docs/newsletter/<slug>`, so no routing wiring is needed.
 
-Structure:
+The page is tiered: the handful of items that define the month read first at full depth, and everything else stays discoverable in compact buckets behind them.
 
 - A single `# Title` H1 (its text becomes the page title).
-- A `> [!TLDR]` callout listing the highest-impact items first, then a short intro paragraph that frames the month around them. Do not start the intro with "This newsletter covers...".
-- Flat `## ` sections, each a theme, **ordered by expected developer impact**: lead with the change most developers will notice or benefit from, and let lower-impact items (niche fixes, platform notes, internal-leaning work) fall toward the end. Keep paragraphs short; split dense lists into chunks.
-- A `## Community` section, when Step 4 turned up content, ranked by impact like any other section. A first-time contributor's fix usually sits toward the end; a notable showcase can lead if it outweighs the month's code changes. Omit the heading entirely rather than leaving it empty.
+- A `> [!TLDR]` callout with one bullet per headline section, in the same order, then a short intro paragraph that frames the month around them. Do not start the intro with "This newsletter covers...".
+- **Headlines**: zero to five flat `## ` sections directly after the intro, one per item that defines the month. Any kind of change qualifies (a feature, a milestone, a performance win, even a major fix); the bar is whether most Marko developers would care, not what kind of change it is. Each gets the full treatment: what shipped, why it matters, and usually a code example. Order them by expected developer impact. A quiet month can have no headlines, in which case the TLDR draws from the buckets below instead; never pad this tier to fill it.
+- `## Improvements` collects the rest of the shipped feature and developer-experience work as `### ` themes (editor support, error messages, playground, and so on), ordered by impact, each a paragraph or two. Open the section with a single framing sentence before the first theme. When a theme grows past a couple of paragraphs and a code example, that is a sign it belongs in the headline tier instead.
+- `## Fixes` collects correctness work. A batch with a story gets its own `### ` theme (a round of resumability fixes, an interop hardening pass); one-liners sweep into a short bullet list at the end. A fix for a feature that shipped this same month still folds into that feature's section (Step 3) rather than landing here.
+- The standing release-notes line ("Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).") closes the shipped-work portion, after `## Fixes`.
+- A `## Community` section, when Step 4 turned up content. Use `### ` subsections when it holds multiple substantial items (a showcase, a blog post, an integration); keep a single item or short shout-outs as plain prose. First-time contributor thanks sit at the end. Omit the heading entirely rather than leaving it empty.
+
+Keep paragraphs short everywhere; split dense lists into chunks.
 
 Style (see AGENTS.md, enforced by the docs lint):
 
@@ -110,7 +115,7 @@ Style (see AGENTS.md, enforced by the docs lint):
 
 ## Step 6 — Examples and links
 
-Add a code example to a section **only when there is a new, authoring-facing capability to show.** Do not force one onto sections about bug fixes, platform support, parser internals, or UI work, which usually read better with none.
+Add a code example to a section **only when there is a new, authoring-facing capability to show.** Headline sections usually earn one; `## Improvements` themes occasionally do; `## Fixes` and `## Community` almost never do. Do not force one onto sections about bug fixes, platform support, parser internals, or UI work, which usually read better with none.
 
 Code block rules:
 
@@ -194,7 +199,8 @@ Surface judgment calls to the user rather than guessing: the `Task` type for a P
 - Verify the nature of a change before writing it. A title can look feature-shaped when the PR is actually a bug fix; framing matters.
 - When a fix corrects a feature that shipped the same month, describe the net shipped behavior and fold the fix in as a follow-up, rather than listing both or dropping the fix.
 - Reconcile the board against the merged list every time. The board is often incomplete, and an untracked PR can be the month's lead story.
-- Order sections by expected developer impact, not by board order, PR number, or theme grouping.
+- Tier by expected developer impact, not by board order, PR number, or kind of change: headlines are the 0-5 items most developers would care about, and the same impact ordering applies within `## Improvements` and `## Fixes`.
+- Never pad the headline tier. Zero headlines is a valid shape for a quiet month; five mediocre headlines bury the one that matters.
 - Do not force examples. Sections about fixes, platform support, parser internals, or UI often read better with none.
 - Get numbers from the PR, with their real scope, and keep the PR's own caveats.
 - Keep implementation detail out of prose; keep compiled-output examples illustrative.
