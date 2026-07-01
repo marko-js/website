@@ -36,23 +36,25 @@ This rewrite builds on new validity APIs in the parser, including helpers for ch
 
 Numeric controllable values are now supported and normalized correctly, so a numeric `value:=` round-trips as a number rather than being coerced to a string ([marko#3098](https://github.com/marko-js/marko/pull/3098), [marko#3096](https://github.com/marko-js/marko/pull/3096)).
 
-## Performance
-
-The HTML serializer now deduplicates long strings. When a serialized value over thirty characters appears more than once, it is written a single time and referenced afterward instead of being repeated, which trims the size of the data sent to the browser for resumption on pages with repeated content ([marko#3105](https://github.com/marko-js/marko/pull/3105)).
-
 ## Compiler
 
 The compiler no longer depends on Babel modules directly. Instead it bundles a pre-patched, pre-built copy of Babel. Marko patches some Babel internals, and a change upstream had previously been able to break the compiler. Vendoring Babel decouples those upgrades, so new Babel versions can be adopted during routine dependency updates, and it removes the old patch strategy's sensitivity to load order and to multiple copies of Babel being present ([marko#3073](https://github.com/marko-js/marko/pull/3073), [marko#3071](https://github.com/marko-js/marko/pull/3071), [marko#3075](https://github.com/marko-js/marko/pull/3075)).
 
 The same effort made `browserslist` optional and firmed up the compiler's browser support, so the compiler runs in more environments, including the browser, without extra configuration ([marko#3077](https://github.com/marko-js/marko/pull/3077), [marko#3081](https://github.com/marko-js/marko/pull/3081)).
 
-## Editor Support
+## Performance
+
+The HTML serializer now deduplicates long strings. When a serialized value over thirty characters appears more than once, it is written a single time and referenced afterward instead of being repeated, which trims the size of the data sent to the browser for resumption on pages with repeated content ([marko#3105](https://github.com/marko-js/marko/pull/3105)).
+
+## Improvements
+
+Smaller features landed in the editor, Marko Run, concise mode, and the documentation.
+
+### Editor Support
 
 Attribute autocomplete grew more helpful. String attributes with common prefixes now suggest those prefixes inline, so completing `href` or `src` offers starting points like `#`, `mailto:`, `https://`, and `/` ([marko#3090](https://github.com/marko-js/marko/pull/3090)).
 
-The language server moved to the latest Marko and picked up a batch of fixes: tag-name syntax highlighting, render errors that map back to the correct tag name, accurate reading of a variable inside its own body, codegen for `const` native tags, and attribute-tag type narrowing ([language-server#460](https://github.com/marko-js/language-server/pull/460), [#450](https://github.com/marko-js/language-server/pull/450), [#452](https://github.com/marko-js/language-server/pull/452), [#454](https://github.com/marko-js/language-server/pull/454), [#456](https://github.com/marko-js/language-server/pull/456), [#458](https://github.com/marko-js/language-server/pull/458)).
-
-## Marko Run
+### Marko Run
 
 Meta data defined in [`+meta`](../marko-run/file-based-routing.md) files can carry HTTP verb specific overrides. For a meta file that exports an object, including a JSON file, top-level keys that match an uppercase HTTP method are treated as overrides. The matching override for the current request method is merged shallowly over the base values and excluded from the meta object otherwise.
 
@@ -69,7 +71,7 @@ Meta data defined in [`+meta`](../marko-run/file-based-routing.md) files can car
 
 A `GET` request sees the base `title` and `robots`, while a `POST` request sees the overridden pair ([run#183](https://github.com/marko-js/run/pull/183)).
 
-## Concise Syntax
+### Concise Syntax
 
 In [concise mode](../reference/concise-syntax.md), text inside a code fence now has its surrounding whitespace trimmed, including leading tabs, instead of preserving the leading and trailing newlines the fence used to keep.
 
@@ -82,9 +84,19 @@ div
 
 The fenced text resolves to `Hello World` with no surrounding whitespace ([htmljs-parser#199](https://github.com/marko-js/htmljs-parser/pull/199)).
 
+### Documentation
+
+A new [Supported Environments](../reference/supported-environments.md) page documents the browsers and Node versions Marko targets, giving a single place to check compatibility ([website#132](https://github.com/marko-js/website/pull/132)).
+
 ## Fixes
 
-A round of correctness fixes landed across the runtime and compiler:
+A batch of language server fixes shipped with its move to the latest Marko, alongside a round of runtime and compiler corrections.
+
+### Language Server
+
+The language server moved to the latest Marko and picked up a batch of fixes: tag-name syntax highlighting, render errors that map back to the correct tag name, accurate reading of a variable inside its own body, codegen for `const` native tags, and attribute-tag type narrowing ([language-server#460](https://github.com/marko-js/language-server/pull/460), [#450](https://github.com/marko-js/language-server/pull/450), [#452](https://github.com/marko-js/language-server/pull/452), [#454](https://github.com/marko-js/language-server/pull/454), [#456](https://github.com/marko-js/language-server/pull/456), [#458](https://github.com/marko-js/language-server/pull/458)).
+
+### In Brief
 
 - Pure signals are preserved correctly when a function is resumed ([marko#3070](https://github.com/marko-js/marko/pull/3070)).
 - Pending `<await>` closures resolve correctly ([marko#3100](https://github.com/marko-js/marko/pull/3100)).
@@ -94,10 +106,6 @@ A round of correctness fixes landed across the runtime and compiler:
 - Class API interop fixes `toJSON` placement on implicit split components ([marko#3083](https://github.com/marko-js/marko/pull/3083)).
 - Types for the `<dialog>` element and the [`<id>`](../reference/core-tag.md#id) tag are filled in ([marko#3085](https://github.com/marko-js/marko/pull/3085), [marko#3087](https://github.com/marko-js/marko/pull/3087)).
 - The Vite integration emits correct sourcemaps for the server and browser entries ([vite#244](https://github.com/marko-js/vite/pull/244)).
-
-## Browser Support
-
-A new [Supported Environments](../reference/supported-environments.md) page documents the browsers and Node versions Marko targets, giving a single place to check compatibility ([website#132](https://github.com/marko-js/website/pull/132)).
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
 
