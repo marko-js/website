@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Marko Newsletter</title>
+<link>https://markojs.com</link>
+<description>Monthly updates from the Marko team.</description>
+<language>en</language>
+<lastBuildDate>Mon, 01 Jun 2026 00:00:00 GMT</lastBuildDate>
+<atom:link href="https://markojs.com/docs/newsletter/feed.xml" rel="self" type="application/rss+xml"/>
+<item>
+<title>Marko in June 2026</title>
+<link>https://markojs.com/docs/newsletter/june-2026</link>
+<guid>https://markojs.com/docs/newsletter/june-2026</guid>
+<pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+<description>Marko 6 is now the default marko on npm Native asset management with automatic lazy loading A Zed extension and a tree-sitter grammar for Marko Synchronous &lt;await&gt; for values that are not promises</description>
+</item>
+<item>
+<title>Marko in May 2026</title>
+<link>https://markojs.com/docs/newsletter/may-2026</link>
+<guid>https://markojs.com/docs/newsletter/may-2026</guid>
+<pubDate>Fri, 01 May 2026 00:00:00 GMT</pubDate>
+<description>Less over-serialization, so resumable pages ship smaller payloads Pages with no interactivity emit no client assets at all A smaller DOM runtime bundle Fixes for SVG class bindings, ${ in attribute values, and attribute tags</description>
+</item>
+<item>
+<title>Marko in April 2026</title>
+<link>https://markojs.com/docs/newsletter/april-2026</link>
+<guid>https://markojs.com/docs/newsletter/april-2026</guid>
+<pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+<description>Safer escaping inside &lt;script&gt;, &lt;style&gt;, and comment tags TypeScript 6 across the language tools Vite 8 support with dev-server hot-reload fixes Smaller serialized output and faster editor parsing</description>
+</item>
+<item>
+<title>Marko in March 2026</title>
+<link>https://markojs.com/docs/newsletter/march-2026</link>
+<guid>https://markojs.com/docs/newsletter/march-2026</guid>
+<pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+<description>Bound attribute modifiers like value:Number:=quantity &quot;Did you mean&quot; suggestions for unknown tags Full Rolldown support and initial Vite 8 compatibility Better support for apps embedded inside another app</description>
+</item>
+<item>
+<title>Marko in February 2026</title>
+<link>https://markojs.com/docs/newsletter/february-2026</link>
+<guid>https://markojs.com/docs/newsletter/february-2026</guid>
+<pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+<description>The Prettier plugin rewritten on the new parser, preserving shorthands and producing idempotent output Controllable attributes unified across &lt;let&gt; and native tags, with number support The compiler now vendors Babel internally, making upgrades and browser compilation more robust Smaller serialized output by deduping repeated long strings</description>
+</item>
+<item>
+<title>Marko in January 2026</title>
+<link>https://markojs.com/docs/newsletter/january-2026</link>
+<guid>https://markojs.com/docs/newsletter/january-2026</guid>
+<pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
+<description>A large batch of compiler fixes for variable hoisting and cross-section scope analysis Correct handling of known rest and spread inputs Steadier type checking in the language server, plus pnpm project discovery Interop and controllable-input fixes for mixed Class API and Tags API apps</description>
+</item>
+</channel>
+</rss>
