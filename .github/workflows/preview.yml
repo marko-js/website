@@ -94,6 +94,21 @@ jobs:
           done
           $pushed || { echo "Failed to deploy preview after 3 attempts."; exit 1; }
 
+      - name: Wait for preview to be reachable
+        run: |
+          set -uo pipefail
+          url="https://markojs.com/previews/pr-${{ github.event.pull_request.number }}/"
+          for attempt in $(seq 1 30); do
+            status=$(curl -s -o /dev/null -w '%{http_code}' "$url")
+            if [ "$status" = "200" ]; then
+              echo "Preview is live at $url"
+              exit 0
+            fi
+            echo "Preview not yet reachable (status ${status}, attempt ${attempt}/30); retrying in 10s..."
+            sleep 10
+          done
+          echo "Preview did not become reachable within 5 minutes; posting the link anyway."
+
       - name: Post preview URL to PR
         uses: actions/github-script@v7
         with:
