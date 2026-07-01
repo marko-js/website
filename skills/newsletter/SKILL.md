@@ -188,7 +188,6 @@ npm run build
   `grep -c 'markoAlts=' src/routes/docs/_compiled-docs/newsletter/<slug>+page.marko`
   Then confirm internal links resolved with no leftover `.md`:
   `grep -oE 'href="[^"]*\.md[^"]*"' src/routes/docs/_compiled-docs/newsletter/<slug>+page.marko` (should print nothing).
-- The build also regenerates `.marko-run/routes.d.ts`, a checked-in generated file, adding the new edition's route to the typed route map. Include the refreshed copy alongside the newsletter change so it does not go stale; never edit it by hand.
 - The build can fail nondeterministically on an unrelated doc (e.g. `docs/guide/low-level-apis` with `Cannot read properties of undefined (reading 'ast')`) because docs compile in parallel. If the newsletter page itself generated fine, rerun a clean build: `rm -rf dist && npm run build`.
 
 ## Step 9 — Confirm and hand off
@@ -206,7 +205,6 @@ Surface judgment calls to the user rather than guessing: the `Task` type for a P
 - Get numbers from the PR, with their real scope, and keep the PR's own caveats.
 - Keep implementation detail out of prose; keep compiled-output examples illustrative.
 - The TLDR renders as a run-on unless it is a real markdown list.
-- The verification build regenerates `.marko-run/routes.d.ts` with the new edition's route. Commit the refreshed file with the edition; leaving it out is how it goes stale.
 - `no-format` is the right tool for concise/anti-pattern/opt-in snippets.
 - Community content beyond first-time contributors (showcases, talks, Discord, Discussions) has no reliable API source. Ask the user rather than guessing, and drop the `## Community` heading if there is nothing to put in it.
 - Keep attributions short and credit the handle, but do not repeat the same "Thanks to X for contributing Y" template verbatim every time; work in a concrete, checkable detail (shipped in the project's docs, a live site) when one exists. Never add an affiliation, team, or motivation that is not directly confirmed.
