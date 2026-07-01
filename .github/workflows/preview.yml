@@ -117,19 +117,31 @@ jobs:
               "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
             commit=$(echo "$build" | jq -r '.commit // empty')
             status=$(echo "$build" | jq -r '.status // empty')
-            if [ -n "$commit" ] && { [ "$status" = "built" ] || [ "$status" = "errored" ]; }; then
-              git -C node_modules/.cache/gh-pages fetch --quiet origin gh-pages
-              if git -C node_modules/.cache/gh-pages merge-base --is-ancestor "$sha" "$commit" 2>/dev/null; then
-                if [ "$status" = "built" ]; then
-                  echo "GitHub Pages built ${commit}, which includes our commit ${sha}."
-                  exit 0
-                fi
-                echo "GitHub Pages build of ${commit} (which includes our commit ${sha}) errored:"
-                echo "$build" | jq -r '.error.message // "unknown error"'
-                exit 1
-              fi
+
+            if [ -z "$commit" ]; then
+              echo "No GitHub Pages build recorded yet (attempt ${attempt}/30)..."
+              sleep 10
+              continue
             fi
-            echo "Waiting on GitHub Pages build to include ${sha} (latest build: commit=${commit:-none}, status=${status:-unknown}), attempt ${attempt}/30..."
+
+            if [ "$status" != "built" ] && [ "$status" != "errored" ]; then
+              echo "Latest GitHub Pages build (${commit}) is still ${status:-pending} (attempt ${attempt}/30)..."
+              sleep 10
+              continue
+            fi
+
+            git -C node_modules/.cache/gh-pages fetch --quiet origin gh-pages
+            if git -C node_modules/.cache/gh-pages merge-base --is-ancestor "$sha" "$commit" 2>/dev/null; then
+              if [ "$status" = "built" ]; then
+                echo "GitHub Pages built ${commit}, which includes our commit ${sha}."
+                exit 0
+              fi
+              echo "GitHub Pages build of ${commit} (which includes our commit ${sha}) errored:"
+              echo "$build" | jq -r '.error.message // "unknown error"'
+              exit 1
+            fi
+
+            echo "Latest GitHub Pages build (${commit}, status=${status}) predates our commit ${sha}; still waiting for a build that includes it (attempt ${attempt}/30)..."
             sleep 10
           done
           echo "GitHub Pages build did not confirm within 5 minutes; posting the link anyway."
