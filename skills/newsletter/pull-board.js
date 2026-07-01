@@ -9,6 +9,7 @@
 //   node skills/newsletter/pull-board.js "Jul 2026"            # board items for an iteration
 //   node skills/newsletter/pull-board.js month "Jul 2026"      # same, explicit
 //   node skills/newsletter/pull-board.js merged 2026-07         # PRs merged that month (coverage cross-check)
+//   node skills/newsletter/pull-board.js contributors 2026-07   # first-time contributors that month (for Community)
 //   node skills/newsletter/pull-board.js pr language-server 527 # a PR's title, body, linked issues, changed files
 //   node skills/newsletter/pull-board.js issue marko 3167       # an issue's title and body (follow a #ref from a PR)
 //
@@ -121,7 +122,7 @@ const SEARCH_QUERY = `
     search(query: $q, type: ISSUE, first: 100, after: $cursor) {
       pageInfo { hasNextPage endCursor }
       nodes {
-        ... on PullRequest { number title repository { name } }
+        ... on PullRequest { number title repository { name } author { login } authorAssociation }
       }
     }
   }
@@ -162,15 +163,36 @@ async function pullMonth(month) {
   console.log(rows.sort().join("\n"));
 }
 
-async function pullMerged(ym) {
-  if (!/^\d{4}-\d{2}$/.test(ym ?? "")) throw new Error("Usage: pull-board.js merged <YYYY-MM>  (e.g. 2026-07)");
+async function searchMergedPRs(ym, usage) {
+  if (!/^\d{4}-\d{2}$/.test(ym ?? "")) throw new Error(usage);
   const [y, m] = ym.split("-").map(Number);
   const lastDay = String(new Date(y, m, 0).getDate()).padStart(2, "0");
   const q = `org:marko-js is:pr is:merged merged:${ym}-01..${ym}-${lastDay}`;
   const nodes = await collect(async (cursor) => (await gql(SEARCH_QUERY, { q, cursor })).search);
-  for (const pr of nodes) {
-    if (!pr?.repository) continue;
-    console.log(`${pr.repository.name}#${pr.number}\t${pr.title}`);
+  return nodes.filter((pr) => pr?.repository);
+}
+
+async function pullMerged(ym) {
+  const prs = await searchMergedPRs(ym, "Usage: pull-board.js merged <YYYY-MM>  (e.g. 2026-07)");
+  for (const pr of prs) {
+    console.log(`${pr.repository.name}#${pr.number}\t${pr.title}\t${pr.author?.login ?? "?"}\t${pr.authorAssociation}`);
+  }
+}
+
+// First-time contributors that month, for the newsletter's Community section.
+// authorAssociation FIRST_TIME_CONTRIBUTOR means their first PR to that repo;
+// FIRST_TIMER means their first PR anywhere on GitHub.
+async function pullContributors(ym) {
+  const prs = await searchMergedPRs(ym, "Usage: pull-board.js contributors <YYYY-MM>  (e.g. contributors 2026-07)");
+  const firstTime = prs.filter(
+    (pr) => pr.authorAssociation === "FIRST_TIME_CONTRIBUTOR" || pr.authorAssociation === "FIRST_TIMER",
+  );
+  if (!firstTime.length) {
+    console.log("(no first-time contributors this month)");
+    return;
+  }
+  for (const pr of firstTime) {
+    console.log(`${pr.repository.name}#${pr.number}\t${pr.author?.login ?? "unknown"}\t${pr.title}`);
   }
 }
 
@@ -209,13 +231,15 @@ const [cmd, ...args] = process.argv.slice(2);
 const command =
   cmd === "merged"
     ? () => pullMerged(args[0])
-    : cmd === "pr"
-      ? () => showPr(args[0], args[1])
-      : cmd === "issue"
-        ? () => showIssue(args[0], args[1])
-        : cmd === "month"
-          ? () => pullMonth(args[0])
-          : () => pullMonth(cmd); // default: treat the first argument as the iteration title
+    : cmd === "contributors"
+      ? () => pullContributors(args[0])
+      : cmd === "pr"
+        ? () => showPr(args[0], args[1])
+        : cmd === "issue"
+          ? () => showIssue(args[0], args[1])
+          : cmd === "month"
+            ? () => pullMonth(args[0])
+            : () => pullMonth(cmd); // default: treat the first argument as the iteration title
 
 command().catch((err) => {
   console.error(err.message);

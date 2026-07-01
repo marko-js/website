@@ -42,6 +42,10 @@ An empty `<@catch>` now absorbs errors as intended. Previously `<@catch></@catch
 
 The documentation site replaced Algolia with a self-hosted FlexSearch index and a redesigned search dialog ([website#138](https://github.com/marko-js/website/pull/138)).
 
+## Community
+
+Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for bringing first-class Marko support to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)); its [sortability docs](https://drag-and-drop.formkit.com/#sortability) now include a Marko example.
+
 ## Experiments
 
 A new experimental project, [TSRX](https://tsrx.dev), explores writing Marko components in a JSX-like TypeScript syntax that compiles to Marko. Early work added control-flow expressions, member-expression tag names that map to dynamic tags, and looser rules for default exports ([tsrx](https://github.com/marko-js/tsrx)).
