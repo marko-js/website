@@ -9,5 +9,7 @@ The Marko newsletter is a monthly summary of shipped work, written for the devel
 
 - [June 2026](newsletter/june-2026.md)
 - [May 2026](newsletter/may-2026.md)
+- [April 2026](newsletter/april-2026.md)
+- [March 2026](newsletter/march-2026.md)
 - [February 2026](newsletter/february-2026.md)
 - [January 2026](newsletter/january-2026.md)
