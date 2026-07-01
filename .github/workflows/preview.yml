@@ -100,10 +100,12 @@ jobs:
             sleep $((attempt * 3))
           done
           $pushed || { echo "Failed to deploy preview after 3 attempts."; exit 1; }
-          # The gh-pages tool leaves its clone (with the commit it just pushed) in
-          # this cache dir, so read the SHA back out rather than trusting the
-          # branch tip, which other concurrent pushes could move in the meantime.
-          echo "sha=$(git -C node_modules/.cache/gh-pages rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          # gh-pages (v6) nests its clone inside a subdirectory keyed by the repo
+          # URL under find-cache-dir's path, not directly at node_modules/.cache/gh-pages,
+          # so `git -C node_modules/.cache/gh-pages rev-parse HEAD` silently walked up to
+          # this job's own checkout and returned github.sha instead of the pushed commit.
+          # Read the real tip back from the remote instead of relying on that cache layout.
+          echo "sha=$(git ls-remote "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages | cut -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Wait for GitHub Pages deployment
         run: |
