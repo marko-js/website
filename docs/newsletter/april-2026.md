@@ -44,7 +44,7 @@ The documentation site replaced Algolia with a self-hosted FlexSearch index and 
 
 ## Community
 
-Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for contributing first-class Marko integration to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)).
+Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for bringing first-class Marko support to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)); its [sortability docs](https://drag-and-drop.formkit.com/#sortability) now include a Marko example.
 
 ## Experiments
 
