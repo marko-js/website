@@ -44,7 +44,7 @@ The documentation site replaced Algolia with a self-hosted FlexSearch index and 
 
 ## Community
 
-FormKit's [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) library gained first-class Marko support, contributed by eBay's Marko team. The integration is a single tag built on Marko's mount, update, and destroy hooks with two-way state binding, so a Marko application can add drag-and-drop lists without a wrapper layer ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)).
+Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for contributing first-class Marko integration to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)).
 
 ## Experiments
 
