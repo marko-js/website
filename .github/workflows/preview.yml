@@ -36,11 +36,16 @@ jobs:
               c => c.user.login === 'github-actions[bot]' && c.body.includes('PR Preview Deployed')
             );
             if (existing) {
+              // Strip any prior "(deploying ...)" marker rather than stacking, in case
+              // a previous run was cancelled (via concurrency) before it could clean up.
+              const body = existing.body
+                .replace(/ _\(deploying .+?\)_$/, '')
+                .trimEnd();
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: existing.id,
-                body: existing.body.trimEnd() + ` _(deploying ${sha}...)_`,
+                body: body + ` _(deploying ${sha}...)_`,
               });
             }
 
