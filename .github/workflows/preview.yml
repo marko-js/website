@@ -18,7 +18,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
-      pages: read
+      deployments: read
     steps:
       - name: Mark existing preview comment as updating
         uses: actions/github-script@v7
@@ -105,51 +105,43 @@ jobs:
           # branch tip, which other concurrent pushes could move in the meantime.
           echo "sha=$(git -C node_modules/.cache/gh-pages rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for GitHub Pages build
+      - name: Wait for GitHub Pages deployment
         run: |
           set -uo pipefail
           sha="${{ steps.deploy.outputs.sha }}"
+          api="https://api.github.com/repos/${{ github.repository }}"
+          auth=(-H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json")
           for attempt in $(seq 1 30); do
-            # GitHub can coalesce rapid gh-pages pushes and only build the branch
-            # tip at the time it dequeues, skipping a dedicated build for our
-            # commit entirely. gh-pages history is strictly fast-forward (see the
-            # retry loop above and preview-cleanup.yml), so any built commit that
-            # descends from ours still contains our changes; check ancestry
-            # instead of requiring an exact commit match.
-            build=$(curl -s --max-time 15 \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
-            commit=$(echo "$build" | jq -r '.commit // empty')
-            status=$(echo "$build" | jq -r '.status // empty')
+            # The github-pages environment in the Deployments API is keyed by exact
+            # commit SHA and updates promptly; the legacy /pages/builds/latest
+            # endpoint reflects a single global "most recent" slot that can sit stale
+            # for many minutes, so it's not a reliable per-commit signal.
+            deployments=$(curl -s --max-time 15 "${auth[@]}" \
+              "${api}/deployments?sha=${sha}&environment=github-pages")
+            id=$(echo "$deployments" | jq -r '.[0].id // empty')
 
-            if [ -z "$commit" ]; then
-              echo "No GitHub Pages build recorded yet (attempt ${attempt}/30)..."
+            if [ -z "$id" ]; then
+              echo "No GitHub Pages deployment recorded yet for ${sha} (attempt ${attempt}/30)..."
               sleep 10
               continue
             fi
 
-            if [ "$status" != "built" ] && [ "$status" != "errored" ]; then
-              echo "Latest GitHub Pages build (${commit}) is still ${status:-pending} (attempt ${attempt}/30)..."
-              sleep 10
-              continue
-            fi
+            statuses=$(curl -s --max-time 15 "${auth[@]}" "${api}/deployments/${id}/statuses")
+            state=$(echo "$statuses" | jq -r '.[0].state // empty')
 
-            git -C node_modules/.cache/gh-pages fetch --quiet origin gh-pages
-            if git -C node_modules/.cache/gh-pages merge-base --is-ancestor "$sha" "$commit" 2>/dev/null; then
-              if [ "$status" = "built" ]; then
-                echo "GitHub Pages built ${commit}, which includes our commit ${sha}."
-                exit 0
-              fi
-              echo "GitHub Pages build of ${commit} (which includes our commit ${sha}) errored:"
-              echo "$build" | jq -r '.error.message // "unknown error"'
+            if [ "$state" = "success" ]; then
+              echo "GitHub Pages deployment for ${sha} succeeded."
+              exit 0
+            fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "GitHub Pages deployment for ${sha} failed (state: ${state})."
               exit 1
             fi
 
-            echo "Latest GitHub Pages build (${commit}, status=${status}) predates our commit ${sha}; still waiting for a build that includes it (attempt ${attempt}/30)..."
+            echo "GitHub Pages deployment for ${sha} is ${state:-pending} (attempt ${attempt}/30)..."
             sleep 10
           done
-          echo "GitHub Pages build did not confirm within 5 minutes; posting the link anyway."
+          echo "GitHub Pages deployment did not confirm within 5 minutes; posting the link anyway."
 
       - name: Post preview URL to PR
         uses: actions/github-script@v7
