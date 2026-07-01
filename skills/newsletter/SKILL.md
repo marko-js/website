@@ -64,7 +64,21 @@ From the body and that context, determine:
 - **Real magnitudes.** Pull performance numbers from the PR, never invent them. State them with their scope rather than vaguely, qualifying a percentage with what it was measured against or a benchmark multiple as measured in isolation, and keep any caveat the PR itself makes. When a PR gives no figure, describe the mechanism and the direction of the effect (smaller output, fewer allocations, less work to resume) rather than reaching for a vague percentage.
 - **The user-facing shape.** Skip implementation detail in prose. Prefer "in debug mode" over an env var name; show an illustrative compiled-output fragment, not a dump of internal helper names.
 
-## Step 4 — Write the page
+## Step 4 — Gather community content
+
+A newsletter edition can include a `## Community` section alongside the shipped-work themes, but only when there is something real to put in it. This is the one step the board and merged-PR lists cannot fully cover, so it splits into what is automatable and what is not.
+
+Automatable: first-time contributors.
+
+```bash
+node skills/newsletter/pull-board.js contributors 2026-07
+```
+
+Lists merged PRs that month whose author's association is `FIRST_TIME_CONTRIBUTOR` (first PR to that repo) or `FIRST_TIMER` (first PR anywhere on GitHub), tab-separated as `repo#number`, author, title. Every row is a reasonable candidate for a welcome or thanks mention.
+
+Not automatable: everything else. Showcases, conference talks, blog posts, Discord highlights, and noteworthy GitHub Discussions threads have no reliable API source, so do not guess at them or invent one to fill the section. Ask the user directly, for example: "Anything for a Community section this month, beyond new contributors? Looking for showcases, talks, Discord highlights, or shoutouts." If the user has nothing to add, drop the `## Community` section entirely rather than publishing an empty or generic one.
+
+## Step 5 — Write the page
 
 Create `docs/newsletter/<month>-<year>.md` (e.g. `july-2026.md`). The `markodown` Vite plugin globs `docs/**/*.md` and auto-generates the route `/docs/newsletter/<slug>`, so no routing wiring is needed.
 
@@ -73,6 +87,7 @@ Structure:
 - A single `# Title` H1 (its text becomes the page title).
 - A `> [!TLDR]` callout listing the highest-impact items first, then a short intro paragraph that frames the month around them. Do not start the intro with "This newsletter covers...".
 - Flat `## ` sections, each a theme, **ordered by expected developer impact**: lead with the change most developers will notice or benefit from, and let lower-impact items (niche fixes, platform notes, internal-leaning work) fall toward the end. Keep paragraphs short; split dense lists into chunks.
+- A `## Community` section, when Step 4 turned up content, ranked by impact like any other section. A first-time contributor's fix usually sits toward the end; a notable showcase can lead if it outweighs the month's code changes. Omit the heading entirely rather than leaving it empty.
 
 Style (see AGENTS.md, enforced by the docs lint):
 
@@ -89,7 +104,7 @@ Style (see AGENTS.md, enforced by the docs lint):
 
   (Blank `>` line, then `- ` items, no trailing periods.)
 
-## Step 5 — Examples and links
+## Step 6 — Examples and links
 
 Add a code example to a section **only when there is a new, authoring-facing capability to show.** Do not force one onto sections about bug fixes, platform support, parser internals, or UI work, which usually read better with none.
 
@@ -106,7 +121,7 @@ Links:
 - Link relevant existing docs with a relative path and the `.md` extension, e.g. `[Lazy Loading](../reference/lazy-loading.md#triggers)`. The build strips `.md` automatically. Confirm anchors against the target doc's headings (GitHub-style slugs).
 - Link the playground to `/playground` and "GitHub" to `https://github.com/marko-js`.
 
-## Step 6 — Link the new edition
+## Step 7 — Link the new edition
 
 The newsletter is wired together in three places. Update all of them when adding a month.
 
@@ -151,7 +166,7 @@ Then edit what was the newest edition to add the forward link below its existing
 
 The oldest edition links only forward, the newest links only back, and every edition in between links both ways.
 
-## Step 7 — Verify
+## Step 8 — Verify
 
 ```bash
 npx markdownlint docs/newsletter/<file>.md
@@ -166,7 +181,7 @@ npm run build
   `grep -oE 'href="[^"]*\.md[^"]*"' src/routes/docs/_compiled-docs/newsletter/<slug>+page.marko` (should print nothing).
 - The build can fail nondeterministically on an unrelated doc (e.g. `docs/guide/low-level-apis` with `Cannot read properties of undefined (reading 'ast')`) because docs compile in parallel. If the newsletter page itself generated fine, rerun a clean build: `rm -rf dist && npm run build`.
 
-## Step 8 — Confirm and hand off
+## Step 9 — Confirm and hand off
 
 Surface judgment calls to the user rather than guessing: the `Task` type for a PR with no conventional-commit prefix, an ambiguous `Epic`, which performance number to quote, and how wide the scope should be. Do not commit unless asked.
 
@@ -181,3 +196,4 @@ Surface judgment calls to the user rather than guessing: the `Task` type for a P
 - Keep implementation detail out of prose; keep compiled-output examples illustrative.
 - The TLDR renders as a run-on unless it is a real markdown list.
 - `no-format` is the right tool for concise/anti-pattern/opt-in snippets.
+- Community content beyond first-time contributors (showcases, talks, Discord, Discussions) has no reliable API source. Ask the user rather than guessing, and drop the `## Community` heading if there is nothing to put in it.
