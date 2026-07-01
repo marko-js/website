@@ -78,6 +78,14 @@ Lists merged PRs that month whose author's association is `FIRST_TIME_CONTRIBUTO
 
 Not automatable: everything else. Showcases, conference talks, blog posts, Discord highlights, and noteworthy GitHub Discussions threads have no reliable API source, so do not guess at them or invent one to fill the section. Ask the user directly, for example: "Anything for a Community section this month, beyond new contributors? Looking for showcases, talks, Discord highlights, or shoutouts." If the user has nothing to add, drop the `## Community` section entirely rather than publishing an empty or generic one.
 
+Keep each attribution to one line: credit the handle, name the thing they contributed, and link it. This section is a shoutout, not a feature writeup, so skip the mechanism-and-benefit prose used elsewhere in the newsletter.
+
+```markdown
+Thanks to [@defunkt-dev](https://github.com/defunkt-dev) for contributing first-class Marko integration to [`@formkit/drag-and-drop`](https://github.com/formkit/drag-and-drop) ([drag-and-drop#168](https://github.com/formkit/drag-and-drop/pull/168)).
+```
+
+State only what the PR or the user directly confirms: the handle, what was built, and where. Do not infer or add an employer, team, or motivation that is not stated outright. When a contributor's affiliation is genuinely relevant and confirmed, it can be worth a mention, but guessing at one from a bio or username is the kind of error that erodes trust in the newsletter.
+
 ## Step 5 — Write the page
 
 Create `docs/newsletter/<month>-<year>.md` (e.g. `july-2026.md`). The `markodown` Vite plugin globs `docs/**/*.md` and auto-generates the route `/docs/newsletter/<slug>`, so no routing wiring is needed.
@@ -197,3 +205,4 @@ Surface judgment calls to the user rather than guessing: the `Task` type for a P
 - The TLDR renders as a run-on unless it is a real markdown list.
 - `no-format` is the right tool for concise/anti-pattern/opt-in snippets.
 - Community content beyond first-time contributors (showcases, talks, Discord, Discussions) has no reliable API source. Ask the user rather than guessing, and drop the `## Community` heading if there is nothing to put in it.
+- Keep attributions to one line: handle, what they contributed, where. Never add an affiliation, team, or motivation that is not directly confirmed.
