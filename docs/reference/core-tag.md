@@ -23,6 +23,51 @@ Expressions in the if/else chain are evaluated in order.
 </else>
 ```
 
+> [!TIP]
+> The content of an `<if>` is discarded when its condition stops matching, and rebuilt with fresh state when it matches again. To toggle the visibility of content while preserving its state, use [`<show>`](#show).
+
+## `<show>`
+
+The `<show>` tag toggles whether its [content](./language.md#tag-content) is displayed. The content is displayed when the `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and hidden otherwise.
+
+```marko
+<show=EXPRESSION>
+  Body
+</show>
+```
+
+Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and stays mounted. The value only controls whether the content's nodes are in the document, so state within the content, including [tag variables](./language.md#tag-variables), form values, and the DOM nodes themselves, persists across toggles.
+
+```marko
+<let/showFilters=false>
+
+<button onClick() { showFilters = !showFilters }>
+  Filters
+</button>
+
+<show=showFilters>
+  <input type="search" name="brand" placeholder="Brand">
+  <select name="condition">
+    <option>New</option>
+    <option>Used</option>
+  </select>
+</show>
+```
+
+Collapsing this filter panel keeps whatever was typed and selected, and reopening it picks up exactly where things were left. With an `<if>` in its place, the inputs would be discarded when hidden and recreated empty when displayed again.
+
+Since the content always exists exactly once, the compiler builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what a stateful condition ships to the browser: an `<if>` whose condition can change client side must bundle its content so the branch can be rendered from scratch, but a changing `<show>` value never requires the content's template, only a small helper that moves the already rendered nodes. When the value is statically known, the tag compiles to plain markup with no runtime at all.
+
+> [!TIP]
+> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields, stateful components, or an expensive-to-initialize [`<lifecycle>`](#lifecycle) widget, which mounts once and survives toggles), or is bulky markup that should not have to ship to the browser just to be toggled. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
+
+<!---->
+
+> [!NOTE]
+> Hidden content still renders on the server and is sent to the browser inside a wrapper element with the [`hidden` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden), which allows it to resume without re-rendering. Once the value changes in the browser, hidden content is instead detached from the document entirely. Because hiding removes the content's nodes from the document rather than hiding them with CSS, transient state such as focus and text selection does not survive being hidden.
+
+The `<show>` tag requires [content](./language.md#tag-content) and accepts only the `value=` attribute. It has no `<else>` counterpart, and unlike `<if>` it cannot be used to apply [attribute tags](./language.md#attribute-tags).
+
 ## `<for>`
 
 The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters).
