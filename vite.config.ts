@@ -2,7 +2,6 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
 import markodown from "./src/util/markodown";
-import { patchCssModules } from "vite-css-modules";
 
 export default defineConfig({
   // BASE_URL is set to "/previews/pr-N/" by the PR Preview workflow so the site can be
@@ -47,14 +46,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
-  plugins: [
-    patchCssModules({
-      exportMode: "named",
-      generateSourceTypes: true,
-    }),
-    markodown(),
-    marko(),
-  ],
+  plugins: [markodown(), marko()],
   css: {
     modules: {
       generateScopedName:

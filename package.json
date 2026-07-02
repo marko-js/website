@@ -39,7 +39,7 @@
     "@jridgewell/source-map": "^0.3.11",
     "@marko/run": "^0.11.0",
     "@marko/run-adapter-static": "^2.0.6",
-    "@marko/type-check": "^2.1.28",
+    "@marko/type-check": "^3.1.1",
     "@rollup/browser": "^4.62.2",
     "@shikijs/langs": "^4.3.0",
     "@types/flexsearch": "^0.7.6",
@@ -72,7 +72,6 @@
     "shiki": "^4.3.0",
     "terser": "^5.48.0",
     "util": "./shim/util",
-    "vite-css-modules": "^1.16.0",
     "writable-dom": "^1.0.6"
   }
 }
