@@ -75,6 +75,30 @@ You may still provide a custom file extension to enable to use of preprocessors.
 <div class=styles.fancy>Hello</div>
 ```
 
+### Dynamic Values
+
+A `<style>` tag may contain dynamic values, written as `${...}` interpolations, keeping state-driven styling next to the rest of the stylesheet.
+
+```marko
+<let/hue=200>
+
+<style>
+  .swatch {
+    /* Updates whenever `hue` changes */
+    background: hsl(${hue} 80% 50%);
+    border-radius: 4px;
+  }
+</style>
+
+<input type="range" min="0" max="360" value:parseFloat:=hue>
+<div class="swatch"/>
+```
+
+The stylesheet is still extracted and bundled once. Each interpolation compiles to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) whose value Marko keeps up to date as state changes.
+
+> [!NOTE]
+> Dynamic values are only supported where css expects a declaration value, and apply to elements rendered after the `<style>` tag. See the [`<style>` reference](../reference/core-tag.md#dynamic-values) for details.
+
 ## Auto-Discovered Styles
 
 Styling files adjacent a [custom tag are automatically discovered](../reference/custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
