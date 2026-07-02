@@ -1487,6 +1487,45 @@ If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it lever
 <div.${styles.foo} />
 ```
 
+### Dynamic Values
+
+The `<style>` tag also supports dynamic values, written as `${...}` interpolations.
+
+```marko
+<style>
+  .toast {
+    border-color: ${input.tone};
+    animation-duration: calc(${input.delay} * 1ms);
+  }
+</style>
+
+<div class="toast">Saved!</div>
+```
+
+The stylesheet itself remains fully static. The compiler replaces each interpolation with a reference to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) and extracts the css into the bundle as usual. At runtime a small `<style>` element is rendered in place of the tag, assigning the custom property values to the elements after it. When state referenced by an interpolation changes, only the custom property values update.
+
+> [!NOTE]
+> Dynamic values only apply to elements rendered after the `<style>` tag, so it must be placed above the content it styles. The compiler warns when renderable content precedes the tag.
+
+Dynamic values are escaped, so arbitrary user input cannot break out of the stylesheet.
+
+Because custom properties only resolve where css expects a declaration value, interpolations cannot appear in selectors, at-rule preludes, property names, or quoted strings. The compiler reports an error in these positions.
+
+A unit also cannot be written directly against an interpolation (`${size}px` would produce invalid css, since css does not re-tokenize the substituted value). Include the unit in the value itself, or multiply by one unit with `calc()`:
+
+```marko
+<style>
+  .dropzone {
+    /* The value resolves to complete css, e.g. "2px dashed teal" */
+    outline: ${input.outline};
+    /* Or multiply a unitless number by one unit */
+    outline-offset: calc(${input.offset} * 1px);
+  }
+</style>
+
+<div class="dropzone">Drop files here</div>
+```
+
 > [!TIP]
 > There are very few cases where you should be using a _real_ inline `<style>` tag but if needed you can use the fallback [`<html-style>`](#html-script--html-style) tag.
 
