@@ -4,7 +4,7 @@ client import extensions, { update } from "app/util/codemirror";
 client import { formatCode } from "app/util/format";
 import { faPaintbrush } from "@fortawesome/free-solid-svg-icons";
 import type { File } from "app/util/workspace";
-import * as styles from "./editor.styles.module.scss";
+import styles from "./editor.styles.module.scss";
 export interface Input {
   files: File[];
   filesChange?: (files: File[]) => void;
