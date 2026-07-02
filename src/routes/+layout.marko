@@ -1,3 +1,5 @@
+import type { PageMeta } from "../types";
+
 <!DOCTYPE html>
 html lang="en"
   head
@@ -9,8 +11,8 @@ html lang="en"
       meta name="robots" content="noindex"
     title --
       ${
-        typeof ($global.meta as any).pageTitle === "string"
-          ? `${($global.meta as any).pageTitle} | Marko`
+        typeof ($global.meta as PageMeta).pageTitle === "string"
+          ? `${($global.meta as PageMeta).pageTitle} | Marko`
           : "Marko"
       }
     link rel="icon" sizes="32x32" href="/fav.png"
@@ -25,5 +27,5 @@ html lang="en"
         app-menu
         ${input.content}
 
-    if=(!($global.meta as any).hideFooter)
+    if=(!($global.meta as PageMeta).hideFooter)
       app-footer
