@@ -56,10 +56,10 @@ Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and sta
 
 Collapsing this filter panel keeps whatever was typed and selected, and reopening it picks up exactly where things were left. With an `<if>` in its place, the inputs would be discarded when hidden and recreated empty when displayed again.
 
-Since the content always exists exactly once, the compiler builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what ships to the browser: when its condition can change client side, an `<if>` must bundle its content so the branch can be rendered from scratch, while a server rendered `<show>` never bundles its content. Only a small helper that moves the already rendered nodes is loaded, and when the value is statically known the tag compiles to plain markup with no runtime at all.
+Since the content always exists exactly once, the compiler builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what a stateful condition ships to the browser: an `<if>` whose condition can change client side must bundle its content so the branch can be rendered from scratch, but a changing `<show>` value never requires the content's template, only a small helper that moves the already rendered nodes. When the value is statically known, the tag compiles to plain markup with no runtime at all.
 
 > [!TIP]
-> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields, stateful components, or an expensive-to-initialize [`<lifecycle>`](#lifecycle) widget, which mounts once and survives toggles), or is bulky markup that is better kept out of the client bundle. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
+> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields, stateful components, or an expensive-to-initialize [`<lifecycle>`](#lifecycle) widget, which mounts once and survives toggles), or is bulky markup that should not have to ship to the browser just to be toggled. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
 
 <!---->
 
