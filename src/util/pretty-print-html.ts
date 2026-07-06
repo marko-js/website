@@ -1,4 +1,4 @@
-import format, { plugins } from "pretty-format";
+import { format, plugins } from "pretty-format";
 const { DOMElement, DOMCollection } = plugins;
 const parser =
   typeof document === "object" ? document.createElement("template") : undefined;
