@@ -57,6 +57,7 @@
     "reorder",
     "reorderer",
     "resumability",
+    "resvg",
     "Rolldown",
     "shiki",
     "shikijs",
@@ -74,15 +75,6 @@
     "WHATWG"
   ],
   "ignoreRegExpList": [],
-  "files": [
-    "*",
-    "docs/**/*",
-    "src/**/*"
-  ],
-  "ignorePaths": [
-    "**/_compiled-docs",
-    "dist",
-    "skills",
-    ".claude"
-  ]
+  "files": ["*", "docs/**/*", "src/**/*"],
+  "ignorePaths": ["**/_compiled-docs", "dist", "skills", ".claude"]
 }
