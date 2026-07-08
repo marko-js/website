@@ -1,2 +1,0 @@
-import{B as e,J as t,g as n,v as r}from"./_DORHfx6a.js";var i=e(9,e=>r(e.a,`aria-current`,e.j&&`step`));t(`h0`,e=>{{let t=document.getElementById(e.f);if(t){let r=new IntersectionObserver(([t])=>{i(e,t.isIntersecting)},{rootMargin:`-20% 0px -20% 0px`});r.observe(t),n(e,0).onabort=()=>r.disconnect()}}});
-//# sourceMappingURL=_D0W-R_K8.js.map
