@@ -152,6 +152,7 @@ function frame(accent: string, content: Element[]): Element {
             style: {
               height: 14,
               width: "100%",
+              flexShrink: 0,
               backgroundImage: chevronStripe,
             },
           },
@@ -217,7 +218,7 @@ function docsBanner(
             type: "div",
             props: {
               style: {
-                fontSize: title.length > 60 ? 52 : title.length > 32 ? 64 : 84,
+                fontSize: title.length > 60 ? 52 : title.length > 22 ? 64 : 84,
                 fontWeight: 700,
                 lineHeight: 1.12,
                 letterSpacing: -1,
