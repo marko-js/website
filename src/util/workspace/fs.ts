@@ -1,6 +1,15 @@
 // Not `/`: resolve-sync never probes the filesystem root's node_modules.
 export const rootDir = "/app/";
 
+// Files sit directly in the workspace directory, so a playground file is at the
+// path the author typed rather than under scaffolding they never asked for.
+// `marko.json` is what buys that: without it the compiler only discovers custom
+// tags inside a directory literally named `tags` or `components`. The preview
+// build and the language server both seed it so the two agree on what a bare
+// `<foo>` resolves to.
+export const markoJsonPath = `${rootDir}marko.json`;
+export const markoJson = JSON.stringify({ "tags-dir": "." });
+
 export class FileSystem {
   constructor(public files: Record<string, string>) {}
   statSync(entry: string) {

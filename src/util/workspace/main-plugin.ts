@@ -12,6 +12,20 @@ export interface MainPluginOptions {
 const mainId = "\0main";
 const excludeId = "\0exclude";
 
+// Extension search order for extensionless imports. Extends resolve-sync's
+// `.js`/`.json` default with the TypeScript variants the script plugin
+// transpiles, so a `.marko` file can import a sibling `./util` (util.ts).
+const resolveExtensions = [
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".ts",
+  ".mts",
+  ".cts",
+  ".json",
+  ".css",
+];
+
 export function mainPlugin({
   ws: { fs },
   code,
@@ -80,7 +94,7 @@ export function mainPlugin({
         silent: true,
         fs: resolveFs,
         from: importer || mainId,
-        exts: [".js", ".json", ".css"],
+        exts: resolveExtensions,
       });
 
       if (resolved === false) {

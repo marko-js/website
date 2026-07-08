@@ -11,9 +11,15 @@ import { cssPlugin } from "./workspace/css-plugin";
 import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
+import { scriptPlugin } from "./workspace/script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
-import { FileSystem, rootDir } from "./workspace/fs";
+import {
+  FileSystem,
+  markoJson,
+  markoJsonPath,
+  rootDir,
+} from "./workspace/fs";
 import { prettyPrintHTML } from "./pretty-print-html";
 
 export interface File {
@@ -48,13 +54,7 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-// Files sit directly in the workspace directory, so a playground file is at
-// the path the author typed rather than under scaffolding they never asked
-// for. `marko.json` is what buys that: without it the compiler only discovers
-// custom tags inside a directory literally named `tags` or `components`.
 const packageJsonPath = `${rootDir}package.json`;
-const markoJsonPath = `${rootDir}marko.json`;
-const markoJson = JSON.stringify({ "tags-dir": "." });
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args
@@ -220,6 +220,7 @@ export async function update(
                 ws,
                 browser: false,
               }),
+              scriptPlugin(),
               cssPlugin({ browser: false }),
               cdnPlugin({ versions }),
               minifyScriptPlugin(),
@@ -283,6 +284,7 @@ export async function update(
               : `import "${rootDir}index.marko?hydrate"`,
           }),
           markoPlugin({ ws, browser: true }),
+          scriptPlugin(),
           cssPlugin({ browser: true }),
           cdnPlugin({ versions }),
           minifyScriptPlugin(),
