@@ -1,2 +1,0 @@
-import{G as e}from"./_Co-n1SI5.js";var t,n,r;function i(e){return function(i){return t.codeToHtml(i,{lang:e.g,defaultColor:!1,transformers:[r,n(e.$)],themes:{light:`marko-light`,dark:`marko-dark`},meta:{cursor:e.h,popovers:e.i}})}}e(`j0`,i);
-//# sourceMappingURL=_lg147BLG.js.map
