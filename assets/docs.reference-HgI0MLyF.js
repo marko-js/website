@@ -1,0 +1,2 @@
+import{t as e}from"./_DAXXjFlN.js";import{tt as t}from"./_DORHfx6a.js";import"./_D0W-R_K8.js";import"./_CsNHX4cl.js";e(((e,t)=>{t.exports=[`Chrome >= 109`,`Firefox >= 115`,`Safari >= 15.4`,`Edge >= 145`,`Opera >= 129`,`ChromeAndroid >= 136`,`ios_saf >= 15.4`]}))(),t();
+//# sourceMappingURL=docs.reference-HgI0MLyF.js.map
