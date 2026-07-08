@@ -10,3 +10,5 @@ dist
 
 **/_compiled-docs
 public/search-index.json
+public/og
+tsconfig.tsbuildinfo

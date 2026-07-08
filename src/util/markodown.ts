@@ -14,6 +14,12 @@ import * as compiler from "@marko/compiler";
 import { glob } from "glob";
 import type { HeadingList } from "../types";
 import { buildSearchIndex } from "./search-index-builder";
+import {
+  defaultBannerSources,
+  docsBannerSources,
+  renderDefaultBanner,
+  renderDocsBanner,
+} from "./og-banner";
 
 export default function markodownPlugin(): PluginOption {
   return {
@@ -43,6 +49,7 @@ export default function markodownPlugin(): PluginOption {
             recursive: true,
           });
           const { markoCode, headings } = await mdToMarko(content);
+          const ogFile = file.split(path.sep).join("/").replace(".md", ".png");
           await Promise.all([
             fs.writeFile(
               path.join(docsPages, file.replace(".md", "+page.marko")),
@@ -53,14 +60,80 @@ export default function markodownPlugin(): PluginOption {
               JSON.stringify({
                 pageTitle: headings[0].title,
                 headings: headings[0].children,
+                ogImage: `/og/docs/${ogFile}`,
               }),
             ),
+            buildDocsBanner(docsPath, file, ogFile, headings[0].title),
           ]);
         }),
+        buildDefaultBanner(),
+        pruneDocsBanners(mdFiles),
         buildSearchIndex(docsPath),
       ]);
     },
   };
+}
+
+const ogDocsDir = () => path.join(process.cwd(), "public", "og", "docs");
+
+async function isStale(target: string, ...sources: string[]) {
+  try {
+    const targetStat = await fs.stat(target);
+    const sourceStats = await Promise.all(
+      sources.map((source) => fs.stat(source)),
+    );
+    return sourceStats.some((stat) => stat.mtimeMs > targetStat.mtimeMs);
+  } catch {
+    return true;
+  }
+}
+
+const bannerModule = () =>
+  path.join(process.cwd(), "src", "util", "og-banner.ts");
+
+async function buildDocsBanner(
+  docsPath: string,
+  mdFile: string,
+  ogFile: string,
+  title: string,
+) {
+  const target = path.join(ogDocsDir(), ogFile);
+  const section = ogFile.includes("/")
+    ? ogFile.slice(0, ogFile.indexOf("/"))
+    : ogFile.replace(".png", "");
+  if (
+    await isStale(
+      target,
+      path.join(docsPath, mdFile),
+      bannerModule(),
+      ...docsBannerSources(section),
+    )
+  ) {
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, await renderDocsBanner(title, section));
+  }
+}
+
+async function buildDefaultBanner() {
+  const target = path.join(process.cwd(), "public", "og", "default.png");
+  if (await isStale(target, bannerModule(), ...defaultBannerSources())) {
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, await renderDefaultBanner());
+  }
+}
+
+async function pruneDocsBanners(mdFiles: string[]) {
+  const expected = new Set(
+    mdFiles.map((file) =>
+      file.split(path.sep).join("/").replace(".md", ".png"),
+    ),
+  );
+  await Promise.all(
+    glob
+      .sync("**/*.png", { cwd: ogDocsDir(), posix: true })
+      .filter((png) => !expected.has(png))
+      .map((png) => fs.rm(path.join(ogDocsDir(), png))),
+  );
 }
 
 async function mdToMarko(source: string) {

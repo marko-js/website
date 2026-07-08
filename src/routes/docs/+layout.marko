@@ -1,7 +1,7 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./+layout.style.module.scss";
 import menuStyles from "../../tags/app-menu/app-menu.style.module.scss";
-import type { HeadingList, PageMeta } from "../../types";
+import type { HeadingList } from "../../types";
 export interface Input {
   content: Marko.Body;
 }
@@ -62,4 +62,4 @@ div#page-menu class=menuStyles.menu
     ul
       li
         strong id=tocLabelId -- On this Page
-      TocTree headings=(($global.meta as PageMeta).headings ?? [])
+      TocTree headings=($global.meta.headings ?? [])
