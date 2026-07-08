@@ -99,4 +99,36 @@
       background: var(--color-blue-dim) !important;
     }
   }
+
+  // LSP hover and completion-info popups render arbitrarily long type
+  // signatures and documentation. Cap their size and wrap long code so a big
+  // signature (eg hovering a DOM handler like `onClick`) scrolls inside the
+  // popup instead of overflowing the window.
+  .cm-lsp-hover,
+  .cm-lsp-info {
+    box-sizing: border-box;
+    max-width: min(48rem, 90vw);
+    max-height: 60vh;
+    padding: 0.4rem 0.6rem;
+    overflow: auto;
+    line-height: 1.4;
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 0.4rem 0;
+      overflow-wrap: anywhere;
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
 }

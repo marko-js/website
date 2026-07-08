@@ -10,6 +10,7 @@ import { cssPlugin } from "./workspace/css-plugin";
 import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
+import { scriptPlugin } from "./workspace/script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
@@ -46,7 +47,14 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-const rootDir = "/tags/";
+/**
+ * Virtual directory every playground file lives under. Rooting the files in a
+ * `tags/` directory makes Marko's tag discovery treat them as mutually
+ * referenceable custom tags, so `<foo>` resolves to a sibling `foo.marko`. The
+ * language server keys on the same root (see `util/lsp/client`) so its analysis
+ * matches what the runtime actually builds.
+ */
+export const rootDir = "/tags/";
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args
@@ -159,6 +167,7 @@ export async function update(
             ws,
             browser: false,
           }),
+          scriptPlugin(),
           cssPlugin({ browser: false }),
           cdnPlugin(),
           minifyScriptPlugin(),
@@ -210,6 +219,7 @@ export async function update(
             code: `import "${rootDir}index.marko?hydrate"`,
           }),
           markoPlugin({ ws, browser: true }),
+          scriptPlugin(),
           cssPlugin({ browser: true }),
           cdnPlugin(),
           minifyScriptPlugin(),

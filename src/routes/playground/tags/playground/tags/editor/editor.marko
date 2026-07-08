@@ -2,6 +2,8 @@ client import { EditorView, keymap } from "@codemirror/view";
 client import { EditorState } from "@codemirror/state";
 client import extensions, { update } from "app/util/codemirror";
 client import { formatCode } from "app/util/format";
+client import { getLspClient, type LspClient } from "app/util/lsp/client";
+client import { markoLsp } from "app/util/lsp/codemirror";
 import { faPaintbrush } from "@fortawesome/free-solid-svg-icons";
 import type { File } from "app/util/workspace";
 import styles from "./editor.styles.module.scss";
@@ -22,7 +24,7 @@ let/file=files[selected]
   }
 
 // Bridges the format button (markup) to the editor's lifecycle; set on mount.
-let/doFormat=(() => {})
+let/doFormat=() => {}
 
 tabs files:=files selected:=selected
 div class=styles.editorWrap
@@ -42,11 +44,20 @@ div class=styles.editorWrap
 
 lifecycle<{
   editor?: EditorView;
+  client?: LspClient;
   listener: ReturnType<typeof EditorView.updateListener.of>;
   currentPath?: string;
   change?: boolean;
+  // A pending go-to-definition jump into another tab: applied once that tab's
+  // editor state is live (see onUpdate).
+  pendingNav?: { path: string; position: { line: number; character: number } };
   set(content: string): void;
   format(): void;
+  openLocation(
+    path: string,
+    position: { line: number; character: number },
+  ): void;
+  focusPosition(position: { line: number; character: number }): void;
   stateFor(f: File | undefined): EditorState;
 }>
   ,set(content) {
@@ -82,6 +93,27 @@ lifecycle<{
         // Ignore formatting errors (e.g. the file currently has a syntax error).
       });
   }
+  ,openLocation(targetPath, position) {
+    const index = files.findIndex((f) => f.path === targetPath);
+    // A target outside the open playground files (eg a lib `.d.ts`) has no tab
+    // to open, so leave the editor where it is.
+    if (index < 0) return;
+    if (index === selected) {
+      this.focusPosition(position);
+    } else {
+      this.pendingNav = { path: targetPath, position };
+      selected = index;
+    }
+  }
+  ,focusPosition(position) {
+    const view = this.editor;
+    if (!view) return;
+    const { doc } = view.state;
+    const line = doc.line(Math.min(Math.max(position.line + 1, 1), doc.lines));
+    const anchor = Math.min(line.from + position.character, line.to);
+    view.dispatch({ selection: { anchor }, scrollIntoView: true });
+    view.focus();
+  }
   ,stateFor(f) {
     return EditorState.create({
       doc: f?.content,
@@ -99,11 +131,24 @@ lifecycle<{
           },
         ]),
         ...extensions,
+        ...(f && this.client
+          ? markoLsp(this.client, f.path, (p, position) =>
+              this.openLocation(p, position),
+            )
+          : []),
       ],
     });
   }
   ,onMount() {
     this.change = false;
+    try {
+      // The language server is a best-effort enhancement; if it fails to start
+      // (eg the worker can't be created) the editor still works without it.
+      this.client = getLspClient();
+      this.client.syncFiles(files);
+    } catch {
+      this.client = undefined;
+    }
     this.listener = EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         this.set(update.state.doc.toString());
@@ -120,6 +165,9 @@ lifecycle<{
     }
   }
   ,onUpdate() {
+    // Keep the language server's view of every file current so cross-file
+    // features (imported components, shared types) resolve.
+    this.client?.syncFiles(files);
     if (this.change) {
       this.change = false;
     } else if (file) {
@@ -130,6 +178,12 @@ lifecycle<{
         this.editor!.setState(this.stateFor(file));
       }
       update(this.editor!, file.content, ext(file.path));
+    }
+    // A go-to-definition jump into this tab: now that its editor state is live,
+    // place the cursor at the target.
+    if (this.pendingNav && file && this.pendingNav.path === file.path) {
+      this.focusPosition(this.pendingNav.position);
+      this.pendingNav = undefined;
     }
   }
   ,onDestroy() {
