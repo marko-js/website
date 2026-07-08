@@ -1,0 +1,2 @@
+import{G as e}from"./_Du1kctS5.js";var t,n,r;function i(e){return function(i){return t.codeToHtml(i,{lang:e.g,defaultColor:!1,transformers:[r,n(e.$)],themes:{light:`marko-light`,dark:`marko-dark`},meta:{cursor:e.h,popovers:e.i}})}}e(`j0`,i);
+//# sourceMappingURL=_D28RP_Uy.js.map
