@@ -46,7 +46,14 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-const rootDir = "/tags/";
+/**
+ * Virtual directory every playground file lives under. Rooting the files in a
+ * `tags/` directory makes Marko's tag discovery treat them as mutually
+ * referenceable custom tags, so `<foo>` resolves to a sibling `foo.marko`. The
+ * language server keys on the same root (see `util/lsp/client`) so its analysis
+ * matches what the runtime actually builds.
+ */
+export const rootDir = "/tags/";
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args

@@ -24,9 +24,7 @@ import {
 } from "@codemirror/commands";
 import {
   acceptCompletion,
-  autocompletion,
   closeBrackets,
-  completeAnyWord,
   completionKeymap,
 } from "@codemirror/autocomplete";
 import { foldGutter, foldService } from "@codemirror/language";
@@ -36,8 +34,7 @@ import { styleToClass } from "./style-to-class";
 const langConfig = new Compartment();
 export function update(view: EditorView, content: string, lang: string) {
   const curLang = (langConfig.get(view.state) as any)?.lang as
-    | string
-    | undefined;
+    string | undefined;
   const effects =
     curLang === lang ? undefined : langConfig.reconfigure(shiki(lang));
 
@@ -69,7 +66,6 @@ export default [
   highlightActiveLine(),
   highlightSelectionMatches(),
   highlightActiveLineGutter(),
-  autocompletion({ override: [completeAnyWord] }),
   EditorState.allowMultipleSelections.of(true),
   EditorState.languageData.of(() => baseLanguageData),
   langConfig.of(shiki()),
