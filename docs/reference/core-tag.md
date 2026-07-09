@@ -36,7 +36,7 @@ The `<show>` tag toggles whether its [content](./language.md#tag-content) is dis
 </show>
 ```
 
-Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and stays mounted. The value only controls whether the content's nodes are in the document, so state within the content, including [tag variables](./language.md#tag-variables), form values, and the DOM nodes themselves, persists across toggles.
+Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and its state is preserved. The value only controls whether the content's nodes are in the document, so state within the content, including [tag variables](./language.md#tag-variables), form values, and the DOM nodes themselves, persists across toggles.
 
 ```marko
 <let/showFilters=false>
@@ -56,10 +56,12 @@ Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and sta
 
 Collapsing this filter panel keeps whatever was typed and selected, and reopening it picks up exactly where things were left. With an `<if>` in its place, the inputs would be discarded when hidden and recreated empty when displayed again.
 
-Since the content always exists exactly once, the compiler builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what a stateful condition ships to the browser: an `<if>` whose condition can change client side must bundle its content so the branch can be rendered from scratch, but a changing `<show>` value never requires the content's template, only a small helper that moves the already rendered nodes. When the value is statically known, the tag compiles to plain markup with no runtime at all.
+State is preserved, but effects are not left running while the content is hidden. A [`<script>`](#script) or [`<lifecycle>`](#lifecycle) in the content is cleaned up when the content is hidden and runs again when it is shown, mirroring how React's [`<Activity>`](https://react.dev/reference/react/Activity) treats hidden content. This keeps side effects such as subscriptions or timers from continuing off screen while still preserving the state around them.
+
+Since the content always exists exactly once, the compiler usually builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what a stateful condition ships to the browser: an `<if>` whose condition can change client side must bundle its content so the branch can be rendered from scratch, but a changing `<show>` value normally needs only a small helper that moves the already rendered nodes, not the content's template. Content that mounts effects is the exception, since it compiles to a branch so those effects can re-run. When the value is statically known, the tag compiles to plain markup with no runtime at all.
 
 > [!TIP]
-> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields, stateful components, or an expensive-to-initialize [`<lifecycle>`](#lifecycle) widget, which mounts once and survives toggles), or is bulky markup that should not have to ship to the browser just to be toggled. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
+> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields or stateful components), or is bulky markup that should not have to ship to the browser just to be toggled. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
 
 <!---->
 
