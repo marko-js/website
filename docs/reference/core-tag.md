@@ -301,6 +301,56 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 <div>${value}</div> // value is always transformed to uppercase
 ```
 
+## `<context>`
+
+The `<context>` tag shares a value with everything rendered within its body, without threading it through `input` at each level.
+
+A providing `<context>` supplies its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) to its [content](./language.md#tag-content). A consuming `<context>` exposes the nearest provided value through its [tag variable](./language.md#tag-variables), naming the providing template with `from=`:
+
+```marko
+/* form-section.marko */
+<context=input.disabled>
+  <fieldset>
+    <${input.content}/>
+  </fieldset>
+</context>
+```
+
+```marko
+/* fancy-input.marko */
+<context/disabled from="<form-section>"/>
+
+<input disabled=disabled ...input>
+```
+
+Any `<fancy-input>` rendered inside a `<form-section>`, at any depth (including through passed content), reflects the section's `disabled` state.
+
+The providing template is the context's identity: each template may contain one providing `<context>`, and `from=` accepts the same forms as an `import`, either a tag name via the [tag `import` shorthand](./language.md#tag-import-shorthand) or a relative path (for templates such as a `+layout.marko` that have no tag name). Resolution follows the render tree, so the nearest provider instance wins when they nest, and a template may consume its own context (for example in recursive components). A consumer with no provider above it is an error in development.
+
+Like [`<let>`](#let) and [`<return>`](#return), a `valueChange=` attribute (usually via the bind shorthand `:=`) makes the context writable; without it, assigning to a consumed variable is a compile error. An assignment goes through the provider's change handler and fans back out to every consumer, so the local variable does not update synchronously:
+
+```marko
+/* accordion-group.marko */
+<let/openId=null>
+<context:=openId>
+  <${input.content}/>
+</context>
+```
+
+```marko
+/* accordion-item.marko */
+<context/openId from="<accordion-group>"/>
+
+<button onClick() { openId = input.id }>${input.title}</button>
+<show=openId === input.id>
+  <${input.content}/>
+</show>
+```
+
+When the provided value can never change in the browser (derived only from [`$global`](./language.md#global), [`static`](./language.md#static) values, or literals), the context is resolved entirely during server rendering: it contributes nothing to the client bundle, and a consumed value is serialized only where the browser actually reads it. A consumer created in the browser (under stateful control flow, for example) still resolves the server computed value: the compiler detects where that can happen and serializes the value for just those pages. A provider created in the browser evaluates its value there, under the usual client [`$global`](./language.md#global) rules. Values derived from state or `input` instead fan out changes to each consumer individually.
+
+The providing `<context>` requires [content](./language.md#tag-content) (its body is the value's extent) and accepts only `value=` and `valueChange=`. The consuming form requires a [tag variable](./language.md#tag-variables) (which cannot be destructured) and a static string `from=`.
+
 ## `<script>`
 
 The `<script>` tag has special behavior in Marko.
