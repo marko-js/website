@@ -182,17 +182,18 @@ This tag should be used sparingly, usually `<script>` or regular state via `<let
 
 <lifecycle
   onMount() {
-    this.map = new WorldMap($el());
-    this.map.on("move", () => {
-      latitude = this.map.x;
-      longitude = this.map.y;
+    const map = new WorldMap($el());
+    map.on("move", () => {
+      latitude = map.x;
+      longitude = map.y;
     });
+    return { map };
   }
   onUpdate() {
     this.map.setCoords(latitude, longitude);
   }
   onDestroy() { this.map.destroy() }
->
+/>
 
 <div/$el/>
 ```
