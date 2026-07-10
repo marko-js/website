@@ -473,7 +473,7 @@ The `<lifecycle>` tag is used to synchronize side-effects from imperative client
 />
 ```
 
-The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be mutated.
+The `this` is consistent across the lifetime of the `<lifecycle>` tag. It contains all attributes of the tag, plus any properties in the object returned from `onMount`. Returning from `onMount` is the way to keep instances of imperative APIs around for the other handlers, and their types are inferred automatically.
 
 ```marko
 client import { WorldMap } from "world-map-api";
@@ -481,13 +481,12 @@ client import { WorldMap } from "world-map-api";
 <let/latitude = 0>
 <let/longitude = 0>
 <div/container/>
-<lifecycle<{ map: WorldMap }>
+<lifecycle
   onMount() {
-    this.map = new WorldMap(container(), { latitude, longitude, zoom });
+    return { map: new WorldMap(container(), { latitude, longitude }) };
   }
   onUpdate() {
     this.map.setCoords(latitude, longitude);
-    this.map.setZoom(zoom);
   }
   onDestroy() {
     this.map.destroy();
@@ -495,8 +494,24 @@ client import { WorldMap } from "world-map-api";
 />
 ```
 
-> [!TIP]
-> All attributes on the `<lifecycle>` tag attributes available as the `this` in any of the event handler attributes.
+> [!WARNING]
+> Attributes of the `<lifecycle>` tag are reassigned onto `this` on every update, so `onMount` must not overwrite existing properties, whether by assignment or from its returned object. In development, doing so throws an error.
+
+`this` may also be extended by direct assignment, providing the extra properties as an explicit type argument.
+
+```marko
+client import { BarChart } from "bar-chart";
+
+<canvas/canvas/>
+<lifecycle<{ chart?: BarChart }>
+  onMount() {
+    this.chart = new BarChart(canvas());
+  }
+  onDestroy() {
+    this.chart?.destroy();
+  }
+/>
+```
 
 ## `<id>`
 

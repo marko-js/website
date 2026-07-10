@@ -9,7 +9,7 @@ import Map from "map"
 
 <lifecycle
   onMount() {
-    this.map = Map();
+    return { map: Map() };
   }
   onUpdate() {
     this.map.doSomething();
