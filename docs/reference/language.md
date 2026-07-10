@@ -421,6 +421,23 @@ export interface Input {
 > [!NOTE]
 > The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
 
+#### Unescaped Text
+
+Prefixing the interpolation with `!` outputs the value without escaping. This is intended for markup that was already generated and sanitized elsewhere, such as compiled markdown.
+
+```marko
+export interface Input {
+  articleHtml: string;
+}
+
+<article>
+  $!{input.articleHtml}
+</article>
+```
+
+> [!CAUTION]
+> Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
+
 ## Attribute Tags
 
 Tags prefixed with an `@` are not rendered, but instead passed alongside attributes in [`input`](./language.md#input). Attribute tags allow for passing named or repeated [content](#tag-content) as additional attributes.
