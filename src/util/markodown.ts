@@ -305,6 +305,7 @@ function markoDocs(): MarkedExtension {
       },
       codespan(token) {
         return `<code>${token.text
+          .replaceAll("$!{", "&#36;!{")
           .replaceAll("${", "&#36;{")
           .replaceAll("<", "&lt;")}</code>`;
       },
