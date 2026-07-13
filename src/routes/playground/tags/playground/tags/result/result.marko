@@ -12,6 +12,7 @@ import {
 import type { CodeToHastOptions } from "shiki";
 import { version as markoVersion } from "marko/package.json";
 client import highlighter from "app/util/shiki";
+client import "terser";
 client import { clearLogs, update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
 import { styleToClass } from "app/util/style-to-class";
