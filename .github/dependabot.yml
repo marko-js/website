@@ -1,0 +1,15 @@
+# Keeps the site's marko dependency current. Dependabot opens a pull request
+# whenever a new marko release is published; a maintainer reviews the bump (and
+# marko's release notes) and merges, and the merge to main triggers the normal
+# deploy. No custom tokens or auto-merge involved.
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    # Scope version-update PRs to marko itself. Broaden to "@marko/*" to also
+    # track @marko/run, @marko/type-check, and prettier-plugin-marko.
+    allow:
+      - dependency-name: marko
