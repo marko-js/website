@@ -4,6 +4,7 @@
 >
 > - Component Boundaries are _far_ less meaningful, state lives locally
 > - `class`, `state`, `out`, `component`, and other class component-specific APIs have been removed
+> - `renderBody` → `content`
 > - Event handling is function-based instead of event-based
 
 Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner and easier to write & read, and it increases Marko's capabilities and optimization potential.
@@ -24,6 +25,7 @@ A quick reference for removed features and their modern equivalents:
 
 - `out` is no longer accessible, except `out.global` as [`$global`](../reference/language.md#global)
 - [`class`](https://v5.markojs.com/docs/class-components/#single-file-components), [`state`](https://v5.markojs.com/docs/state/#state), and [`component`](https://v5.markojs.com/docs/class-components/#component) are removed in favor of [tag variables](../reference/language.md#tag-variables)
+- [`input.renderBody`](https://v5.markojs.com/docs/body-content/) is renamed to [`input.content`](../reference/language.md#tag-content)
 - All [instance methods](https://v5.markojs.com/docs/class-components/#methods) have been removed
   - [`getEl`/`getEls`](#element-refs), [`getComponent`](#component-refs), `forceUpdate`, `subscribeTo`, etc.
 - Directives are no longer necessary, as updates are more granular
