@@ -99,6 +99,26 @@ The stylesheet is still extracted and bundled once. Each interpolation compiles 
 > [!NOTE]
 > Dynamic values are only supported where css expects a declaration value, and apply to elements rendered after the `<style>` tag. See the [`<style>` reference](../reference/core-tag.md#dynamic-values) for details.
 
+### Per-Item Values
+
+Because dynamic values apply to the elements after each `<style>` tag, placing one inside a [`<for>`](../reference/core-tag.md#for) gives every iteration its own values. Each pass renders its own `<style>` just before that item's markup, so the interpolations resolve per item.
+
+```marko
+<nav class="brands">
+  <for|brand| of=input.brands>
+    <style>
+      .brand {
+        color: ${brand.color};
+      }
+    </style>
+    <a class="brand" href=brand.url>${brand.name}</a>
+  </for>
+</nav>
+```
+
+> [!WARNING]
+> Each iteration renders a real `<style>` element among the items, so positional selectors like `:nth-child` count those elements and miss their targets. Use [`:nth-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type), which counts only elements of the same tag and skips the interleaved `<style>` tags.
+
 ## Auto-Discovered Styles
 
 Styling files adjacent a [custom tag are automatically discovered](../reference/custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
