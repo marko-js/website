@@ -4,6 +4,7 @@
 >
 > - Component Boundaries are _far_ less meaningful, state lives locally
 > - `class`, `state`, `out`, `component`, and other class component-specific APIs have been removed
+> - `input.renderBody` is renamed to `input.content`
 > - Event handling is function-based instead of event-based
 
 Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner and easier to write & read, and it increases Marko's capabilities and optimization potential.
