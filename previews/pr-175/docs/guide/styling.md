@@ -119,7 +119,7 @@ Because dynamic values apply to the elements after each `<style>` tag, placing o
 > [!WARNING]
 > Each iteration renders a real `<style>` element among the items, so positional selectors like `:nth-child` count those elements and miss their targets. Use [`:nth-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type), which counts only elements of the same tag and skips the interleaved `<style>` tags.
 
-A staggered `animation-delay` is a natural fit here, but interpolate it as its own longhand declaration. The `animation:` shorthand resets `animation-delay` to `0s`, overriding the interpolated value.
+This enables staggered animation, giving each item its own `animation-delay`. Keep the delay in a longhand declaration, since the `animation:` shorthand resets it to `0s`.
 
 ## Auto-Discovered Styles
 
