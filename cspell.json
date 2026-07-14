@@ -11,6 +11,7 @@
     "beforeend",
     "beforeunload",
     "beresp",
+    "blocklist",
     "browsersl",
     "browserslist",
     "Brrrrr",
@@ -59,6 +60,7 @@
     "resumability",
     "resvg",
     "Rolldown",
+    "safelist",
     "shiki",
     "shikijs",
     "sortability",
@@ -70,6 +72,7 @@
     "tsrx",
     "TTFB",
     "unitless",
+    "unocss",
     "webkitdirectory",
     "webp",
     "WHATWG"

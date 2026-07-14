@@ -1,6 +1,7 @@
 import path from "node:path";
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
+import unocss from "unocss/vite";
 import markodown from "./src/util/markodown";
 
 export default defineConfig({
@@ -47,7 +48,7 @@ export default defineConfig({
     include: ["flexsearch"],
     exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
-  plugins: [markodown(), marko()],
+  plugins: [markodown(), unocss(), marko()],
   css: {
     modules: {
       generateScopedName:
