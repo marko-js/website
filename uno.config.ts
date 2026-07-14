@@ -1,4 +1,8 @@
-import { defineConfig, presetWind3, transformerCompileClass } from "unocss";
+import { defineConfig, presetWind3 } from "unocss";
+
+// Populated by uno-marko/transform.cjs during Marko's compile: class -> utilities.
+const unoMarkoStore: Map<string, string> = ((globalThis as any)
+  .__UNO_MARKO_STORE__ ||= new Map());
 
 // The design tokens in `src/styles/colors.scss` emit CSS custom properties that
 // already flip for dark mode. Mapping them into the theme lets utilities like
@@ -41,9 +45,10 @@ export default defineConfig({
   // The site ships its own reset in +layout.style.scss, so UnoCSS preflight is
   // disabled to measure only the utility cost against the SCSS it replaces.
   presets: [presetWind3({ dark: "media", preflight: false })],
-  // compile-class expands variant groups internally; the standalone variant-group
-  // transformer is omitted because it would rewrite JS ternaries in .marko files.
-  transformers: [transformerCompileClass()],
+  // The `:uno:` -> `uno-<hash>` substitution happens inside Marko's compiler
+  // (uno-marko/transform.cjs, registered via marko.json), not as a Vite transformer,
+  // so both the module compile and Marko's disk-read dependency pass stay in sync.
+  transformers: [],
   content: {
     pipeline: {
       include: [/\.marko($|\?)/],
@@ -68,11 +73,8 @@ export default defineConfig({
       ([, c]) =>
         `text-transparent bg-clip-text bg-gradient-to-r from-${c}-dark to-${c}-light`,
     ],
-    // Named shortcut = single semantic class, authored as utilities, with NO
-    // source rewrite (compatible with Marko's dual-pass compile, unlike :uno:).
-    {
-      "home-cta":
-        "relative overflow-hidden inline-flex mt-6 rounded-[2rem] px-16 py-4 no-underline text-white bg-section text-[1.1rem] font-medium justify-center self-start justify-self-end w-full dark:text-foreground dark:bg-gradient-to-r dark:from-section-dark dark:to-section-light min-[30rem]:w-auto lg:px-[2.4rem] lg:py-[0.8rem] hover:after:content-empty hover:after:absolute hover:after:-top-1/2 hover:after:-left-1/4 hover:after:w-[150%] hover:after:h-[200%] hover:after:bg-[linear-gradient(-45deg,transparent,rgba(255,255,255,0.3),transparent)] hover:after:animate-shimmer",
-    },
+    // Resolve the compiled `uno-<hash>` classes (produced by the Marko compile-time
+    // transform) back to their utilities, so UnoCSS generates the CSS for each one.
+    [/^uno-[0-9a-z]+$/, ([name]) => unoMarkoStore.get(name)],
   ],
 });

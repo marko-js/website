@@ -48,7 +48,7 @@ export default defineConfig({
     include: ["flexsearch"],
     exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
-  plugins: [markodown(), unocss(), marko()],
+  plugins: [markodown(), marko(), unocss()],
   css: {
     modules: {
       generateScopedName:
