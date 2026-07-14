@@ -1,0 +1,2 @@
+import{N as e}from"./_cNGmJygz.js";var t,n,r;function i(e){return function(i){return t.codeToHtml(i,{lang:e.g,defaultColor:!1,transformers:[r,n(e.$)],themes:{light:`marko-light`,dark:`marko-dark`},meta:{cursor:e.h,popovers:e.i}})}}e(`j0`,i);
+//# sourceMappingURL=_CkkcN3l2.js.map
