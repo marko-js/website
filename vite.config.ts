@@ -44,6 +44,7 @@ export default defineConfig({
     ],
   },
   optimizeDeps: {
+    include: ["flexsearch"],
     exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
   plugins: [markodown(), marko()],
