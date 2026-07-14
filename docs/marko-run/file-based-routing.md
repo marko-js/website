@@ -78,6 +78,46 @@ Typically, these will be `.js` or `.ts` files, depending on your project. Like p
     }
     ```
 
+#### Loading Data
+
+Passing an object to `next()` renders the page with that object available on [`$global`](../reference/language.md#global) as `$global.data`. This is the canonical way to load data for a `GET` request: the handler starts the work and the page reads it.
+
+```ts
+/* products/$id/+handler.ts */
+import { getProduct } from "../../data/products.js";
+
+export const GET: MarkoRun.Handler = (context, next) => {
+  // Start the request without awaiting it, so the page can stream.
+  return next({ product: getProduct(context.params.id) });
+};
+```
+
+Because the promise is forwarded unresolved, the shell of the page flushes immediately and the data streams in when it settles. The page reads it back through an [`<await>`](../reference/core-tag.md#await) wrapped in a [`<try>`](../reference/core-tag.md#try) for pending and error states.
+
+```marko
+/* products/$id/+page.marko */
+<try>
+  <await|product|=$global.data.product>
+    <if=product>
+      <h1>${product.name}</h1>
+    </if>
+    <else>
+      <p>Product not found.</p>
+    </else>
+  </await>
+
+  <@placeholder>
+    Loading...
+  </@placeholder>
+
+  <@catch|err|>
+    <p>Could not load this product.</p>
+  </@catch>
+</try>
+```
+
+Awaiting the data inside the handler is also supported, but it holds the response until the data is ready and gives up streaming.
+
 ### `+middleware.*`
 
 These files are like layouts, but for handlers. Middleware files are called before handlers and let you perform arbitrary work before and after.
