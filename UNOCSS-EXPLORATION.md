@@ -6,11 +6,17 @@ Spike to evaluate migrating the site from SCSS + CSS Modules to
 targeting two goals: **more maintainable styling** and **smaller CSS**.
 
 > [!IMPORTANT]
-> Headline result: the compile-class transformer **cannot be used with the
-> `@marko/run` build** (it breaks compilation), and none of the UnoCSS modes
-> that _do_ work reduce total bytes for this site. The current SCSS + design-token
-> setup is already close to optimal for a 211-page static site. Recommendation is
-> to **not** pursue this migration as framed. Details and evidence below.
+> Two separate conclusions:
+>
+> 1. **compile-class is not a supported UnoCSS + Marko configuration** and breaks
+>    the `@marko/run` build. This is a known class of failure for compile-class,
+>    not a bug in our setup (see Finding 1).
+> 2. UnoCSS **atomic** utilities _are_ officially supported with Marko and build
+>    fine, but they do not reduce total bytes for this site (they grow the HTML,
+>    which is the dominant payload). The current SCSS + design-token setup is
+>    already close to optimal for a 211-page static site.
+>
+> Net recommendation: do not pursue this migration as framed.
 
 ## How this was tested
 
@@ -36,7 +42,7 @@ The single most important number here: **HTML gzip (244 KB) is ~16x the CSS gzip
 minified, code-split per route, and built on CSS-variable tokens rather than
 repeated literals.
 
-## Finding 1 — compile-class breaks the Marko build (hard blocker)
+## Finding 1 — why compile-class breaks the Marko build
 
 Authoring `class=":uno: flex gap-2 ..."` and building fails with 15 errors like:
 
@@ -46,23 +52,35 @@ Authoring `class=":uno: flex gap-2 ..."` and building fails with 15 errors like:
 [MISSING_EXPORT] "$walks3" is not exported by ".../home-cta-button.marko".
 ```
 
-This happens for **both** child-tag components and route entries (`+404.marko`),
-so it is not a niche case.
+This happens for **both** child-tag components and route entries (`+404.marko`).
 
-Root cause: compile-class is a **source-rewriting Vite transformer**. It runs
-`enforce: "pre"` and replaces the `:uno: ...` string in the `.marko` source with
-a hashed class (`uno-mhb7vd`) before Marko compiles. But Marko and `@marko/run`
-build each `.marko` through **two passes that must see identical source**:
+### The mechanism (verified)
 
-1. The module itself, compiled through Vite (sees the UnoCSS-rewritten source).
-2. Cross-template linking. Marko reads referenced `.marko` files **directly from
-   disk**, bypassing Vite (confirmed: the translator's `getStyleFile` scans the
-   component directory on disk). This pass sees the **raw** `:uno:` source.
+compile-class is a **source-rewriting Vite transformer**: it runs `enforce: "pre"`
+in the `transform` phase and replaces a `:uno: ...` string with a content-hashed
+class (`uno-mhb7vd`), expecting to edit template **markup** before the framework
+compiles it. That assumption does not hold for Marko:
 
-Marko emits content-coordinated resumability bindings (`$setup`, `$template`,
-`$walks`) for composition. Because the two passes see different source, the
-bindings the importer expects do not match the ones the rewritten module
-exports, and the link fails.
+- `@marko/vite` compiles `.marko` to JS inside a Vite **`load`** hook
+  (`node_modules/@marko/vite/dist/index.mjs`: the `/\.marko$/` load handler reads
+  the file with `this.fs.readFile` and runs `@marko/compiler`). It also discovers
+  child-tag dependencies by reading them **raw from disk** (`fs.readFileSync` in
+  `scanFile`). No Vite `transform` hook ever sees `.marko` markup.
+- Because `load` runs before `transform`, UnoCSS's compile-class transform runs on
+  Marko's **already-compiled JavaScript**, not on markup. It finds the `:uno:`
+  string embedded in the compiled output and rewrites it there, then calls
+  `invalidate()`.
+- In isolation that rewrite is harmless: I compiled the component both ways and the
+  generated exports (`$template`, `$walks`, `$setup`) are **identical** regardless
+  of the class string, and the rewrite only overwrites the string literal.
+- The break appears in Marko's **linked** build, which compiles each template for
+  two environments (server streaming-HTML and client DOM) and reconciles their
+  generated export identifiers across a shared manifest (`generateBundle` in
+  `@marko/vite`, using `cachedSources` and a `serverManifest`). A downstream
+  transform that mutates and invalidates a compiled `.marko` module after that
+  analysis breaks the coordination, so a parent's import of the child's
+  cross-template bindings (`$setup3` / `$template3` / `$walks3`, suffixed per the
+  linked graph) no longer resolves. Hence `MISSING_EXPORT`.
 
 Control tests (same component, same structure):
 
@@ -70,111 +88,120 @@ Control tests (same component, same structure):
 | --- | --- |
 | `styles.cta` (original CSS Module) | pass |
 | `"cta"` (plain static string) | pass |
-| `"home-cta"` (UnoCSS **shortcut**, see below) | pass |
+| `"home-cta"` (UnoCSS **shortcut**) | pass |
+| `"relative overflow-hidden ..."` (atomic inline utilities) | pass |
 | `":uno: relative overflow-hidden ..."` (**compile-class**) | fail, 15 errors |
 
-The only thing that changed between a passing and failing build is that
-compile-class rewrites the file mid-build. Workarounds all require either a
-filesystem pre-pass that mutates `.marko` source (breaks HMR and dev ergonomics)
-or moving the transform inside the Marko compiler itself (a custom integration,
-not the stock transformer). Neither is "use the compile-class transformer".
+The differentiator is not the final class string (the compile-class output
+`uno-mhb7vd` is just as static as `"cta"`); it is the transform+invalidate step
+acting on Marko's compiled, cross-linked modules.
 
-## Finding 2 — the Marko-compatible modes, and their trade-offs
+### This is a known compile-class limitation, not our bug
 
-UnoCSS still works with Marko as long as the class string on disk is the class
-string Marko compiles (no rewrite):
+UnoCSS's compile-class is documented as fragile with exactly this situation, a
+compiler that re-reads or separately compiles the source, and the maintainers have
+closed such reports as unsupported:
 
-- **Atomic inline** — `class="relative overflow-hidden inline-flex ..."` directly
-  in the template. Co-located, but puts many classes in the markup, and complex
-  selectors (`:has`, `> input`, `::before` background images, keyframes) need
-  verbose arbitrary variants (`[&>input]:hidden`, `hover:after:...`). For those
-  cases it is arguably _less_ readable than the SCSS it replaces.
-- **Named shortcuts** — define the utility group in `uno.config.ts`
-  (`{ "home-cta": "relative overflow-hidden ..." }`) and reference `"home-cta"`
-  in the template. Produces one clean semantic class (the compile-class outcome),
-  keeps the markup clean, and builds fine. But it moves style definitions _out_
-  of the component and into a central config, which is a different maintainability
-  trade-off than co-located `.module.scss`, not an obvious win.
+- Next.js (separate server/client compile): the `:uno:` groups are not compiled,
+  [unocss/unocss#4507](https://github.com/unocss/unocss/issues/4507), closed **not
+  planned**.
+- Svelte: both plugins use `enforce: "pre"`; the Svelte plugin restores the file
+  from its own cache and discards the rewrite,
+  [unocss/unocss#1676](https://github.com/unocss/unocss/issues/1676).
+- `@vitejs/plugin-react-swc` (SWC transforms first):
+  [unocss/unocss#2653](https://github.com/unocss/unocss/issues/2653).
+- The content-hash class name also causes duplicate-class errors on edit in dev,
+  [unocss/unocss#4926](https://github.com/unocss/unocss/issues/4926).
 
-`home-cta-button` in this branch is converted to the **shortcut** form as a
-working proof that this path builds green (including its `:hover::after` shimmer
-and `@keyframes`, expressed via the UnoCSS `theme.animation`).
+Marko, with its separate server + client compiles and disk-based dependency
+analysis, is the same category.
 
-## Finding 3 — size does not go down
+## Is UnoCSS supported with Marko at all? Yes, for atomic utilities
 
-The single-class model (shortcut, and by extension what compile-class _would_
-produce) folds every declaration into one class with no atomic cross-element
-sharing, so it does not beat hand-written CSS. Measured on `home-cta-button`,
-compiled and minified both ways:
+Marko is a first-class citizen for **atomic** UnoCSS:
+
+- `.marko` is in UnoCSS's **default content pipeline**
+  (`defaultPipelineInclude` includes `marko`), so class extraction works with no
+  extra config.
+- There is an official [`examples/marko-run`](https://github.com/unocss/unocss/tree/main/examples/marko-run)
+  using `presetWind3` + `presetIcons` + `presetWebFonts` and **no transformers**.
+- The [Vite integration docs](https://unocss.dev/integrations/vite) have a Marko
+  section: order `@marko/vite` (or `@marko/run/vite`) **before** `UnoCSS()`.
+
+Verified here: the atomic config (plugins ordered `marko()` then `unocss()`, no
+compile-class transformer) builds green. So "is it supported properly" has a clear
+answer: **atomic yes, compile-class no.**
+
+## Finding 2 — size does not go down in any usable mode
+
+**Single-class modes** (compile-class, or its Marko-compatible stand-in, named
+`shortcuts`) fold every declaration into one class with no atomic sharing, so they
+do not beat hand-written CSS. Measured on `home-cta-button`, compiled and minified:
 
 | | Bytes (min) |
 | --- | --- |
-| Original SCSS `.cta` (base + dark + 2 breakpoints + shimmer) | **854** |
-| UnoCSS `.home-cta` (same states) | **1,715** (~2x) |
+| Original SCSS `.cta` | **854** |
+| UnoCSS single class (same states) | **1,715** (~2x) |
 
-Net effect of wiring UnoCSS in and converting that one component:
+The gradient alone expands to a `--un-gradient-from / -to / -stops / -shape` var
+cascade (~300 B) versus a ~90 B hand-written `linear-gradient(...)`. The current
+SCSS already factors color and theme through CSS variables, so there is little
+duplication left for a utility engine to remove.
 
-| | Raw | Gzip |
-| --- | --- | --- |
-| Total CSS delta | **+1,790 B** | **+363 B** |
+**Atomic mode** is the only mode that shares CSS across elements, but it moves bytes
+into the markup, which is the payload that matters here. Converting one small
+component (`home-cta-button`, used 5x on the home page) to atomic inline utilities:
 
-Why bigger, not smaller:
+| Home page HTML | Bytes |
+| --- | --- |
+| Clean single class | 52,929 |
+| Atomic inline | 55,707 (**+2,778 for one component**) |
 
-- UnoCSS's generic utility output is more verbose than purpose-written CSS. The
-  gradient alone expands to a `--un-gradient-from / -to / -stops / -shape` var
-  cascade (~300 B) versus a ~90 B hand-written `linear-gradient(...)`.
-- No atomic sharing in single-class mode, so nothing is reclaimed.
-- The current SCSS already factors color and theme through CSS variables, so
-  there is little duplication left for a utility engine to remove.
+That is one component on one page; the home page has ~12 components and there are
+211 pages, all of which would carry the repeated utility strings. Trading 15 KB of
+shared, cached CSS for added weight on every static page is a net loss in transfer.
 
-The only mode that _would_ shrink CSS is **pure atomic** (many shared utility
-classes). But that moves bytes from CSS into the markup, and on this site the
-markup is the payload that matters: HTML is **16x** the CSS after gzip and is
-repeated across **211** statically rendered pages. Trading 15 KB of shared,
-cached CSS for added weight on every page is a net loss in total transfer.
+## Finding 3 — where there _is_ a real (small) win
 
-## Finding 4 — where there _is_ a real (small) win
-
-The Sass-generated utility modules emit every color and variant combination
-whether used or not, which an on-demand engine would prune:
+The Sass-generated utility modules emit every color and variant combination whether
+used or not, which an on-demand engine would prune:
 
 - `text.module.scss` — generates 25 classes, **8 used** (~68% dead). ~1.3 KB chunk.
 - `section-colors.module.scss` — generates 5 `.xSection` classes, **2 used**.
 
 Pruning this dead code is a genuine but small win (~1 to 1.5 KB raw, less after
-gzip), and it does **not** require UnoCSS. The same generators could be trimmed to
-the used set, or these two files could move to on-demand utilities specifically,
-independent of any broader migration.
+gzip), and it does **not** require UnoCSS. The generators can simply be trimmed to
+the used set.
 
-## Finding 5 — scanning `.marko` produces spurious utilities
+## Finding 4 — scanning `.marko` produces spurious utilities
 
-With `.marko` in the UnoCSS content pipeline, ordinary words and identifiers in
-markup, prose, and embedded JS get extracted as utilities. A single-component
-build already emitted unused `.block`, `.hidden`, `.border`, `.table`,
-`.relative`, `.static`, `.rounded`, `.px`, `.uppercase`, ... (~32 utility rules).
-This is tunable (blocklist, safelist, or a class-attribute-only extractor) but is
-ongoing config maintenance, and it partly offsets Finding 4's savings.
+With `.marko` extraction on, ordinary words and identifiers in markup, prose, and
+embedded JS get picked up as utilities. A single-component build already emitted
+unused `.block`, `.hidden`, `.border`, `.table`, `.relative`, `.static`,
+`.rounded`, `.px`, `.uppercase`, ... (~32 utility rules). Tunable (blocklist,
+safelist, or a class-attribute-only extractor) but ongoing config maintenance.
 
 ## Recommendation
 
-**Do not migrate to UnoCSS + compile-class as framed.**
+**Do not migrate to UnoCSS + compile-class.** It is not a supported configuration
+and breaks the build; there is no config that fixes it (only heavy workarounds:
+a filesystem pre-pass that mutates `.marko` source, or a custom `@marko/compiler`
+plugin that applies the class transform during Marko's own compile so both the
+server and client passes agree).
 
-- Goal "smaller CSS" is unlikely to be met: CSS is not the dominant payload, the
-  current setup is already lean, and the compatible UnoCSS modes either grow CSS
-  (single-class) or grow the dominant HTML (atomic).
-- Goal "more maintainable" is not clearly advanced either: compile-class (the
-  ergonomic inline mode) is blocked by the Marko build, atomic inline is verbose
-  for this site's selector patterns, and shortcuts re-centralize what is currently
-  co-located.
+**The supported UnoCSS mode (atomic) does not meet the goals either:** CSS is not
+the dominant payload, the current setup is already lean, and atomic grows the HTML
+that dominates a 211-page static site.
 
-If maintainability is the real driver, cheaper targeted moves that keep the
-current pipeline:
+If maintainability is the real driver, cheaper targeted moves that keep the current
+pipeline:
 
 1. Prune the unused generated classes in `text.module.scss` and
-   `section-colors.module.scss` (Finding 4).
-2. Consider a Marko-compiler-level utility transform (not the Vite transformer) if
-   inline utility authoring is desired later; that is the only integration that
-   would sidestep Finding 1, and it is a real project, not a config change.
+   `section-colors.module.scss` (Finding 3).
+2. If inline utility authoring is genuinely wanted later, the only robust
+   integration is a Marko-compiler-level transform (not a Vite transformer), which
+   is a real project rather than a config change. Worth an upstream conversation
+   with the Marko team before investing.
 
 ## Reproduction
 
@@ -188,4 +215,6 @@ NODE_ENV=production npm run build   # green: home-cta-button uses a shortcut
 
 Files in this spike: `uno.config.ts`, `vite.config.ts` (unocss plugin),
 `src/routes/+layout.marko` (`import "virtual:uno.css"`),
-`src/routes/_home/tags/home-cta-button/*` (shortcut conversion).
+`src/routes/_home/tags/home-cta-button/*` (shortcut conversion). The committed POC
+uses the shortcut form (Marko-compatible) so the build stays green; swap in a
+`:uno:` class to reproduce Finding 1.
