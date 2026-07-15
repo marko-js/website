@@ -90,6 +90,6 @@ export const POST = Run.POST(
 
 ## Next Steps
 
-- [Validation](./validation.md#request-bodies) covers parsing and validating the request bodies behind form submissions
-- [Runtime](./runtime.md#context-methods) documents the redirect helpers used for Post/Redirect/Get
-- [Streaming](../explanation/streaming.md) explains how Marko flushes content as promises resolve
+- [Validation](./validation.md#request-bodies)
+- [Runtime](./runtime.md#context-methods)
+- [Streaming](../explanation/streaming.md)

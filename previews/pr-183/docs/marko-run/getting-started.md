@@ -64,9 +64,9 @@ npm exec marko-run
 npm exec marko-run dev
 ```
 
-| Option         | Description                                                                                         |
-| -------------- | --------------------------------------------------------------------------------------------------- |
-| `-p`, `--port` | Port to listen on (defaults: `preview.port` in the Vite config, the `PORT` env variable, or `3000`) |
+| Option         | Description                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------- |
+| `-p`, `--port` | Port to listen on (defaults: `preview.port` in the Vite config, the `PORT` env variable, or 3000) |
 
 ### `build`
 
@@ -91,11 +91,12 @@ npm exec marko-run preview
 | Option           | Description                                                                                          |
 | ---------------- | ---------------------------------------------------------------------------------------------------- |
 | `-o`, `--output` | Directory to serve files from, and write built files to (default: `build.outDir` in the Vite config) |
-| `-p`, `--port`   | Port the server should listen on (defaults: the `PORT` env variable or `3000`)                       |
+| `-p`, `--port`   | Port the server should listen on (defaults: the `PORT` env variable or 3000)                         |
 | `-f`, `--file`   | Output file to start                                                                                 |
 
 ## Next Steps
 
-- [File-based Routing](./file-based-routing.md) describes how pages, layouts, handlers, and middleware map to URLs
-- [Validation](./validation.md) and [Data Loading](./data-loading.md) cover working with requests and passing data to pages
-- [Adapters](./adapters.md) covers building for platforms beyond the default Node server
+- [File-based Routing](./file-based-routing.md)
+- [Validation](./validation.md)
+- [Data Loading](./data-loading.md)
+- [Adapters](./adapters.md)

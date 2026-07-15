@@ -181,6 +181,6 @@ express()
 
 ## Next Steps
 
-- [Data Loading](./data-loading.md) puts the context and `next` to work feeding pages
-- [Adapters](./adapters.md) covers the platforms that host this runtime, including the Node middleware
-- [TypeScript](./typescript.md) explains how the context and `Run.href` become fully typed
+- [Data Loading](./data-loading.md)
+- [Adapters](./adapters.md)
+- [TypeScript](./typescript.md)

@@ -91,10 +91,10 @@ Function validators resolve `ctx.body` to their return value. Standard Schema va
 
 Handles requests with an `application/json` content type. The option can be a validator, or an options object:
 
-| Option      | Default          | Description                                     |
-| ----------- | ---------------- | ----------------------------------------------- |
-| `validator` |                  | Function or Standard Schema for the parsed JSON |
-| `maxBytes`  | `1048576` (1MiB) | Maximum request body size in bytes              |
+| Option      | Default        | Description                                     |
+| ----------- | -------------- | ----------------------------------------------- |
+| `validator` |                | Function or Standard Schema for the parsed JSON |
+| `maxBytes`  | 1048576 (1MiB) | Maximum request body size in bytes              |
 
 ### `form`
 
@@ -104,9 +104,9 @@ Handles requests with an `application/x-www-form-urlencoded` or `multipart/form-
 | -------------- | ------------------------- | -------------------------------------------------- |
 | `validator`    |                           | Function or Standard Schema for the parsed form    |
 | `maxBytes`     | `maxFiles * maxFileBytes` | Maximum request body size in bytes                 |
-| `maxParts`     | `1000`                    | Maximum number of parts in a multipart request     |
-| `maxFiles`     | `20`                      | Maximum number of files in a multipart request     |
-| `maxFileBytes` | `1048576` (1MiB)          | Maximum size of each uploaded file in bytes        |
+| `maxParts`     | 1000                      | Maximum number of parts in a multipart request     |
+| `maxFiles`     | 20                        | Maximum number of files in a multipart request     |
+| `maxFileBytes` | 1048576 (1MiB)            | Maximum size of each uploaded file in bytes        |
 | `onFile`       |                           | `(ctx, file) => any` called for each uploaded file |
 
 ## Schema Results
@@ -136,6 +136,6 @@ This makes middleware a natural home for shared validation. An options-only `Run
 
 ## Next Steps
 
-- [Data Loading](./data-loading.md) shows how handlers pass validated data to pages and layouts
-- [Runtime](./runtime.md#context) documents every property validators interact with on the context
-- [TypeScript](./typescript.md#generated-types) explains how validated types flow through generated types
+- [Data Loading](./data-loading.md)
+- [Runtime](./runtime.md#context)
+- [TypeScript](./typescript.md#generated-types)

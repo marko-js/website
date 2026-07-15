@@ -150,6 +150,6 @@ An adapter is an object implementing the `Adapter` interface from `@marko/run/vi
 
 ## Next Steps
 
-- [Vite Plugin](./vite-plugin.md) shows where the adapter is configured
-- [Runtime](./runtime.md#embedding) covers embedding the router directly when no adapter fits
-- [Getting Started](./getting-started.md#cli) documents the CLI commands adapters hook into
+- [Vite Plugin](./vite-plugin.md)
+- [Runtime](./runtime.md#embedding)
+- [Getting Started](./getting-started.md#cli)

@@ -46,14 +46,14 @@ With the generated types, the `Run` namespace is narrowed per routable file:
 
 **`Run` verb helpers**
 
-- Validation options and handler return types are fully inferred, so `ctx.params`, `ctx.search`, `ctx.body`, and the data passed to `next(...)` flow through to downstream handlers, pages, and layouts
+Validation options and handler return types are fully inferred, so `ctx.params`, `ctx.search`, `ctx.body`, and the data passed to `next(...)` flow through to downstream handlers, pages, and layouts.
 
 **`Run.href`**
 
-- The path and its params are typed against every route the application serves
+The path and its params are typed against every route the application serves.
 
 ## Next Steps
 
-- [Validation](./validation.md) shows the verb helpers whose options drive these inferred types
-- [Runtime](./runtime.md#typed-urls) documents `Run.href` and the request context
-- [TypeScript in Marko](../reference/typescript.md) covers typing Marko templates themselves
+- [Validation](./validation.md)
+- [Runtime](./runtime.md#typed-urls)
+- [TypeScript in Marko](../reference/typescript.md)

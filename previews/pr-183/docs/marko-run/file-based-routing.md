@@ -370,6 +370,6 @@ routes/
 
 ## Next Steps
 
-- [Validation](./validation.md) covers the verb helpers used in handler and middleware files
-- [Data Loading](./data-loading.md) shows how handlers pass data to pages and layouts
-- [Runtime](./runtime.md) documents the request context available to every routable file
+- [Validation](./validation.md)
+- [Data Loading](./data-loading.md)
+- [Runtime](./runtime.md)
