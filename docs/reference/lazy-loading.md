@@ -172,3 +172,6 @@ import PriceChart from "<price-chart>" with { load: "visible.chart" }
 ## Bundler Support
 
 Lazy loading is coordinated with the bundler through the `linkAssets` compiler option. [`@marko/vite`](https://github.com/marko-js/vite) (and therefore [Marko Run](../marko-run/getting-started.md)) configures this automatically, so no setup is required.
+
+> [!NOTE]
+> Integrations that do not configure `linkAssets`, such as `@marko/vite` with `linked: false` (used by Storybook), cannot code-split. A `with { load }` import then compiles as a normal eager import, so templates that render a lazily-loaded component still build and render normally.
