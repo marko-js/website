@@ -59,8 +59,85 @@ Binding form controls to [tag variables](../reference/language.md#tag-variables)
   <textarea id="message" name="message" maxlength="280" value:=message/>
   <p>${280 - message.length} characters left</p>
 
-  <button type="submit" disabled=!message.trim()>Send</button>
+  <button type="submit">Send</button>
 </form>
 ```
 
 Because the form still posts natively, this enhancement degrades gracefully: without JavaScript the character counter stays static, but the form submits all the same.
+
+> [!WARNING]
+> Deriving `disabled` on the submit button from bound state (for example, disabling it until a field is filled in) renders the button disabled in the server HTML, locking out visitors whose JavaScript has not loaded. Prefer [validation attributes](#validating), which the browser enforces on its own.
+
+## Binding Controls
+
+Every stateful form control has a [`Change` handler](../reference/native-tag.md#change-handlers) in Marko, so the `:=` shorthand from the previous section is not limited to text. Radio groups and checkboxes bind through the [`checkedValue` attribute](../reference/native-tag.md#input-typeradio-and-input-typecheckbox), which holds a string for radios and an array for checkbox groups, and `<select>` binds through its [enhanced `value` attribute](../reference/native-tag.md#select).
+
+```marko
+<let/format="html">
+<let/topics=[]>
+<let/frequency="weekly">
+
+<form method="POST" action="/newsletter">
+  <fieldset>
+    <legend>Format</legend>
+    <label><input type="radio" name="format" value="html" checkedValue:=format> HTML</label>
+    <label><input type="radio" name="format" value="text" checkedValue:=format> Plain text</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Topics</legend>
+    <label><input type="checkbox" name="topics" value="releases" checkedValue:=topics> Releases</label>
+    <label><input type="checkbox" name="topics" value="community" checkedValue:=topics> Community</label>
+  </fieldset>
+
+  <label for="frequency">Frequency</label>
+  <select id="frequency" name="frequency" value:=frequency>
+    <option value="daily">Daily</option>
+    <option value="weekly">Weekly</option>
+    <option value="monthly">Monthly</option>
+  </select>
+
+  <p>${topics.length} topic${topics.length === 1 ? "" : "s"}, delivered ${frequency}.</p>
+
+  <button type="submit">Subscribe</button>
+</form>
+```
+
+Each control still submits its `name` and value natively; the bound variables exist so the rest of the template can react, as the summary line does here.
+
+> [!CAUTION]
+> Form controls always report strings. Binding a numeric input directly (`value:=quantity`) turns the variable into a string on the first edit. Add a [refining function](../reference/language.md#refining-function) to convert each change before it is assigned:
+>
+> ```marko
+> <let/quantity=1>
+>
+> <input type="number" name="quantity" min="1" value:parseFloat:=quantity>
+> ```
+
+## Reusable Fields
+
+Repeated label-and-input markup can move into a [custom tag](../reference/custom-tag.md#relative-custom-tags), discovered from a `tags/` directory. The [`<id>` tag](../reference/core-tag.md#id) generates a unique id per instance to associate the label with its control, and binding the native input to `input.value` forwards both the value and its change handler to the parent, so the tag is bound with `:=` exactly like a native control.
+
+```marko
+/* tags/labeled-input.marko */
+<id/fieldId>
+
+<div class="field">
+  <label for=fieldId>${input.label}</label>
+  <input id=fieldId name=input.name value:=input.value>
+</div>
+```
+
+```marko
+/* profile-form.marko */
+<let/displayName="">
+
+<form method="POST">
+  <labeled-input label="Display name" name="displayName" value:=displayName/>
+  <p hidden=!displayName>Previewing as ${displayName}</p>
+
+  <button type="submit">Save</button>
+</form>
+```
+
+Components that hold their own state can offer the same interface by making that state controllable; [Controllable Components](../explanation/controllable-components.md) covers the pattern in depth.
