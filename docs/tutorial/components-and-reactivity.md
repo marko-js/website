@@ -57,6 +57,8 @@ Because this is such a common pattern, Marko provides a [shorthand](../reference
 <div>It's ${degF}°F</div>
 ```
 
+The `:=` binds `value` to `degF` and wires up the `valueChange` handler for us, and the function between the colons (`parseFloat`) is a [refining function](../reference/language.md#refining-function) that transforms each new value before it is assigned.
+
 ## Adding Computed Values
 
 Now we can use [the `<const>` tag](../reference/core-tag.md#const) to convert to celsius!
@@ -99,7 +101,7 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 
 ## Adding Styles and Visualization
 
-Or what about a temperature gauge, with some fancy CSS?
+Or what about a temperature gauge, with some fancy CSS? By default styles in a `.marko` file are globally scoped and loaded once, and the [Styling guide](../guide/styling.md) covers more options.
 
 ```marko
 <let/degF=80>

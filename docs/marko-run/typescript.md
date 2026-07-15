@@ -49,3 +49,8 @@ These types are replaced with more specific versions per routable file:
 
 - In middleware and layouts which are used in many routes, this type will be a union of all possible routes that the file will see.
 - When an adapter is used, it can provide types for the platform
+
+## Next Steps
+
+- [TypeScript Reference](../reference/typescript.md)
+- [Supported Environments](../reference/supported-environments.md)

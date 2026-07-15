@@ -32,7 +32,7 @@ Consider this Marko template. Reassigning the array triggers an update; mutating
 </ul>
 ```
 
-Immutable updates work naturally with Marko's assignment-based reactivity. Replacing a value (object, array, map-like structure) makes change propagation explicit and reliable.
+Immutable updates work naturally with Marko's [assignment-based reactivity](../reference/reactivity.md). Replacing a value (object, array, map-like structure) makes change propagation explicit and reliable.
 
 ## Functional UI
 

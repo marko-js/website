@@ -118,6 +118,9 @@ Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, 
 </div>
 ```
 
+> [!NOTE]
+> Buttons like these respond to clicks with [event handlers](../reference/native-tag.md#event-handlers), which we use in [Components and Reactivity](./components-and-reactivity.md).
+
 Now we can show different states based on the product data:
 
 ```marko
