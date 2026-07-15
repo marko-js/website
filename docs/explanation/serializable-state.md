@@ -22,7 +22,7 @@ State does not travel through a separate data request or a client-side re-render
 
 The wire format of this data is an implementation detail that changes between versions, so application code should never read or write it directly.
 
-Since values are only serialized when client-side logic can reference them, state that is rendered into HTML and never touched again in the browser adds nothing to the payload. [Fine-Grained Bundling](./fine-grained-bundling.md) explains how the compiler makes that determination.
+Since values are only serialized when client-side logic can reference them, state that is rendered into HTML and never touched again in the browser adds nothing to the serialized client-state payload. [Fine-Grained Bundling](./fine-grained-bundling.md) explains how the compiler makes that determination.
 
 ## Unserializable Data
 
