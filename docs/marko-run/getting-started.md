@@ -56,7 +56,7 @@ Starting with a template:
 Manual project setup:
 
 1. Install the required package: `npm install @marko/run`
-2. Create the entry file: `src/routes/+page.marko`
+2. Create the entry file: `src/routes/+page.marko` (see [File-based Routing](./file-based-routing.md))
 3. Start the development server: `npm exec marko-run`
 
 The application will be available at `http://localhost:3000` 🚀
@@ -92,3 +92,8 @@ Creates a production build and start the preview server
 ```sh
 npm exec marko-run preview
 ```
+
+## Next Steps
+
+- [File-based Routing](./file-based-routing.md)
+- [TypeScript](./typescript.md)

@@ -28,10 +28,16 @@ The router only recognizes certain filenames, all prefixed with `+`. The followi
 
 These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
 
+Within a page, the request, path parameters, URL, and route metadata are available through [`$global`](../reference/language.md#global). For example, a page under a [dynamic directory](#path-structure) reads its parameter from `$global.params`:
+
+```marko
+/* src/routes/blog/$slug/+page.marko */
+<h1>Reading post: ${$global.params.slug}</h1>
+```
+
 ### `+layout.marko`
 
-These files provide a **layout component**, which will wrap all nested layouts and pages. Information is obtained from [`$global`](../reference/language.md#global) and `input`
-Layouts are like any other Marko component, with no extra constraints. Each layout receives the request, path params, URL, and route metadata as input, as well as a `content` which refers to the nested page that is being rendered.
+These files provide a **layout component**, which will wrap all nested layouts and pages. Layouts are like any other Marko component, with no extra constraints. Each layout receives a `content` input, which refers to the nested page that is being rendered. As with [pages](#pagemarko), the request, path parameters, URL, and route metadata are available through [`$global`](../reference/language.md#global).
 
 ```marko
 /* +layout.marko */
@@ -77,6 +83,9 @@ Typically, these will be `.js` or `.ts` files, depending on your project. Like p
       return response;
     }
     ```
+
+> [!TIP]
+> The [Forms guide](../guide/forms.md) shows a handler receiving a form submission and redirecting on success.
 
 ### `+middleware.*`
 
@@ -225,12 +234,12 @@ Without flat routes, you would have a file structure like:
 
 ```text
 routes/
+  +layout.marko
   projects/
+    +layout.marko
     $projectId/
-    $members/
-      +page.marko
-        +layout.marko
-        +layout.marko
+      members/
+        +page.marko
 ```
 
 With flat routes, move the path defined by the directories into the files and separate with a period
@@ -242,17 +251,19 @@ routes/
   projects.$projectId.members+page.marko
 ```
 
-Additionally, you can continue to organize files under directories to decrease duplication and use flat route syntax in the folder name
+Additionally, you can continue to organize files under directories to decrease duplication and use flat route syntax in the folder name. Every file inside the directory is nested under its flat route prefix, so a members page and a settings page can share one folder:
 
 ```text
 routes/
+  +layout.marko
   projects.$projectId/
-  +layout.marko
-  members+page.marko
-  +layout.marko
+    members+page.marko
+    settings+page.marko
 ```
 
-Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have layout
+This serves both `/projects/$projectId/members` and `/projects/$projectId/settings`.
+
+Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have the layout
 
 ```text
 routes/
@@ -305,3 +316,9 @@ routes/
 ```
 
 While both of these create a route which matches the paths, they have slightly different semantics. Using a pathless segment is the same as creating a pathless directory, which allows you to isolate middleware and layouts. Using an empty segment is the same as defining a file at the current location.
+
+## Next Steps
+
+- [TypeScript](./typescript.md)
+- [Forms](../guide/forms.md)
+- [HTML Streaming](../explanation/streaming.md)

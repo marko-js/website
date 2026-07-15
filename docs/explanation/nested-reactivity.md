@@ -118,7 +118,3 @@ import { produce } from "immer"
   });
 }>
 ```
-
-## Case 3: Complex Hoisted State
-
-<!-- TODO: discuss `<mut>` tag -->

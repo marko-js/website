@@ -16,6 +16,14 @@ Most standard data types can be serialized, including:
 
 ... and many more.
 
+## Reaching the Client
+
+State does not travel through a separate data request or a client-side re-render. When a template renders on the server, inline `<script>` tags are emitted alongside the markup, carrying the serialized state and markers that tie each value back to its place in the DOM. When the page loads, the runtime reads this data and resumes exactly where the server finished, without re-executing the template.
+
+The wire format of this data is an implementation detail that changes between versions, so application code should never read or write it directly.
+
+Since values are only serialized when client-side logic can reference them, state that is rendered into HTML and never touched again in the browser adds nothing to the serialized client-state payload. [Fine-Grained Bundling](./fine-grained-bundling.md) explains how the compiler makes that determination.
+
 ## Unserializable Data
 
 Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.
