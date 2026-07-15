@@ -9,7 +9,14 @@ The [`disabled`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Att
 ```marko
 <let/submitting=false>
 
-<form method="POST" action="/rsvp" onSubmit() { submitting = true }>
+<form method="POST" action="/rsvp" onSubmit(e) {
+  if (submitting) {
+    e.preventDefault();
+    return;
+  }
+
+  submitting = true;
+}>
   <label for="guests">Number of guests</label>
   <input id="guests" name="guests" type="number" min="1">
 
@@ -30,6 +37,8 @@ Forms that stay on the page, such as those sending data with [`fetch`](https://d
 
 <form onSubmit(e) {
   e.preventDefault();
+  if (submitting) return;
+
   submitting = true;
 
   fetch("/rsvp", {

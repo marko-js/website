@@ -2,7 +2,7 @@
 
 Marko renders HTML, and HTML forms work without any JavaScript. Starting from a native `<form>` keeps submissions functional before scripts load, and Marko's reactivity can then layer on richer behavior where it helps.
 
-## Submitting to the Server
+## Server Submission
 
 In a [Marko Run](../marko-run/getting-started.md) app, a form posts to a route, and a [`+handler`](../marko-run/file-based-routing.md#handler) beside the page receives the submission. The handler reads the submitted fields with the standard [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) API and redirects when finished.
 
@@ -21,7 +21,13 @@ In a [Marko Run](../marko-run/getting-started.md) app, a form posts to a route, 
 /* src/routes/feedback/+handler.ts */
 export async function POST(context) {
   const data = await context.request.formData();
-  await saveFeedback(data.get("message"));
+  const message = data.get("message");
+
+  if (typeof message !== "string" || !message.trim()) {
+    return new Response("A message is required.", { status: 400 });
+  }
+
+  await saveFeedback(message);
   return context.redirect("/feedback/thanks", 303);
 }
 ```
@@ -103,10 +109,10 @@ Every stateful form control has a [`Change` handler](../reference/native-tag.md#
 </form>
 ```
 
-Each control still submits its `name` and value natively; the bound variables exist so the rest of the template can react, as the summary line does here.
+Successful, named controls still submit their values natively; the bound variables exist so the rest of the template can react, as the summary line does here.
 
 > [!CAUTION]
-> Form controls always report strings. Binding a numeric input directly (`value:=quantity`) turns the variable into a string on the first edit. Add a [refining function](../reference/language.md#refining-function) to convert each change before it is assigned:
+> `value` bindings report strings. Binding a numeric input directly (`value:=quantity`) turns the variable into a string on the first edit. In contrast, `checked` bindings produce booleans, while `checkedValue` may produce an array for checkbox groups. Add a [refining function](../reference/language.md#refining-function) to convert each `value` change before it is assigned:
 >
 > ```marko
 > <let/quantity=1>
