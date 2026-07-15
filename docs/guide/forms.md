@@ -35,7 +35,7 @@ export async function POST(context) {
 `GET` requests continue to the page as usual, while the `POST` export handles submissions from the form above.
 
 > [!NOTE]
-> Redirecting after a successful `POST` (the [Post/Redirect/Get pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get)) prevents a page refresh from resubmitting the form. See [Preventing Duplicate Form Submissions](./duplicate-form-submissions.md) for handling repeated clicks before the response arrives.
+> Redirecting after a successful `POST` (the [Post/Redirect/Get pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get)) prevents a page refresh from resubmitting the form. See [Preventing Duplicate Form Submissions](./duplicate-form-submissions.md) for making repeated requests safe on the server.
 
 ## Validating
 

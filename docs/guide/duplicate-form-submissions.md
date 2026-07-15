@@ -1,61 +1,54 @@
 # Preventing Duplicate Form Submissions
 
-When a form takes time to process, users may click the submit button again before the first request completes, causing the same data to be sent twice. Tracking submission state with a [`<let>` tag](../reference/core-tag.md#let) prevents these duplicate submissions. For the full submission flow, including server handling, see the [Forms guide](./forms.md).
+A native form sends an HTTP request and follows the server's response. The browser may send the same request more than once because of repeated submissions, retries, or multiple open tabs, so correctness cannot depend on disabling a button. The server should make repeated submissions safe.
 
-## Disabling the Button
+## Submission Keys
 
-The [`disabled`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled) attribute can be driven by a tag variable that is set in the form's [event handler](../reference/native-tag.md#event-handlers) when it is first submitted.
+Include a unique submission key in the rendered form. Because the page renders on the server, the form works without browser JavaScript.
 
 ```marko
-<let/submitting=false>
+/* src/routes/rsvp/+page.marko */
+<const/submissionId=crypto.randomUUID()>
 
-<form method="POST" action="/rsvp" onSubmit(e) {
-  if (submitting) {
-    e.preventDefault();
-    return;
-  }
+<form method="POST" action="/rsvp">
+  <input type="hidden" name="submissionId" value=submissionId>
 
-  submitting = true;
-}>
   <label for="guests">Number of guests</label>
-  <input id="guests" name="guests" type="number" min="1">
+  <input id="guests" name="guests" type="number" min="1" required>
 
-  <button type="submit" disabled=submitting>
-    ${submitting ? "Sending..." : "RSVP"}
-  </button>
+  <button type="submit">RSVP</button>
 </form>
 ```
 
-While `submitting` is `true`, the button is disabled and further clicks are ignored. Since the form here submits normally and navigates away, the flag never needs to be reset.
+The handler validates the submitted fields and passes the key to the persistence layer. Repeating the request returns the record created by the first request instead of creating another one.
 
-## Resetting After Completion
+```ts
+/* src/routes/rsvp/+handler.ts */
+export async function POST(context) {
+  const data = await context.request.formData();
+  const submissionId = data.get("submissionId");
+  const guestsValue = data.get("guests");
+  const guests = typeof guestsValue === "string" ? Number(guestsValue) : NaN;
 
-Forms that stay on the page, such as those sending data with [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), should reset the flag once the request settles so the form can be used again.
+  if (
+    typeof submissionId !== "string" ||
+    !submissionId ||
+    !Number.isInteger(guests) ||
+    guests < 1
+  ) {
+    return new Response("Invalid submission.", { status: 400 });
+  }
 
-```marko
-<let/submitting=false>
-
-<form onSubmit(e) {
-  e.preventDefault();
-  if (submitting) return;
-
-  submitting = true;
-
-  fetch("/rsvp", {
-    method: "POST",
-    body: new FormData(e.target),
-  }).finally(() => {
-    submitting = false;
-  });
-}>
-  <label for="guests">Number of guests</label>
-  <input id="guests" name="guests" type="number" min="1">
-
-  <button type="submit" disabled=submitting>
-    ${submitting ? "Sending..." : "RSVP"}
-  </button>
-</form>
+  const rsvp = await saveRsvpOnce({ submissionId, guests });
+  return context.redirect(`/rsvp/${rsvp.id}`, 303);
+}
 ```
 
 > [!WARNING]
-> Disabling the button is a user experience improvement, not a guarantee. Requests can still be repeated by network retries or multiple open tabs, so the server should handle duplicate submissions gracefully as well.
+> `saveRsvpOnce` must enforce uniqueness for the submission key in the same database transaction that creates the record. Checking for an existing key and inserting in separate operations leaves a race condition.
+
+## Redirecting
+
+After processing the `POST`, the handler returns a `303` redirect to a `GET` page. This [Post/Redirect/Get pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) means refreshing the resulting page repeats only the `GET`, not the form submission. The submission key still protects against duplicate requests that reach the server before the redirect.
+
+For the complete native form flow, see the [Forms guide](./forms.md).
