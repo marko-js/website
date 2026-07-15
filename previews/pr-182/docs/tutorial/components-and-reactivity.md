@@ -1,0 +1,216 @@
+# Components and Reactivity
+
+> [!TLDR]
+>
+> We build a simple example which introduces tag variables, conditionals, and components
+
+In this tutorial, we're going to build an app for converting temperature between fahrenheit and celsius.
+
+## Introducing a Tag
+
+As with many user interfaces, our first step is to gather input from the user. We can do so with HTML's `<input>` tag:
+
+```marko
+<input type="number">
+```
+
+## Adding State
+
+Of course, right now we aren't keeping track of the value that this input contains. To do this, we need to introduce state. In Marko, the most common way to do this is with [tag variables](../reference/language.md#tag-variables). Here, we will use [Marko's `<let>` tag](../reference/core-tag.md#let):
+
+```marko
+<let/degF=80>
+
+<input type="number" value=degF>
+<div>It's ${degF}°F</div>
+```
+
+## Syncing State
+
+Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way you may think to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
+
+```marko
+// Warning: There's a better way to do this!
+<let/degF=80>
+
+<input type="number" value=degF onInput(e) {
+  degF = +e.target.value;
+}>
+<div>It's ${degF}°F</div>
+```
+
+This _seems_ to work at first glance, but you'll find out quickly that the value of the input isn't fully synchronized. This is because in HTML, `value=` actually refers to the [_default_ value](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#value) of the input and not its current value. This is why instead, we should leverage the [controllable](../reference/native-tag.md#change-handlers) pattern with `Change` handlers.
+
+```marko
+<let/degF=80>
+
+<input type="number" value=degF valueChange(value) { degF = parseFloat(value) }>
+<div>It's ${degF}°F</div>
+```
+
+Because this is such a common pattern, Marko provides a [shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) for it!
+
+```marko
+<let/degF=80>
+
+<input type="number" value:parseFloat:=degF>
+<div>It's ${degF}°F</div>
+```
+
+The `:=` binds `value` to `degF` and wires up the `valueChange` handler for us, and the function between the colons (`parseFloat`) is a [refining function](../reference/language.md#refining-function) that transforms each new value before it is assigned.
+
+## Adding Computed Values
+
+Now we can use [the `<const>` tag](../reference/core-tag.md#const) to convert to celsius!
+
+```marko
+<let/degF=80>
+<const/degC=(degF - 32) * 5 / 9>
+
+<input type="number" value:parseFloat:=degF>
+<div>
+  ${degF}°F ↔ ${degC.toFixed(1)}°C
+</div>
+```
+
+Since `degC` is a [tag variable](../reference/language.md#tag-variables), its changes also propagate every time `degF` is updated.
+
+## Using Conditionals
+
+Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
+
+```marko
+<let/degF=80>
+<const/degC=(degF - 32) * 5 / 9>
+
+<input type="number" value:parseFloat:=degF>
+<div>
+  ${degF}°F ↔ ${degC.toFixed(1)}°C
+</div>
+
+<if=(degF > 90)>
+  It's <strong>hot</strong> 🥵
+</if>
+<else if=(degF > 60)>
+  Lovely day! 😎
+</else>
+<else if=(degF < 32)>
+  Brrrrr 🥶
+</else>
+```
+
+## Adding Styles and Visualization
+
+Or what about a temperature gauge, with some fancy CSS? By default styles in a `.marko` file are globally scoped and loaded once, and the [Styling guide](../guide/styling.md) covers more options.
+
+```marko
+<let/degF=80>
+<const/degC=(degF - 32) * 5 / 9>
+
+<input type="number" value:parseFloat:=degF>
+<div>
+  ${degF}°F ↔ ${degC.toFixed(1)}°C
+</div>
+
+<div class="gauge">
+  <div class="needle" style={"--rotation": `${degF * 180 / 100}deg`}/>
+</div>
+
+<style>
+  .gauge {
+    position: relative;
+    width: 8rem;
+    height: 4rem;
+    border-radius: 4rem 4rem 0 0;
+    background: conic-gradient(from 270deg at 50% 100%, lightblue, blue, green, orange, red 180deg);
+  }
+
+  .needle {
+    position: absolute;
+    box-sizing: border-box;
+    width: 4rem;
+    height: 4px;
+    bottom: -2px;
+    background: black;
+    border: 1px solid white;
+    transform-origin: right;
+    transform: rotate(var(--rotation));
+  }
+</style>
+```
+
+## Creating Reusable Components
+
+Actually, this is getting a little bit too complex to all put in one place. Maybe we should pull that temperature gauge out into a component:
+
+```marko
+/* index.marko */
+<let/degF=80>
+<const/degC=(degF - 32) * 5 / 9>
+
+<input type="number" value:parseFloat:=degF>
+<div>
+  ${degF}°F ↔ ${degC.toFixed(1)}°C
+</div>
+
+<gauge temperature=degF/>
+```
+
+```marko
+/* tags/gauge.marko */
+<div class="gauge">
+  <div class="needle" style={"--rotation": `${input.temperature * 180 / 100}deg`}/>
+</div>
+
+<if=(input.temperature > 90)>
+  It's <strong>hot</strong> 🥵
+</if>
+<else if=(input.temperature > 60)>
+  Lovely day! 😎
+</else>
+<else if=(input.temperature < 32)>
+  Brrrrr 🥶
+</else>
+
+<style>
+  .gauge {
+    position: relative;
+    width: 8rem;
+    height: 4rem;
+    border-radius: 4rem 4rem 0 0;
+    background: conic-gradient(from 270deg at 50% 100%, lightblue, blue, green, orange, red 180deg);
+  }
+
+  .needle {
+    position: absolute;
+    box-sizing: border-box;
+    width: 4rem;
+    height: 4px;
+    bottom: -2px;
+    background: black;
+    border: 1px solid white;
+    transform-origin: right;
+    transform: rotate(var(--rotation));
+  }
+</style>
+```
+
+> [!IMPORTANT]
+> Make sure your `<gauge>` component file is in a `tags/` directory! Marko [auto-discovers](../reference/custom-tag.md#custom-tag-discovery) custom tags based on directory structure.
+
+<!-- markdownlint-disable MD026 allow exclamation point -->
+
+## Your Turn!
+
+That's all we're going to build for now, but feel free to add more! Here are some ideas:
+
+- How about a new temperature unit? Maybe Kelvin or [Delisle](https://en.wikipedia.org/wiki/Delisle_scale)?
+- Most of the world actually uses celsius 😅, maybe users should be able to pick which unit to start with
+- What about wind chill? Apparently there are [standard formulas](https://en.wikipedia.org/wiki/Wind_chill) if "wind velocity" is known
+- Converting between temperatures is cool, but this system _could_ be generalized. What if it converted between weights, volumes, or distances?
+- Anything else! The opportunities are limitless!
+
+## Next Steps
+
+- [Nested Reactivity](../explanation/nested-reactivity.md)
+- [Language Reference](../reference/language.md)
