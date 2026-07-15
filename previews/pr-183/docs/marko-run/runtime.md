@@ -181,6 +181,6 @@ express()
 
 ## Next Steps
 
-- [Data Loading](./data-loading.md)
+- [Vite Plugin](./vite-plugin.md)
 - [Adapters](./adapters.md)
 - [TypeScript](./typescript.md)

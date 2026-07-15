@@ -97,6 +97,5 @@ npm exec marko-run preview
 ## Next Steps
 
 - [File-based Routing](./file-based-routing.md)
-- [Validation](./validation.md)
-- [Data Loading](./data-loading.md)
+- [TypeScript](./typescript.md)
 - [Adapters](./adapters.md)

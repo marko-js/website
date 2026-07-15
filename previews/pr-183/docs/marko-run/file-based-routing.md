@@ -370,6 +370,6 @@ routes/
 
 ## Next Steps
 
+- [TypeScript](./typescript.md)
 - [Validation](./validation.md)
 - [Data Loading](./data-loading.md)
-- [Runtime](./runtime.md)
