@@ -3,6 +3,7 @@ import path from "path";
 import {
   Marked,
   type MarkedExtension,
+  Renderer,
   type Tokens,
   type TokensList,
 } from "marked";
@@ -291,6 +292,9 @@ function markoDocs(): MarkedExtension {
       }
     },
     renderer: {
+      table(token) {
+        return `<div class="table-scroll">${Renderer.prototype.table.call(this, token)}</div>`;
+      },
       code({ lang, text, html, concise, htmlTS, conciseTS, filename }) {
         let out = `<app-code-block lang="${lang}"`;
         if (filename) {
