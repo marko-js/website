@@ -1,2 +1,0 @@
-import{N as e}from"./_SzZ-0h8m.js";var t,n,r;function i(e){return function(i){return t.codeToHtml(i,{lang:e.g,defaultColor:!1,transformers:[r,n(e.$)],themes:{light:`marko-light`,dark:`marko-dark`},meta:{cursor:e.h,popovers:e.i}})}}e(`j0`,i);
-//# sourceMappingURL=_DQN9AFi8.js.map
