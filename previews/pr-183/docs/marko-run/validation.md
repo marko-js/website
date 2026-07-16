@@ -49,7 +49,7 @@ export const GET = Run.GET(
 );
 ```
 
-Function validators replace the value with whatever they return. Standard Schema validators produce a [`[value, issues]` tuple](#schema-results).
+Function validators replace the value with whatever they return. Standard Schema validators produce a [`[value, issues]` tuple](#standard-schema).
 
 Validators are lazy. `ctx.params` and `ctx.search` do not run their validators until the property is accessed. The first access runs the validator and caches the result for later reads. A request that never touches these properties never pays for their validation.
 
@@ -82,10 +82,10 @@ export const POST = Run.POST(
 
 Like `params` and `search`, `ctx.body` is lazy. The body is only read, parsed, and validated when the promise is consumed, meaning it is awaited or its `.then` method is called. A handler that rejects a request early does so without reading the body at all.
 
-Function validators resolve `ctx.body` to their return value. Standard Schema validators resolve it to a [`[value, issues]` tuple](#schema-results). With no validator, it resolves to the raw parsed body.
+Function validators resolve `ctx.body` to their return value. Standard Schema validators resolve it to a [`[value, issues]` tuple](#standard-schema). With no validator, it resolves to the raw parsed body. Requests exceeding the configured size limits below are rejected.
 
 > [!NOTE]
-> Requests exceeding the configured size limits below are rejected.
+> `ctx.body` is a promise, not a function. Read the parsed body with `await ctx.body`, there is nothing to call.
 
 ### `json`
 
@@ -109,14 +109,11 @@ Handles requests with an `application/x-www-form-urlencoded` or `multipart/form-
 | `maxFileBytes` | 1048576 (1MiB)            | Maximum size of each uploaded file in bytes        |
 | `onFile`       |                           | `(ctx, file) => any` called for each uploaded file |
 
-## Schema Results
+## Standard Schema
 
-When a validator is a Standard Schema, the validated value is a `[value, issues]` tuple. On success, `issues` is `undefined` and `value` is the parsed output. On failure, `value` is the raw input and `issues` describes the problems.
+When a validator is a Standard Schema, the validated result is a `[value, issues]` tuple. On success, `issues` is `undefined` and `value` holds the parsed output. On failure, `value` holds the raw input and `issues` describes each problem.
 
-In TypeScript this tuple is a discriminated union. The `issues` element must be checked before `value` narrows to the parsed type. Each read of the tuple narrows independently, so this check is required everywhere the result is used. That is simply how TypeScript narrowing works.
-
-> [!TIP]
-> Discriminate the tuple once in the handler and pass the narrowed data to the page with [`next`](./data-loading.md). The template then receives plain, already-validated values instead of repeating the `issues` check in both places.
+TypeScript treats the tuple as a discriminated union: checking `issues` is what narrows `value` to the parsed type. Narrowing applies to one read of the tuple at a time, so every place that uses the result needs its own check.
 
 ```ts
 export const POST = Run.POST({ form: signupSchema }, async (ctx, next) => {
@@ -127,6 +124,9 @@ export const POST = Run.POST({ form: signupSchema }, async (ctx, next) => {
   return next({ signup }); // downstream sees the narrowed type
 });
 ```
+
+> [!TIP]
+> Check `issues` once in the handler and pass the narrowed data to the page with [`next`](./data-loading.md). The template then receives already-validated values instead of repeating the check.
 
 ## Merging Options
 

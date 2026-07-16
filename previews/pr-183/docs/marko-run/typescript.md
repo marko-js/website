@@ -27,7 +27,7 @@ declare module "@marko/run" {
 ```
 
 > [!NOTE]
-> The previous `MarkoRun` global namespace and its types (`MarkoRun.Handler`, `MarkoRun.Context`, etc.) are deprecated. New code should use the `Run` namespace instead.
+> Declaring these interfaces only overrides the types. The values themselves must still be provided at runtime, for example by middleware that assigns properties to the context, or by the adapter for the platform.
 
 ## Generated Types
 

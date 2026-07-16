@@ -82,5 +82,6 @@ Marko's key features include:
 - [Validation](/docs/marko-run/validation.md): Validating params, search, and request bodies
 - [Data Loading](/docs/marko-run/data-loading.md): Passing data to pages and layouts
 - [Runtime](/docs/marko-run/runtime.md): Request context, typed URLs, and embedding the router
+- [CLI](/docs/marko-run/cli.md): Commands to develop, build, and preview
 - [Vite Plugin](/docs/marko-run/vite-plugin.md): Plugin options and configuration
 - [Adapters](/docs/marko-run/adapters.md): Deploying to different platforms
