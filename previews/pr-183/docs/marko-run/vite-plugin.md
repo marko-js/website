@@ -2,7 +2,7 @@
 
 Marko Run's Vite plugin discovers the application's [route files](./file-based-routing.md), generates the routing code, and registers the [`@marko/vite`](https://github.com/marko-js/vite) plugin to compile `.marko` files.
 
-Since Marko Run ships with a default Vite config, a config file is only needed when customizing behavior:
+Marko Run prefers convention over configuration. It ships with a default Vite config, routes live in `src/routes`, and [adapters](#adapter) are discovered automatically, so most applications never need a `vite.config` file at all. When one is needed, register the plugin and pass options there:
 
 ```ts
 import { defineConfig } from "vite";
@@ -15,18 +15,24 @@ export default defineConfig({
 
 ## Options
 
-Marko Run's Vite plugin accepts the following options, along with all options of the underlying `@marko/vite` plugin:
+Along with the options below, Marko Run's Vite plugin accepts all options of the underlying `@marko/vite` plugin.
 
-| Option            | Type     | Default         | Description                                                                                                                   |
-| ----------------- | -------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `routesDir`       | string   | src/routes      | Directory containing the [routable files](./file-based-routing.md#routable-files), relative to the Vite config                |
-| `adapter`         | Adapter  | discovered      | The [adapter](./adapters.md) used to develop, build, and deploy the application. Pass `null` to opt out of adapter discovery. |
-| `trailingSlashes` | string   | RedirectWithout | How the router treats trailing slashes in request paths (see [below](#trailing-slashes))                                      |
-| `emitRoutes`      | function |                 | Callback that receives the discovered routes whenever they are built, and may return a promise                                |
+### `routesDir`
 
-## Trailing Slashes
+The directory containing the [routable files](./file-based-routing.md#routable-files), relative to the Vite config file. Defaults to `src/routes`.
 
-Marko Run routes are canonically defined without trailing slashes. The `trailingSlashes` option controls how requests that end with one are treated:
+> [!WARNING]
+> Changing the routes directory is discouraged. The default is a convention shared across Marko Run projects, templates, and examples, so keeping it makes any project immediately familiar.
+
+### `adapter`
+
+The [adapter](./adapters.md) used to develop, build, and deploy the application.
+
+Adapters are discovered automatically by package name. The first dependency in `package.json` whose name starts with `@marko/run-adapter` or contains `marko-run-adapter` is used, and the default Node-based adapter applies when none is found. Installing an adapter package is therefore all most applications need. Set this option only to configure an adapter or choose between several installed ones, or pass `null` to opt out of adapter discovery.
+
+### `trailingSlashes`
+
+How the router treats trailing slashes in request paths. Marko Run routes are canonically defined without trailing slashes, and requests are matched against one of the following behaviors. Defaults to RedirectWithout.
 
 | Value             | Description                                                                     |
 | ----------------- | ------------------------------------------------------------------------------- |
