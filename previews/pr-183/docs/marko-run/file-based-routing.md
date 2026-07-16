@@ -134,7 +134,7 @@ for a `GET` request, it will be
 
 ```js
 {
-  name: "Get Name";
+  name: "Get Name"
 }
 ```
 
@@ -142,7 +142,7 @@ and for all other methods, including `PUT`, it will be the base object
 
 ```js
 {
-  name: "Default Name";
+  name: "Default Name"
 }
 ```
 

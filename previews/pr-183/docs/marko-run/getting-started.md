@@ -64,9 +64,9 @@ npm exec marko-run
 npm exec marko-run dev
 ```
 
-| Option         | Description                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------------- |
-| `-p`, `--port` | Port to listen on (defaults: `preview.port` in the Vite config, the `PORT` env variable, or 3000) |
+| Option         | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `-p`, `--port` | Port to listen on (defaults: `server.port` then `preview.port` in the Vite config, the `PORT` env variable, or 3000) |
 
 ### `build`
 
@@ -88,11 +88,11 @@ Creates a production build and starts a production-like server.
 npm exec marko-run preview
 ```
 
-| Option           | Description                                                                                          |
-| ---------------- | ---------------------------------------------------------------------------------------------------- |
-| `-o`, `--output` | Directory to serve files from, and write built files to (default: `build.outDir` in the Vite config) |
-| `-p`, `--port`   | Port the server should listen on (defaults: the `PORT` env variable or 3000)                         |
-| `-f`, `--file`   | Output file to start                                                                                 |
+| Option           | Description                                                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `-o`, `--output` | Directory to serve files from, and write built files to (default: `build.outDir` in the Vite config)                                |
+| `-p`, `--port`   | Port the server should listen on (defaults: `preview.port` then `server.port` in the Vite config, the `PORT` env variable, or 3000) |
+| `-f`, `--file`   | Output file to start                                                                                                                |
 
 ## Next Steps
 

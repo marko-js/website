@@ -155,20 +155,20 @@ import * as router from "@marko/run/router";
 
 express()
   .use((req, res, next) => {
-    req.match = router.match(req.method, req.path);
+    res.locals.match = router.match(req.method, req.path);
     next();
   })
 
-  // ...other middleware which can check `req.match`
+  // ...other middleware which can check `res.locals.match`
 
   .use(async (req, res, next) => {
-    if (!req.match) {
+    if (!res.locals.match) {
       next();
       return;
     }
 
     const request = createWHATWGRequest(req); // code to create a WHATWG Request from `req`
-    const response = await router.invoke(req.match, request, { req, res });
+    const response = await router.invoke(res.locals.match, request, { req, res });
 
     if (response) {
       applyResponse(response, res); // code to apply a WHATWG Response to `res`
