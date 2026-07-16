@@ -6,7 +6,7 @@ Marko Run is powered by [Vite](https://vitejs.dev/) and works with zero configur
 
 ## Using a Template
 
-Marko's CLI provides a variety of templates, many of which use Marko Run.
+Marko provides project templates through `npm init marko`, many of which use Marko Run.
 
 ```sh
 npm init marko
@@ -44,7 +44,7 @@ Marko Run requires just one dependency, whether starting fresh or adding it to a
 The application is now available at `http://localhost:3000` 🚀
 
 > [!NOTE]
-> No Vite config file is required. When one is needed, for example to apply an [adapter](./adapters.md), see [Marko Run's Vite plugin](./vite-plugin.md).
+> No Vite config file is required, and [adapters](./adapters.md) are discovered automatically by package name. When a config file is needed, for example to set plugin options or register additional Vite plugins, see [Marko Run's Vite plugin](./vite-plugin.md).
 
 ## CLI
 

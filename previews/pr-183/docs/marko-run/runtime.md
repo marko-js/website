@@ -81,8 +81,8 @@ All params, search values, and the hash are URI-encoded automatically.
 
 The full path checking relies on [generated types](./typescript.md#generated-types), so a TSConfig file must be present in the project root for `Run.href` to validate paths and params at compile time. The function still builds correct URLs without it.
 
-> [!TIP]
-> In client builds, Marko Run's Vite plugin rewrites statically analyzable `Run.href(...)` calls at compile time, so most calls cost nothing at runtime.
+> [!NOTE]
+> In client builds, Marko Run rewrites statically analyzable `Run.href(...)` calls at compile time, so most calls cost nothing at runtime.
 
 ## Embedding
 

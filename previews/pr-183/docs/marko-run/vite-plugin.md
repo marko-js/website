@@ -17,12 +17,12 @@ export default defineConfig({
 
 Marko Run's Vite plugin accepts the following options, along with all options of the underlying `@marko/vite` plugin:
 
-| Option            | Type       | Default           | Description                                                                                                                   |
-| ----------------- | ---------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `routesDir`       | `string`   | `src/routes`      | Directory containing the [routable files](./file-based-routing.md#routable-files), relative to the Vite config                |
-| `adapter`         | `Adapter`  | discovered        | The [adapter](./adapters.md) used to develop, build, and deploy the application. Pass `null` to opt out of adapter discovery. |
-| `trailingSlashes` | `string`   | `RedirectWithout` | How the router treats trailing slashes in request paths (see [below](#trailing-slashes))                                      |
-| `emitRoutes`      | `function` |                   | Callback that receives the discovered routes whenever they are built, and may return a promise                                |
+| Option            | Type     | Default         | Description                                                                                                                   |
+| ----------------- | -------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `routesDir`       | string   | src/routes      | Directory containing the [routable files](./file-based-routing.md#routable-files), relative to the Vite config                |
+| `adapter`         | Adapter  | discovered      | The [adapter](./adapters.md) used to develop, build, and deploy the application. Pass `null` to opt out of adapter discovery. |
+| `trailingSlashes` | string   | RedirectWithout | How the router treats trailing slashes in request paths (see [below](#trailing-slashes))                                      |
+| `emitRoutes`      | function |                 | Callback that receives the discovered routes whenever they are built, and may return a promise                                |
 
 ## Trailing Slashes
 
