@@ -27,7 +27,8 @@ export interface Input {
 <main>
   <h1>My Products</h1>
 
-  <${input.content}/> // render the nested page or layout here
+  // render the nested page or layout here
+  <${input.content}/>
 </main>
 ```
 
@@ -37,7 +38,7 @@ These files establish a route at the current directory path that can respond to 
 
 Typically, these will be `.js` or `.ts` files, depending on the project. Like pages, only one handler file may exist for any served path.
 
-Handlers are created with the global [`Run` namespace's](./typescript.md#run-namespace) verb helpers (`Run.GET`, `Run.POST`, etc.), which add [request validation, typed bodies](./validation.md), and [data loading](./data-loading.md):
+Handlers are created with the global [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, etc.), which add request validation, typed bodies, and [data loading](./data-loading.md):
 
 ```ts
 export const POST = Run.POST(async (ctx, next) => {
@@ -45,12 +46,6 @@ export const POST = Run.POST(async (ctx, next) => {
   return new Response("Successfully updated", { status: 200 });
 });
 ```
-
-Each verb export can be one of the following:
-
-- A handler function created with the matching `Run` verb helper
-- An array of handler functions, which are composed by calling them in order
-- A promise that resolves to a handler function or an array of handler functions
 
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
@@ -205,46 +200,54 @@ When the path `/about` is requested, the routable files execute in the following
 
 Within the routes directory, the directory structure determines the path from which the route is served. There are four types of directory names: **static**, **pathless**, **dynamic**, and **catch-all**.
 
-1. **Static directories** - The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, similar to a traditional file server. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
+### Static Directories
 
-   Examples:
+The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, similar to a traditional file server. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
 
-   ```text
-   /foo
-   /users
-   /projects
-   ```
+Examples:
 
-2. **Pathless directories** - These directories do **not** contribute their name to the route's served path. Directory names that start with an underscore (`_`) will be ignored when parsing the route.
+```text
+/foo
+/users
+/projects
+```
 
-   Examples:
+### Pathless Directories
 
-   ```text
-   /_users
-   /_public
-   ```
+These directories do **not** contribute their name to the route's served path. Directory names that start with an underscore (`_`) will be ignored when parsing the route.
 
-3. **Dynamic directories** - These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured, but it will be matched.
+Examples:
 
-   Examples:
+```text
+/_users
+/_public
+```
 
-   ```text
-   /$id
-   /$name
-   /$
-   ```
+### Dynamic Directories
 
-4. **Catch-all directories** - These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured, but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
+These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured, but it will be matched.
 
-   Because catch-all directories match any path segment and consume the rest of the path, route files cannot be nested inside them, and no further directories will be traversed.
+Examples:
 
-   Examples:
+```text
+/$id
+/$name
+/$
+```
 
-   ```text
-   /$$all
-   /$$rest
-   /$$
-   ```
+### Catch-all Directories
+
+These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured, but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
+
+Because catch-all directories match any path segment and consume the rest of the path, route files cannot be nested inside them, and no further directories will be traversed.
+
+Examples:
+
+```text
+/$$all
+/$$rest
+/$$
+```
 
 ## Flat Routes
 
@@ -295,7 +298,7 @@ routes/
   projects.$projectId+page.marko
 ```
 
-## Multiple Paths
+### Multiple Paths
 
 Along with describing multiple segments, flat route syntax supports defining routes that match more than one path. To describe a route that matches multiple paths, use a comma (`,`) and define each route.
 
@@ -314,7 +317,7 @@ routes/
     members,people+page.marko
 ```
 
-## Groups
+### Groups
 
 **Grouping** simplifies multiple paths further. Groups define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). With a group, the page above collapses back into a single file:
 
@@ -325,7 +328,7 @@ routes/
 
 This is a basic use of grouping, but groups can be nested and combined as needed.
 
-## Optional Segments
+### Optional Segments
 
 Introducing an empty segment or pathless segment along with another value makes that segment optional. For example, a page that matches both `/projects` and `/projects/home` can be created with a flat route that optionally matches `home`
 

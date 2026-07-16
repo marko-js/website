@@ -15,7 +15,7 @@ export default defineConfig({
 
 ## Options
 
-Along with the options below, Marko Run's Vite plugin accepts all options of the underlying `@marko/vite` plugin.
+Along with the options below, Marko Run's Vite plugin accepts all options of the underlying [`@marko/vite`](https://github.com/marko-js/vite) plugin.
 
 ### `routesDir`
 

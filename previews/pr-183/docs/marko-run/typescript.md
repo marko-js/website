@@ -4,7 +4,7 @@ Marko Run is designed to be used with TypeScript. Route files get typed request 
 
 ## Run Namespace
 
-`@marko/run` provides a global namespace `Run`, available in route files without any imports. At runtime it exposes the [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, ..., `Run.ALL`) and [`Run.href`](./runtime.md#typed-urls). In TypeScript it also provides:
+Marko Run provides a global namespace `Run`, available in route files without any imports. At runtime it exposes the [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, ..., `Run.ALL`) and [`Run.href`](./runtime.md#typed-urls). In TypeScript it also provides:
 
 **`Run.Context`** - Type of the request context object in a handler and `$global` in Marko files. This type can be extended using TypeScript's module and interface merging by declaring a `Context` interface on the `@marko/run` module within the application code:
 

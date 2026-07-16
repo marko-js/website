@@ -1,6 +1,6 @@
 # Getting Started
 
-Marko Run (`@marko/run`) is the application framework for Marko. It turns a directory of Marko templates into a full web application with [file-based routing](./file-based-routing.md), nested layouts, middleware, streaming server-side rendering, and [adapters](./adapters.md) for deploying to different platforms.
+Marko Run ([`@marko/run`](https://github.com/marko-js/run)) is the application framework for Marko. It turns a directory of Marko templates into a full web application with [file-based routing](./file-based-routing.md), nested layouts, middleware, streaming server-side rendering, and [adapters](./adapters.md) for deploying to different platforms.
 
 Marko Run is powered by [Vite](https://vitejs.dev/) and works with zero configuration. The package ships with a default Vite config and a Node-based adapter, so a single `+page.marko` file is enough to serve an application.
 
