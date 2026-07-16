@@ -27,7 +27,7 @@ declare module "@marko/run" {
 ```
 
 > [!NOTE]
-> Declaring these interfaces only overrides the types. The values themselves must still be provided at runtime, for example by middleware that assigns properties to the context, or by the adapter for the platform.
+> Reserve the `Context` interface for application-wide properties that every route can rely on, like a database connection or session helper. For route-specific values, prefer [data loading](./data-loading.md) via `next`, which types the data per route automatically.
 
 ## Generated Types
 
