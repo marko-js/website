@@ -52,6 +52,7 @@
     "optgroup",
     "popovertarget",
     "recents",
+    "Referer",
     "renderable",
     "renderId",
     "reorder",
@@ -70,6 +71,7 @@
     "tsrx",
     "TTFB",
     "unitless",
+    "vite",
     "webkitdirectory",
     "webp",
     "WHATWG"

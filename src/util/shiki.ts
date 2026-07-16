@@ -8,11 +8,12 @@ import js from "@shikijs/langs/javascript";
 import json from "@shikijs/langs/json";
 import marko from "@shikijs/langs/marko";
 import sh from "@shikijs/langs/shellscript";
+import toml from "@shikijs/langs/toml";
 import ts from "@shikijs/langs/typescript";
 import { dark, light } from "./shiki-theme";
 
 export default await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/wasm")),
   themes: [dark, light],
-  langs: [css, html, xml, js, json, marko, sh, ts],
+  langs: [css, html, xml, js, json, marko, sh, toml, ts],
 });

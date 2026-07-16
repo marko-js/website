@@ -1,94 +1,101 @@
 # Getting Started
 
-Marko Run is a framework for building web applications with Marko. This is a _meta_-framework for Marko, similar to Next.js or Remix for React, SvelteKit for Svelte, and Nuxt for Vue.
+Marko Run ([`@marko/run`](https://github.com/marko-js/run)) is the application framework for Marko. It turns a directory of Marko templates into a full web application with [file-based routing](./file-based-routing.md), nested layouts, middleware, streaming server-side rendering, and [adapters](./adapters.md) for deploying to different platforms.
 
-Marko Run is powered by Vite, a fast and modern build tool that provides a great developer experience. It is designed to be easy to use and flexible, allowing developers to build applications with Marko quickly and efficiently.
+Marko Run is powered by [Vite](https://vitejs.dev/) and works with zero configuration. The package ships with a default Vite config and a Node-based adapter, so a single `+page.marko` file is enough to serve an application.
 
 ## Using a Template
 
-Marko's CLI provides a variety of templates to get started with Marko, many of which use Marko Run.
+Marko provides project templates through `npm init marko`, many of which use Marko Run.
 
 ```sh
 npm init marko
 ```
 
-## Starting from Zero
-
-The smallest possible Marko Run project requires just a few files.
+After choosing a template and project name:
 
 ```sh
-npm init
-npm install @marko/run
+cd PROJECT_NAME
+npm run dev
 ```
 
-## Adding to an Existing Project
+## Manual Setup
 
-Marko Run can be added to an existing Marko project by installing the package.
+Marko Run requires just one dependency, whether starting fresh or adding it to an existing Marko project.
 
-```sh
-npm install @marko/run
-```
-
-## Zero Config Setup
-
-`marko-run` enables quick project initialization with minimal configuration. The package ships with a default Vite config and node-based adapter.
-
-Starting with a template:
-
-1. Create a new project
+1. Install the package
 
    ```sh
-   npm init marko -- -t basic
+   npm install @marko/run
    ```
 
-2. Navigate to project directory
+2. Create the first page at `src/routes/+page.marko`
+
+   ```marko
+   <h1>Hello Marko Run</h1>
+   ```
+
+3. Start the development server
 
    ```sh
-   cd PROJECT_NAME
+   npm exec marko-run
    ```
 
-3. Start development server
+The application is now available at `http://localhost:3000` 🚀
 
-   ```sh
-   npm run dev
-   ```
+> [!NOTE]
+> No Vite config file is required, and [adapters](./adapters.md) are discovered automatically by package name. When a config file is needed, for example to set plugin options or register additional Vite plugins, see [Marko Run's Vite plugin](./vite-plugin.md).
 
-Manual project setup:
+## CLI
 
-1. Install the required package: `npm install @marko/run`
-2. Create the entry file: `src/routes/+page.marko`
-3. Start the development server: `npm exec marko-run`
+The `marko-run` CLI has three commands: `dev`, `build`, and `preview`. All commands accept these options:
 
-The application will be available at `http://localhost:3000` 🚀
+| Option           | Description                                                                                                                      |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `-c`, `--config` | Path to a Vite config file (by default, looks for a `vite.config` file with a `.js`, `.cjs`, `.mjs`, `.ts`, or `.mts` extension) |
+| `-e`, `--env`    | Path to a dotenv file                                                                                                            |
 
-## CLI Commands
+### `dev`
 
-### `marko-run dev`
-
-Starts a development server in watch mode
+Starts a development server in watch mode. This is the default command, so both of the following are equivalent:
 
 ```sh
 npm exec marko-run
-```
-
-or (with explicit sub command)
-
-```sh
 npm exec marko-run dev
 ```
 
-### `marko-run build`
+| Option         | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `-p`, `--port` | Port to listen on (defaults: `server.port` then `preview.port` in the Vite config, the `PORT` env variable, or 3000) |
 
-Creates a production build
+### `build`
+
+Creates a production build.
 
 ```sh
 npm exec marko-run build
 ```
 
-### `marko-run preview`
+| Option           | Description                                                                 |
+| ---------------- | --------------------------------------------------------------------------- |
+| `-o`, `--output` | Directory to write built files (default: `build.outDir` in the Vite config) |
 
-Creates a production build and start the preview server
+### `preview`
+
+Creates a production build and starts a production-like server.
 
 ```sh
 npm exec marko-run preview
 ```
+
+| Option           | Description                                                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `-o`, `--output` | Directory to serve files from, and write built files to (default: `build.outDir` in the Vite config)                                |
+| `-p`, `--port`   | Port the server should listen on (defaults: `preview.port` then `server.port` in the Vite config, the `PORT` env variable, or 3000) |
+| `-f`, `--file`   | Output file to start                                                                                                                |
+
+## Next Steps
+
+- [File-based Routing](./file-based-routing.md)
+- [TypeScript](./typescript.md)
+- [Adapters](./adapters.md)
