@@ -27,7 +27,7 @@ declare module "@marko/run" {
 ```
 
 > [!NOTE]
-> The previous `MarkoRun` global namespace and its types (`MarkoRun.Handler`, `MarkoRun.Context`, etc.) are deprecated. New code should use the `Run` namespace instead.
+> Reserve the `Context` interface for application-wide properties that every route can rely on, like a database connection or session helper. For route-specific values, prefer [data loading](./data-loading.md) via `next`, which types the data per route automatically.
 
 ## Generated Types
 

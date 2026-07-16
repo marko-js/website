@@ -152,4 +152,4 @@ An adapter is an object implementing the `Adapter` interface from `@marko/run/vi
 
 - [Vite Plugin](./vite-plugin.md)
 - [Runtime](./runtime.md#embedding)
-- [Getting Started](./getting-started.md#cli)
+- [CLI](./cli.md)
