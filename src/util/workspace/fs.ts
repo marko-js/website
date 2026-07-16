@@ -19,14 +19,16 @@ export class FileSystem {
   }
   readdirSync(dirname: string) {
     const dir = toDirname(dirname);
-    const entries: string[] = [];
+    const entries = new Set<string>();
     for (const file in this.files) {
       if (file.startsWith(dir)) {
-        entries.push(file.slice(dir.length));
+        const rel = file.slice(dir.length);
+        const sep = rel.indexOf("/");
+        entries.add(sep === -1 ? rel : rel.slice(0, sep));
       }
     }
 
-    return entries;
+    return [...entries];
   }
 }
 

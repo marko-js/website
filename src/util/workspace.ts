@@ -6,6 +6,7 @@ import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
 import WritableDOMStream from "writable-dom";
 
 import { cdnPlugin } from "./workspace/cdn-plugin";
+import { fetchNodeModules } from "./workspace/npm";
 import { cssPlugin } from "./workspace/css-plugin";
 import { mainPlugin } from "./workspace/main-plugin";
 import { markoPlugin } from "./workspace/marko-plugin";
@@ -46,7 +47,9 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-const rootDir = "/tags/";
+const projectDir = "/app";
+export const packageJsonPath = `${projectDir}/package.json`;
+const rootDir = `${projectDir}/tags/`;
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args
@@ -142,10 +145,21 @@ export async function update(
     logs: [],
   });
   for (const file of files) {
-    fs.files[rootDir + file.path] = file.content;
+    fs.files[
+      file.path === "package.json" ? packageJsonPath : rootDir + file.path
+    ] = file.content;
   }
 
   try {
+    const packageJson = fs.files[packageJsonPath];
+    if (packageJson) {
+      const nodeModules = await fetchNodeModules(packageJson, signal);
+      if (signal.aborted) return;
+      for (const path in nodeModules) {
+        fs.files[projectDir + path] = nodeModules[path];
+      }
+    }
+
     const serverBuild = (async function buildServer() {
       const file = "server.js";
       const build = await rollup({
@@ -160,7 +174,7 @@ export async function update(
             browser: false,
           }),
           cssPlugin({ browser: false }),
-          cdnPlugin(),
+          cdnPlugin({ ws }),
           minifyScriptPlugin(),
         ],
       });
@@ -211,7 +225,7 @@ export async function update(
           }),
           markoPlugin({ ws, browser: true }),
           cssPlugin({ browser: true }),
-          cdnPlugin(),
+          cdnPlugin({ ws }),
           minifyScriptPlugin(),
         ],
       });

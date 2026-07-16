@@ -8,6 +8,7 @@ import runtimeDebugDOM from "marko/debug/dom?raw";
 import runtimeDebugHTML from "marko/debug/html?raw";
 
 import type { Workspace } from "../workspace";
+import { setResolveFileSystem } from "./modules-shim";
 
 declare module "../workspace" {
   interface Workspace {
@@ -44,6 +45,7 @@ export interface MarkoPluginOptions {
 }
 export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   const { fs, optimize } = ws;
+  setResolveFileSystem(fs);
   let optimizeKnownTemplates = knownTemplatesForWS.get(ws);
   if (!optimizeKnownTemplates) {
     cache.clear();
@@ -80,12 +82,14 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
 
   for (const file of optimizeKnownTemplates) {
-    const { code, map } = compiler.compileSync(
-      fs.files[file],
-      file,
-      baseConfig,
-    );
-    compiled[file] = { code, map };
+    if (!file.includes("/node_modules/")) {
+      const { code, map } = compiler.compileSync(
+        fs.files[file],
+        file,
+        baseConfig,
+      );
+      compiled[file] = { code, map };
+    }
   }
 
   return {
@@ -118,6 +122,15 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
             code: compiled.code,
             map: compiled.map,
           };
+        }
+
+        if (!compiled[id]) {
+          const { code: compiledCode, map } = compiler.compileSync(
+            code,
+            id,
+            baseConfig,
+          );
+          compiled[id] = { code: compiledCode, map };
         }
 
         return compiled[id];
