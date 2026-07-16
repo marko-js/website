@@ -169,13 +169,16 @@ main {
     margin: 3rem 0;
   }
 
-  table {
+  :global(.table-scroll) {
     margin: 2rem 0;
-    border-collapse: collapse;
-    border: 1px solid var(--section-color);
     border-radius: 1rem;
-    overflow: hidden;
-    display: block;
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    display: table;
+    width: 100%;
 
     thead {
       border-bottom: 1px solid var(--section-color);
@@ -183,6 +186,10 @@ main {
 
     th {
       font-weight: 500;
+
+      &:not([align]) {
+        text-align: start;
+      }
     }
 
     thead,
