@@ -118,8 +118,11 @@ jobs:
           for attempt in $(seq 1 30); do
             if [ -z "$id" ]; then
               # Query by exact commit SHA; the legacy /pages/builds/latest endpoint
-              # isn't a reliable per-commit signal.
-              id=$(gh_api "${api}/deployments?sha=${sha}&environment=github-pages" | jq -r '.[0].id // empty')
+              # isn't a reliable per-commit signal. The `|| true` keeps a non-JSON
+              # response (e.g. an HTML 503 page during an API incident) from failing
+              # the step under the runner's default `bash -e`, which would otherwise
+              # defeat this retry loop; a bad response just counts as "not yet".
+              id=$(gh_api "${api}/deployments?sha=${sha}&environment=github-pages" | jq -r '.[0].id // empty' || true)
               if [ -z "$id" ]; then
                 echo "No GitHub Pages deployment recorded yet for ${sha} (attempt ${attempt}/30)..."
                 sleep 10
@@ -127,7 +130,7 @@ jobs:
               fi
             fi
 
-            state=$(gh_api "${api}/deployments/${id}/statuses" | jq -r '.[0].state // empty')
+            state=$(gh_api "${api}/deployments/${id}/statuses" | jq -r '.[0].state // empty' || true)
 
             if [ "$state" = "success" ]; then
               echo "GitHub Pages deployment for ${sha} succeeded."
