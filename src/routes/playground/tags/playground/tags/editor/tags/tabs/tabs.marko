@@ -25,7 +25,7 @@ div class=styles.tabs
         ,tabindex=0
         ,role="button"
         ,onClick() {
-          if (isSelected && !isEditing) {
+          if (isSelected && isEditable && !isEditing) {
             editingIndex = i;
           } else if (!isEditing) {
             selected = i;
@@ -33,7 +33,7 @@ div class=styles.tabs
         }
         ,onKeyDown(e, el) {
           if (e.target === el && (e.key === " " || e.key === "Enter")) {
-            if (isSelected && !isEditing) {
+            if (isSelected && isEditable && !isEditing) {
               editingIndex = i;
             } else if (!isEditing) {
               selected = i;
