@@ -255,12 +255,31 @@ function docsBanner(
   ]);
 }
 
-function defaultBanner(logo: string): Element {
+function defaultBanner(logo: string, suffix?: string): Element {
   return frame("#00CFFB", [
     { type: "div", props: { style: { display: "flex" } } },
     {
-      type: "img",
-      props: { src: logo, width: 560, height: 115 },
+      type: "div",
+      props: {
+        style: { display: "flex", flexDirection: "column", gap: 96 },
+        children: [
+          {
+            type: "img",
+            props: { src: logo, width: 560, height: 115 },
+          },
+          ...(suffix
+            ? [
+                {
+                  type: "div",
+                  props: {
+                    style: { fontSize: 96, fontWeight: 700, lineHeight: 1 },
+                    children: suffix,
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
     },
     {
       type: "div",
@@ -298,7 +317,7 @@ export async function renderDocsBanner(title: string, section: string) {
   return render(docsBanner(title, section, logomark, widget));
 }
 
-export async function renderDefaultBanner() {
+export async function renderDefaultBanner(suffix?: string) {
   const { logo } = await loadAssets();
-  return render(defaultBanner(logo));
+  return render(defaultBanner(logo, suffix));
 }
