@@ -1,10 +1,10 @@
 import type { Plugin } from "@rollup/browser";
 
-export function cdnPlugin({
-  versions,
-}: {
+export interface CDNPluginOptions {
   versions: Record<string, string>;
-}): Plugin {
+}
+
+export function cdnPlugin({ versions }: CDNPluginOptions): Plugin {
   return {
     name: "cdn",
     async resolveId(id, importer, opts) {

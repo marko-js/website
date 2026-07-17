@@ -80,6 +80,8 @@ async function materialize(
   const isMarko = !!(meta.peerDependencies?.marko || meta.dependencies?.marko);
   if (markoOnly && !isMarko) return;
 
+  // Rechecked after the await: a concurrent branch may have claimed this
+  // package while the packument was loading.
   if (seen.has(name)) return;
   seen.add(name);
   if (seen.size > MAX_PACKAGES) {
