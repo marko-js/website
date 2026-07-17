@@ -4,6 +4,7 @@ import validRange from "semver/ranges/valid";
 const MAX_PACKAGES = 32;
 const MAX_FILE_SIZE = 1024 * 1024;
 const MAX_PACKAGE_SIZE = 12 * 1024 * 1024;
+const MAX_TARBALL_SIZE = 32 * 1024 * 1024;
 
 const providedPackages = new Set(["marko", "@marko/compiler", "@marko/run"]);
 const validPackageName =
@@ -26,9 +27,16 @@ const decoder = new TextDecoder();
 const packumentCache = new Map<string, Promise<Packument>>();
 const tarballCache = new Map<string, Promise<Record<string, string>>>();
 
-export async function fetchNodeModules(
-  packageJsonSource: string,
-): Promise<Record<string, string>> {
+interface Materialization {
+  files: Record<string, string>;
+  versions: Record<string, string>;
+  seen: Set<string>;
+}
+
+export async function fetchNodeModules(packageJsonSource: string): Promise<{
+  files: Record<string, string>;
+  versions: Record<string, string>;
+}> {
   let pkg: {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
@@ -40,8 +48,7 @@ export async function fetchNodeModules(
     throw new Error(`Could not parse package.json: ${(err as Error).message}`);
   }
 
-  const entries: Record<string, string> = {};
-  const seen = new Set<string>();
+  const ctx: Materialization = { files: {}, versions: {}, seen: new Set() };
   const deps = {
     ...pkg.peerDependencies,
     ...pkg.devDependencies,
@@ -49,21 +56,19 @@ export async function fetchNodeModules(
   };
 
   await Promise.all(
-    Object.entries(deps).map(([name, range]) =>
-      materialize(entries, seen, name, range),
-    ),
+    Object.entries(deps).map(([name, range]) => materialize(ctx, name, range)),
   );
 
-  return entries;
+  return ctx;
 }
 
 async function materialize(
-  entries: Record<string, string>,
-  seen: Set<string>,
+  ctx: Materialization,
   name: string,
   range: string,
   markoOnly = false,
 ): Promise<void> {
+  const { files, versions, seen } = ctx;
   if (providedPackages.has(name) || seen.has(name)) return;
   if (!validPackageName.test(name)) {
     throw new Error(`Invalid package name in package.json: "${name}"`);
@@ -71,9 +76,11 @@ async function materialize(
 
   const packument = await loadPackument(name);
   const meta = packument.versions[pickVersion(name, range, packument)];
+  versions[name] ??= meta.version;
   const isMarko = !!(meta.peerDependencies?.marko || meta.dependencies?.marko);
   if (markoOnly && !isMarko) return;
 
+  if (seen.has(name)) return;
   seen.add(name);
   if (seen.size > MAX_PACKAGES) {
     throw new Error(
@@ -82,19 +89,19 @@ async function materialize(
   }
 
   if (isMarko) {
-    const files = await loadTarball(name, meta, includedFile);
-    if ("/marko.json" in files) {
-      for (const file in files) {
-        entries[`/node_modules/${name}${file}`] ??= files[file];
+    const pkgFiles = await loadTarball(name, meta, includedFile);
+    if ("/marko.json" in pkgFiles) {
+      for (const file in pkgFiles) {
+        files[`/node_modules/${name}${file}`] = pkgFiles[file];
       }
 
       await Promise.all([
         ...Object.entries(meta.dependencies || {}).map(([depName, depRange]) =>
-          materialize(entries, seen, depName, depRange, true).catch(() => {}),
+          materialize(ctx, depName, depRange, true).catch(() => {}),
         ),
         ...Object.entries(meta.peerDependencies || {}).map(
           ([depName, depRange]) =>
-            materialize(entries, seen, depName, depRange).catch(() => {}),
+            materialize(ctx, depName, depRange).catch(() => {}),
         ),
       ]);
     }
@@ -103,10 +110,10 @@ async function materialize(
   }
 
   try {
-    const files = await loadTarball(name, meta, styleFile);
-    if (Object.keys(files).some((file) => file !== "/package.json")) {
-      for (const file in files) {
-        entries[`/node_modules/${name}${file}`] ??= files[file];
+    const pkgFiles = await loadTarball(name, meta, styleFile);
+    if (Object.keys(pkgFiles).some((file) => file !== "/package.json")) {
+      for (const file in pkgFiles) {
+        files[`/node_modules/${name}${file}`] = pkgFiles[file];
       }
     }
   } catch {}
@@ -147,6 +154,9 @@ function loadTarball(name: string, meta: VersionMeta, filter: RegExp) {
     const res = await fetch(meta.dist.tarball);
     if (!res.ok) {
       throw new Error(`Could not download npm package ${key}`);
+    }
+    if (+(res.headers.get("content-length") || 0) > MAX_TARBALL_SIZE) {
+      throw new Error(`npm package ${key} is too large for the playground.`);
     }
     const gzipped = res.body!.pipeThrough(new DecompressionStream("gzip"));
     const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());

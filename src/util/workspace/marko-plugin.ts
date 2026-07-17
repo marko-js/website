@@ -96,6 +96,9 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
     resolveId(id, importer) {
       const tagName = importer && /^<([^>]+)>$/.exec(id)?.[1];
       if (tagName) {
+        // Rebound per hook since a newer workspace build may have pointed the
+        // shared resolver at its own file system in the meantime.
+        setResolveFileSystem(fs);
         const tagDef = compiler.taglib
           .buildLookup(importer.slice(0, importer.lastIndexOf("/")))
           .getTag(tagName);
@@ -115,6 +118,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
       }
 
       if (isMarkoFile(id)) {
+        setResolveFileSystem(fs);
         if (suffix === "?hydrate") {
           const compiled = compiler.compileSync(code, id, hydrateConfig);
           return {

@@ -48,7 +48,7 @@ export interface Workspace {
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
 const projectDir = "/app";
-export const packageJsonPath = `${projectDir}/package.json`;
+const packageJsonPath = `${projectDir}/package.json`;
 const rootDir = `${projectDir}/tags/`;
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
@@ -150,13 +150,15 @@ export async function update(
     ] = file.content;
   }
 
+  let versions: Record<string, string> = {};
   try {
     const packageJson = fs.files[packageJsonPath];
     if (packageJson) {
       const nodeModules = await fetchNodeModules(packageJson);
       if (signal.aborted) return;
-      for (const path in nodeModules) {
-        fs.files[projectDir + path] = nodeModules[path];
+      versions = nodeModules.versions;
+      for (const path in nodeModules.files) {
+        fs.files[projectDir + path] = nodeModules.files[path];
       }
     }
 
@@ -174,7 +176,7 @@ export async function update(
             browser: false,
           }),
           cssPlugin({ browser: false }),
-          cdnPlugin({ ws }),
+          cdnPlugin({ versions }),
           minifyScriptPlugin(),
         ],
       });
@@ -225,7 +227,7 @@ export async function update(
           }),
           markoPlugin({ ws, browser: true }),
           cssPlugin({ browser: true }),
-          cdnPlugin({ ws }),
+          cdnPlugin({ versions }),
           minifyScriptPlugin(),
         ],
       });

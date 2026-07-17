@@ -129,6 +129,20 @@ div class=styles.tabs
       }
       ,class=styles.templateButton -- New Blank File
 
+    for|{ name, content }| of=EXAMPLE_TEMPLATES
+      button
+        ,role="menuitem"
+        ,onClick() {
+          selected = tabs.length;
+          let path = name + ".marko";
+          for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
+            path = name + "-" + i + ".marko";
+          }
+          tabs = [...tabs, { path, content }];
+          document.querySelector<HTMLElement>(".cm-content")?.focus();
+        }
+        ,class=styles.templateButton -- ${`<${name}>`}
+
     if=!tabs.some((tab) => tab.path === "package.json")
       button
         ,role="menuitem"
@@ -145,17 +159,3 @@ div class=styles.tabs
           document.querySelector<HTMLElement>(".cm-content")?.focus();
         }
         ,class=styles.templateButton -- package.json
-
-    for|{ name, content }| of=EXAMPLE_TEMPLATES
-      button
-        ,role="menuitem"
-        ,onClick() {
-          selected = tabs.length;
-          let path = name + ".marko";
-          for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
-            path = name + "-" + i + ".marko";
-          }
-          tabs = [...tabs, { path, content }];
-          document.querySelector<HTMLElement>(".cm-content")?.focus();
-        }
-        ,class=styles.templateButton -- ${`<${name}>`}

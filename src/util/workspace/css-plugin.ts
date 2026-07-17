@@ -12,9 +12,16 @@ const relativeImport =
 
 function hoistImports(code: string) {
   let jsCode = "";
-  code = code.replace(relativeImport, (_, spec) => {
+  // Comparing against a copy with comments blanked out skips matches inside
+  // comments, and replacing with same-length whitespace keeps later sourcemap
+  // offsets aligned.
+  const uncommented = code.replace(/\/\*[\s\S]*?\*\//g, (comment) =>
+    " ".repeat(comment.length),
+  );
+  code = code.replace(relativeImport, (match, spec, index: number) => {
+    if (!uncommented.startsWith(match, index)) return match;
     jsCode += `import ${JSON.stringify(spec)};\n`;
-    return "";
+    return " ".repeat(match.length);
   });
   return { code, jsCode };
 }

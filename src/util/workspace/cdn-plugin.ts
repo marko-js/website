@@ -1,22 +1,10 @@
 import type { Plugin } from "@rollup/browser";
 
-import { packageJsonPath, type Workspace } from "../workspace";
-
-const simpleRange = /^[\^~]?\d[\w.\-+]*$/;
-
-export function cdnPlugin({ ws: { fs } }: { ws: Workspace }): Plugin {
-  let deps: Record<string, string> | undefined;
-  try {
-    const pkg = JSON.parse(fs.files[packageJsonPath] || "{}");
-    deps = {
-      ...pkg.peerDependencies,
-      ...pkg.devDependencies,
-      ...pkg.dependencies,
-    };
-  } catch {
-    deps = undefined;
-  }
-
+export function cdnPlugin({
+  versions,
+}: {
+  versions: Record<string, string>;
+}): Plugin {
   return {
     name: "cdn",
     async resolveId(id, importer, opts) {
@@ -33,11 +21,9 @@ export function cdnPlugin({ ws: { fs } }: { ws: Workspace }): Plugin {
         const [, name, subpath = ""] = /^(@[^/]+\/[^/]+|[^/]+)(\/.*)?$/.exec(
           id,
         )!;
-        const range = deps?.[name];
+        const version = versions[name];
         return {
-          id: `https://esm.sh/${
-            range && simpleRange.test(range) ? `${name}@${range}${subpath}` : id
-          }?bundle`,
+          id: `https://esm.sh/${version ? `${name}@${version}${subpath}` : id}?bundle`,
           external: true,
         };
       }
