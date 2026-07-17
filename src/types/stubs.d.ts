@@ -3,23 +3,6 @@ declare module "@ebay/browserslist-config" {
   export default config;
 }
 
-declare module "semver/ranges/max-satisfying" {
-  const maxSatisfying: (
-    versions: readonly string[],
-    range: string,
-    options?: { loose?: boolean; includePrerelease?: boolean },
-  ) => string | null;
-  export default maxSatisfying;
-}
-
-declare module "semver/ranges/valid" {
-  const validRange: (
-    range: string,
-    options?: { loose?: boolean; includePrerelease?: boolean },
-  ) => string | null;
-  export default validRange;
-}
-
 declare module "@marko/compiler/modules" {
   const modules: {
     cwd: string;
