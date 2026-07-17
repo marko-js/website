@@ -67,7 +67,8 @@ export default function markodownPlugin(): PluginOption {
             buildDocsBanner(docsPath, file, ogFile, headings[0].title),
           ]);
         }),
-        buildDefaultBanner(),
+        buildDefaultBanner("default"),
+        buildDefaultBanner("playground", "Playground"),
         pruneDocsBanners(mdFiles),
         buildSearchIndex(docsPath),
       ]);
@@ -115,11 +116,13 @@ async function buildDocsBanner(
   }
 }
 
-async function buildDefaultBanner() {
-  const target = path.join(process.cwd(), "public", "og", "default.png");
-  if (await isStale(target, bannerModule(), ...defaultBannerSources())) {
+async function buildDefaultBanner(name: string, suffix?: string) {
+  // this module is a source too since it provides the suffix
+  const self = path.join(process.cwd(), "src", "util", "markodown.ts");
+  const target = path.join(process.cwd(), "public", "og", `${name}.png`);
+  if (await isStale(target, bannerModule(), self, ...defaultBannerSources())) {
     await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, await renderDefaultBanner());
+    await fs.writeFile(target, await renderDefaultBanner(suffix));
   }
 }
 

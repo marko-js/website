@@ -1,4 +1,5 @@
 {
   "pageTitle": "Playground",
-  "hideFooter": true
+  "hideFooter": true,
+  "ogImage": "/og/playground.png"
 }
