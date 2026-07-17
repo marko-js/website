@@ -117,8 +117,7 @@ export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
     name: "css",
     async transform(rawCode, id) {
       if (id.endsWith(".css")) {
-        const { code, jsCode: hoisted } = hoistImports(rawCode);
-        let jsCode = hoisted;
+        let { code, jsCode } = hoistImports(rawCode);
         if (id.endsWith(".module.css")) {
           await initOnce();
           const result = transform({

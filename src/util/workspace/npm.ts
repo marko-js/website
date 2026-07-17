@@ -31,7 +31,6 @@ const tarballCache = new Map<string, Promise<Record<string, string>>>();
 
 export async function fetchNodeModules(
   packageJsonSource: string,
-  signal: AbortSignal,
 ): Promise<Record<string, string>> {
   let pkg: {
     dependencies?: Record<string, string>;
@@ -58,7 +57,6 @@ export async function fetchNodeModules(
     ),
   );
 
-  if (signal.aborted) return {};
   return entries;
 }
 
@@ -115,43 +113,19 @@ async function materialize(
           ),
         ]);
       }
-      return;
     }
 
-    mergeStyles(entries, name, files);
     return;
   }
 
   try {
-    mergeStyles(
-      entries,
-      name,
-      await loadTarball(name, meta, styleFile, "#style"),
-    );
-  } catch {
-    return;
-  }
-}
-
-function mergeStyles(
-  entries: Record<string, string>,
-  name: string,
-  files: Record<string, string>,
-) {
-  let hasCSS = false;
-  for (const file in files) {
-    if (file.endsWith(".css")) {
-      hasCSS = true;
-      break;
+    const files = await loadTarball(name, meta, styleFile);
+    if (Object.keys(files).some((file) => file !== "/package.json")) {
+      for (const file in files) {
+        entries[`/node_modules/${name}${file}`] ??= files[file];
+      }
     }
-  }
-  if (!hasCSS) return;
-
-  for (const file in files) {
-    if (file.endsWith(".css") || file === "/package.json") {
-      entries[`/node_modules/${name}${file}`] ??= files[file];
-    }
-  }
+  } catch {}
 }
 
 function dependsOnMarko(meta: VersionMeta) {
@@ -164,13 +138,12 @@ function pickVersion(name: string, range: string, packument: Packument) {
 
   if (distTags[wanted]) return distTags[wanted];
 
-  const versions = Object.keys(packument.versions);
   if (validRange(wanted, { loose: true })) {
-    const version = maxSatisfying(versions, wanted, { loose: true });
+    const version = maxSatisfying(Object.keys(packument.versions), wanted, {
+      loose: true,
+    });
     if (version) return version;
   }
-
-  if (packument.versions[wanted]) return wanted;
 
   throw new Error(`No version of ${name} satisfies "${range}"`);
 }
@@ -193,15 +166,9 @@ function loadPackument(name: string) {
   return promise;
 }
 
-function loadTarball(
-  name: string,
-  meta: VersionMeta,
-  filter: RegExp,
-  cacheSuffix = "",
-) {
+function loadTarball(name: string, meta: VersionMeta, filter: RegExp) {
   const key = `${name}@${meta.version}`;
-  const cacheKey = key + cacheSuffix;
-  let promise = tarballCache.get(cacheKey);
+  let promise = tarballCache.get(key);
   if (!promise) {
     promise = (async () => {
       const res = await fetch(meta.dist.tarball);
@@ -212,8 +179,8 @@ function loadTarball(
       const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());
       return untar(key, tar, filter);
     })();
-    tarballCache.set(cacheKey, promise);
-    promise.catch(() => tarballCache.delete(cacheKey));
+    tarballCache.set(key, promise);
+    promise.catch(() => tarballCache.delete(key));
   }
   return promise;
 }

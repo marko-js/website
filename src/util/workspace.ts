@@ -153,7 +153,7 @@ export async function update(
   try {
     const packageJson = fs.files[packageJsonPath];
     if (packageJson) {
-      const nodeModules = await fetchNodeModules(packageJson, signal);
+      const nodeModules = await fetchNodeModules(packageJson);
       if (signal.aborted) return;
       for (const path in nodeModules) {
         fs.files[projectDir + path] = nodeModules[path];

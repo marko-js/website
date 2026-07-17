@@ -44,10 +44,6 @@ markoModules.resolve = (id, from) => {
   return resolved;
 };
 markoModules.require = (id) => {
-  if (id.endsWith(".json") && currentFS && id in currentFS.files) {
-    return JSON.parse(currentFS.files[id]);
-  }
-
   throw new Error(
     `Loading taglib JS modules is not supported in the playground: "${id}"`,
   );
@@ -81,11 +77,6 @@ lassoPackageRoot.getRootPackage = (dirname) => {
     }
 
     if (dir === "/") return undefined;
-    const parent = dir.slice(0, dir.lastIndexOf("/")) || "/";
-    if (parent === dir) return undefined;
-    dir = parent;
+    dir = dir.slice(0, dir.lastIndexOf("/")) || "/";
   }
 };
-
-lassoPackageRoot.getRootDir = (dirname) =>
-  lassoPackageRoot.getRootPackage(dirname)?.__dirname;
