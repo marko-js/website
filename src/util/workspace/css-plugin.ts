@@ -7,13 +7,25 @@ export interface CSSPluginOptions {
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const relativeImport =
+  /@import\s+(?:url\(\s*)?["']?(\.\.?\/[^"')]+)["']?\s*\)?\s*;/g;
+
+function hoistImports(code: string) {
+  let jsCode = "";
+  code = code.replace(relativeImport, (_, spec) => {
+    jsCode += `import ${JSON.stringify(spec)};\n`;
+    return "";
+  });
+  return { code, jsCode };
+}
+
 export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
   if (browser) {
     return {
       name: "css",
-      async transform(code, id) {
+      async transform(rawCode, id) {
         if (id.endsWith(".css")) {
-          let jsCode = "";
+          let { code, jsCode } = hoistImports(rawCode);
           let map = this.getCombinedSourcemap();
           if (id.endsWith(".module.css")) {
             await initOnce();
@@ -103,9 +115,10 @@ export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
 
   return {
     name: "css",
-    async transform(code, id) {
+    async transform(rawCode, id) {
       if (id.endsWith(".css")) {
-        let jsCode = "";
+        const { code, jsCode: hoisted } = hoistImports(rawCode);
+        let jsCode = hoisted;
         if (id.endsWith(".module.css")) {
           await initOnce();
           const result = transform({

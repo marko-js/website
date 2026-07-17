@@ -12,6 +12,7 @@ const providedPackages = new Set(["marko", "@marko/compiler", "@marko/run"]);
 const validPackageName =
   /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 const includedFile = /(?<!\.d)\.(marko|[cm]?[jt]s|json|css|html)$/;
+const styleFile = /^\/package\.json$|\.css$/;
 
 interface Packument {
   "dist-tags"?: Record<string, string>;
@@ -67,11 +68,17 @@ async function materialize(
   name: string,
   range: string,
   depth = 0,
+  markoOnly = false,
 ): Promise<void> {
   if (providedPackages.has(name) || seen.has(name)) return;
   if (!validPackageName.test(name)) {
     throw new Error(`Invalid package name in package.json: "${name}"`);
   }
+
+  const packument = await loadPackument(name);
+  const meta = packument.versions[pickVersion(name, range, packument)];
+  const isMarko = dependsOnMarko(meta);
+  if (markoOnly && !isMarko) return;
 
   seen.add(name);
   if (seen.size > MAX_PACKAGES) {
@@ -80,25 +87,70 @@ async function materialize(
     );
   }
 
-  const packument = await loadPackument(name);
-  const meta = packument.versions[pickVersion(name, range, packument)];
-  if (!dependsOnMarko(meta)) return;
+  if (isMarko) {
+    const files = await loadTarball(name, meta, includedFile);
+    if ("/marko.json" in files) {
+      for (const file in files) {
+        entries[`/node_modules/${name}${file}`] ??= files[file];
+      }
 
-  const files = await loadTarball(name, meta);
-  if (!("/marko.json" in files)) return;
+      if (depth < MAX_DEPTH) {
+        await Promise.all([
+          ...Object.entries(meta.dependencies || {}).map(
+            ([depName, depRange]) =>
+              materialize(
+                entries,
+                seen,
+                depName,
+                depRange,
+                depth + 1,
+                true,
+              ).catch(() => {}),
+          ),
+          ...Object.entries(meta.peerDependencies || {}).map(
+            ([depName, depRange]) =>
+              materialize(entries, seen, depName, depRange, depth + 1).catch(
+                () => {},
+              ),
+          ),
+        ]);
+      }
+      return;
+    }
 
-  for (const file in files) {
-    entries[`/node_modules/${name}${file}`] ??= files[file];
+    mergeStyles(entries, name, files);
+    return;
   }
 
-  if (depth < MAX_DEPTH && meta.dependencies) {
-    await Promise.all(
-      Object.entries(meta.dependencies).map(([depName, depRange]) =>
-        materialize(entries, seen, depName, depRange, depth + 1).catch(
-          () => {},
-        ),
-      ),
+  try {
+    mergeStyles(
+      entries,
+      name,
+      await loadTarball(name, meta, styleFile, "#style"),
     );
+  } catch {
+    return;
+  }
+}
+
+function mergeStyles(
+  entries: Record<string, string>,
+  name: string,
+  files: Record<string, string>,
+) {
+  let hasCSS = false;
+  for (const file in files) {
+    if (file.endsWith(".css")) {
+      hasCSS = true;
+      break;
+    }
+  }
+  if (!hasCSS) return;
+
+  for (const file in files) {
+    if (file.endsWith(".css") || file === "/package.json") {
+      entries[`/node_modules/${name}${file}`] ??= files[file];
+    }
   }
 }
 
@@ -141,9 +193,15 @@ function loadPackument(name: string) {
   return promise;
 }
 
-function loadTarball(name: string, meta: VersionMeta) {
+function loadTarball(
+  name: string,
+  meta: VersionMeta,
+  filter: RegExp,
+  cacheSuffix = "",
+) {
   const key = `${name}@${meta.version}`;
-  let promise = tarballCache.get(key);
+  const cacheKey = key + cacheSuffix;
+  let promise = tarballCache.get(cacheKey);
   if (!promise) {
     promise = (async () => {
       const res = await fetch(meta.dist.tarball);
@@ -152,15 +210,19 @@ function loadTarball(name: string, meta: VersionMeta) {
       }
       const gzipped = res.body!.pipeThrough(new DecompressionStream("gzip"));
       const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());
-      return untar(key, tar);
+      return untar(key, tar, filter);
     })();
-    tarballCache.set(key, promise);
-    promise.catch(() => tarballCache.delete(key));
+    tarballCache.set(cacheKey, promise);
+    promise.catch(() => tarballCache.delete(cacheKey));
   }
   return promise;
 }
 
-function untar(key: string, bytes: Uint8Array): Record<string, string> {
+function untar(
+  key: string,
+  bytes: Uint8Array,
+  filter: RegExp,
+): Record<string, string> {
   const files: Record<string, string> = {};
   let totalSize = 0;
   let offset = 0;
@@ -193,7 +255,7 @@ function untar(key: string, bytes: Uint8Array): Record<string, string> {
     paxPath = undefined;
 
     const path = raw.replace(/^[^/]*\//, "/");
-    if (!path.startsWith("/") || !includedFile.test(path)) continue;
+    if (!path.startsWith("/") || !filter.test(path)) continue;
     if (size > MAX_FILE_SIZE) continue;
 
     totalSize += size;
