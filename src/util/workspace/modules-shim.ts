@@ -71,7 +71,6 @@ lassoPackageRoot.getRootPackage = (dirname) => {
           pkg.peerDependencies)
       ) {
         pkg.__dirname = dir;
-        pkg.__filename = packagePath;
         return pkg;
       }
     }

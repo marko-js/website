@@ -1,12 +1,9 @@
 import maxSatisfying from "semver/ranges/max-satisfying";
 import validRange from "semver/ranges/valid";
 
-const REGISTRY_URL = "https://registry.npmjs.org/";
-const ABBREVIATED = "application/vnd.npm.install-v1+json";
 const MAX_PACKAGES = 32;
 const MAX_FILE_SIZE = 1024 * 1024;
 const MAX_PACKAGE_SIZE = 12 * 1024 * 1024;
-const MAX_DEPTH = 4;
 
 const providedPackages = new Set(["marko", "@marko/compiler", "@marko/run"]);
 const validPackageName =
@@ -65,7 +62,6 @@ async function materialize(
   seen: Set<string>,
   name: string,
   range: string,
-  depth = 0,
   markoOnly = false,
 ): Promise<void> {
   if (providedPackages.has(name) || seen.has(name)) return;
@@ -75,7 +71,7 @@ async function materialize(
 
   const packument = await loadPackument(name);
   const meta = packument.versions[pickVersion(name, range, packument)];
-  const isMarko = dependsOnMarko(meta);
+  const isMarko = !!(meta.peerDependencies?.marko || meta.dependencies?.marko);
   if (markoOnly && !isMarko) return;
 
   seen.add(name);
@@ -92,27 +88,15 @@ async function materialize(
         entries[`/node_modules/${name}${file}`] ??= files[file];
       }
 
-      if (depth < MAX_DEPTH) {
-        await Promise.all([
-          ...Object.entries(meta.dependencies || {}).map(
-            ([depName, depRange]) =>
-              materialize(
-                entries,
-                seen,
-                depName,
-                depRange,
-                depth + 1,
-                true,
-              ).catch(() => {}),
-          ),
-          ...Object.entries(meta.peerDependencies || {}).map(
-            ([depName, depRange]) =>
-              materialize(entries, seen, depName, depRange, depth + 1).catch(
-                () => {},
-              ),
-          ),
-        ]);
-      }
+      await Promise.all([
+        ...Object.entries(meta.dependencies || {}).map(([depName, depRange]) =>
+          materialize(entries, seen, depName, depRange, true).catch(() => {}),
+        ),
+        ...Object.entries(meta.peerDependencies || {}).map(
+          ([depName, depRange]) =>
+            materialize(entries, seen, depName, depRange).catch(() => {}),
+        ),
+      ]);
     }
 
     return;
@@ -126,10 +110,6 @@ async function materialize(
       }
     }
   } catch {}
-}
-
-function dependsOnMarko(meta: VersionMeta) {
-  return !!(meta.peerDependencies?.marko || meta.dependencies?.marko);
 }
 
 function pickVersion(name: string, range: string, packument: Packument) {
@@ -149,38 +129,41 @@ function pickVersion(name: string, range: string, packument: Packument) {
 }
 
 function loadPackument(name: string) {
-  let promise = packumentCache.get(name);
-  if (!promise) {
-    promise = (async () => {
-      const res = await fetch(`${REGISTRY_URL}${name.replace("/", "%2f")}`, {
-        headers: { accept: ABBREVIATED },
-      });
-      if (!res.ok) {
-        throw new Error(`Could not find npm package "${name}"`);
-      }
-      return (await res.json()) as Packument;
-    })();
-    packumentCache.set(name, promise);
-    promise.catch(() => packumentCache.delete(name));
-  }
-  return promise;
+  return cached(packumentCache, name, async () => {
+    const res = await fetch(
+      `https://registry.npmjs.org/${name.replace("/", "%2f")}`,
+      { headers: { accept: "application/vnd.npm.install-v1+json" } },
+    );
+    if (!res.ok) {
+      throw new Error(`Could not find npm package "${name}"`);
+    }
+    return (await res.json()) as Packument;
+  });
 }
 
 function loadTarball(name: string, meta: VersionMeta, filter: RegExp) {
   const key = `${name}@${meta.version}`;
-  let promise = tarballCache.get(key);
+  return cached(tarballCache, key, async () => {
+    const res = await fetch(meta.dist.tarball);
+    if (!res.ok) {
+      throw new Error(`Could not download npm package ${key}`);
+    }
+    const gzipped = res.body!.pipeThrough(new DecompressionStream("gzip"));
+    const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());
+    return untar(key, tar, filter);
+  });
+}
+
+function cached<T>(
+  cache: Map<string, Promise<T>>,
+  key: string,
+  load: () => Promise<T>,
+) {
+  let promise = cache.get(key);
   if (!promise) {
-    promise = (async () => {
-      const res = await fetch(meta.dist.tarball);
-      if (!res.ok) {
-        throw new Error(`Could not download npm package ${key}`);
-      }
-      const gzipped = res.body!.pipeThrough(new DecompressionStream("gzip"));
-      const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());
-      return untar(key, tar, filter);
-    })();
-    tarballCache.set(key, promise);
-    promise.catch(() => tarballCache.delete(key));
+    promise = load();
+    cache.set(key, promise);
+    promise.catch(() => cache.delete(key));
   }
   return promise;
 }

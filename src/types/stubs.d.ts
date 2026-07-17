@@ -21,27 +21,21 @@ declare module "semver/ranges/valid" {
 }
 
 declare module "@marko/compiler/modules" {
-  interface MarkoModules {
+  const modules: {
     cwd: string;
     root: string;
-    pkg: unknown;
     require: null | ((id: string) => unknown);
     resolve: null | ((id: string, from?: string) => string);
     tryResolve: null | ((id: string, from?: string) => string | undefined);
-  }
-  const modules: MarkoModules;
+  };
   export default modules;
 }
 
 declare module "lasso-package-root" {
-  interface RootPackage {
-    __dirname: string;
-    __filename: string;
-    [key: string]: unknown;
-  }
   const lassoPackageRoot: {
-    getRootPackage(dirname: string): RootPackage | undefined;
-    getRootDir(dirname: string): string | undefined;
+    getRootPackage(
+      dirname: string,
+    ): { __dirname: string; [key: string]: unknown } | undefined;
   };
   export default lassoPackageRoot;
 }

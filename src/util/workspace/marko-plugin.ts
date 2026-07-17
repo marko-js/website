@@ -80,15 +80,14 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   };
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
   const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
+  const compileFile = (source: string, file: string) => {
+    const { code, map } = compiler.compileSync(source, file, baseConfig);
+    return (compiled[file] = { code, map });
+  };
 
   for (const file of optimizeKnownTemplates) {
     if (!file.includes("/node_modules/")) {
-      const { code, map } = compiler.compileSync(
-        fs.files[file],
-        file,
-        baseConfig,
-      );
-      compiled[file] = { code, map };
+      compileFile(fs.files[file], file);
     }
   }
 
@@ -124,16 +123,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
           };
         }
 
-        if (!compiled[id]) {
-          const { code: compiledCode, map } = compiler.compileSync(
-            code,
-            id,
-            baseConfig,
-          );
-          compiled[id] = { code: compiledCode, map };
-        }
-
-        return compiled[id];
+        return compiled[id] || compileFile(code, id);
       }
     },
   };
