@@ -107,11 +107,11 @@ const/compiledCode=(() => {
     switch (outputType) {
       case "dom": {
         return debug
-          ? ws.markoCompiled?.dom?.[`/tags/${selectedFile}`]?.code
-          : ws.previewModules?.[`/tags/${selectedFile}`]?.code;
+          ? ws.markoCompiled?.dom?.[`/app/tags/${selectedFile}`]?.code
+          : ws.previewModules?.[`/app/tags/${selectedFile}`]?.code;
       }
       case "html":
-        return ws.markoCompiled?.html?.[`/tags/${selectedFile}`]?.code;
+        return ws.markoCompiled?.html?.[`/app/tags/${selectedFile}`]?.code;
       case "previewJS":
         return ws.previewJS;
       case "previewCSS":

@@ -8,6 +8,7 @@ import runtimeDebugDOM from "marko/debug/dom?raw";
 import runtimeDebugHTML from "marko/debug/html?raw";
 
 import type { Workspace } from "../workspace";
+import { setResolveFileSystem } from "./modules-shim";
 
 declare module "../workspace" {
   interface Workspace {
@@ -44,6 +45,7 @@ export interface MarkoPluginOptions {
 }
 export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   const { fs, optimize } = ws;
+  setResolveFileSystem(fs);
   let optimizeKnownTemplates = knownTemplatesForWS.get(ws);
   if (!optimizeKnownTemplates) {
     cache.clear();
@@ -78,14 +80,15 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   };
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
   const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
+  const compileFile = (source: string, file: string) => {
+    const { code, map } = compiler.compileSync(source, file, baseConfig);
+    return (compiled[file] = { code, map });
+  };
 
   for (const file of optimizeKnownTemplates) {
-    const { code, map } = compiler.compileSync(
-      fs.files[file],
-      file,
-      baseConfig,
-    );
-    compiled[file] = { code, map };
+    if (!file.includes("/node_modules/")) {
+      compileFile(fs.files[file], file);
+    }
   }
 
   return {
@@ -93,6 +96,9 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
     resolveId(id, importer) {
       const tagName = importer && /^<([^>]+)>$/.exec(id)?.[1];
       if (tagName) {
+        // Rebound per hook since a newer workspace build may have pointed the
+        // shared resolver at its own file system in the meantime.
+        setResolveFileSystem(fs);
         const tagDef = compiler.taglib
           .buildLookup(importer.slice(0, importer.lastIndexOf("/")))
           .getTag(tagName);
@@ -112,6 +118,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
       }
 
       if (isMarkoFile(id)) {
+        setResolveFileSystem(fs);
         if (suffix === "?hydrate") {
           const compiled = compiler.compileSync(code, id, hydrateConfig);
           return {
@@ -120,7 +127,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
           };
         }
 
-        return compiled[id];
+        return compiled[id] || compileFile(code, id);
       }
     },
   };

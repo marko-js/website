@@ -142,3 +142,20 @@ div class=styles.tabs
           document.querySelector<HTMLElement>(".cm-content")?.focus();
         }
         ,class=styles.templateButton -- ${`<${name}>`}
+
+    if=!tabs.some((tab) => tab.path === "package.json")
+      button
+        ,role="menuitem"
+        ,onClick() {
+          selected = tabs.length;
+          tabs = [
+            ...tabs,
+            {
+              path: "package.json",
+              content:
+                '{\n  "dependencies": { "@evo-web/marko": "^0.5.0" }\n}\n',
+            },
+          ];
+          document.querySelector<HTMLElement>(".cm-content")?.focus();
+        }
+        ,class=styles.templateButton -- package.json

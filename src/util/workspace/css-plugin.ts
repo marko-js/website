@@ -7,13 +7,32 @@ export interface CSSPluginOptions {
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const relativeImport =
+  /@import\s+(?:url\(\s*)?["']?(\.\.?\/[^"')]+)["']?\s*\)?\s*;/g;
+
+function hoistImports(code: string) {
+  let jsCode = "";
+  // Comparing against a copy with comments blanked out skips matches inside
+  // comments, and replacing with same-length whitespace keeps later sourcemap
+  // offsets aligned.
+  const uncommented = code.replace(/\/\*[\s\S]*?\*\//g, (comment) =>
+    " ".repeat(comment.length),
+  );
+  code = code.replace(relativeImport, (match, spec, index: number) => {
+    if (!uncommented.startsWith(match, index)) return match;
+    jsCode += `import ${JSON.stringify(spec)};\n`;
+    return " ".repeat(match.length);
+  });
+  return { code, jsCode };
+}
+
 export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
   if (browser) {
     return {
       name: "css",
-      async transform(code, id) {
+      async transform(rawCode, id) {
         if (id.endsWith(".css")) {
-          let jsCode = "";
+          let { code, jsCode } = hoistImports(rawCode);
           let map = this.getCombinedSourcemap();
           if (id.endsWith(".module.css")) {
             await initOnce();
@@ -103,9 +122,9 @@ export function cssPlugin({ browser }: CSSPluginOptions): Plugin {
 
   return {
     name: "css",
-    async transform(code, id) {
+    async transform(rawCode, id) {
       if (id.endsWith(".css")) {
-        let jsCode = "";
+        let { code, jsCode } = hoistImports(rawCode);
         if (id.endsWith(".module.css")) {
           await initOnce();
           const result = transform({

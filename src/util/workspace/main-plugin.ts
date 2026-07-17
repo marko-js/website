@@ -72,6 +72,7 @@ export function mainPlugin({
         silent: true,
         fs: resolveFs,
         from: importer || mainId,
+        exts: [".js", ".json", ".css"],
       });
 
       if (resolved === false) {
