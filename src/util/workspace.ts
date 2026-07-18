@@ -15,7 +15,6 @@ import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
 import { prettyPrintHTML } from "./pretty-print-html";
-import { pageColorScheme, onPageColorSchemeChange } from "./page-color-scheme";
 
 export interface File {
   path: string;
@@ -111,6 +110,36 @@ const consoleInjection = (
   };
 };
 
+// The preview adopts the page's color theme (including the theme-light/
+// theme-dark overrides). Browsers do not resolve `prefers-color-scheme`
+// inside an iframe from the embedding element's `color-scheme` (despite CSS
+// Color Adjust describing that), so the bootstrap markup carries a
+// color-scheme declaration instead, injected before the preview's own
+// stylesheet so any color-scheme rule in preview CSS takes precedence. The
+// result tag keeps it current through setPreviewColorScheme.
+let previewColorScheme: "light" | "dark" | undefined;
+
+export function setPreviewColorScheme(
+  frame: HTMLIFrameElement,
+  scheme: "light" | "dark",
+) {
+  previewColorScheme = scheme;
+  syncPreviewColorScheme(frame);
+}
+
+function previewColorSchemeCSS() {
+  return `:root{color-scheme:${(previewColorScheme ??= matchMedia(
+    "(prefers-color-scheme: dark)",
+  ).matches
+    ? "dark"
+    : "light")}}`;
+}
+
+function syncPreviewColorScheme(frame: HTMLIFrameElement) {
+  const style = frame.contentDocument?.querySelector("style[data-page-theme]");
+  if (style) style.textContent = previewColorSchemeCSS();
+}
+
 export function subscribe(
   handler: (workspace: Workspace) => void,
   signal: AbortSignal,
@@ -150,22 +179,6 @@ export async function update(
       file.path === "package.json" ? packageJsonPath : rootDir + file.path
     ] = file.content;
   }
-
-  // The preview adopts the page's color theme (including the
-  // theme-light/theme-dark overrides). Browsers do not resolve
-  // `prefers-color-scheme` inside an iframe from the embedding element's
-  // `color-scheme` (despite CSS Color Adjust describing that), so the
-  // bootstrap markup carries a color-scheme declaration that is kept in sync
-  // with the page here. It is injected before the preview's own stylesheet so
-  // any color-scheme rule in preview CSS takes precedence.
-  const themeCSS = () => `:root{color-scheme:${pageColorScheme()}}`;
-  const syncTheme = () => {
-    const style = frame.contentDocument?.querySelector(
-      "style[data-page-theme]",
-    );
-    if (style) style.textContent = themeCSS();
-  };
-  onPageColorSchemeChange(syncTheme, signal);
 
   let versions: Record<string, string> = {};
   try {
@@ -303,7 +316,7 @@ export async function update(
         async () => {
           // Re-sync on every load so reloads and theme changes that raced the
           // srcdoc assignment still render with the page's current theme.
-          syncTheme();
+          syncPreviewColorScheme(frame);
           const win = frame.contentWindow! as Window & typeof globalThis;
           if (typeof window.console === "object") {
             consoleInjection(win.console, "client", "#c2185b", (method, args) =>
@@ -344,7 +357,7 @@ export async function update(
         { signal },
       );
       frame.srcdoc =
-        `<style data-page-theme>${themeCSS()}</style>` +
+        `<style data-page-theme>${previewColorSchemeCSS()}</style>` +
         (cssCode
           ? `<link rel=stylesheet href="${toAssetURL(
               cssFile,

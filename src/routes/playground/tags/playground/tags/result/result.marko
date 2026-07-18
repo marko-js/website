@@ -13,7 +13,12 @@ import type { CodeToHastOptions } from "shiki";
 import { version as markoVersion } from "marko/package.json";
 client import highlighter from "app/util/shiki";
 client import "terser";
-client import { clearLogs, update, type File } from "app/util/workspace";
+client import {
+  clearLogs,
+  setPreviewColorScheme,
+  update,
+  type File,
+} from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
 import { styleToClass } from "app/util/style-to-class";
 import styles from "./result.style.module.scss";
@@ -57,7 +62,7 @@ static const compiledHighlightOpts: CodeToHastOptions = {
   ],
 } as const;
 
-define/Stat|{ name, size }: { name: string; size: number | undefined }|
+define/Stat|{ name, size }: { name: string; size: (number | undefined) }|
   if=size !== undefined
     const/{ value, unit }=bytesToUnits(size)
     div
@@ -169,6 +174,17 @@ div class=styles.result
       ,class={
         [styles.hide]: !showPreview,
       }
+    let-local-storage/theme="system" key="theme"
+    let-match-media/prefersDark value="(prefers-color-scheme: dark)"
+    script --
+      setPreviewColorScheme(
+        $frame(),
+        theme === "light" || theme === "dark"
+          ? theme
+          : prefersDark
+            ? "dark"
+            : "light",
+      );
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
@@ -198,9 +214,9 @@ div class=styles.result
         }
         fa-icon=(consoleOpen ? faChevronDown : faChevronUp)
         span -- Console
-        if=ws.logs?.length
+        if=(ws.logs?.length)
           span class=styles.consoleCount -- ${ws.logs.length}
-      if=ws.logs?.length
+      if=(ws.logs?.length)
         button
           ,type="button"
           ,title="Clear console"
@@ -256,7 +272,7 @@ div class=styles.result
           Stat name="gzip" size=(ws.stats?.style?.gzip)
     if=consoleOpen
       div class=styles.consoleBody
-        if=ws.logs?.length
+        if=(ws.logs?.length)
           for|log| of=ws.logs
             div class=styles.logEntry data-method=log.method
               span class=styles.logNs data-ns=log.ns -- ${log.ns}

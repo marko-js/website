@@ -1,55 +1,15 @@
 import styles from "./theme-select.style.module.scss";
 
-// Keep in sync with the pre-paint script in routes/+layout.marko.
-static const THEME_KEY = "marko-theme";
+let-local-storage/theme="system" key="theme"
+script --
+  document.documentElement.classList.toggle("theme-light", theme === "light");
+  document.documentElement.classList.toggle("theme-dark", theme === "dark");
+html-script --
+  ${
+    `var t=localStorage.getItem("theme");document.documentElement.classList.toggle("theme-light",t==='"light"');document.documentElement.classList.toggle("theme-dark",t==='"dark"');`
+  };
 
-static function storedTheme() {
-  try {
-    const theme = localStorage.getItem(THEME_KEY);
-    return theme === "light" || theme === "dark" ? theme : "system";
-  } catch {
-    return "system";
-  }
-}
-
-static function applyTheme(theme: string) {
-  const classes = document.documentElement.classList;
-  classes.toggle("theme-light", theme === "light");
-  classes.toggle("theme-dark", theme === "dark");
-}
-
-select/themeSelect
-  ,aria-label="Color theme"
-  ,class=styles.themeSelect
-  ,onChange(e: Event) {
-    const theme = (e.target as HTMLSelectElement).value;
-    applyTheme(theme);
-    try {
-      if (theme === "system") {
-        localStorage.removeItem(THEME_KEY);
-      } else {
-        localStorage.setItem(THEME_KEY, theme);
-      }
-    } catch {
-      // Persistence is best-effort; the theme still applies for this page.
-    }
-  }
+select aria-label="Color theme" class=styles.themeSelect value:=theme
   option value="system" -- System
   option value="light" -- Light
   option value="dark" -- Dark
-
-script --
-  // The pre-paint script in the layout already set the class on <html>;
-  // sync the select to the stored choice and follow changes in other tabs.
-  themeSelect().value = storedTheme();
-  window.addEventListener(
-    "storage",
-    (e: StorageEvent) => {
-      if (e.key === THEME_KEY || e.key === null) {
-        const theme = storedTheme();
-        themeSelect().value = theme;
-        applyTheme(theme);
-      }
-    },
-    { signal: $signal },
-  );

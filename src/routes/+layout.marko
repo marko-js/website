@@ -23,12 +23,6 @@ html lang="en"
     link rel="icon" sizes="32x32" href="/fav.png"
     link rel="icon" type="image/svg+xml" href="/fav.svg"
 
-    // Apply the stored theme override before first paint (see theme-select).
-    html-script --
-      ${
-        `try{var t=localStorage.getItem("marko-theme");(t==="light"||t==="dark")&&document.documentElement.classList.add("theme-"+t)}catch(t){}`
-      };
-
     prefetch-links
 
   body spellcheck="false"
