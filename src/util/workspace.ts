@@ -15,6 +15,7 @@ import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 import { toByteSizes, type Sizes } from "./sizes";
 import { FileSystem } from "./workspace/fs";
 import { prettyPrintHTML } from "./pretty-print-html";
+import { pageColorScheme, onPageColorSchemeChange } from "./page-color-scheme";
 
 export interface File {
   path: string;
@@ -150,6 +151,22 @@ export async function update(
     ] = file.content;
   }
 
+  // The preview adopts the page's color theme (including the
+  // theme-light/theme-dark overrides). Browsers do not resolve
+  // `prefers-color-scheme` inside an iframe from the embedding element's
+  // `color-scheme` (despite CSS Color Adjust describing that), so the
+  // bootstrap markup carries a color-scheme declaration that is kept in sync
+  // with the page here. It is injected before the preview's own stylesheet so
+  // any color-scheme rule in preview CSS takes precedence.
+  const themeCSS = () => `:root{color-scheme:${pageColorScheme()}}`;
+  const syncTheme = () => {
+    const style = frame.contentDocument?.querySelector(
+      "style[data-page-theme]",
+    );
+    if (style) style.textContent = themeCSS();
+  };
+  onPageColorSchemeChange(syncTheme, signal);
+
   let versions: Record<string, string> = {};
   try {
     const packageJson = fs.files[packageJsonPath];
@@ -284,6 +301,9 @@ export async function update(
       frame.addEventListener(
         "load",
         async () => {
+          // Re-sync on every load so reloads and theme changes that raced the
+          // srcdoc assignment still render with the page's current theme.
+          syncTheme();
           const win = frame.contentWindow! as Window & typeof globalThis;
           if (typeof window.console === "object") {
             consoleInjection(win.console, "client", "#c2185b", (method, args) =>
@@ -324,6 +344,7 @@ export async function update(
         { signal },
       );
       frame.srcdoc =
+        `<style data-page-theme>${themeCSS()}</style>` +
         (cssCode
           ? `<link rel=stylesheet href="${toAssetURL(
               cssFile,

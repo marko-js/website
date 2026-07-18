@@ -86,12 +86,15 @@
   iframe {
     flex: 1;
     border: none;
-    /* TODO:
-       Figure out why Chrome ignores the default iframe background color
-       after the playground recovers from a syntax error, and remove this line.
-       This is fine except `color-scheme: light dark` examples
-    */
-    background-color: white;
+    /* The preview document mirrors the page's color scheme (see
+       util/workspace.ts), so when it renders dark its canvas stays
+       transparent and this backdrop must match the page theme rather than
+       being hardcoded white. Examples that force a light-only scheme get an
+       opaque light canvas from the browser because the color schemes
+       mismatch. An explicit background is still required because Chrome
+       drops the default iframe background after the playground recovers
+       from a syntax error. */
+    background-color: var(--color-background);
   }
 }
 

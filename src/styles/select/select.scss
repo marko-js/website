@@ -16,6 +16,13 @@ select {
   }
 }
 
+// The fragment-less chevron picks its color from the SVG's internal
+// `prefers-color-scheme` query, which follows the OS. When light is forced
+// via the theme class, target the #light view so the chevron stays dark.
+:root.theme-light select {
+  background-image: url("./chevron.svg?no-inline#light");
+}
+
 select:focus {
   outline: none;
   border-color: var(--section-color-alt, var(--color-blue-alt));

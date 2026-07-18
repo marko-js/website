@@ -63,6 +63,16 @@
       width: 240px;
       height: 48px;
     }
+
+    // The <picture> source only reacts to the OS scheme; when a theme is
+    // forced via the root class, swap in the matching logo view directly.
+    :global(:root.theme-dark) & {
+      content: url("/assets/logo.svg#dark");
+    }
+
+    :global(:root.theme-light) & {
+      content: url("/assets/logo.svg#light");
+    }
   }
 }
 

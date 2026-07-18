@@ -67,6 +67,22 @@ $colors: (
       }
     }
   }
+
+  // The theme-light/theme-dark classes (toggled by the theme-select tag)
+  // force a single color scheme regardless of the OS preference. A PostCSS
+  // plugin (scripts/postcss-color-scheme-classes.mjs) rewrites every
+  // `prefers-color-scheme` media query in the site's CSS to respect these
+  // classes. Forcing `color-scheme` here also keeps native UI (form controls,
+  // scrollbars) and the rendering of embedded iframe canvases consistent with
+  // the forced theme. The playground preview additionally mirrors this value
+  // into its document (see util/page-color-scheme.ts and util/workspace.ts).
+  :root.theme-light {
+    color-scheme: light;
+  }
+
+  :root.theme-dark {
+    color-scheme: dark;
+  }
 }
 
 @mixin section($color, $dark: false) {
