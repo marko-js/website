@@ -16,6 +16,16 @@
   padding: 0.5rem 1rem;
   text-wrap: nowrap;
   border-right: 2px solid transparent;
+  input {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    outline-offset: 3px;
+    field-sizing: content;
+    min-width: 1ch;
+  }
   &:hover,
   &[aria-selected="true"] {
     background-color: var(--color-gray-alt-dim);
