@@ -104,7 +104,7 @@ div class=styles.tabs
     ,popover
     ,role="menu"
     ,onFocusOut(e) {
-      if (!$popover().contains(e.relatedTarget as Node)) {
+      if (e.relatedTarget && !$popover().contains(e.relatedTarget as Node)) {
         $popover().hidePopover();
       }
     }
@@ -112,6 +112,7 @@ div class=styles.tabs
       ,role="menuitem"
       ,autofocus
       ,onClick() {
+        $popover().hidePopover();
         const newIndex = tabs.length;
         let path = "Tag.marko";
         for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
@@ -133,6 +134,7 @@ div class=styles.tabs
       button
         ,role="menuitem"
         ,onClick() {
+          $popover().hidePopover();
           selected = tabs.length;
           let path = name + ".marko";
           for (let i = 1; tabs.some((tab) => tab.path === path); i++) {
@@ -147,6 +149,7 @@ div class=styles.tabs
       button
         ,role="menuitem"
         ,onClick() {
+          $popover().hidePopover();
           selected = tabs.length;
           tabs = [
             ...tabs,
