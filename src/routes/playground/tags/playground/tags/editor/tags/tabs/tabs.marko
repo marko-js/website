@@ -55,6 +55,7 @@ div class=styles.tabs
             }
             ,onKeyDown(e, el) {
               if (e.key === "Enter") {
+                e.preventDefault();
                 document.querySelector<HTMLElement>(".cm-content")?.focus();
               } else if (e.key === "Escape") {
                 // Restore the original name and blur so the blur handler
