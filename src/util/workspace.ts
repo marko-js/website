@@ -28,6 +28,7 @@ export interface LogEntry {
 export interface Workspace {
   fs: FileSystem;
   optimize: boolean;
+  previewReady: boolean;
   previewJS: string;
   previewCSS: string;
   previewHTML: string;
@@ -134,6 +135,7 @@ export async function update(
   const ws: Workspace = (workspace = {
     fs,
     optimize,
+    previewReady: workspace?.previewReady ?? false,
     previewJS: "",
     previewCSS: "",
     previewHTML: "",
@@ -309,6 +311,7 @@ export async function update(
             } else if (data) {
               rawHTML += data;
               ws.previewHTML = prettyPrintHTML(rawHTML);
+              ws.previewReady = true;
               emit();
               domWriter.write(data);
             } else {
@@ -317,6 +320,8 @@ export async function update(
                 emit();
               });
               domWriter.close();
+              ws.previewReady = true;
+              emit();
             }
           };
           server.postMessage(1);
@@ -343,6 +348,8 @@ export async function update(
                 getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
             )}"></script>`
           : "");
+      ws.previewReady = false;
+      emit();
     })();
 
     await Promise.all([serverBuild, browserBuild]);

@@ -193,6 +193,35 @@
   }
 }
 
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 1.25rem;
+  animation: fade-in 0.3s ease 1s both;
+
+  span {
+    opacity: 0.35;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 1;
+  }
+}
+
 .spin {
   animation: spin 0.25s ease-out;
 }

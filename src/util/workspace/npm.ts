@@ -31,6 +31,7 @@ interface Materialization {
   files: Record<string, string>;
   versions: Record<string, string>;
   seen: Set<string>;
+  declared: Set<string>;
 }
 
 export async function fetchNodeModules(packageJsonSource: string): Promise<{
@@ -48,11 +49,16 @@ export async function fetchNodeModules(packageJsonSource: string): Promise<{
     throw new Error(`Could not parse package.json: ${(err as Error).message}`);
   }
 
-  const ctx: Materialization = { files: {}, versions: {}, seen: new Set() };
   const deps = {
     ...pkg.peerDependencies,
     ...pkg.devDependencies,
     ...pkg.dependencies,
+  };
+  const ctx: Materialization = {
+    files: {},
+    versions: {},
+    seen: new Set(),
+    declared: new Set(Object.keys(deps)),
   };
 
   await Promise.all(
@@ -91,21 +97,25 @@ async function materialize(
   }
 
   if (isMarko) {
-    const pkgFiles = await loadTarball(name, meta, includedFile);
+    for (const depName in meta.peerDependencies) {
+      if (!providedPackages.has(depName) && !ctx.declared.has(depName)) {
+        throw new Error(
+          `${name} requires the peer dependency "${depName}", add it to package.json`,
+        );
+      }
+    }
+
+    const [pkgFiles] = await Promise.all([
+      loadTarball(name, meta, includedFile),
+      ...Object.entries(meta.dependencies || {}).map(([depName, depRange]) =>
+        materialize(ctx, depName, depRange, true).catch(() => {}),
+      ),
+    ]);
+
     if ("/marko.json" in pkgFiles) {
       for (const file in pkgFiles) {
         files[`/node_modules/${name}${file}`] = pkgFiles[file];
       }
-
-      await Promise.all([
-        ...Object.entries(meta.dependencies || {}).map(([depName, depRange]) =>
-          materialize(ctx, depName, depRange, true).catch(() => {}),
-        ),
-        ...Object.entries(meta.peerDependencies || {}).map(
-          ([depName, depRange]) =>
-            materialize(ctx, depName, depRange).catch(() => {}),
-        ),
-      ]);
     }
 
     return;

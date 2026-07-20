@@ -172,6 +172,10 @@ div class=styles.result
     if=files.length
       script -- update($signal, $frame(), files, !debug);
 
+    if=showPreview && !ws.previewReady
+      div class=styles.loading role="status"
+        span -- setting up
+
     a class=styles.markoLogo href="https://markojs.com" title="Built with Marko"
     if=outputType !== "preview"
       button
