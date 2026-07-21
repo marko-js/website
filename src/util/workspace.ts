@@ -8,8 +8,9 @@ import WritableDOMStream from "writable-dom";
 import { cdnPlugin } from "./workspace/cdn-plugin";
 import { fetchNodeModules } from "./workspace/npm";
 import { cssPlugin } from "./workspace/css-plugin";
+import { getMarkoInstance } from "./workspace/custom-marko";
 import { mainPlugin } from "./workspace/main-plugin";
-import { markoPlugin } from "./workspace/marko-plugin";
+import { bundledMarko, markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
@@ -37,6 +38,7 @@ export interface Workspace {
   runtimeErrors: undefined | [Error, ...Error[]];
   server: undefined | Worker;
   logs: LogEntry[];
+  markoVersion: string;
   stats:
     | undefined
     | {
@@ -145,6 +147,7 @@ export async function update(
     stats: undefined,
     server: undefined,
     logs: [],
+    markoVersion: workspace?.markoVersion ?? bundledMarko.markoVersion,
   });
   for (const file of files) {
     fs.files[
@@ -153,15 +156,25 @@ export async function update(
   }
 
   let versions: Record<string, string> = {};
+  let marko = bundledMarko;
   try {
     const packageJson = fs.files[packageJsonPath];
     if (packageJson) {
-      const nodeModules = await fetchNodeModules(packageJson);
+      const [nodeModules, markoInstance] = await Promise.all([
+        fetchNodeModules(packageJson),
+        getMarkoInstance(packageJson),
+      ]);
       if (signal.aborted) return;
       versions = nodeModules.versions;
+      marko = markoInstance;
       for (const path in nodeModules.files) {
         fs.files[projectDir + path] = nodeModules.files[path];
       }
+    }
+
+    if (ws.markoVersion !== marko.markoVersion) {
+      ws.markoVersion = marko.markoVersion;
+      emit();
     }
 
     const serverBuild = (async function buildServer() {
@@ -176,6 +189,7 @@ export async function update(
           markoPlugin({
             ws,
             browser: false,
+            marko,
           }),
           cssPlugin({ browser: false }),
           cdnPlugin({ versions }),
@@ -227,7 +241,7 @@ export async function update(
             browser: true,
             code: `import "${rootDir}index.marko?hydrate"`,
           }),
-          markoPlugin({ ws, browser: true }),
+          markoPlugin({ ws, browser: true, marko }),
           cssPlugin({ browser: true }),
           cdnPlugin({ versions }),
           minifyScriptPlugin(),

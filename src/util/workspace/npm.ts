@@ -12,15 +12,20 @@ const validPackageName =
 const includedFile = /(?<!\.d)\.(marko|[cm]?[jt]s|json|css|html)$/;
 const styleFile = /^\/package\.json$|\.css$/;
 
-interface Packument {
+export interface Packument {
   "dist-tags"?: Record<string, string>;
   versions: Record<string, VersionMeta>;
 }
-interface VersionMeta {
+export interface VersionMeta {
   version: string;
   dist: { tarball: string };
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
+}
+
+export interface TarballLimits {
+  maxFileSize?: number;
+  maxPackageSize?: number;
 }
 
 const decoder = new TextDecoder();
@@ -131,7 +136,7 @@ async function materialize(
   } catch {}
 }
 
-function pickVersion(name: string, range: string, packument: Packument) {
+export function pickVersion(name: string, range: string, packument: Packument) {
   const distTags = packument["dist-tags"] || {};
   const wanted = range || "latest";
 
@@ -147,7 +152,7 @@ function pickVersion(name: string, range: string, packument: Packument) {
   throw new Error(`No version of ${name} satisfies "${range}"`);
 }
 
-function loadPackument(name: string) {
+export function loadPackument(name: string) {
   return cached(packumentCache, name, async () => {
     const res = await fetch(
       `https://registry.npmjs.org/${name.replace("/", "%2f")}`,
@@ -160,23 +165,31 @@ function loadPackument(name: string) {
   });
 }
 
-function loadTarball(name: string, meta: VersionMeta, filter: RegExp) {
-  const key = `${name}@${meta.version}`;
+export function loadTarball(
+  name: string,
+  meta: VersionMeta,
+  filter: RegExp,
+  limits?: TarballLimits,
+) {
+  const version = `${name}@${meta.version}`;
+  const key = `${version}!${filter.source}`;
   return cached(tarballCache, key, async () => {
     const res = await fetch(meta.dist.tarball);
     if (!res.ok) {
-      throw new Error(`Could not download npm package ${key}`);
+      throw new Error(`Could not download npm package ${version}`);
     }
     if (+(res.headers.get("content-length") || 0) > MAX_TARBALL_SIZE) {
-      throw new Error(`npm package ${key} is too large for the playground.`);
+      throw new Error(
+        `npm package ${version} is too large for the playground.`,
+      );
     }
     const gzipped = res.body!.pipeThrough(new DecompressionStream("gzip"));
     const tar = new Uint8Array(await new Response(gzipped).arrayBuffer());
-    return untar(key, tar, filter);
+    return untar(version, tar, filter, limits);
   });
 }
 
-function cached<T>(
+export function cached<T>(
   cache: Map<string, Promise<T>>,
   key: string,
   load: () => Promise<T>,
@@ -194,7 +207,10 @@ function untar(
   key: string,
   bytes: Uint8Array,
   filter: RegExp,
+  limits?: TarballLimits,
 ): Record<string, string> {
+  const maxFileSize = limits?.maxFileSize ?? MAX_FILE_SIZE;
+  const maxPackageSize = limits?.maxPackageSize ?? MAX_PACKAGE_SIZE;
   const files: Record<string, string> = {};
   let totalSize = 0;
   let offset = 0;
@@ -228,10 +244,10 @@ function untar(
 
     const path = raw.replace(/^[^/]*\//, "/");
     if (!path.startsWith("/") || !filter.test(path)) continue;
-    if (size > MAX_FILE_SIZE) continue;
+    if (size > maxFileSize) continue;
 
     totalSize += size;
-    if (totalSize > MAX_PACKAGE_SIZE) {
+    if (totalSize > maxPackageSize) {
       throw new Error(`npm package ${key} is too large for the playground.`);
     }
 

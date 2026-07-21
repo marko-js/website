@@ -1,7 +1,9 @@
 import path from "path";
 import type { Plugin } from "@rollup/browser";
 import * as compiler from "@marko/compiler";
+import { version as compilerVersion } from "@marko/compiler/package.json";
 import * as translator from "marko/translator";
+import { version as markoVersion } from "marko/package.json";
 import runtimeDOM from "marko/dom?raw";
 import runtimeHTML from "marko/html?raw";
 import runtimeDebugDOM from "marko/debug/dom?raw";
@@ -19,14 +21,33 @@ declare module "../workspace" {
   }
 }
 
-const cache = new Map();
-const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
-const runtimeModules: Record<string, string> = {
-  "marko/dom": runtimeDOM,
-  "marko/html": runtimeHTML,
-  "marko/debug/dom": runtimeDebugDOM,
-  "marko/debug/html": runtimeDebugHTML,
+// A compiler + translator + runtime set the playground can build with. The
+// bundled instance ships with the site; alternates are loaded on demand when
+// package.json pins a different version (see custom-marko.ts).
+export interface MarkoInstance {
+  compiler: typeof compiler;
+  translator: compiler.Config["translator"];
+  runtimeModules: Record<string, string>;
+  compileCache: Map<unknown, unknown>;
+  markoVersion: string;
+  compilerVersion: string;
+}
+
+export const bundledMarko: MarkoInstance = {
+  compiler,
+  translator,
+  runtimeModules: {
+    "marko/dom": runtimeDOM,
+    "marko/html": runtimeHTML,
+    "marko/debug/dom": runtimeDebugDOM,
+    "marko/debug/html": runtimeDebugHTML,
+  },
+  compileCache: new Map(),
+  markoVersion,
+  compilerVersion,
 };
+
+const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
 
 // Shim currently needed because @marko/compiler uses `lasso-package-root`.
 (globalThis as any).process = {
@@ -42,13 +63,19 @@ const runtimeModules: Record<string, string> = {
 export interface MarkoPluginOptions {
   ws: Workspace;
   browser: boolean;
+  marko?: MarkoInstance;
 }
-export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
+export function markoPlugin({
+  ws,
+  browser,
+  marko = bundledMarko,
+}: MarkoPluginOptions): Plugin {
   const { fs, optimize } = ws;
+  const { compiler, translator, runtimeModules, compileCache } = marko;
   setResolveFileSystem(fs);
   let optimizeKnownTemplates = knownTemplatesForWS.get(ws);
   if (!optimizeKnownTemplates) {
-    cache.clear();
+    compileCache.clear();
     compiler.taglib.clearCaches();
     optimizeKnownTemplates = [];
     for (const file in fs.files) {
@@ -61,7 +88,7 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
 
   const output = browser ? "dom" : "html";
   const baseConfig: compiler.Config = {
-    cache,
+    cache: compileCache,
     output,
     optimize,
     translator,

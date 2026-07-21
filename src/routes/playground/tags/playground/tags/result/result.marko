@@ -57,7 +57,7 @@ static const compiledHighlightOpts: CodeToHastOptions = {
   ],
 } as const;
 
-define/Stat|{ name, size }: { name: string; size: number | undefined }|
+define/Stat|{ name, size }: { name: string; size: (number | undefined) }|
   if=size !== undefined
     const/{ value, unit }=bytesToUnits(size)
     div
@@ -138,7 +138,7 @@ div class=styles.result
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
-    span class=styles.version -- v${markoVersion}
+    span class=styles.version -- v${ws.markoVersion || markoVersion}
 
   div class=styles.output
     if=ws.buildErrors
@@ -202,9 +202,9 @@ div class=styles.result
         }
         fa-icon=(consoleOpen ? faChevronDown : faChevronUp)
         span -- Console
-        if=ws.logs?.length
+        if=(ws.logs?.length)
           span class=styles.consoleCount -- ${ws.logs.length}
-      if=ws.logs?.length
+      if=(ws.logs?.length)
         button
           ,type="button"
           ,title="Clear console"
@@ -260,7 +260,7 @@ div class=styles.result
           Stat name="gzip" size=(ws.stats?.style?.gzip)
     if=consoleOpen
       div class=styles.consoleBody
-        if=ws.logs?.length
+        if=(ws.logs?.length)
           for|log| of=ws.logs
             div class=styles.logEntry data-method=log.method
               span class=styles.logNs data-ns=log.ns -- ${log.ns}

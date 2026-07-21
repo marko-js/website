@@ -33,49 +33,59 @@ function tryResolve(id: string, from = "/") {
   }
 }
 
-markoModules.cwd = "/";
-markoModules.root = "/";
-markoModules.tryResolve = tryResolve;
-markoModules.resolve = (id, from) => {
-  const resolved = tryResolve(id, from);
-  if (!resolved) {
-    throw new Error(`Cannot resolve module "${id}"`);
-  }
-  return resolved;
-};
-markoModules.require = (id) => {
-  throw new Error(
-    `Loading taglib JS modules is not supported in the playground: "${id}"`,
-  );
-};
-
-lassoPackageRoot.getRootPackage = (dirname) => {
-  if (!currentFS) return undefined;
-  let dir = dirname;
-  while (true) {
-    const packagePath = dir === "/" ? "/package.json" : `${dir}/package.json`;
-    if (packagePath in currentFS.files) {
-      let pkg;
-      try {
-        pkg = JSON.parse(currentFS.files[packagePath]);
-      } catch {
-        pkg = undefined;
-      }
-
-      if (
-        pkg &&
-        (pkg.name ||
-          pkg.version ||
-          pkg.dependencies ||
-          pkg.devDependencies ||
-          pkg.peerDependencies)
-      ) {
-        pkg.__dirname = dir;
-        return pkg;
-      }
+// The compiler resolves taglib files and package roots through these injectable
+// modules. Point them at the in-memory workspace file system for the bundled
+// compiler here, and for any dynamically loaded compiler via `patchModules`.
+export function patchModules(
+  modules: typeof markoModules,
+  lasso: typeof lassoPackageRoot,
+) {
+  modules.cwd = "/";
+  modules.root = "/";
+  modules.tryResolve = tryResolve;
+  modules.resolve = (id, from) => {
+    const resolved = tryResolve(id, from);
+    if (!resolved) {
+      throw new Error(`Cannot resolve module "${id}"`);
     }
+    return resolved;
+  };
+  modules.require = (id) => {
+    throw new Error(
+      `Loading taglib JS modules is not supported in the playground: "${id}"`,
+    );
+  };
 
-    if (dir === "/") return undefined;
-    dir = dir.slice(0, dir.lastIndexOf("/")) || "/";
-  }
-};
+  lasso.getRootPackage = (dirname) => {
+    if (!currentFS) return undefined;
+    let dir = dirname;
+    while (true) {
+      const packagePath = dir === "/" ? "/package.json" : `${dir}/package.json`;
+      if (packagePath in currentFS.files) {
+        let pkg;
+        try {
+          pkg = JSON.parse(currentFS.files[packagePath]);
+        } catch {
+          pkg = undefined;
+        }
+
+        if (
+          pkg &&
+          (pkg.name ||
+            pkg.version ||
+            pkg.dependencies ||
+            pkg.devDependencies ||
+            pkg.peerDependencies)
+        ) {
+          pkg.__dirname = dir;
+          return pkg;
+        }
+      }
+
+      if (dir === "/") return undefined;
+      dir = dir.slice(0, dir.lastIndexOf("/")) || "/";
+    }
+  };
+}
+
+patchModules(markoModules, lassoPackageRoot);
