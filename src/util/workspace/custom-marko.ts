@@ -14,16 +14,13 @@ import {
 import { patchModules } from "./modules-shim";
 import { bundledMarko, type MarkoInstance } from "./marko-plugin";
 
-// Older versions predate the compiler APIs the playground drives (fileSystem,
-// optimizeKnownTemplates, marko/translator).
 const MIN_MARKO = "6.0.0-0";
 const MIN_COMPILER = "5.39.0-0";
 
-// Only loaded by entrypoints the playground never evaluates, or type-only.
 const SKIPPED_DEPS = new Set(["csstype", "source-map-support"]);
 
-// resolve-sync never reaches a root-level /node_modules (the parent walk
-// stops at "/"), so loader packages are mounted one level deep.
+// resolve-sync cannot reach a root-level /node_modules, so packages are
+// mounted one level deep.
 const loaderRoot = "/npm";
 
 const RUNTIME_MODULE_FILES: Record<string, string> = {
@@ -33,14 +30,13 @@ const RUNTIME_MODULE_FILES: Record<string, string> = {
   "marko/debug/html": `${loaderRoot}/node_modules/marko/dist/debug/html.mjs`,
 };
 
-// dist/babel.js is the node-only Babel build (the browser condition selects
-// babel.web.js) and register.js is a node require hook.
+// dist/babel.js (node-only Babel build) and register.js (node require hook)
+// are excluded; the browser export condition selects dist/babel.web.js.
 const compilerFiles =
   /^\/(?:package\.json$|modules\.js$|dist\/(?!babel\.js$|register\.js$).*(?<!\.d)\.(?:[cm]?js|json)$)/;
 const markoFiles = /^\/(?:package\.json$|dist\/.*(?<!\.d)\.(?:[cm]?js|json)$)/;
 const depFiles = /(?<!\.d)\.(?:[cm]?js|json)$/;
 
-// babel.web.js is ~2MB in a single file.
 const loaderLimits: TarballLimits = {
   maxFileSize: 4 * 1024 * 1024,
   maxPackageSize: 24 * 1024 * 1024,
@@ -48,12 +44,6 @@ const loaderLimits: TarballLimits = {
 
 const instanceCache = new Map<string, Promise<MarkoInstance>>();
 
-/**
- * Returns the marko compiler/translator/runtime set a workspace build should
- * use. When package.json pins `marko` (or `@marko/compiler`) to something
- * other than the versions bundled with the site, the requested versions are
- * downloaded from npm and evaluated in the browser.
- */
 export async function getMarkoInstance(
   packageJsonSource: string,
 ): Promise<MarkoInstance> {
@@ -191,8 +181,6 @@ async function addDependencies(
   );
 }
 
-// A small CommonJS loader over the in-memory package files, used to evaluate
-// the downloaded compiler and translator in the browser.
 function createRequire(files: Record<string, string>) {
   const moduleCache = new Map<string, { exports: any }>();
   const resolveFS: ResolveOptions["fs"] = {
@@ -200,13 +188,10 @@ function createRequire(files: Record<string, string>) {
     readPkg: (file) => JSON.parse(files[file] || ""),
   };
   const builtins: Record<string, unknown> = {
-    // The compiler only touches fs through its injectable fileSystem config,
-    // which the playground always provides.
+    // The compiler reads files through its fileSystem config, never fs.
     fs: {},
     path,
     assert,
-    // Only reached when a browserslist target is configured, which the
-    // playground never does.
     browserslist: () => [],
   };
 

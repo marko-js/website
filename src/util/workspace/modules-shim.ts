@@ -33,9 +33,6 @@ function tryResolve(id: string, from = "/") {
   }
 }
 
-// Points a compiler's injectable resolution hooks at the in-memory workspace
-// file system. Applied to the bundled compiler below and to dynamically loaded
-// compilers by custom-marko.ts.
 export function patchModules(
   modules: typeof markoModules,
   lasso: typeof lassoPackageRoot,

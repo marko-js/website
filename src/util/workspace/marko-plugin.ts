@@ -21,8 +21,6 @@ declare module "../workspace" {
   }
 }
 
-// A compiler + translator + runtime set to build with. The bundled instance
-// ships with the site; custom-marko.ts loads alternates on demand.
 export interface MarkoInstance {
   compiler: typeof compiler;
   translator: compiler.Config["translator"];
