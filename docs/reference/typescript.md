@@ -172,7 +172,7 @@ export interface Input {
   content: Marko.Body<[number]>
 }
 
-<for|i| from=0 to=input.to by=2>
+<for|i| from=0 to=input.to step=2>
   <${input.content}(i)/>
 </for>
 ```
