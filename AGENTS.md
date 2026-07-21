@@ -103,3 +103,7 @@
 - Emphasize compile-time intelligence and automatic optimization
 - Highlight zero-JS by default and progressive enhancement
 - Show how features solve real development problems
+
+## Agent feedback
+
+Anything actionable but out of scope for the current task — a suspected bug, cleanup, a perf/size win, tooling friction, or code that was confusing — must be recorded in [`agent-feedback/`](agent-feedback/README.md) before finishing. Don't silently drop it, and don't fix it inside an unrelated diff.
