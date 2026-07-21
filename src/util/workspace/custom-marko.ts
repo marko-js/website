@@ -8,19 +8,18 @@ import {
   loadPackument,
   loadTarball,
   pickVersion,
+  type TarballLimits,
   type VersionMeta,
 } from "./npm";
 import { patchModules } from "./modules-shim";
 import { bundledMarko, type MarkoInstance } from "./marko-plugin";
 
-// Overriding to versions older than these is unsupported: the playground
-// drives the compiler through APIs (fileSystem, optimizeKnownTemplates,
-// marko/translator) that first stabilized in these releases.
+// Older versions predate the compiler APIs the playground drives (fileSystem,
+// optimizeKnownTemplates, marko/translator).
 const MIN_MARKO = "6.0.0-0";
 const MIN_COMPILER = "5.39.0-0";
 
-// Loaded lazily by entrypoints the playground never evaluates (register.js),
-// or type-only, so their tarballs are never needed.
+// Only loaded by entrypoints the playground never evaluates, or type-only.
 const SKIPPED_DEPS = new Set(["csstype", "source-map-support"]);
 
 // resolve-sync never reaches a root-level /node_modules (the parent walk
@@ -35,15 +34,14 @@ const RUNTIME_MODULE_FILES: Record<string, string> = {
 };
 
 // dist/babel.js is the node-only Babel build (the browser condition selects
-// babel.web.js) and register.js is a node require hook; both are excluded so
-// they aren't kept in memory.
+// babel.web.js) and register.js is a node require hook.
 const compilerFiles =
   /^\/(?:package\.json$|modules\.js$|dist\/(?!babel\.js$|register\.js$).*(?<!\.d)\.(?:[cm]?js|json)$)/;
 const markoFiles = /^\/(?:package\.json$|dist\/.*(?<!\.d)\.(?:[cm]?js|json)$)/;
-const depFiles = /^\/(?:.*(?<!\.d)\.(?:[cm]?js|json)$)/;
+const depFiles = /(?<!\.d)\.(?:[cm]?js|json)$/;
 
 // babel.web.js is ~2MB in a single file.
-const loaderLimits = {
+const loaderLimits: TarballLimits = {
   maxFileSize: 4 * 1024 * 1024,
   maxPackageSize: 24 * 1024 * 1024,
 };
@@ -57,11 +55,11 @@ const instanceCache = new Map<string, Promise<MarkoInstance>>();
  * downloaded from npm and evaluated in the browser.
  */
 export async function getMarkoInstance(
-  packageJsonSource: string | undefined,
+  packageJsonSource: string,
 ): Promise<MarkoInstance> {
   let deps: Record<string, string>;
   try {
-    const pkg = JSON.parse(packageJsonSource || "{}");
+    const pkg = JSON.parse(packageJsonSource);
     deps = {
       ...pkg.peerDependencies,
       ...pkg.devDependencies,
@@ -101,12 +99,12 @@ export async function getMarkoInstance(
 
   if (!gte(markoVersion, MIN_MARKO)) {
     throw new Error(
-      `The playground cannot load marko@${markoVersion}; only ${MIN_MARKO.slice(0, -2)} and newer can be loaded. Remove "marko" from package.json to use the bundled version (${bundledMarko.markoVersion}).`,
+      `The playground can only load marko 6.0.0 and newer (requested ${markoVersion}). Remove "marko" from package.json to use the bundled version (${bundledMarko.markoVersion}).`,
     );
   }
   if (!gte(compilerVersion, MIN_COMPILER)) {
     throw new Error(
-      `The playground cannot load @marko/compiler@${compilerVersion}; only ${MIN_COMPILER.slice(0, -2)} and newer can be loaded. Remove "@marko/compiler" from package.json to use the bundled version (${bundledMarko.compilerVersion}).`,
+      `The playground can only load @marko/compiler 5.39.0 and newer (requested ${compilerVersion}). Remove "@marko/compiler" from package.json to use the bundled version (${bundledMarko.compilerVersion}).`,
     );
   }
 
@@ -166,7 +164,7 @@ async function addPackage(
   name: string,
   meta: VersionMeta,
   filter: RegExp,
-  limits?: { maxFileSize: number; maxPackageSize: number },
+  limits?: TarballLimits,
 ) {
   const pkgFiles = await loadTarball(name, meta, filter, limits);
   for (const file in pkgFiles) {
@@ -193,10 +191,8 @@ async function addDependencies(
   );
 }
 
-/**
- * A small CommonJS loader over the in-memory package files, used to evaluate
- * the downloaded compiler and translator in the browser.
- */
+// A small CommonJS loader over the in-memory package files, used to evaluate
+// the downloaded compiler and translator in the browser.
 function createRequire(files: Record<string, string>) {
   const moduleCache = new Map<string, { exports: any }>();
   const resolveFS: ResolveOptions["fs"] = {

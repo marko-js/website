@@ -21,9 +21,8 @@ declare module "../workspace" {
   }
 }
 
-// A compiler + translator + runtime set the playground can build with. The
-// bundled instance ships with the site; alternates are loaded on demand when
-// package.json pins a different version (see custom-marko.ts).
+// A compiler + translator + runtime set to build with. The bundled instance
+// ships with the site; custom-marko.ts loads alternates on demand.
 export interface MarkoInstance {
   compiler: typeof compiler;
   translator: compiler.Config["translator"];
@@ -63,12 +62,12 @@ const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
 export interface MarkoPluginOptions {
   ws: Workspace;
   browser: boolean;
-  marko?: MarkoInstance;
+  marko: MarkoInstance;
 }
 export function markoPlugin({
   ws,
   browser,
-  marko = bundledMarko,
+  marko,
 }: MarkoPluginOptions): Plugin {
   const { fs, optimize } = ws;
   const { compiler, translator, runtimeModules, compileCache } = marko;

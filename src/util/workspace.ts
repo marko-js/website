@@ -172,10 +172,7 @@ export async function update(
       }
     }
 
-    if (ws.markoVersion !== marko.markoVersion) {
-      ws.markoVersion = marko.markoVersion;
-      emit();
-    }
+    ws.markoVersion = marko.markoVersion;
 
     const serverBuild = (async function buildServer() {
       const file = "server.js";
