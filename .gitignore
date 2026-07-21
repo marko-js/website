@@ -12,3 +12,5 @@ dist
 public/search-index.json
 public/og
 tsconfig.tsbuildinfo
+package-lock.json
+yarn.lock

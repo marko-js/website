@@ -23,15 +23,17 @@ jobs:
           # The gh-pages push below authenticates with an explicit token URL, and
           # the fetch is a public read, so the checkout credential is not needed.
           persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build site
-        run: npm run build
+        run: pnpm run build
         env:
           REPO_GITHUB_API_TOKEN: ${{ secrets.REPO_GITHUB_API_TOKEN }}
       # Deploy to the gh-pages branch root while preserving the previews/ directory so
