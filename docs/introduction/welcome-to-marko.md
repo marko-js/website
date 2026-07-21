@@ -75,9 +75,14 @@ Marko takes advantage of HTML streaming to send content to the client as soon as
 
 ```marko
 <header>Sent immediately</header>
-<await=Promise((res) => setTimeout(res, 500))>
-  <p>Sent after 500 milliseconds</p>
-</await>
+<try>
+  <await=new Promise((resolve) => setTimeout(resolve, 500))>
+    <p>Sent after 500 milliseconds</p>
+  </await>
+  <@placeholder>
+    <p>Loading…</p>
+  </@placeholder>
+</try>
 ```
 
 ### Resumability

@@ -1,9 +1,12 @@
 # Nested Reactivity
 
 > [!TLDR]
-> Three approaches are explored for managing nested state
+>
+> - Prefer local state over nested trees
+> - Hoist only fields the parent must read or write
+> - Extract controllable child tags when list items grow complex
 
-It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.
+It is often the case in application development that state is stored in a top-level object which is then represented and updated throughout the component tree. This guide outlines three ways of handling that pattern, using a to-do list as a base.
 
 Each method in this guide is more complex and has more overhead than those before it. Generally, you should use the _least_ complex method that still addresses the needs of your application.
 
@@ -119,6 +122,63 @@ import { produce } from "immer"
 }>
 ```
 
-## Case 3: Complex Hoisted State
+## Case 3: Extracted Controllable Tags
 
-<!-- TODO: discuss `<mut>` tag -->
+When several fields must stay in sync with a parent list, extract a child tag and give it a [controllable](./controllable-components.md) API. The parent owns the list; the child owns only presentation and local UI that does not need to leave the item.
+
+```marko
+/* tags/todo-item.marko */
+export interface Input {
+  text: string;
+  done: boolean;
+  doneChange?: (done: boolean) => void;
+  onDelete?: () => void;
+}
+
+<id/checkboxId>
+<let/done:=input.done>
+
+<li>
+  <input type="checkbox" checked:=done id=checkboxId>
+  <label for=checkboxId>${input.text}</label>
+  <button
+    title="delete"
+    disabled=!done
+    onClick() { input.onDelete?.() }
+  >&times;</button>
+</li>
+```
+
+```marko
+/* list.marko */
+<let/todos=[
+  { id: 0, text: "Learn Marko", done: false },
+  { id: 1, text: "Make a Website", done: false },
+]>
+
+<ul>
+  <for|todo, i| of=todos by="id">
+    <todo-item
+      text=todo.text
+      done=todo.done
+      doneChange(done) {
+        todos = todos.toSpliced(i, 1, { ...todo, done });
+      }
+      onDelete() {
+        todos = todos.toSpliced(i, 1);
+      }
+    />
+  </for>
+</ul>
+```
+
+The parent passes `done` and a `doneChange` that replaces that item in the list. Callers that omit `doneChange` leave the child uncontrolled with its own local state, which is Case 1 again. The bind shorthand `done:=` works when the parent has a single tag variable or an `input.done` / `input.doneChange` pair; for list items, an explicit change handler is the usual form.
+
+> [!TIP]
+> Prefer Case 1 until a feature truly needs the parent to read or write the nested field. Controllable children scale better than large immutable patches scattered through a single template, and they keep [resume data](./serializable-state.md) closer to the components that need it.
+
+## Further Reading
+
+- [Controllable Components](./controllable-components.md)
+- [Immutable State](./immutable-state.md)
+- [Core Tags: Controllable `<let>`](../reference/core-tag.md#controllable-let)

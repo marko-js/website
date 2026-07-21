@@ -116,10 +116,10 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
-The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
+The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop body) that returns a unique key for each iteration.
 
 ```marko
-<for|user| of=users by=user => user.id>
+<for|user| of=users by=(user) => user.id>
   ${user.firstName} ${user.lastName}
 </for>
 ```
@@ -135,6 +135,23 @@ This means the previous example can simplified to:
   ${user.firstName} ${user.lastName}
 </for>
 ```
+
+For primitive lists, pass a function that returns the item itself. The `by=` expression is evaluated outside the loop body, so the loop parameters are not in scope as free identifiers.
+
+```marko
+// ✅ function receives the item as its argument
+<for|city| of=cities by=(city) => city>
+  ${city}
+</for>
+
+// ❌ `city` is not defined where `by=` is evaluated
+<for|city| of=cities by=city>
+  ${city}
+</for>
+```
+
+> [!NOTE]
+> Prefer stable keys (`by="id"` or a unique field). Index-only identity is the default when `by=` is omitted, which loses per-item state when the list is reordered.
 
 ## `<let>`
 
@@ -581,7 +598,7 @@ This debugger executes on the initial render and whenever `input.firstName` or `
 
 ## `<await>`
 
-The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters).
+The `<await>` tag unwraps the value in its [`value=` attribute](./language.md#shorthand-value) and exposes the result through a [tag parameter](./language.md#tag-parameters).
 
 ```marko
 <await|user|=getUser()>
@@ -590,7 +607,9 @@ The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#
 </await>
 ```
 
-If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder), the placeholder content is shown while the promise is pending.
+If the value is a promise, the tag waits until it settles and then renders its content with the resolved value. If the value is not a promise, the content renders in the same pass with no extra tick and no placeholder flash.
+
+If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder), the placeholder content is shown while the promise is pending. Loading and error UI belong on `<try>`, not on `<await>`.
 
 ```marko
 <try>
@@ -609,6 +628,34 @@ If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder)
   </@catch>
 </try>
 ```
+
+On the server, content before an unsettled `<await>` can [stream](../explanation/streaming.md) immediately; the rest flushes when the promise resolves. In the browser, the same tags work for client-side async work: when the expression passed to `<await>` becomes a new pending promise (for example a `<const>` derived from state), a surrounding `@placeholder` is shown again until the new result arrives.
+
+### Passing Promises
+
+Start data loads early and pass the promise into the template. Await only where the data is rendered so independent regions can resolve in parallel and static markup is not blocked.
+
+```marko
+static function loadUser(id) {
+  return fetch(`/api/users/${id}`).then((r) => r.json());
+}
+
+export interface Input {
+  userId: string;
+}
+
+<const/userPromise=loadUser(input.userId)>
+
+<try>
+  <await|user|=userPromise>
+    <h1>${user.name}</h1>
+  </await>
+  <@placeholder>Loading profile...</@placeholder>
+</try>
+```
+
+> [!WARNING]
+> Calling `await` on data in a route handler or parent before rendering forces the entire response to wait. Pass the promise through and let `<await>` unwrap it. Under [Marko Run](../marko-run/data-loading.md), that is `return next({ user: loadUser(id) })` without awaiting the fetch.
 
 ## `<try>`
 
@@ -629,9 +676,16 @@ When a runtime error occurs in the [content](./language.md#tag-content) of the `
 </try>
 ```
 
+Rejected promises from a nested [`<await>`](#await) are handled the same way: the nearest `@catch` receives the rejection reason.
+
 ### `@placeholder`
 
-The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
+The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags) is displayed while an [`<await>`](#await) (or [lazy-loaded tag](./lazy-loading.md#placeholders--errors)) inside the `<try>` content is pending.
+
+On the server, providing `@placeholder` opts the boundary into [out-of-order streaming](../explanation/streaming.md): the placeholder can flush first, and the resolved content is rearranged into place with a small amount of client script. Without a placeholder, the stream waits in document order for the promise.
+
+> [!TIP]
+> Size placeholders to match the eventual content when possible, to limit [layout shift](../explanation/streaming.md#avoiding-layout-shift-cls) when the real content arrives.
 
 ## `<html-comment>`
 

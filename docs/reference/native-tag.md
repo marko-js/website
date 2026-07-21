@@ -263,16 +263,16 @@ The `value=` attribute may be controlled with `valueChange=`
 ```
 
 > [!CAUTION]
-> The value of `<input>` is _always_ a string, so numbers need to be casted.
+> The DOM reports text-field values as strings. For `type="number"` (and similar cases), refine the value in the change handler or with a [refining bind](./language.md#refining-function) so state stays a number.
 >
 > ```marko
-> <let/number=0>
+> <let/quantity=0>
 >
-> // ❌ (INCORRECT) this will set number to a string when updated
-> <input type="number" value:=number>
+> // ✅ refine on the way in
+> <input type="number" value:parseFloat:=quantity>
 >
-> // ✅ cast the string value to a number during the change handler
-> <input type="number" value=number valueChange(value) { number = +value }>
+> // ✅ same idea, written out
+> <input type="number" value=quantity valueChange(value) { quantity = +value }>
 > ```
 
 The `checked=` attribute may be controlled with `checkedChange=`

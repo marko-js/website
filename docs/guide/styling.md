@@ -4,7 +4,7 @@ This section explains some different ways to style HTML within Marko. From simpl
 
 ## Inline Styles
 
-Marko [enhances the HTML `<style>` tag](../reference/core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
+Marko [enhances the HTML `<style>` tag](../reference/core-tag.md#style) to be processed and optimized by the [bundler used in the project](../introduction/integrations.md#bundlers). A template may specify any number of `<style>` tags.
 
 By default, all styles defined in the template are **globally scoped**. As such, many Marko projects use patterns like [BEM](https://getbem.com/introduction/) to avoid name conflicts.
 

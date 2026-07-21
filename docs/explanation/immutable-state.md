@@ -57,7 +57,7 @@ By replacing `user`, the view updates deterministically as a function of the new
 
 ## Serialization
 
-To pass work from server to client, state must be serialized. Only serializable data can be reliably embedded into HTML and later hydrated. Class instances, DOM nodes, and some types of closures cannot be serialized and should not be stored in state.
+To pass work from server to client, state must be serialized. Only serializable data can be reliably embedded into HTML and later [resumed](./why-is-marko-fast.md#resumability) in the browser. Class instances, DOM nodes, and some types of closures cannot be serialized and should not be stored in state.
 
 ```marko
 /* cart.marko */
@@ -68,7 +68,7 @@ To pass work from server to client, state must be serialized. Only serializable 
 <let/cart=new Cart([{ id: 1, qty: 2 }])>
 ```
 
-Keeping state serializable enables streaming HTML on the server and interactive handoff in the browser without brittle custom hydration logic.
+Keeping state serializable enables streaming HTML on the server and interactive handoff in the browser without brittle custom resume logic.
 
 > [!TIP]
 > For details on what data is supported and patterns to avoid, see [serializable state](./serializable-state.md)
