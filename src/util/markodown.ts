@@ -43,7 +43,55 @@ export default function markodownPlugin(): PluginOption {
         cwd: docsPath,
       });
 
+      const learnPath = path.join(process.cwd(), "learn");
+      const learnPages = path.join(
+        process.cwd(),
+        "src",
+        "routes",
+        "learn",
+        "_compiled-learn",
+      );
+
+      await fs.rm(learnPages, { recursive: true, force: true });
+      await fs.mkdir(learnPages, { recursive: true });
+
+      // Lesson order comes from the numeric filename prefixes, which are
+      // stripped from the served URLs.
+      const learnFiles = glob
+        .sync("**/*.md", { cwd: learnPath })
+        .map((file) => file.split(path.sep).join("/"))
+        .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+      const learnManifest: { slug: string; title: string }[] = [];
+
       await Promise.all([
+        ...learnFiles.map(async (file, i) => {
+          const content = await fs.readFile(
+            path.join(learnPath, file),
+            "utf-8",
+          );
+          const { markoCode, headings } = await mdToMarko(content, {
+            checkpoints: true,
+          });
+          const slug = file
+            .replace(/\.md$/, "")
+            .split("/")
+            .map((segment) => segment.replace(/^\d+-/, ""))
+            .join("/");
+          learnManifest[i] = { slug, title: headings[0].title };
+          const target = path.join(learnPages, ...slug.split("/"));
+          await fs.mkdir(path.dirname(target), { recursive: true });
+          await Promise.all([
+            fs.writeFile(`${target}+page.marko`, markoCode),
+            fs.writeFile(
+              `${target}+meta.json`,
+              JSON.stringify({
+                pageTitle: headings[0].title,
+                headings: headings[0].children,
+                hideFooter: true,
+              }),
+            ),
+          ]);
+        }),
         ...mdFiles.map(async (file) => {
           const content = await fs.readFile(path.join(docsPath, file), "utf-8");
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
@@ -72,6 +120,11 @@ export default function markodownPlugin(): PluginOption {
         pruneDocsBanners(mdFiles),
         buildSearchIndex(docsPath),
       ]);
+
+      await fs.writeFile(
+        path.join(learnPages, "manifest.json"),
+        JSON.stringify(learnManifest),
+      );
     },
   };
 }
@@ -140,10 +193,14 @@ async function pruneDocsBanners(mdFiles: string[]) {
   );
 }
 
-async function mdToMarko(source: string) {
+async function mdToMarko(source: string, opts?: { checkpoints?: boolean }) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(semanticAdmonitions(), headingSections(headings), markoDocs())
+    .use(
+      semanticAdmonitions(),
+      headingSections(headings),
+      markoDocs(opts?.checkpoints),
+    )
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -214,13 +271,51 @@ declare module "marked" {
       htmlTS?: string;
       conciseTS?: string;
       filename?: string;
+      playgroundFiles?: Code[];
+      playgroundEnd?: boolean;
     }
   }
 }
 
-function markoDocs(): MarkedExtension {
+function isPlaygroundFence(token: Tokens.Code) {
+  const [lang, ...modifiers] = (token.lang ?? "").trim().split(/\s+/);
+  return lang === "marko" && modifiers.includes("playground");
+}
+
+function markoDocs(checkpoints?: boolean): MarkedExtension {
+  let checkpointCount = 0;
   return {
     async: true,
+    hooks: {
+      // Consecutive ```marko playground fences (blank lines between them are
+      // fine) become the files of a single interactive playground; anything
+      // else, including prose, ends the group.
+      processAllTokens(tokens) {
+        let group: Tokens.Code[] | undefined;
+        const endGroup = () => {
+          if (group) {
+            group[group.length - 1].playgroundEnd = true;
+            group = undefined;
+          }
+        };
+
+        for (const token of tokens) {
+          if (token.type === "code" && isPlaygroundFence(token)) {
+            if (group) {
+              group.push(token);
+            } else {
+              group = [token];
+              token.playgroundFiles = group;
+            }
+          } else if (token.type !== "space") {
+            endGroup();
+          }
+        }
+
+        endGroup();
+        return tokens;
+      },
+    },
     async walkTokens(token) {
       if (token.type === "code") {
         // named files begin with `/* file.name */\n`
@@ -298,8 +393,40 @@ function markoDocs(): MarkedExtension {
       table(token) {
         return `<div class="table-scroll">${Renderer.prototype.table.call(this, token)}</div>`;
       },
-      code({ lang, text, html, concise, htmlTS, conciseTS, filename }) {
-        let out = `<app-code-block lang="${lang}"`;
+      code(token) {
+        const { lang, text, html, concise, htmlTS, conciseTS, filename } =
+          token;
+        let out = "";
+
+        if (token.playgroundFiles) {
+          const files = token.playgroundFiles.map((file, i) => {
+            const path = file.filename ?? (i === 0 ? "index.marko" : "");
+            if (!path) {
+              throw new Error(
+                "Each fence after the first in a playground group needs a /* filename */ comment",
+              );
+            }
+            return {
+              path,
+              content: file.text.endsWith("\n") ? file.text : `${file.text}\n`,
+            };
+          });
+          if (!files.some((file) => file.path === "index.marko")) {
+            throw new Error(
+              "A playground group needs an index.marko entry file",
+            );
+          }
+          if (checkpoints) {
+            // In lesson pages, playground fences load into the page's shared
+            // workspace instead of embedding their own; the first group is the
+            // lesson's starting state.
+            out += `<learn-checkpoint files=${JSON.stringify(files)}${checkpointCount++ === 0 ? " auto" : ""}>`;
+          } else {
+            out += `<app-playground files=${JSON.stringify(files)}>`;
+          }
+        }
+
+        out += `<app-code-block lang="${lang}"`;
         if (filename) {
           out += ` filename="${filename}"`;
         }
@@ -308,7 +435,12 @@ function markoDocs(): MarkedExtension {
         } else {
           out += ` text=${JSON.stringify(text)}`;
         }
-        return out + "/>";
+        out += "/>";
+
+        if (token.playgroundEnd) {
+          out += "</>";
+        }
+        return out;
       },
       codespan(token) {
         return `<code>${token.text

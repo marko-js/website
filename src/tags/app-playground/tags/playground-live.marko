@@ -1,0 +1,14 @@
+import Editor from "app/routes/playground/tags/playground/tags/editor/editor.marko";
+import type { File } from "app/util/workspace";
+export interface Input {
+  files: File[];
+  filesChange?: (files: File[]) => void;
+}
+
+let/files:=input.files
+let/tab=0
+
+div.playground-live
+  div.playground-live-editor
+    Editor files:=files tab:=tab
+  embed-result files=files

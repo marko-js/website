@@ -1,0 +1,49 @@
+import { faPlay, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import type { File } from "app/util/workspace";
+export interface Input {
+  files: File[];
+  content?: Marko.Body;
+}
+
+// The workspace that powers live examples is shared, so only one example may
+// be running at a time; activating one deactivates whichever ran before it.
+static let deactivate: (() => void) | undefined;
+
+let/files=input.files
+let/Live=(null as typeof import("./tags/playground-live.marko").default | null)
+let/loading=false
+
+div.playground-embed
+  // The static code blocks are server-rendered only (they cannot re-render in
+  // the browser), so they are hidden rather than removed while running live.
+  div.playground-embed-static hidden=!!Live
+    ${input.content}
+  if=Live
+    ${Live} files:=files
+  div.playground-embed-bar
+    button.playground-embed-run
+      ,type="button"
+      ,disabled=loading
+      ,onClick() {
+        if (Live) {
+          Live = null;
+          files = input.files;
+          deactivate = undefined;
+          return;
+        }
+        loading = true;
+        import("./tags/playground-live.marko").then(
+          (live) => {
+            deactivate?.();
+            deactivate = () => (Live = null);
+            Live = live.default;
+            loading = false;
+          },
+          () => {
+            loading = false;
+          },
+        );
+      }
+      fa-icon=(Live ? faRotateLeft : faPlay)
+      -- ${Live ? "Reset" : loading ? "Loading" : "Edit and run"}
+    open-in-playground files=files
