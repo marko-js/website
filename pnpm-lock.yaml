@@ -49,17 +49,17 @@ importers:
         specifier: ^0.3.11
         version: 0.3.11
       '@marko/compiler':
-        specifier: ^5.41.1
-        version: 5.41.1
+        specifier: ^5.41.6
+        version: 5.41.6
       '@marko/run':
-        specifier: ^0.11.4
-        version: 0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+        specifier: ^0.11.6
+        version: 0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
       '@marko/run-adapter-static':
-        specifier: ^2.0.6
-        version: 2.0.6(@marko/run@0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)
+        specifier: ^2.0.7
+        version: 2.0.7(@marko/run@0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)
       '@marko/type-check':
-        specifier: ^3.1.2
-        version: 3.1.2
+        specifier: ^3.1.4
+        version: 3.1.4
       '@resvg/resvg-js':
         specifier: ^2.6.2
         version: 2.6.2
@@ -127,8 +127,8 @@ importers:
         specifier: ^18.0.6
         version: 18.0.6
       marko:
-        specifier: ^6.3.7
-        version: 6.3.7
+        specifier: ^6.3.21
+        version: 6.3.21
       path:
         specifier: ./shim/path
         version: link:shim/path
@@ -1006,15 +1006,15 @@ packages:
   '@marijn/find-cluster-break@1.0.3':
     resolution: {integrity: sha512-FY+MKLBoTsLNJF/eLWaOsXGdz6uh3Iu1axjPf6TUq92IYumcTcXWHoS747JARLkcdlJ/Waiaxc5wQfFO8jC6NA==}
 
-  '@marko/compiler@5.41.1':
-    resolution: {integrity: sha512-Y62G8sTA7dCa+LyTLjmSX950VszaSMcFGWTkOoRR9CFU1S3IN0iETu2GF074oyek+hZbZnRqxtxe02ejYlIlKw==}
+  '@marko/compiler@5.41.6':
+    resolution: {integrity: sha512-7yO1vvyfUo7+c3RQ7wGApJqs9QmIT2a07/BiKzivqDS00Mkg4rOB9oHvNKkqu7d5KIsVT4X9l+J6bHHe3LOFLQ==}
     engines: {node: 18 || 20 || >=22}
 
-  '@marko/language-tools@2.6.4':
-    resolution: {integrity: sha512-nQoQixafywB/dyrdeKCVkxH8U4BzrVmHQ8V+N8hXazrFbiGCcfMq3aU7FljVE8XVdpPdVYo1zTLz21PbieS94Q==}
+  '@marko/language-tools@2.6.6':
+    resolution: {integrity: sha512-q4w/JO6MYyJ33P/QN87EN4YCBQCWRGPXWS2fRlJldnZyd1+W2rNChbGa75lzMSXVMSkq+vQpKBE1erKtNTXC2Q==}
 
-  '@marko/run-adapter-static@2.0.6':
-    resolution: {integrity: sha512-oltb0egfDc2QpGLtZkxRhLuR+kPINhWu4iqV+xCt45Uc7Dx4BuInN907AgBSkxNEEmVUoajWHcZIjJLIg4IOcg==}
+  '@marko/run-adapter-static@2.0.7':
+    resolution: {integrity: sha512-K+72VgB5soT8N43QdAdPOue1vL9yE4mUCChd3366/Q9RHwazAS/8xk/KCWto3HCz9Pwi3WreKw/7fNeHStHPsw==}
     peerDependencies:
       '@marko/run': ^0.7.7||^0.8||^0.9||^0.10||^0.11
 
@@ -1023,14 +1023,14 @@ packages:
     peerDependencies:
       '@marko/run': ^0.7||^0.8||^0.9||^0.10||^0.11
 
-  '@marko/run@0.11.4':
-    resolution: {integrity: sha512-yOZtm9tdYxID0Q2A59JfJdYUjv7DqTRgvDp7k5oJpG8Dy4xbKvtKkehx3olgmWcCxXc1BBReBOuGjrKY19/KcA==}
+  '@marko/run@0.11.6':
+    resolution: {integrity: sha512-rnGOW8WqusNMRX/A3EMw5SgedSj4gYracG7C6q8p/0RI12bjdnNA8/Y7BOecGZZEzodwoixMGKKS6JyayFDT7g==}
     hasBin: true
     peerDependencies:
       marko: 5 - 6
 
-  '@marko/type-check@3.1.2':
-    resolution: {integrity: sha512-IbRAVCT6smYOoZvAWZPVPr3j+YJfdepjH6JeuSeAg8bzO3Hdql6cBWBT3O2MAyACdbEgv0au/O66mp2b54Vlzw==}
+  '@marko/type-check@3.1.4':
+    resolution: {integrity: sha512-Su9OIOH8waWhKEqat8MzsYEs0kANLB8nrG/k/kUYbQE5xrgvJAGP1BTM4jb9lOIZMDDQ3hlHjP35HuNPAA1Dtw==}
     hasBin: true
 
   '@marko/vite@6.1.4':
@@ -2353,8 +2353,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marko@6.3.7:
-    resolution: {integrity: sha512-eR9z5MzNS4q+DxQ6JuVbYGrpg3gb0zmLxz7G470cjrWLym0KdtC+tTsKVZbZPFI1zoZ9fsymnDPI3q4YRcIV8w==}
+  marko@6.3.21:
+    resolution: {integrity: sha512-GuMU1CBXj6zOOOskF1jwELXW8EpDMiFWqO/pNF4fY8i4xoM8YJTEnREY4d20ICCCYqT72wIqvGcxiaCM+gTAfw==}
     engines: {node: '>=22'}
 
   mdast-util-to-hast@13.2.1:
@@ -4050,7 +4050,7 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.3': {}
 
-  '@marko/compiler@5.41.1':
+  '@marko/compiler@5.41.6':
     dependencies:
       '@luxass/strip-json-comments': 2.0.1
       complain: 1.6.1
@@ -4059,6 +4059,7 @@ snapshots:
       jsesc: 3.1.0
       kleur: 4.1.5
       lasso-package-root: 1.0.1
+      magic-string: 0.30.21
       raptor-regexp: 1.0.1
       raptor-util: 3.2.0
       relative-import-path: 1.0.1
@@ -4066,16 +4067,16 @@ snapshots:
       self-closing-tags: 1.0.1
       source-map-support: 0.5.21
 
-  '@marko/language-tools@2.6.4':
+  '@marko/language-tools@2.6.6':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.41.1
+      '@marko/compiler': 5.41.6
       htmljs-parser: 5.12.1
       relative-import-path: 1.0.1
 
-  '@marko/run-adapter-static@2.0.6(@marko/run@0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)':
+  '@marko/run-adapter-static@2.0.7(@marko/run@0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)':
     dependencies:
-      '@marko/run': 0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+      '@marko/run': 0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
       compression: 1.8.1(supports-color@10.2.2)
       htmlparser2: 10.1.0
       sirv: 1.0.19
@@ -4083,14 +4084,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@marko/run-explorer@2.0.4(@marko/run@0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
+  '@marko/run-explorer@2.0.4(@marko/run@0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
     dependencies:
-      '@marko/run': 0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+      '@marko/run': 0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
 
-  '@marko/run@0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)':
+  '@marko/run@0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)':
     dependencies:
-      '@marko/run-explorer': 2.0.4(@marko/run@0.11.4(@marko/compiler@5.41.1)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
-      '@marko/vite': 6.1.4(@marko/compiler@5.41.1)(vite@8.1.4(@types/node@26.1.1)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
+      '@marko/run-explorer': 2.0.4(@marko/run@0.11.6(@marko/compiler@5.41.6)(@types/node@26.1.1)(esbuild@0.27.7)(marko@6.3.21)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
+      '@marko/vite': 6.1.4(@marko/compiler@5.41.6)(vite@8.1.4(@types/node@26.1.1)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
       '@remix-run/form-data-parser': 0.17.4
       '@standard-schema/spec': 1.1.0
       browserslist: 4.28.6
@@ -4103,7 +4104,7 @@ snapshots:
       glob: 13.0.6
       human-format: 1.2.1
       kleur: 4.1.5
-      marko: 6.3.7
+      marko: 6.3.21
       parse-node-args: 1.1.3
       sade: 1.8.1
       serve-static: 2.2.1(supports-color@10.2.2)
@@ -4125,19 +4126,19 @@ snapshots:
       - tsx
       - yaml
 
-  '@marko/type-check@3.1.2':
+  '@marko/type-check@3.1.4':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.41.1
-      '@marko/language-tools': 2.6.4
+      '@marko/compiler': 5.41.6
+      '@marko/language-tools': 2.6.6
       arg: 5.0.2
       kleur: 4.1.5
       typescript: 6.0.3
 
-  '@marko/vite@6.1.4(@marko/compiler@5.41.1)(vite@8.1.4(@types/node@26.1.1)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
+  '@marko/vite@6.1.4(@marko/compiler@5.41.6)(vite@8.1.4(@types/node@26.1.1)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
     dependencies:
       '@chialab/estransform': 0.19.1
-      '@marko/compiler': 5.41.1
+      '@marko/compiler': 5.41.6
       anymatch: 3.1.3
       domelementtype: 2.3.0
       domhandler: 5.0.3
@@ -5295,9 +5296,9 @@ snapshots:
 
   marked@18.0.6: {}
 
-  marko@6.3.7:
+  marko@6.3.21:
     dependencies:
-      '@marko/compiler': 5.41.1
+      '@marko/compiler': 5.41.6
       csstype: 3.2.3
       fastest-levenshtein: 1.0.16
       magic-string: 0.30.21
