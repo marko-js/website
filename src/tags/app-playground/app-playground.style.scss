@@ -78,46 +78,11 @@
     margin-bottom: 0.5rem;
   }
 
+  // Shared preview styles live in embed-result.style.scss; only the embed
+  // sizing belongs here.
   .playground-live-result {
-    position: relative;
     height: 14rem;
     resize: vertical;
     overflow: auto;
-
-    iframe {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: var(--color-white);
-
-      &.hide {
-        visibility: hidden;
-      }
-    }
-
-    .playground-live-error {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      overflow: auto;
-      padding: 0.5rem 0.75rem;
-      background-color: var(--color-background);
-      color: var(--color-red);
-      font-family: "Ubuntu Mono", monospace;
-      white-space: pre-wrap;
-
-      p {
-        margin: 0;
-      }
-    }
-
-    .playground-live-loading {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: var(--color-gray);
-    }
   }
 }

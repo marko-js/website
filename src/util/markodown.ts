@@ -43,7 +43,55 @@ export default function markodownPlugin(): PluginOption {
         cwd: docsPath,
       });
 
+      const learnPath = path.join(process.cwd(), "learn");
+      const learnPages = path.join(
+        process.cwd(),
+        "src",
+        "routes",
+        "learn",
+        "_compiled-learn",
+      );
+
+      await fs.rm(learnPages, { recursive: true, force: true });
+      await fs.mkdir(learnPages, { recursive: true });
+
+      // Lesson order comes from the numeric filename prefixes, which are
+      // stripped from the served URLs.
+      const learnFiles = glob
+        .sync("**/*.md", { cwd: learnPath })
+        .map((file) => file.split(path.sep).join("/"))
+        .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+      const learnManifest: { slug: string; title: string }[] = [];
+
       await Promise.all([
+        ...learnFiles.map(async (file, i) => {
+          const content = await fs.readFile(
+            path.join(learnPath, file),
+            "utf-8",
+          );
+          const { markoCode, headings } = await mdToMarko(content, {
+            checkpoints: true,
+          });
+          const slug = file
+            .replace(/\.md$/, "")
+            .split("/")
+            .map((segment) => segment.replace(/^\d+-/, ""))
+            .join("/");
+          learnManifest[i] = { slug, title: headings[0].title };
+          const target = path.join(learnPages, ...slug.split("/"));
+          await fs.mkdir(path.dirname(target), { recursive: true });
+          await Promise.all([
+            fs.writeFile(`${target}+page.marko`, markoCode),
+            fs.writeFile(
+              `${target}+meta.json`,
+              JSON.stringify({
+                pageTitle: headings[0].title,
+                headings: headings[0].children,
+                hideFooter: true,
+              }),
+            ),
+          ]);
+        }),
         ...mdFiles.map(async (file) => {
           const content = await fs.readFile(path.join(docsPath, file), "utf-8");
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
@@ -72,6 +120,11 @@ export default function markodownPlugin(): PluginOption {
         pruneDocsBanners(mdFiles),
         buildSearchIndex(docsPath),
       ]);
+
+      await fs.writeFile(
+        path.join(learnPages, "manifest.json"),
+        JSON.stringify(learnManifest),
+      );
     },
   };
 }
@@ -140,10 +193,14 @@ async function pruneDocsBanners(mdFiles: string[]) {
   );
 }
 
-async function mdToMarko(source: string) {
+async function mdToMarko(source: string, opts?: { checkpoints?: boolean }) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(semanticAdmonitions(), headingSections(headings), markoDocs())
+    .use(
+      semanticAdmonitions(),
+      headingSections(headings),
+      markoDocs(opts?.checkpoints),
+    )
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -225,7 +282,8 @@ function isPlaygroundFence(token: Tokens.Code) {
   return lang === "marko" && modifiers.includes("playground");
 }
 
-function markoDocs(): MarkedExtension {
+function markoDocs(checkpoints?: boolean): MarkedExtension {
+  let checkpointCount = 0;
   return {
     async: true,
     hooks: {
@@ -358,7 +416,14 @@ function markoDocs(): MarkedExtension {
               "A playground group needs an index.marko entry file",
             );
           }
-          out += `<app-playground files=${JSON.stringify(files)}>`;
+          if (checkpoints) {
+            // In lesson pages, playground fences load into the page's shared
+            // workspace instead of embedding their own; the first group is the
+            // lesson's starting state.
+            out += `<learn-checkpoint files=${JSON.stringify(files)}${checkpointCount++ === 0 ? " auto" : ""}>`;
+          } else {
+            out += `<app-playground files=${JSON.stringify(files)}>`;
+          }
         }
 
         out += `<app-code-block lang="${lang}"`;
