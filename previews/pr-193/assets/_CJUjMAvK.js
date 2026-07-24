@@ -1,0 +1,2 @@
+import{M as e,V as t,i as n,o as r}from"./_g5edqev1.js";import"./_bVTKQkmU.js";var i=e(9,e=>r(e.a,`aria-current`,e.j&&`step`));t(`h0`,e=>{{let t=document.getElementById(e.f);if(t){let r=new IntersectionObserver(([t])=>{i(e,t.isIntersecting)},{rootMargin:`-20% 0px -20% 0px`});r.observe(t),n(e,0).onabort=()=>r.disconnect()}}});
+//# sourceMappingURL=_CJUjMAvK.js.map
