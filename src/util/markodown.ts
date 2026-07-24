@@ -214,13 +214,50 @@ declare module "marked" {
       htmlTS?: string;
       conciseTS?: string;
       filename?: string;
+      playgroundFiles?: Code[];
+      playgroundEnd?: boolean;
     }
   }
+}
+
+function isPlaygroundFence(token: Tokens.Code) {
+  const [lang, ...modifiers] = (token.lang ?? "").trim().split(/\s+/);
+  return lang === "marko" && modifiers.includes("playground");
 }
 
 function markoDocs(): MarkedExtension {
   return {
     async: true,
+    hooks: {
+      // Consecutive ```marko playground fences (blank lines between them are
+      // fine) become the files of a single interactive playground; anything
+      // else, including prose, ends the group.
+      processAllTokens(tokens) {
+        let group: Tokens.Code[] | undefined;
+        const endGroup = () => {
+          if (group) {
+            group[group.length - 1].playgroundEnd = true;
+            group = undefined;
+          }
+        };
+
+        for (const token of tokens) {
+          if (token.type === "code" && isPlaygroundFence(token)) {
+            if (group) {
+              group.push(token);
+            } else {
+              group = [token];
+              token.playgroundFiles = group;
+            }
+          } else if (token.type !== "space") {
+            endGroup();
+          }
+        }
+
+        endGroup();
+        return tokens;
+      },
+    },
     async walkTokens(token) {
       if (token.type === "code") {
         // named files begin with `/* file.name */\n`
@@ -298,8 +335,33 @@ function markoDocs(): MarkedExtension {
       table(token) {
         return `<div class="table-scroll">${Renderer.prototype.table.call(this, token)}</div>`;
       },
-      code({ lang, text, html, concise, htmlTS, conciseTS, filename }) {
-        let out = `<app-code-block lang="${lang}"`;
+      code(token) {
+        const { lang, text, html, concise, htmlTS, conciseTS, filename } =
+          token;
+        let out = "";
+
+        if (token.playgroundFiles) {
+          const files = token.playgroundFiles.map((file, i) => {
+            const path = file.filename ?? (i === 0 ? "index.marko" : "");
+            if (!path) {
+              throw new Error(
+                "Each fence after the first in a playground group needs a /* filename */ comment",
+              );
+            }
+            return {
+              path,
+              content: file.text.endsWith("\n") ? file.text : `${file.text}\n`,
+            };
+          });
+          if (!files.some((file) => file.path === "index.marko")) {
+            throw new Error(
+              "A playground group needs an index.marko entry file",
+            );
+          }
+          out += `<app-playground files=${JSON.stringify(files)}>`;
+        }
+
+        out += `<app-code-block lang="${lang}"`;
         if (filename) {
           out += ` filename="${filename}"`;
         }
@@ -308,7 +370,12 @@ function markoDocs(): MarkedExtension {
         } else {
           out += ` text=${JSON.stringify(text)}`;
         }
-        return out + "/>";
+        out += "/>";
+
+        if (token.playgroundEnd) {
+          out += "</>";
+        }
+        return out;
       },
       codespan(token) {
         return `<code>${token.text

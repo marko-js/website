@@ -1,0 +1,20 @@
+import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import type { File } from "app/util/workspace";
+client import { compress } from "app/util/hasher";
+export interface Input {
+  files: File[];
+}
+
+let/hash=""
+script --
+  const timeout = setTimeout(() => {
+    compress(JSON.stringify(input.files)).then((h) => (hash = h));
+  }, 500);
+  $signal.onabort = () => clearTimeout(timeout);
+
+a.playground-embed-open
+  ,href=`${import.meta.env.BASE_URL}playground${hash && `#${hash}`}`
+  ,target="_blank"
+  ,rel="noopener"
+  -- Open in Playground
+  fa-icon=faUpRightFromSquare
