@@ -816,6 +816,9 @@ export interface Input {
 <${"h" + input.headingSize}>Hello!</>
 ```
 
+> [!CAUTION]
+> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use user-provided content as a dynamic tag name.
+
 ### Dynamic Custom Tags
 
 ```marko
