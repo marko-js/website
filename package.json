@@ -17,7 +17,7 @@
     "deploy": "pnpm run build && gh-pages --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
-    "lint": "markdownlint \"docs/**/*.md\" && cspell \"**/*.{md,ts,marko}\"",
+    "lint": "markdownlint \"docs/**/*.md\" \"learn/**/*.md\" && cspell \"**/*.{md,ts,marko}\"",
     "prepare": "husky",
     "preview": "marko-run preview"
   },

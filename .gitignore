@@ -9,6 +9,7 @@ dist
 .agents
 
 **/_compiled-docs
+**/_compiled-learn
 public/search-index.json
 public/og
 tsconfig.tsbuildinfo

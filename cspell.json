@@ -47,6 +47,7 @@
     "mlog",
     "nbsp",
     "noindex",
+    "noopener",
     "onbeforeinput",
     "openjsf",
     "optgroup",
@@ -80,6 +81,12 @@
     "WHATWG"
   ],
   "ignoreRegExpList": [],
-  "files": ["*", "docs/**/*", "src/**/*"],
-  "ignorePaths": ["**/_compiled-docs", "dist", "skills", ".claude"]
+  "files": ["*", "docs/**/*", "learn/**/*", "src/**/*"],
+  "ignorePaths": [
+    "**/_compiled-docs",
+    "**/_compiled-learn",
+    "dist",
+    "skills",
+    ".claude"
+  ]
 }

@@ -1,0 +1,46 @@
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import Editor from "app/routes/playground/tags/playground/tags/editor/editor.marko";
+import SplitPanes from "app/routes/playground/tags/split-panes/split-panes.marko";
+import EmbedResult from "app/tags/app-playground/tags/embed-result.marko";
+import type { File } from "app/util/workspace";
+import manifest from "./_compiled-learn/manifest.json";
+client import { onLoadFiles } from "app/util/learn-files";
+export interface Input {
+  content: Marko.Body;
+}
+
+let/files=[] as File[]
+let/tab=0
+
+script --
+  onLoadFiles((newFiles) => {
+    files = newFiles.map((file) => ({ ...file }));
+    tab = 0;
+  }, $signal);
+
+const/index=manifest.findIndex((lesson) =>
+  $global.url.pathname.endsWith(`/learn/${lesson.slug}`),
+)
+const/prev=(manifest[index - 1] as (typeof manifest)[number] | undefined)
+const/next=(manifest[index + 1] as (typeof manifest)[number] | undefined)
+
+SplitPanes
+  @first
+    div.learn-lesson
+      article.learn-article
+        ${input.content}
+      nav.learn-nav aria-label="lessons"
+        if=prev
+          a.learn-nav-prev href=`/learn/${prev.slug}`
+            fa-icon=faArrowLeft
+            -- ${prev.title}
+        span.learn-nav-progress -- ${index + 1} / ${manifest.length}
+        if=next
+          a.learn-nav-next href=`/learn/${next.slug}`
+            -- ${next.title}
+            fa-icon=faArrowRight
+  @second
+    div.learn-workspace
+      div.learn-workspace-editor
+        Editor files:=files tab:=tab
+      EmbedResult files=files

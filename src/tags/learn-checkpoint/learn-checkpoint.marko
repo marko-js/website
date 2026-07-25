@@ -1,0 +1,25 @@
+import { faPlay, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import type { File } from "app/util/workspace";
+client import { loadFiles } from "app/util/learn-files";
+export interface Input {
+  files: File[];
+  auto?: boolean;
+  content?: Marko.Body;
+}
+
+script -- if (input.auto) loadFiles(input.files);
+
+div.learn-checkpoint
+  details
+    summary
+      span.learn-checkpoint-files --
+        ${input.files.map((file) => file.path).join(", ")}
+    div.learn-checkpoint-code
+      ${input.content}
+  button.learn-checkpoint-load
+    ,type="button"
+    ,onClick() {
+      loadFiles(input.files);
+    }
+    fa-icon=(input.auto ? faRotateLeft : faPlay)
+    -- ${input.auto ? "Reset editor" : "Load into editor"}

@@ -1,0 +1,83 @@
+:root {
+  --stick-size: 5rem;
+}
+
+#header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  margin: 0 0;
+  padding: 0 1rem;
+  transform: none !important;
+  background-color: var(--color-background);
+}
+
+.learn-lesson {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.learn-article {
+  padding: 1rem 1.5rem 2rem;
+  max-width: 48rem;
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  pre {
+    overflow-x: auto;
+  }
+}
+
+.learn-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem 2rem;
+  max-width: 48rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      height: 0.8em;
+      fill: currentColor;
+    }
+  }
+
+  .learn-nav-progress {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+  }
+
+  .learn-nav-next {
+    margin-left: auto;
+  }
+}
+
+.learn-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .learn-workspace-editor {
+    display: flex;
+    flex-direction: column;
+    flex: 1.2 1 0;
+    min-height: 0;
+    border-bottom: 1px solid var(--color-gray-dim);
+  }
+
+  .playground-live-result {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+}

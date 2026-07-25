@@ -1,0 +1,35 @@
+client import {
+  subscribe,
+  update,
+  type File,
+  type Workspace,
+} from "app/util/workspace";
+export interface Input {
+  files: File[];
+}
+
+let/ws={} as Partial<Workspace>
+script -- subscribe((v) => (ws = v), $signal);
+
+// Debounced copy of input.files so the preview doesn't rebuild on every
+// keystroke. `let-debounce` is not used here because its returned value never
+// flows when rendered without server markup (see agent-feedback).
+let/files=input.files
+script --
+  const timeout = setTimeout(() => {
+    files = input.files;
+  }, 500);
+  $signal.onabort = () => clearTimeout(timeout);
+
+const/errors=ws.buildErrors || ws.runtimeErrors
+
+div.playground-live-result
+  if=errors
+    div.playground-live-error role="alert"
+      p -- ${errors.join("\n")}
+  iframe/$frame title="example output" class=errors && "hide"
+  if=files.length
+    script -- update($signal, $frame(), files, true);
+  if=!ws.previewReady && !errors
+    div.playground-live-loading role="status"
+      span -- setting up

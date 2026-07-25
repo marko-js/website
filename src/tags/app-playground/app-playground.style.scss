@@ -1,0 +1,88 @@
+.playground-embed {
+  margin-block: 1rem;
+  border: 1px solid var(--color-gray-dim);
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  .playground-embed-static {
+    padding: 0 1rem;
+  }
+
+  .playground-embed-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--color-gray-dim);
+  }
+
+  .playground-embed-run {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border: none;
+    border-radius: 2rem;
+    background-color: var(--section-color, var(--color-blue));
+    color: var(--color-background);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.95rem;
+
+    svg {
+      height: 0.9em;
+      fill: currentColor;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background-color: var(--section-color-alt, var(--color-blue-alt));
+    }
+  }
+
+  .playground-embed-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    font-size: 0.9rem;
+
+    svg {
+      height: 0.8em;
+      fill: currentColor;
+    }
+  }
+}
+
+.playground-live {
+  display: flex;
+  flex-direction: column;
+
+  .playground-live-editor {
+    display: flex;
+    flex-direction: column;
+    height: 20rem;
+    resize: vertical;
+    overflow: auto;
+    border-bottom: 1px solid var(--color-gray-dim);
+  }
+
+  // The full-page playground pads the last line so it can scroll past the end;
+  // embedded editors are compact and don't want that.
+  .cm-line:last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  // Shared preview styles live in embed-result.style.scss; only the embed
+  // sizing belongs here.
+  .playground-live-result {
+    height: 14rem;
+    resize: vertical;
+    overflow: auto;
+  }
+}

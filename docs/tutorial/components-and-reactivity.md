@@ -18,7 +18,7 @@ As with many user interfaces, our first step is to gather input from the user. W
 
 Of course, right now we aren't keeping track of the value that this input contains. To do this, we need to introduce state. In Marko, the most common way to do this is with [tag variables](../reference/language.md#tag-variables). Here, we will use [Marko's `<let>` tag](../reference/core-tag.md#let):
 
-```marko
+```marko playground
 <let/degF=80>
 
 <input type="number" value=degF>
@@ -29,7 +29,7 @@ Of course, right now we aren't keeping track of the value that this input contai
 
 Now the `<input>` has an initial value, but we still aren't keeping track of it when it changes. One way you may think to do this is by listening for [the `input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) with an [event handler](../reference/native-tag.md#event-handlers):
 
-```marko
+```marko playground
 // Warning: There's a better way to do this!
 <let/degF=80>
 
@@ -41,7 +41,7 @@ Now the `<input>` has an initial value, but we still aren't keeping track of it 
 
 This _seems_ to work at first glance, but you'll find out quickly that the value of the input isn't fully synchronized. This is because in HTML, `value=` actually refers to the [_default_ value](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#value) of the input and not its current value. This is why instead, we should leverage the [controllable](../reference/native-tag.md#change-handlers) pattern with `Change` handlers.
 
-```marko
+```marko playground
 <let/degF=80>
 
 <input type="number" value=degF valueChange(value) { degF = parseFloat(value) }>
@@ -50,7 +50,7 @@ This _seems_ to work at first glance, but you'll find out quickly that the value
 
 Because this is such a common pattern, Marko provides a [shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) for it!
 
-```marko
+```marko playground
 <let/degF=80>
 
 <input type="number" value:parseFloat:=degF>
@@ -61,7 +61,7 @@ Because this is such a common pattern, Marko provides a [shorthand](../reference
 
 Now we can use [the `<const>` tag](../reference/core-tag.md#const) to convert to celsius!
 
-```marko
+```marko playground
 <let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
@@ -77,7 +77,7 @@ Since `degC` is a [tag variable](../reference/language.md#tag-variables), its ch
 
 Now that we have a reactive variable, let's see what else we can do! Maybe some notes about the temperature, using [conditional tags](../reference/core-tag.md#if--else)?
 
-```marko
+```marko playground
 <let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
@@ -101,7 +101,7 @@ Now that we have a reactive variable, let's see what else we can do! Maybe some 
 
 Or what about a temperature gauge, with some fancy CSS?
 
-```marko
+```marko playground
 <let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
 
@@ -141,7 +141,7 @@ Or what about a temperature gauge, with some fancy CSS?
 
 Actually, this is getting a little bit too complex to all put in one place. Maybe we should pull that temperature gauge out into a component:
 
-```marko
+```marko playground
 /* index.marko */
 <let/degF=80>
 <const/degC=(degF - 32) * 5 / 9>
@@ -154,7 +154,7 @@ Actually, this is getting a little bit too complex to all put in one place. Mayb
 <gauge temperature=degF/>
 ```
 
-```marko
+```marko playground
 /* tags/gauge.marko */
 <div class="gauge">
   <div class="needle" style={"--rotation": `${input.temperature * 180 / 100}deg`}/>
