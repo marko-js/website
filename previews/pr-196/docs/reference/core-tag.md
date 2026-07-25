@@ -671,6 +671,3 @@ Though not typically needed, vanilla versions of these tags may be written via t
   @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 </html-style>
 ```
-
-> [!CAUTION]
-> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.
