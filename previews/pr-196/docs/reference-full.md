@@ -817,7 +817,7 @@ export interface Input {
 ```
 
 > [!CAUTION]
-> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). As with [unescaped text](#unescaped-text), a dynamic tag name must already be sanitized. Never use user-provided content as a dynamic tag name.
+> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use user-provided content as a dynamic tag name.
 
 ### Dynamic Custom Tags
 
@@ -1791,6 +1791,9 @@ Though not typically needed, vanilla versions of these tags may be written via t
   @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 </html-style>
 ```
+
+> [!CAUTION]
+> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.
 
 
 ----------

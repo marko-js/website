@@ -811,7 +811,7 @@ export interface Input {
 ```
 
 > [!CAUTION]
-> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). As with [unescaped text](#unescaped-text), a dynamic tag name must already be sanitized. Never use user-provided content as a dynamic tag name.
+> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use user-provided content as a dynamic tag name.
 
 ### Dynamic Custom Tags
 
