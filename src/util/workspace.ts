@@ -86,7 +86,7 @@ const consoleInjection = (
     "error",
     "debug",
     "trace",
-  ] as (keyof typeof console)[]) {
+  ] as const) {
     const f = c[method] as any;
     c[method] = ((...args: unknown[]) => {
       try {

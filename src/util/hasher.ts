@@ -33,7 +33,7 @@ export async function decompress(value: string) {
     const stream = new DecompressionStream("gzip");
     const writer = stream.writable.getWriter();
     const bytes = new Uint8Array(compressed.length);
-    for (let i = compressed.length; i--; ) {
+    for (let i = compressed.length; i--;) {
       bytes[i] = compressed.charCodeAt(i);
     }
     writer.write(bytes);

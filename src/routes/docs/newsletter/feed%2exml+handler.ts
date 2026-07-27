@@ -24,7 +24,7 @@ function stripMarkdown(value: string) {
   return value.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`/g, "");
 }
 
-export const GET = (() => {
+export const GET = Run.GET(() => {
   const items = fs
     .readdirSync(newsletterDir)
     .filter((file) => file.endsWith(".md"))
@@ -78,4 +78,4 @@ ${items
   return new Response(feed, {
     headers: { "Content-Type": "application/rss+xml; charset=utf-8" },
   });
-}) satisfies MarkoRun.Handler;
+});
