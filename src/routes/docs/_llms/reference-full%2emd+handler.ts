@@ -17,10 +17,10 @@ const referenceDocs = prepareLlmsTxt(
   ].map((file) => path.join(referenceDir, file + ".md")),
 );
 
-export const GET = (() => {
+export const GET = Run.GET(() => {
   return new Response(referenceDocs, {
     headers: {
       "Content-Type": "text/plain",
     },
   });
-}) satisfies MarkoRun.Handler;
+});

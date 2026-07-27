@@ -22,7 +22,7 @@ let/file=files[selected]
   }
 
 // Bridges the format button (markup) to the editor's lifecycle; set on mount.
-let/doFormat=(() => {})
+let/doFormat=() => {}
 
 tabs files:=files selected:=selected
 div class=styles.editorWrap
@@ -42,7 +42,7 @@ div class=styles.editorWrap
 
 lifecycle<{
   editor?: EditorView;
-  listener: ReturnType<typeof EditorView.updateListener.of>;
+  listener?: ReturnType<typeof EditorView.updateListener.of>;
   currentPath?: string;
   change?: boolean;
   set(content: string): void;
@@ -86,7 +86,7 @@ lifecycle<{
     return EditorState.create({
       doc: f?.content,
       extensions: [
-        this.listener,
+        this.listener!,
         keymap.of([
           {
             // Alt+letter is a dead key on macOS, so use Cmd there instead.
