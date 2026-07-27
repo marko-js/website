@@ -1,0 +1,100 @@
+client import highlighter from "app/util/shiki";
+import { styleToClass } from "app/util/style-to-class";
+import {
+  langForFile,
+  parseError,
+  parseInline,
+  type CodeFrame,
+  type Inline,
+} from "app/util/compile-error";
+import styles from "./error-output.style.module.scss";
+export interface Input {
+  errors: readonly unknown[];
+  kind: "build" | "runtime";
+}
+
+// Both playground themes are emitted at once and picked by a media query, so
+// tokens carry `--shiki-light`/`--shiki-dark` rather than a resolved color.
+static const themes = { light: "marko-light", dark: "marko-dark" } as const;
+
+// Diagnostics only ever nest code spans inside a link, never another link, so
+// the leaf renderer stays separate rather than recursing.
+define/Leaf|{ node }: { node: Inline }|
+  if=node.type === "code"
+    code -- ${node.value}
+  else -- ${(node as { value: string }).value}
+
+define/Text|{ nodes }: { nodes: Inline[] }|
+  for|node| of=nodes
+    if=node.type === "link"
+      a
+        ,href=node.href
+        ,target=node.external && "_blank"
+        ,rel=node.external && "noopener noreferrer"
+        for|child| of=node.children
+          Leaf node=child
+    else
+      Leaf node=node
+
+define/Frame|{ frame }: { frame: CodeFrame }|
+  // Highlighting the frame as one snippet keeps constructs spanning its lines
+  // tokenized together, and yields one token array per row.
+  const/lines=(
+    highlighter.codeToTokens(frame.rows.map((row) => row.code).join("\n"), {
+      lang: langForFile(frame.file),
+      defaultColor: false,
+      themes,
+    }).tokens
+  )
+  div/frameEl class=styles.frame
+    for|row, i| of=frame.rows
+      div class=styles.gutter aria-hidden="true" data-error=row.isError --
+        ${row.num}
+      // `shiki` is the global class the layout hangs the theme's
+      // `--shiki-light`/`--shiki-dark` to `color` mapping off of.
+      div class=[styles.line, "shiki"] data-error=row.isError
+        for|token| of=lines[i] || []
+          span class=styleToClass(token.htmlStyle) -- ${token.content}
+      if=row.marker
+        div class=styles.gutter aria-hidden="true"
+        // Plain text on the same monospace grid, so the carets line up with
+        // the source above without measuring anything.
+        div class=styles.marker
+          -- ${" ".repeat(row.marker.start)}
+          span data-caret -- ${"^".repeat(row.marker.width)}
+
+  script --
+    const el = frameEl();
+    const caret = frame.rows.some((row) => row.marker)
+      ? (el.querySelector("[data-caret]") as HTMLElement | null)
+      : null;
+    if (caret) {
+      // A long line pushes the underlined token off the right edge, leaving a
+      // frame that shows everything except the part being pointed at.
+      el.scrollLeft = Math.max(0, caret.offsetLeft - el.clientWidth / 3);
+    }
+
+div class=styles.errors role="alert"
+  for|err| of=input.errors
+    const/parsed=parseError(err)
+    section class=styles.error
+      header class=styles.head
+        span class=styles.badge --
+          ${input.kind === "build" ? "Build failed" : "Runtime error"}
+        if=parsed.frame
+          span class=styles.location --
+            ${`${parsed.frame.file}:${parsed.frame.line}:${parsed.frame.col}`}
+        // A bare "Error" only repeats the badge; anything more specific earns
+        // its place.
+        else if=parsed.name !== "Error"
+          span class=styles.location -- ${parsed.name}
+
+      if=parsed.message
+        p class=styles.message
+          Text nodes=parseInline(parsed.message)
+
+      if=parsed.frame
+        Frame frame=parsed.frame
+
+      if=parsed.details
+        pre class=styles.details -- ${parsed.details}

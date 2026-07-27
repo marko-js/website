@@ -1,0 +1,149 @@
+.errors {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--color-background);
+}
+
+.error {
+  border: 1px solid var(--color-red-dim);
+  border-left-width: 4px;
+  border-radius: 4px;
+  background-color: var(--color-background);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-red-dim);
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.location {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.75;
+  margin-left: auto;
+}
+
+.message {
+  margin: 0;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  // Runtime errors carry their location on a second line; without this it runs
+  // straight into the end of the sentence.
+  white-space: pre-wrap;
+
+  code {
+    font-family: "Ubuntu Mono", monospace;
+    font-size: 1em;
+    padding: 0.05em 0.3em;
+    border-radius: 3px;
+    background-color: var(--color-gray-dim);
+  }
+
+  a {
+    color: var(--color-blue);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+
+    &:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    // Diagnostics routinely wrap a code span in a link. Letting the chip keep
+    // its own background breaks the underline into disconnected runs.
+    code {
+      padding: 0;
+      background: none;
+      color: inherit;
+    }
+  }
+}
+
+.frame {
+  // A two-column grid keeps every gutter and caret row on the same baseline
+  // grid as the source above it.
+  display: grid;
+  // `max-content` floor so a row's background spans the whole scrollable width
+  // rather than stopping at the container edge; `1fr` still fills short frames.
+  grid-template-columns: auto minmax(max-content, 1fr);
+  align-items: start;
+  // Makes this the offset parent the caret's scroll position is measured from.
+  position: relative;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-gray-alt-dim);
+  background-color: var(--color-gray-dim);
+  overflow-x: auto;
+}
+
+.gutter {
+  // Stays put while a long line scrolls horizontally underneath it, so the
+  // line numbers remain readable. Needs an opaque background to cover the code.
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--color-gray-dim);
+  padding: 0 0.75rem 0 0.5rem;
+  text-align: right;
+  user-select: none;
+  opacity: 0.5;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+
+  &[data-error] {
+    opacity: 1;
+    color: var(--color-red);
+    font-weight: bold;
+    background-color: var(--color-red-dim);
+  }
+}
+
+.line {
+  white-space: pre;
+  padding-right: 0.75rem;
+
+  &[data-error] {
+    background-color: var(--color-red-dim);
+  }
+}
+
+.marker {
+  white-space: pre;
+  padding-right: 0.75rem;
+  color: var(--color-red);
+  font-weight: bold;
+}
+
+.details {
+  margin: 0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--color-gray-alt-dim);
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  opacity: 0.75;
+}

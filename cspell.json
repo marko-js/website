@@ -47,6 +47,8 @@
     "mlog",
     "nbsp",
     "noindex",
+    "noopener",
+    "noreferrer",
     "onbeforeinput",
     "openjsf",
     "optgroup",
