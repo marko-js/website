@@ -40,7 +40,7 @@ export class ConcatSourceMap {
       });
 
       if (map.sourcesContent) {
-        for (let i = map.sourcesContent.length; i--; ) {
+        for (let i = map.sourcesContent.length; i--;) {
           const sourceContent = map.sourcesContent[i];
           const source = map.sources[i];
           if (sourceContent !== null && source !== null) {
@@ -49,7 +49,7 @@ export class ConcatSourceMap {
         }
       }
     } else if (source) {
-      for (let i = lines; i--; ) {
+      for (let i = lines; i--;) {
         this.sourceMap.addMapping({
           generated: {
             line: line + i,
@@ -69,7 +69,7 @@ export class ConcatSourceMap {
 
 function getLineCount(str: string) {
   let lines = 1;
-  for (let i = str.length; i--; ) {
+  for (let i = str.length; i--;) {
     if (str.charAt(i) === "\n") {
       lines++;
     }

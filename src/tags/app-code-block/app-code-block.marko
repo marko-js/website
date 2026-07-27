@@ -11,7 +11,9 @@ static declare module "hast" {
 export interface Input {
   lang: string;
   text: string;
-  markoAlts?: [concise: string, htmlTS: string, conciseTS: string];
+  // The TS variants are omitted when the sample is identical with and without
+  // them, so only the concise variant is always present.
+  markoAlts?: [concise: string, htmlTS?: string, conciseTS?: string];
   filename?: string;
   theme?: "light" | "dark" | "reverse";
   cursor?: {

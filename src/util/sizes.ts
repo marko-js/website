@@ -27,7 +27,17 @@ export async function toByteSizes(
 }
 
 function streamToGzipByteLength(data: ReadableStream<Uint8Array>) {
-  return streamToByteLength(data.pipeThrough(new CompressionStream("gzip")));
+  // `CompressionStream`'s writable side is typed `WritableStream<BufferSource>`,
+  // which `pipeThrough` rejects even though it accepts strictly more than the
+  // `Uint8Array` chunks written to it.
+  return streamToByteLength(
+    data.pipeThrough(
+      new CompressionStream("gzip") as ReadableWritablePair<
+        Uint8Array,
+        Uint8Array
+      >,
+    ),
+  );
 }
 
 async function streamToByteLength(data: ReadableStream<Uint8Array>) {

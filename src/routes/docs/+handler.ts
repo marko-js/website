@@ -1,3 +1,3 @@
-export const GET = ((ctx) => {
+export const GET: MarkoRun.Handler = (ctx) => {
   return ctx.redirect("/docs/introduction/getting-started");
-}) satisfies MarkoRun.Handler;
+};

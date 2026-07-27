@@ -40,7 +40,10 @@ async function apiFetch(url, init = {}) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     let res;
     try {
-      res = await fetch(url, { ...init, headers: { ...headers, ...init.headers } });
+      res = await fetch(url, {
+        ...init,
+        headers: { ...headers, ...init.headers },
+      });
     } catch (err) {
       lastError = err;
       if (attempt < MAX_RETRIES) await sleep(attempt * 500);
@@ -65,14 +68,17 @@ async function gql(query, variables) {
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok || json.errors) {
-    throw new Error(`GitHub GraphQL error (${res.status}): ${JSON.stringify(json.errors ?? json)}`);
+    throw new Error(
+      `GitHub GraphQL error (${res.status}): ${JSON.stringify(json.errors ?? json)}`,
+    );
   }
   return json.data;
 }
 
 async function rest(path) {
   const res = await apiFetch(`${API}${path}`);
-  if (!res.ok) throw new Error(`GitHub API ${res.status} ${res.statusText} for ${path}`);
+  if (!res.ok)
+    throw new Error(`GitHub API ${res.status} ${res.statusText} for ${path}`);
   return res.json();
 }
 
@@ -147,9 +153,13 @@ const fieldValue = (item, name) => {
 };
 
 async function pullMonth(month) {
-  if (!month) throw new Error('Usage: pull-board.js "<Iteration Title>"  (e.g. "Jul 2026")');
+  if (!month)
+    throw new Error(
+      'Usage: pull-board.js "<Iteration Title>"  (e.g. "Jul 2026")',
+    );
   const items = await collect(
-    async (cursor) => (await gql(ITEMS_QUERY, { project: PROJECT_ID, cursor })).node.items,
+    async (cursor) =>
+      (await gql(ITEMS_QUERY, { project: PROJECT_ID, cursor })).node.items,
   );
   const rows = [];
   for (const item of items) {
@@ -157,7 +167,12 @@ async function pullMonth(month) {
     const c = item.content ?? {};
     const ref = c.repository ? `${c.repository.name}#${c.number}` : "draft";
     rows.push(
-      [ref, fieldValue(item, "Epic") ?? "-", fieldValue(item, "Task") ?? "-", c.title ?? "(draft)"].join("\t"),
+      [
+        ref,
+        fieldValue(item, "Epic") ?? "-",
+        fieldValue(item, "Task") ?? "-",
+        c.title ?? "(draft)",
+      ].join("\t"),
     );
   }
   console.log(rows.sort().join("\n"));
@@ -168,14 +183,21 @@ async function searchMergedPRs(ym, usage) {
   const [y, m] = ym.split("-").map(Number);
   const lastDay = String(new Date(y, m, 0).getDate()).padStart(2, "0");
   const q = `org:marko-js is:pr is:merged merged:${ym}-01..${ym}-${lastDay}`;
-  const nodes = await collect(async (cursor) => (await gql(SEARCH_QUERY, { q, cursor })).search);
+  const nodes = await collect(
+    async (cursor) => (await gql(SEARCH_QUERY, { q, cursor })).search,
+  );
   return nodes.filter((pr) => pr?.repository);
 }
 
 async function pullMerged(ym) {
-  const prs = await searchMergedPRs(ym, "Usage: pull-board.js merged <YYYY-MM>  (e.g. 2026-07)");
+  const prs = await searchMergedPRs(
+    ym,
+    "Usage: pull-board.js merged <YYYY-MM>  (e.g. 2026-07)",
+  );
   for (const pr of prs) {
-    console.log(`${pr.repository.name}#${pr.number}\t${pr.title}\t${pr.author?.login ?? "?"}\t${pr.authorAssociation}`);
+    console.log(
+      `${pr.repository.name}#${pr.number}\t${pr.title}\t${pr.author?.login ?? "?"}\t${pr.authorAssociation}`,
+    );
   }
 }
 
@@ -183,22 +205,36 @@ async function pullMerged(ym) {
 // authorAssociation FIRST_TIME_CONTRIBUTOR means their first PR to that repo;
 // FIRST_TIMER means their first PR anywhere on GitHub.
 async function pullContributors(ym) {
-  const prs = await searchMergedPRs(ym, "Usage: pull-board.js contributors <YYYY-MM>  (e.g. contributors 2026-07)");
+  const prs = await searchMergedPRs(
+    ym,
+    "Usage: pull-board.js contributors <YYYY-MM>  (e.g. contributors 2026-07)",
+  );
   const firstTime = prs.filter(
-    (pr) => pr.authorAssociation === "FIRST_TIME_CONTRIBUTOR" || pr.authorAssociation === "FIRST_TIMER",
+    (pr) =>
+      pr.authorAssociation === "FIRST_TIME_CONTRIBUTOR" ||
+      pr.authorAssociation === "FIRST_TIMER",
   );
   if (!firstTime.length) {
     console.log("(no first-time contributors this month)");
     return;
   }
   for (const pr of firstTime) {
-    console.log(`${pr.repository.name}#${pr.number}\t${pr.author?.login ?? "unknown"}\t${pr.title}`);
+    console.log(
+      `${pr.repository.name}#${pr.number}\t${pr.author?.login ?? "unknown"}\t${pr.title}`,
+    );
   }
 }
 
 async function showPr(repo, number) {
-  if (!repo || !number) throw new Error("Usage: pull-board.js pr <repo> <number>  (e.g. pr language-server 527)");
-  const { repository } = await gql(PR_QUERY, { owner: "marko-js", repo, number: Number(number) });
+  if (!repo || !number)
+    throw new Error(
+      "Usage: pull-board.js pr <repo> <number>  (e.g. pr language-server 527)",
+    );
+  const { repository } = await gql(PR_QUERY, {
+    owner: "marko-js",
+    repo,
+    number: Number(number),
+  });
   const pr = repository?.pullRequest;
   if (!pr) throw new Error(`marko-js/${repo}#${number} not found`);
   const out = [pr.title, "----", pr.body?.trim() || "(no description)"];
@@ -214,15 +250,22 @@ async function showPr(repo, number) {
   const files = pr.files?.nodes ?? [];
   const signal = files.filter((f) => !isNoise(f.path));
   if (files.length) {
-    out.push("", `Changed files (${signal.length} of ${files.length}, test/generated hidden):`);
-    for (const f of signal) out.push(`  ${f.path} (+${f.additions} -${f.deletions})`);
+    out.push(
+      "",
+      `Changed files (${signal.length} of ${files.length}, test/generated hidden):`,
+    );
+    for (const f of signal)
+      out.push(`  ${f.path} (+${f.additions} -${f.deletions})`);
     if (!signal.length) out.push("  (only test/generated files changed)");
   }
   console.log(out.join("\n"));
 }
 
 async function showIssue(repo, number) {
-  if (!repo || !number) throw new Error("Usage: pull-board.js issue <repo> <number>  (e.g. issue marko 3167)");
+  if (!repo || !number)
+    throw new Error(
+      "Usage: pull-board.js issue <repo> <number>  (e.g. issue marko 3167)",
+    );
   const issue = await rest(`/repos/marko-js/${repo}/issues/${number}`);
   console.log(`${issue.title}\n----\n${issue.body ?? ""}`);
 }

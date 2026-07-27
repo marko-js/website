@@ -11,7 +11,7 @@ interface GithubProfile {
   contributions: number;
 }
 
-export default ((ctx) => {
+const middleware: MarkoRun.Handler = (ctx) => {
   const route = ctx.url.pathname.slice(ctx.url.pathname.indexOf("docs/"));
   const contributors: Record<string, GithubProfile> = {};
   ctx.contributors = fetch(
@@ -48,4 +48,6 @@ export default ((ctx) => {
     .catch((e) => {
       return [];
     });
-}) satisfies MarkoRun.Handler;
+};
+
+export default middleware;

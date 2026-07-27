@@ -57,7 +57,8 @@ function rebaseMetaRefresh(value) {
   );
 }
 
-const ATTR = /\b(href|src|srcset|content)=("([^"]*)"|'([^']*)'|([^\s"'`=<>]+))/g;
+const ATTR =
+  /\b(href|src|srcset|content)=("([^"]*)"|'([^']*)'|([^\s"'`=<>]+))/g;
 
 function rebaseHtml(html) {
   return html.replace(ATTR, (match, name, _raw, dq, sq, unq) => {
@@ -92,4 +93,6 @@ for await (const file of htmlFiles(dir)) {
   }
 }
 
-console.log(`rebase-html: prefixed root-absolute links with "${base}" in ${changed} file(s).`);
+console.log(
+  `rebase-html: prefixed root-absolute links with "${base}" in ${changed} file(s).`,
+);
