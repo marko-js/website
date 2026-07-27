@@ -142,9 +142,7 @@ div class=styles.result
 
   div class=styles.output
     if=ws.buildErrors
-      div class=styles.error
-        p -- ${ws.buildErrors.join("\n")}
-        p -- Check the devtools console for more information.
+      error-output errors=ws.buildErrors kind="build"
     else if=outputType !== "preview"
       div
         ,id=styles.compiled
@@ -160,9 +158,7 @@ div class=styles.result
           )
         }
     else if=ws.runtimeErrors
-      div class=styles.error
-        p -- ${ws.runtimeErrors.join("\n")}
-        p -- Check the devtools console for more information.
+      error-output errors=ws.runtimeErrors kind="runtime"
 
     iframe/$frame
       ,title="code output"
