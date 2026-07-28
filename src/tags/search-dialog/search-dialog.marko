@@ -46,8 +46,21 @@ script --
     activeIndex = -1;
   }
 
+// The results are a listbox the input owns rather than a focus stop of their
+// own: focus stays in the field and `aria-activedescendant` reports the row
+// the arrow keys are on, which is what lets typing and choosing interleave.
+const/expanded=!!(results && results.length > 0)
+const/status=(
+  !results
+    ? ""
+    : results.length === 0
+      ? "No results found."
+      : `${results.length} result${results.length === 1 ? "" : "s"}`
+)
+
 dialog/$dialog
   ,class=styles.dialog
+  ,aria-label="Search docs"
   ,onCancel(e) {
     e.preventDefault();
     open = false;
@@ -82,11 +95,28 @@ dialog/$dialog
       ,class=styles.input
       ,type="text"
       ,placeholder="Search docs..."
+      ,aria-label="Search docs"
+      ,role="combobox"
+      ,aria-autocomplete="list"
+      ,aria-expanded=(expanded ? "true" : "false")
+      ,aria-controls=(expanded ? "search-results" : undefined)
+      ,aria-activedescendant=(
+        expanded && activeIndex >= 0
+          ? `search-result-${activeIndex}`
+          : undefined
+      )
       ,value:=query
-    if=results && results.length > 0
-      div class=styles.results
+    div class=styles.status role="status" -- ${status}
+    if=expanded
+      div#search-results
+        ,class=styles.results
+        ,role="listbox"
+        ,aria-label="Results"
         for|result, i| of=results
           a/$el
+            ,id=`search-result-${i}`
+            ,role="option"
+            ,aria-selected=(i === activeIndex ? "true" : "false")
             ,href=result.href
             ,class=[styles.result, i === activeIndex && styles.active]
             ,onClick() {

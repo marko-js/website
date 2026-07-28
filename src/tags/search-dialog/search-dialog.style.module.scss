@@ -53,6 +53,19 @@ html {
   }
 }
 
+// Announces the result count to screen readers, which otherwise get no signal
+// that anything happened when the list below the field changes.
+.status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
 .results {
   border-top: 1px solid var(--color-gray-dim);
   overflow-y: auto;
