@@ -1,0 +1,2 @@
+import{L as e,i as t,k as n,o as r}from"./_Ca_JKSD4.js";var i=n(9,e=>r(e.a,`aria-current`,e.j&&`step`));e(`h0`,e=>{{let n=document.getElementById(e.f);if(n){let r=new IntersectionObserver(([t])=>{i(e,t.isIntersecting)},{rootMargin:`-20% 0px -20% 0px`});r.observe(n),t(e,0).onabort=()=>r.disconnect()}}});
+//# sourceMappingURL=_Dxb67PsY.js.map
