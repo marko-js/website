@@ -10,6 +10,8 @@ const/{ on, off, ...checkboxInput }=input
 label class=styles.label
   span -- ${off}
   span class=styles.appSwitch
-    input ...checkboxInput type="checkbox"
+    // `switch` announces the on/off state a checkbox only implies, which the
+    // visible "HTML"/"Concise" pair does not convey on its own.
+    input ...checkboxInput type="checkbox" role="switch"
     fa-icon=faToggleOff
   span -- ${on}

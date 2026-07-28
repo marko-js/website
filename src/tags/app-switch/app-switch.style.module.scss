@@ -1,7 +1,25 @@
 .appSwitch {
   width: 1.5rem;
+  position: relative;
+
+  // Hidden visually but still focusable and exposed to assistive tech. With
+  // `display: none` the control was reachable only by pointer.
   > input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  // The input carries the focus but cannot show it, so the icon stands in.
+  &:has(> input:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   > input:checked + svg {
