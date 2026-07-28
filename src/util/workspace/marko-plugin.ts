@@ -8,6 +8,7 @@ import runtimeDebugDOM from "marko/debug/dom?raw";
 import runtimeDebugHTML from "marko/debug/html?raw";
 
 import type { Workspace } from "../workspace";
+import { attachErrorFile } from "../compile-error";
 import { setResolveFileSystem } from "./modules-shim";
 
 declare module "../workspace" {
@@ -81,8 +82,12 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
   const hydrateConfig: compiler.Config = { ...baseConfig, output: "hydrate" };
   const compiled = ((ws.markoCompiled ??= {})[output] ??= {});
   const compileFile = (source: string, file: string) => {
-    const { code, map } = compiler.compileSync(source, file, baseConfig);
-    return (compiled[file] = { code, map });
+    try {
+      const { code, map } = compiler.compileSync(source, file, baseConfig);
+      return (compiled[file] = { code, map });
+    } catch (err) {
+      throw attachErrorFile(err, file);
+    }
   };
 
   for (const file of optimizeKnownTemplates) {

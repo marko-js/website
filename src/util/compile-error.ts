@@ -46,7 +46,190 @@ export interface ParsedError {
   details?: string;
 }
 
-export function parseError(err: unknown): ParsedError {
+/** Lines of source shown either side of the offending one. */
+const CONTEXT_LINES = 2;
+/** Tabs are expanded so the caret row lines up on the monospace grid. */
+const TAB_WIDTH = 2;
+
+/** The subset of an error worth reading structurally, from any producer. */
+interface ErrorMeta {
+  loc?: unknown;
+  label?: unknown;
+  filename?: unknown;
+  id?: unknown;
+  errors?: unknown;
+}
+
+interface NormalLoc {
+  line: number;
+  column: number;
+  endLine?: number;
+  endColumn?: number;
+}
+
+/**
+ * Flattens aggregates and normalizes each error. Marko raises `CompileErrors`
+ * holding one `CompileError` per diagnostic, and each deserves its own card.
+ */
+export function normalizeErrors(
+  errors: readonly unknown[],
+  files: Record<string, string> = {},
+): ParsedError[] {
+  const out: ParsedError[] = [];
+  for (const err of errors) collectError(err, files, out);
+  return out;
+}
+
+function collectError(
+  err: unknown,
+  files: Record<string, string>,
+  out: ParsedError[],
+) {
+  const children = (err as ErrorMeta | undefined)?.errors;
+  if (Array.isArray(children) && children.length) {
+    for (const child of children) collectError(child, files, out);
+  } else {
+    out.push(parseError(err, files));
+  }
+}
+
+/**
+ * Records the file a compile error came from. `CompileError` carries `loc` and
+ * `label` but not its filename, and the copy in the message is relativized
+ * against a cwd the playground does not have.
+ */
+export function attachErrorFile<T>(err: T, file: string): T {
+  const meta = err as ErrorMeta;
+  if (meta && typeof meta === "object") {
+    if (Array.isArray(meta.errors)) {
+      for (const child of meta.errors) attachErrorFile(child, file);
+    }
+    if (meta.filename === undefined) meta.filename = file;
+  }
+  return err;
+}
+
+/**
+ * Reads position and message off the error itself. Preferred over the frame
+ * text, which loses the diagnostic whenever the source is indented with tabs
+ * and cannot be relied on for producers other than the Marko compiler.
+ */
+function fromMetadata(
+  err: unknown,
+  files: Record<string, string>,
+): ParsedError | undefined {
+  const meta = err as ErrorMeta | undefined;
+  const loc = normalizeLoc(meta?.loc);
+  if (!loc) return undefined;
+
+  const file = firstString(meta?.filename, meta?.id);
+  const source = file === undefined ? undefined : files[file];
+  if (source === undefined) return undefined;
+
+  const label = typeof meta?.label === "string" ? meta.label : undefined;
+  return {
+    name: errorName(err),
+    message: label ?? errorMessage(err).split("\n")[0].trim(),
+    frame: buildFrame(displayPath(file!), source, loc),
+  };
+}
+
+/** Marko and Babel nest under `start`/`end`; Rollup reports a flat position. */
+function normalizeLoc(loc: unknown): NormalLoc | undefined {
+  const raw = loc as
+    | { line?: unknown; column?: unknown; start?: unknown; end?: unknown }
+    | undefined;
+  if (!raw || typeof raw !== "object") return undefined;
+
+  if (typeof raw.line === "number") {
+    return { line: raw.line, column: numberOr(raw.column, 0) };
+  }
+
+  const start = raw.start as { line?: unknown; column?: unknown } | undefined;
+  if (typeof start?.line !== "number") return undefined;
+  const end = raw.end as { line?: unknown; column?: unknown } | undefined;
+  return {
+    line: start.line,
+    column: numberOr(start.column, 0),
+    endLine: typeof end?.line === "number" ? end.line : undefined,
+    endColumn: typeof end?.column === "number" ? end.column : undefined,
+  };
+}
+
+function buildFrame(
+  file: string,
+  source: string,
+  loc: NormalLoc,
+): CodeFrame | undefined {
+  const lines = source.split(/\r?\n/);
+  if (loc.line < 1 || loc.line > lines.length) return undefined;
+
+  const from = Math.max(1, loc.line - CONTEXT_LINES);
+  const to = Math.min(lines.length, loc.line + CONTEXT_LINES);
+  const rows: CodeRow[] = [];
+
+  for (let num = from; num <= to; num++) {
+    const raw = lines[num - 1] ?? "";
+    if (num !== loc.line) {
+      rows.push({ num, code: expandTabs(raw).text, isError: false });
+      continue;
+    }
+    const start = expandTabs(raw, loc.column).column;
+    const end =
+      loc.endLine === loc.line && loc.endColumn !== undefined
+        ? expandTabs(raw, loc.endColumn).column
+        : start;
+    rows.push({
+      num,
+      code: expandTabs(raw).text,
+      isError: true,
+      marker: { start, width: Math.max(1, end - start) },
+    });
+  }
+
+  return { file, line: loc.line, col: loc.column + 1, rows };
+}
+
+/**
+ * Renders tabs as spaces and reports where `column` lands once they are, so the
+ * caret row and the source row share one grid.
+ */
+function expandTabs(line: string, column = 0) {
+  let text = "";
+  let shifted = column;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] !== "\t") {
+      text += line[i];
+      continue;
+    }
+    const pad = TAB_WIDTH - (text.length % TAB_WIDTH);
+    text += " ".repeat(pad);
+    if (i < column) shifted += pad - 1;
+  }
+  return { text, column: shifted };
+}
+
+function firstString(...values: unknown[]) {
+  for (const value of values) if (typeof value === "string") return value;
+  return undefined;
+}
+
+function numberOr(value: unknown, fallback: number) {
+  return typeof value === "number" ? value : fallback;
+}
+
+/** Workspace paths are absolute; the leading slash is noise in the header. */
+function displayPath(file: string) {
+  return file.replace(/^\//, "");
+}
+
+export function parseError(
+  err: unknown,
+  files: Record<string, string> = {},
+): ParsedError {
+  const structured = fromMetadata(err, files);
+  if (structured) return structured;
+
   const name = errorName(err);
   const raw = errorMessage(err);
   const lines = raw.split("\n");
