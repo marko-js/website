@@ -2,6 +2,9 @@ import type { SearchHit } from "../../util/search-worker";
 
 let worker: Worker | undefined;
 let ready: Promise<void> | undefined;
+let lastQueryId = 0;
+/** Resolvers keyed by request id, so a reply only settles the query it answers. */
+const pending = new Map<number, (hits: SearchHit[]) => void>();
 
 function ensureWorker(): Promise<void> {
   if (ready) return ready;
@@ -20,6 +23,14 @@ function ensureWorker(): Promise<void> {
     }
     worker!.addEventListener("message", onMessage);
   });
+  worker.addEventListener("message", (e: MessageEvent) => {
+    if (e.data?.type !== "results") return;
+    const resolve = pending.get(e.data.id);
+    if (resolve) {
+      pending.delete(e.data.id);
+      resolve(e.data.results);
+    }
+  });
   worker.postMessage({ type: "init" });
   return ready;
 }
@@ -34,15 +45,10 @@ export function warmSearch(): void {
 
 export async function sendQuery(q: string): Promise<SearchHit[]> {
   await ensureWorker();
+  const id = ++lastQueryId;
   const result = new Promise<SearchHit[]>((resolve) => {
-    worker!.addEventListener(
-      "message",
-      (e: MessageEvent) => {
-        if (e.data.type === "results") resolve(e.data.results);
-      },
-      { once: true },
-    );
+    pending.set(id, resolve);
   });
-  worker!.postMessage({ type: "query", query: q });
+  worker!.postMessage({ type: "query", query: q, id });
   return result;
 }

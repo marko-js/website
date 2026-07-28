@@ -154,7 +154,7 @@ function lookup(hrefs: string[]): SearchHit[] {
 // ── Worker message handler ───────────────────────────────────────────
 
 self.onmessage = async (e: MessageEvent) => {
-  const { type, query, hrefs } = e.data;
+  const { type, query, hrefs, id } = e.data;
 
   switch (type) {
     case "init": {
@@ -173,7 +173,8 @@ self.onmessage = async (e: MessageEvent) => {
 
     case "query": {
       const results = search(query);
-      self.postMessage({ type: "results", results, query });
+      // `id` is echoed so the client can tell which query a reply answers.
+      self.postMessage({ type: "results", results, query, id });
       break;
     }
 
