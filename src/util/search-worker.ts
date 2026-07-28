@@ -159,7 +159,9 @@ self.onmessage = async (e: MessageEvent) => {
   switch (type) {
     case "init": {
       try {
-        const res = await fetch("/search-index.json");
+        // Root-relative would miss the index on a preview deploy, which serves
+        // the site from /previews/pr-N/. BASE_URL always carries a trailing slash.
+        const res = await fetch(`${import.meta.env.BASE_URL}search-index.json`);
         const blocks: SearchBlock[] = await res.json();
         init(blocks);
         self.postMessage({ type: "ready" });
