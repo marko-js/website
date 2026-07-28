@@ -41,17 +41,6 @@ export default defineConfig({
         find: /^prettier$/,
         replacement: "prettier/standalone",
       },
-      // @marko/compiler colors a CompileError's file name with kleur. Bundled
-      // for the browser it becomes a lazily-initialized CJS module that is still
-      // uninitialized when the compiler formats an error, so every compile error
-      // in the playground surfaced as `TypeError: cyan is not a function` rather
-      // than the diagnostic. Only the browser bundle resolves through Vite; the
-      // compiler that runs the build is required by node, so its output stays
-      // colored.
-      {
-        find: /^kleur$/,
-        replacement: path.resolve("./shim/kleur/browser.js"),
-      },
     ],
   },
   optimizeDeps: {
