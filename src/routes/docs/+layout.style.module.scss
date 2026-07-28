@@ -60,7 +60,7 @@ main {
     background: linear-gradient(
       to bottom,
       var(--section-color),
-      color-mix(in srgb, var(--section-color-alt), var(--section-color))
+      color-mix(in srgb, var(--section-color-alt) 30%, var(--section-color))
     );
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -81,7 +81,7 @@ main {
     background: linear-gradient(
       to bottom,
       var(--section-color),
-      color-mix(in srgb, var(--section-color-alt), var(--section-color))
+      color-mix(in srgb, var(--section-color-alt) 30%, var(--section-color))
     );
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -95,7 +95,7 @@ main {
         background: linear-gradient(
           to bottom,
           var(--section-color),
-          color-mix(in srgb, var(--section-color-alt), var(--section-color))
+          color-mix(in srgb, var(--section-color-alt) 30%, var(--section-color))
         );
         background-clip: text;
         -webkit-text-fill-color: transparent;

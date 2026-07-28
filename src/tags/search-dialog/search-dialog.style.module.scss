@@ -90,7 +90,8 @@ html {
 
 .breadcrumbs {
   font-size: 0.75rem;
-  color: var(--color-blue-alt);
+  // `-alt` is the opposite theme's swatch, so this was the pale blue on white.
+  color: var(--color-blue);
 }
 
 .empty {

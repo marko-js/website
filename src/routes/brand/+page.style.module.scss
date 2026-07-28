@@ -69,7 +69,7 @@
     background: linear-gradient(
       to bottom right,
       var(--section-color),
-      color-mix(in srgb, var(--section-color-alt), var(--section-color))
+      color-mix(in srgb, var(--section-color-alt) 30%, var(--section-color))
     );
     text-decoration: none;
     padding: 0.1rem 0.5rem;
@@ -95,7 +95,7 @@ h2 {
   background: linear-gradient(
     to bottom,
     var(--section-color),
-    color-mix(in srgb, var(--section-color-alt), var(--section-color))
+    color-mix(in srgb, var(--section-color-alt) 30%, var(--section-color))
   );
   background-clip: text;
   -webkit-text-fill-color: transparent;
