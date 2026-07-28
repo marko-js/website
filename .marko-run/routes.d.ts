@@ -10,8 +10,9 @@ import type * as $ from "@marko/run";
 declare module "@marko/run" {
 	interface App extends $.DefineRoutes<{
 		"/": [L1, P1, D1];
+		"/sitemap.xml": [H1];
 		"/brand": [L1, P2, D2];
-		"/docs": [M1, H1];
+		"/docs": [M1, H2];
 		"/docs/newsletter": [M1, L1, L2, P3, D3];
 		"/docs/newsletter/april-2026": [M1, L1, L2, P4, D4];
 		"/docs/newsletter/february-2026": [M1, L1, L2, P5, D5];
@@ -63,8 +64,8 @@ declare module "@marko/run" {
 		"/docs/reference/typescript": [M1, L1, L2, P51, D51];
 		"/docs/tutorial/components-and-reactivity": [M1, L1, L2, P52, D52];
 		"/docs/tutorial/fundamentals": [M1, L1, L2, P53, D53];
-		"/docs/reference-full.md": [M1, H2];
-		"/docs/newsletter/feed.xml": [M1, H3];
+		"/docs/reference-full.md": [M1, H3];
+		"/docs/newsletter/feed.xml": [M1, H4];
 		"/playground": [L1, P54, D54];
 	}> {}
 }
@@ -92,11 +93,34 @@ declare module "../src/routes/docs/+middleware" {
   }
 }
 
-type H1 = $.Handler<"H1", typeof import("../src/routes/docs/+handler")>;
-declare module "../src/routes/docs/+handler" {
+type H1 = $.Handler<"H1", typeof import("../src/routes/sitemap%2exml+handler")>;
+declare module "../src/routes/sitemap%2exml+handler" {
   const Run: $.Namespace<H1>;
   namespace Run {
     type Context = $.ContextForFile<H1>;
+  }
+
+  /** @deprecated use `Run` namespace instead */
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    export type Route = $.Routes["/sitemap.xml"];
+    export type Context = $.MultiRouteContext<Route>;
+    export type Handler = $.HandlerLike<Route>;
+    export type GET = $.HandlerLike<Route, "GET">;
+    export type HEAD = $.HandlerLike<Route, "HEAD">;
+    export type POST = $.HandlerLike<Route, "POST">;
+    export type PUT = $.HandlerLike<Route, "PUT">;
+    export type DELETE = $.HandlerLike<Route, "DELETE">;
+    export type PATCH = $.HandlerLike<Route, "PATCH">;
+    export type OPTIONS = $.HandlerLike<Route, "OPTIONS">;
+  }
+}
+
+type H2 = $.Handler<"H2", typeof import("../src/routes/docs/+handler")>;
+declare module "../src/routes/docs/+handler" {
+  const Run: $.Namespace<H2>;
+  namespace Run {
+    type Context = $.ContextForFile<H2>;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -115,11 +139,11 @@ declare module "../src/routes/docs/+handler" {
   }
 }
 
-type H2 = $.Handler<"H2", typeof import("../src/routes/docs/_llms/reference-full%2emd+handler")>;
+type H3 = $.Handler<"H3", typeof import("../src/routes/docs/_llms/reference-full%2emd+handler")>;
 declare module "../src/routes/docs/_llms/reference-full%2emd+handler" {
-  const Run: $.Namespace<H2>;
+  const Run: $.Namespace<H3>;
   namespace Run {
-    type Context = $.ContextForFile<H2>;
+    type Context = $.ContextForFile<H3>;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -138,11 +162,11 @@ declare module "../src/routes/docs/_llms/reference-full%2emd+handler" {
   }
 }
 
-type H3 = $.Handler<"H3", typeof import("../src/routes/docs/newsletter/feed%2exml+handler")>;
+type H4 = $.Handler<"H4", typeof import("../src/routes/docs/newsletter/feed%2exml+handler")>;
 declare module "../src/routes/docs/newsletter/feed%2exml+handler" {
-  const Run: $.Namespace<H3>;
+  const Run: $.Namespace<H4>;
   namespace Run {
-    type Context = $.ContextForFile<H3>;
+    type Context = $.ContextForFile<H4>;
   }
 
   /** @deprecated use `Run` namespace instead */
