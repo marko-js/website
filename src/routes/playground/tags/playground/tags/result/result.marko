@@ -142,7 +142,7 @@ div class=styles.result
 
   div class=styles.output
     if=ws.buildErrors
-      error-output errors=ws.buildErrors kind="build"
+      error-output errors=ws.buildErrors files=(ws.fs?.files) kind="build"
     else if=outputType !== "preview"
       div
         ,id=styles.compiled
@@ -158,7 +158,7 @@ div class=styles.result
           )
         }
     else if=ws.runtimeErrors
-      error-output errors=ws.runtimeErrors kind="runtime"
+      error-output errors=ws.runtimeErrors files=(ws.fs?.files) kind="runtime"
 
     iframe/$frame
       ,title="code output"

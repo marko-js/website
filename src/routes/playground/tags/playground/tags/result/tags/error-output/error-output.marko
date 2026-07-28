@@ -2,7 +2,7 @@ client import highlighter from "app/util/shiki";
 import { styleToClass } from "app/util/style-to-class";
 import {
   langForFile,
-  parseError,
+  normalizeErrors,
   parseInline,
   type CodeFrame,
   type Inline,
@@ -10,6 +10,8 @@ import {
 import styles from "./error-output.style.module.scss";
 export interface Input {
   errors: readonly unknown[];
+  /** Workspace sources, so a frame can be cut from the file the error names. */
+  files?: Record<string, string>;
   kind: "build" | "runtime";
 }
 
@@ -75,8 +77,7 @@ define/Frame|{ frame }: { frame: CodeFrame }|
     }
 
 div class=styles.errors role="alert"
-  for|err| of=input.errors
-    const/parsed=parseError(err)
+  for|parsed| of=normalizeErrors(input.errors, input.files)
     section class=styles.error
       header class=styles.head
         span class=styles.badge --

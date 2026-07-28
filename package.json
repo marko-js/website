@@ -20,6 +20,7 @@
     "lint": "markdownlint \"docs/**/*.md\" && cspell \"**/*.{md,ts,marko}\"",
     "prepare": "husky",
     "preview": "marko-run preview",
+    "test": "vitest run",
     "type-check": "marko-type-check"
   },
   "dependencies": {
@@ -82,6 +83,7 @@
     "terser": "^5.49.0",
     "util": "./shim/util",
     "vite": "^8.1.5",
+    "vitest": "^4.1.10",
     "writable-dom": "^1.0.6"
   },
   "packageManager": "pnpm@11.15.1"
