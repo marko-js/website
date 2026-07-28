@@ -14,12 +14,16 @@ interface GithubProfile {
 export default Run.ALL((ctx) => {
   const route = ctx.url.pathname.slice(ctx.url.pathname.indexOf("docs/"));
   const contributors: Record<string, GithubProfile> = {};
+  const token = process.env.REPO_GITHUB_API_TOKEN;
   ctx.contributors = fetch(
-    `https://api.github.com/repos/marko-js/website-next/commits?path=${route}.md`,
+    `https://api.github.com/repos/marko-js/website/commits?path=${route}.md`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${process.env.REPO_GITHUB_API_TOKEN}`,
+        // Sent only when there is a token: `Bearer undefined` is rejected with
+        // a 401, where omitting the header entirely falls back to the
+        // unauthenticated rate limit and still returns the commits.
+        ...(token && { Authorization: `Bearer ${token}` }),
         Accept: "application/vnd.github.v3+json",
       },
     },
