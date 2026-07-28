@@ -180,3 +180,22 @@ main {
     }
   }
 }
+
+// Off-screen until focused, so keyboard users can jump the docs sidebar
+// without the link taking up room for everyone else.
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  outline: 2px solid currentColor;
+  border-radius: 0 0 0.25rem 0;
+  transform: translateY(-100%);
+
+  &:focus {
+    transform: none;
+  }
+}

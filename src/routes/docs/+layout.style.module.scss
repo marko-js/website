@@ -22,7 +22,12 @@ main {
   }
 }
 
-#article {
+.article {
+  // Focused by the skip link, which should not leave a ring on a whole page.
+  &:focus {
+    outline: none;
+  }
+
   flex: 1;
   padding: 2.5rem 0;
   line-height: 1.5;
