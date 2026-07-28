@@ -24,7 +24,13 @@ function ensureWorker(): Promise<void> {
   return ready;
 }
 
-ensureWorker();
+/**
+ * Start the worker and its index fetch before the first keystroke. Best effort:
+ * a failed init is reported when `sendQuery` awaits the same promise.
+ */
+export function warmSearch(): void {
+  ensureWorker().catch(() => {});
+}
 
 export async function sendQuery(q: string): Promise<SearchHit[]> {
   await ensureWorker();
