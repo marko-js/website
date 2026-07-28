@@ -1,12 +1,22 @@
+static const SITE_URL = `https://markojs.com${import.meta.env.BASE_URL.replace(/\/$/, "")}`;
+static const DEFAULT_DESCRIPTION = "The Marko programming language";
+
+// Each page is reachable at one path, so the canonical is self-referential; it
+// is here to collapse the query strings and alternate casings crawlers arrive
+// with onto the page itself.
+const/canonical=SITE_URL + $global.url.pathname.replace(/(.)\/$/, "$1")
+const/description=($global.meta.description || DEFAULT_DESCRIPTION)
+
 <!DOCTYPE html>
 html lang="en"
   head
     meta charset="UTF-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
-    meta name="description" content="The Marko programming language"
+    meta name="description" content=description
     // PR preview deploys are served from a subdirectory and must not be indexed.
     if=(import.meta.env.BASE_URL !== "/")
       meta name="robots" content="noindex"
+    link rel="canonical" href=canonical
     title --
       ${
         typeof $global.meta.pageTitle === "string"
@@ -14,9 +24,13 @@ html lang="en"
           : "Marko"
       }
     meta property="og:title" content=($global.meta.pageTitle || "Marko")
+    meta property="og:description" content=description
+    meta property="og:url" content=canonical
+    meta property="og:type" content="website"
+    meta property="og:site_name" content="Marko"
     meta
       ,property="og:image"
-      ,content=`https://markojs.com${import.meta.env.BASE_URL.replace(/\/$/, "")}${$global.meta.ogImage || "/og/default.png"}`
+      ,content=`${SITE_URL}${$global.meta.ogImage || "/og/default.png"}`
     meta property="og:image:width" content="1200"
     meta property="og:image:height" content="630"
     meta name="twitter:card" content="summary_large_image"

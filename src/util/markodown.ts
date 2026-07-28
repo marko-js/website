@@ -49,7 +49,7 @@ export default function markodownPlugin(): PluginOption {
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
             recursive: true,
           });
-          const { markoCode, headings } = await mdToMarko(content);
+          const { markoCode, headings, description } = await mdToMarko(content);
           const ogFile = file.split(path.sep).join("/").replace(".md", ".png");
           await Promise.all([
             fs.writeFile(
@@ -60,6 +60,7 @@ export default function markodownPlugin(): PluginOption {
               path.join(docsPages, file.replace(".md", "+meta.json")),
               JSON.stringify({
                 pageTitle: headings[0].title,
+                description,
                 headings: headings[0].children,
                 ogImage: `/og/docs/${ogFile}`,
               }),
@@ -152,7 +153,130 @@ async function mdToMarko(source: string) {
       },
     );
 
-  return { headings, markoCode };
+  return { headings, markoCode, description: extractDescription(source) };
+}
+
+const DESCRIPTION_MAX = 160;
+
+/**
+ * The opening prose of a doc, used as its `<meta name=description>`. Docs
+ * usually lead with a `> [!TLDR]` callout, which lexes as a blockquote rather
+ * than a paragraph and so is skipped in favor of the intro that follows it.
+ * A doc with no prose at all (only headings) gets no description and falls
+ * back to the site default.
+ */
+export function extractDescription(source: string) {
+  const tokens = new Marked().lexer(source, { gfm: true });
+
+  for (const token of tokens) {
+    if (token.type === "paragraph") {
+      // A paragraph holding only a badge or screenshot flattens to nothing,
+      // so the search continues past it.
+      const text = clamp(inlineText(token.tokens));
+      if (text) {
+        return text;
+      }
+    }
+  }
+
+  // A doc with no prose at all is usually one that opens straight into its
+  // TLDR bullets, so those stand in for the intro.
+  for (const token of tokens) {
+    const text = clamp(blockText(token));
+    if (text) {
+      return text;
+    }
+  }
+}
+
+/**
+ * Flattens the block content of a callout or list, dropping the `[!TLDR]`
+ * marker that opens one and reading each bullet as its own clause.
+ */
+function blockText(token: Tokens.Generic): string {
+  switch (token.type) {
+    case "list":
+      return (token.items as Tokens.Generic[])
+        .map(blockText)
+        .filter(Boolean)
+        .join("; ");
+    case "blockquote":
+    case "list_item":
+      return ((token.tokens ?? []) as Tokens.Generic[])
+        .map(blockText)
+        .filter(Boolean)
+        .join(" ");
+    case "paragraph":
+    case "text":
+      return inlineText(token.tokens).replace(/^\s*\[!\w+]\s*/, "");
+    default:
+      return "";
+  }
+}
+
+/**
+ * Flattens inline tokens to their text, so links read as their label and
+ * `code` loses its backticks. Images contribute nothing.
+ */
+function inlineText(tokens: Tokens.Generic[] | undefined): string {
+  let text = "";
+
+  for (const token of tokens ?? []) {
+    switch (token.type) {
+      case "image":
+      case "html":
+        break;
+      case "br":
+        text += " ";
+        break;
+      default:
+        text += token.tokens
+          ? inlineText(token.tokens)
+          : decodeEntities(token.text ?? "");
+        break;
+    }
+  }
+
+  return text;
+}
+
+const entities: Record<string, string> = {
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&#39;": "'",
+};
+
+function decodeEntities(text: string) {
+  return text.replace(/&(?:amp|lt|gt|quot|#39);/g, (match) => entities[match]);
+}
+
+/**
+ * Search results show roughly {@link DESCRIPTION_MAX} characters, so the
+ * paragraph is cut back to whole sentences that fit. A first sentence longer
+ * than the budget is cut at a word instead.
+ */
+function clamp(text: string) {
+  const description = text.replace(/\s+/g, " ").trim();
+  if (description.length <= DESCRIPTION_MAX) {
+    return description;
+  }
+
+  const sentences = description.match(/[^.!?]+(?:[.!?]+|$)/g) ?? [];
+  let kept = "";
+  for (const sentence of sentences) {
+    if (kept && kept.length + sentence.length > DESCRIPTION_MAX) break;
+    kept += sentence;
+  }
+
+  kept = kept.trim();
+  if (kept && kept.length <= DESCRIPTION_MAX) {
+    return kept;
+  }
+
+  const cut = description.slice(0, DESCRIPTION_MAX);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "") + "…";
 }
 
 function semanticAdmonitions(): MarkedExtension {
