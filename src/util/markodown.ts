@@ -49,7 +49,11 @@ export default function markodownPlugin(): PluginOption {
           await fs.mkdir(path.dirname(path.join(docsPages, file)), {
             recursive: true,
           });
-          const { markoCode, headings, description } = await mdToMarko(content);
+          const { markoCode, headings, description } = await mdToMarko(
+            content,
+          ).catch((cause) => {
+            throw new Error(`Failed to compile docs/${file}`, { cause });
+          });
           const ogFile = file.split(path.sep).join("/").replace(".md", ".png");
           await Promise.all([
             fs.writeFile(
@@ -363,51 +367,62 @@ function markoDocs(): MarkedExtension {
 
           if (!modifiers.includes("no-format")) {
             const unlock = await acquireMutexLock();
-            const text = (() => {
-              try {
-                return compiler.compileSync(
-                  token.text,
-                  token.filename || "temp.marko",
-                  {
-                    output: "source",
-                    stripTypes: true,
-                    sourceMaps: false,
-                  },
-                ).code;
-              } catch {
-                return token.text;
-              }
-            })();
+            try {
+              const text = (() => {
+                try {
+                  return compiler.compileSync(
+                    token.text,
+                    token.filename || "temp.marko",
+                    {
+                      output: "source",
+                      stripTypes: true,
+                      sourceMaps: false,
+                    },
+                  ).code;
+                } catch {
+                  return token.text;
+                }
+              })();
 
-            const [htmlFormat, conciseFormat, htmlTSFormat, conciseTSFormat] =
-              await Promise.all([
-                format(text, {
-                  parser: "marko",
-                  plugins: [prettierMarko],
-                  markoSyntax: "html",
-                }),
-                format(text, {
-                  parser: "marko",
-                  plugins: [prettierMarko],
-                  markoSyntax: "concise",
-                }),
-                format(token.text, {
-                  parser: "marko",
-                  plugins: [prettierMarko],
-                  markoSyntax: "html",
-                }),
-                format(token.text, {
-                  parser: "marko",
-                  plugins: [prettierMarko],
-                  markoSyntax: "concise",
-                }),
-              ]);
-            token.html = htmlFormat.trim();
-            token.concise = conciseFormat.trim();
-            token.htmlTS = htmlTSFormat.trim();
-            token.conciseTS = conciseTSFormat.trim();
-
-            unlock();
+              const [htmlFormat, conciseFormat, htmlTSFormat, conciseTSFormat] =
+                await Promise.all([
+                  format(text, {
+                    parser: "marko",
+                    plugins: [prettierMarko],
+                    markoSyntax: "html",
+                  }),
+                  format(text, {
+                    parser: "marko",
+                    plugins: [prettierMarko],
+                    markoSyntax: "concise",
+                  }),
+                  format(token.text, {
+                    parser: "marko",
+                    plugins: [prettierMarko],
+                    markoSyntax: "html",
+                  }),
+                  format(token.text, {
+                    parser: "marko",
+                    plugins: [prettierMarko],
+                    markoSyntax: "concise",
+                  }),
+                ]);
+              token.html = htmlFormat.trim();
+              token.concise = conciseFormat.trim();
+              token.htmlTS = htmlTSFormat.trim();
+              token.conciseTS = conciseTSFormat.trim();
+            } catch (cause) {
+              // Prettier's error says nothing about where the snippet came
+              // from, and this is the only place that knows.
+              throw new Error(
+                `Failed to format the ${token.lang} code block${token.filename ? ` \`${token.filename}\`` : ""}`,
+                { cause },
+              );
+            } finally {
+              // Released on the failure path too, or every code fence still in
+              // flight waits on a lock that never opens.
+              unlock();
+            }
           }
         }
       }

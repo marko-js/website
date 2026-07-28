@@ -12,10 +12,26 @@ interface GithubProfile {
 }
 
 export default Run.ALL((ctx) => {
-  const route = ctx.url.pathname.slice(ctx.url.pathname.indexOf("docs/"));
+  ctx.contributors = fetchContributors(ctx.url.pathname);
+});
+
+/**
+ * Only doc pages render the layout that shows contributors. The `/docs`
+ * redirect and the `reference-full.md` and `feed.xml` handlers each spent a
+ * request asking after a path that cannot exist, which matters because a build
+ * with no token has 60 an hour to cover 51 pages.
+ */
+function fetchContributors(pathname: string): Promise<GithubProfile[]> {
+  const start = pathname.indexOf("/docs/");
+  const route = start === -1 ? "" : pathname.slice(start + 1);
+
+  if (!route || /\.\w+$/.test(route)) {
+    return Promise.resolve([]);
+  }
+
   const contributors: Record<string, GithubProfile> = {};
   const token = process.env.REPO_GITHUB_API_TOKEN;
-  ctx.contributors = fetch(
+  return fetch(
     `https://api.github.com/repos/marko-js/website/commits?path=${route}.md`,
     {
       method: "GET",
@@ -49,7 +65,5 @@ export default Run.ALL((ctx) => {
         (a, b) => b.contributions - a.contributions,
       );
     })
-    .catch((e) => {
-      return [];
-    });
-});
+    .catch(() => []);
+}
