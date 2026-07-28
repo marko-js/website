@@ -26,9 +26,8 @@ article id="main-content" tabindex="-1" class=styles.article
               -- ${contributor.username}
         li
           a href=(
-            `https://github.com/marko-js/website-next/blob/main/docs/${$global.url.pathname.slice(
-              "/docs/".length,
-              $global.url.pathname.length,
+            `https://github.com/marko-js/website/blob/main/docs/${$global.url.pathname.slice(
+              $global.url.pathname.indexOf("/docs/") + "/docs/".length,
             )}.md`
           )
             div
