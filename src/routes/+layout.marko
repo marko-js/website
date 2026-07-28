@@ -26,6 +26,10 @@ html lang="en"
     prefetch-links
 
   body spellcheck="false"
+    // Docs pages put ~50 nav links ahead of the article, and they are the only
+    // ones that render the `#main-content` target this jumps to.
+    if=($global.meta.headings)
+      a.skip-link href="#main-content" -- Skip to content
     div#root
       app-header
       main

@@ -6,7 +6,9 @@ export interface Input {
   content: Marko.Body;
 }
 
-article id=styles.article
+// A stable id so the layout's skip link has something to target; the styling
+// hook moved to a class to free it up.
+article id="main-content" tabindex="-1" class=styles.article
   ${input.content}
   hr
   section id=styles.contributors
