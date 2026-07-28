@@ -1,5 +1,6 @@
 {
   "pageTitle": "Playground",
+  "description": "Write Marko in the browser and see it compile and run instantly. Share what you build with a link.",
   "hideFooter": true,
   "ogImage": "/og/playground.png"
 }

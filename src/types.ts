@@ -9,6 +9,7 @@ declare global {
     interface Global {
       meta: {
         pageTitle?: string;
+        description?: string;
         hideFooter?: boolean;
         headings?: HeadingList;
         ogImage?: string;
