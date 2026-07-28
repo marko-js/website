@@ -132,6 +132,9 @@ export async function update(
   optimize: boolean,
 ) {
   const fs = new FileSystem({});
+  // Read before `workspace` is reassigned below: this holds the only reference
+  // to the running preview server, which stays up until this build replaces it.
+  const previous = workspace;
   const ws: Workspace = (workspace = {
     fs,
     optimize,
@@ -196,13 +199,13 @@ export async function update(
       if (signal.aborted) return;
 
       const code = getAssetCode(output, file);
-      workspace.server?.terminate();
+      previous?.server?.terminate();
 
       if (!code) {
         return;
       }
 
-      ws.server = new Worker(
+      const server = new Worker(
         toAssetURL(
           file,
           "application/javascript",
@@ -215,7 +218,17 @@ export async function update(
           type: "module",
         },
       );
-      ws.server.addEventListener("error", onRuntimeError, { signal });
+
+      // An abort between the check above and here would otherwise strand this
+      // worker: `workspace` already points at a newer build, so nothing else
+      // holds a reference to terminate it.
+      if (signal.aborted) {
+        server.terminate();
+        return;
+      }
+
+      ws.server = server;
+      server.addEventListener("error", onRuntimeError, { signal });
     })();
     const browserBuild = (async function buildClient() {
       const file = "client.js";
