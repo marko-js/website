@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "marko-run build && node scripts/rebase-html.mjs",
+    "build": "marko-run build && node scripts/prune-crawl-artifacts.mjs && node scripts/rebase-html.mjs",
     "deploy": "pnpm run build && gh-pages --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\"",
     "dev": "marko-run",
     "format": "prettier . -w",
