@@ -1,5 +1,5 @@
 import type { File } from "app/util/workspace";
-client import { compress, decompress } from "app/util/hasher";
+client import { compress, decodeFiles } from "app/util/hasher";
 export interface Input {
   value: File[];
 }
@@ -7,8 +7,8 @@ export interface Input {
 let/value=[] as File[]
 lifecycle
   ,onMount() {
-    decompress(window.location.hash.slice(1)).then((decompressed) => {
-      value = JSON.parse(decompressed) || input.value;
+    decodeFiles(window.location.hash.slice(1)).then((files) => {
+      value = files ?? input.value;
     });
   }
   ,onUpdate() {
