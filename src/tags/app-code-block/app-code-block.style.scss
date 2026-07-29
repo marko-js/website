@@ -91,6 +91,10 @@
           opacity: 0;
         }
       }
+      // Leaves the caret solid, which is what the keyframes rest at.
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     }
   }
   &-menu {

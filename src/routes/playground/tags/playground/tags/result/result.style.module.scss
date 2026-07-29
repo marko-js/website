@@ -197,6 +197,13 @@
   span {
     opacity: 0.35;
     animation: pulse 2.4s ease-in-out infinite;
+
+    // Held at the bright end of the pulse so the text stays readable once it
+    // is no longer drawing attention to itself by moving.
+    @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      animation: none;
+    }
   }
 }
 

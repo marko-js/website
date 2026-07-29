@@ -47,6 +47,12 @@
     transparent
   );
   animation: shimmer 2s infinite;
+
+  // Dropping the sweep rather than freezing it: with the animation off the
+  // gradient parks over the button as a permanent white smear.
+  @media (prefers-reduced-motion: reduce) {
+    content: none;
+  }
 }
 
 @keyframes shimmer {
