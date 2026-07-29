@@ -217,7 +217,7 @@ export interface Input extends Marko.HTML.Button {
 ```
 
 > [!TIP]
-> Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+> Since Marko 6, native tags have supported including [`content`](./native-tag.md#content) as an attribute so there is no need to inject manually
 >
 > ```marko
 > <button style=`color: ${color}` ...attrs>

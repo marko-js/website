@@ -404,6 +404,8 @@ export interface Input {
 </div>
 ```
 
+[Native tags](./native-tag.md#content) also accept content as an attribute, so the wrapper above can be written as `<div content=input.content/>`.
+
 ### Dynamic Text
 
 Dynamic text content can be `${interpolated}` in the tag content. This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
