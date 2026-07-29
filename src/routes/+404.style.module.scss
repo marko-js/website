@@ -84,6 +84,10 @@
     display: grid;
     place-items: center;
     animation: float 6s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   @media (max-width: 64rem) {
@@ -166,6 +170,12 @@
       transparent
     );
     animation: shimmer 2s infinite;
+
+    // Dropping the sweep rather than freezing it: with the animation off the
+    // gradient parks over the button as a permanent white smear.
+    @media (prefers-reduced-motion: reduce) {
+      content: none;
+    }
   }
 }
 
