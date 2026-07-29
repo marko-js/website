@@ -21,6 +21,12 @@ const resolveFS: ResolveOptions["fs"] = {
 
 function tryResolve(id: string, from = "/") {
   if (!currentFS) return undefined;
+  // `resolveSync` only understands relative and bare specifiers, so an absolute
+  // path -- which is what the taglib records for a discovered tag -- has to be
+  // looked up directly or it never resolves.
+  if (id.startsWith("/")) {
+    return id in currentFS.files ? id : undefined;
+  }
   try {
     const resolved = resolveSync(id, {
       from: `${from.endsWith("/") ? from : `${from}/`}_`,

@@ -67,6 +67,14 @@ export function mainPlugin({
       if (suffix) {
         id = id.slice(0, -suffix.length);
       }
+
+      // `resolveSync` only understands relative and bare specifiers. Templates
+      // compiled from a tag directory import each other by absolute path, so
+      // those are looked up directly.
+      if (id.startsWith("/")) {
+        return id in fs.files ? id + (suffix || "") : undefined;
+      }
+
       const resolved = resolveSync(id, {
         browser,
         silent: true,
