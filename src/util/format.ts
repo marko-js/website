@@ -1,43 +1,30 @@
-import { format, formatWithCursor } from "prettier/standalone";
-import prettierBabel from "prettier/plugins/babel";
-import prettierEstree from "prettier/plugins/estree";
-import prettierCSS from "prettier/plugins/postcss";
-import * as prettierMarko from "prettier-plugin-marko";
-
-function optionsFor(ext: string) {
-  switch (ext) {
-    case "marko":
-      // Marko embeds js/ts/css, so include those plugins for the embedded code.
-      return {
-        parser: "marko",
-        plugins: [prettierMarko, prettierBabel, prettierEstree, prettierCSS],
-      };
-    case "js":
-    case "jsx":
-    case "mjs":
-    case "cjs":
-      return { parser: "babel", plugins: [prettierBabel, prettierEstree] };
-    case "ts":
-    case "tsx":
-      return { parser: "babel-ts", plugins: [prettierBabel, prettierEstree] };
-    case "json":
-      return { parser: "json", plugins: [prettierBabel, prettierEstree] };
-    case "css":
-      return { parser: "css", plugins: [prettierCSS] };
-  }
-}
+// Prettier and its plugins are a sixth of the playground's bundle, and nothing
+// needs them until the editor's format command runs, so they are fetched on
+// first use rather than shipped with the page.
+const parsers: Record<string, string> = {
+  marko: "marko",
+  js: "babel",
+  jsx: "babel",
+  mjs: "babel",
+  cjs: "babel",
+  ts: "babel-ts",
+  tsx: "babel-ts",
+  json: "json",
+  css: "css",
+};
 
 export function formatCode(content: string, cursorOffset: number, ext: string) {
-  const options = optionsFor(ext);
-  if (!options) return;
-  return formatStable(content, cursorOffset, options);
+  const parser = parsers[ext];
+  if (!parser) return;
+  return formatStable(content, cursorOffset, parser);
 }
 
 async function formatStable(
   content: string,
   cursorOffset: number,
-  options: NonNullable<ReturnType<typeof optionsFor>>,
+  parser: string,
 ) {
+  const { format, formatWithCursor, options } = await load(parser);
   const [withCursor, formatted] = await Promise.all([
     formatWithCursor(content, { ...options, cursorOffset }),
     format(content, options),
@@ -45,4 +32,25 @@ async function formatStable(
   return withCursor.formatted === formatted
     ? withCursor
     : { formatted, cursorOffset: withCursor.cursorOffset };
+}
+
+async function load(parser: string) {
+  const [{ format, formatWithCursor }, babel, estree, postcss, marko] =
+    await Promise.all([
+      import("prettier/standalone"),
+      import("prettier/plugins/babel"),
+      import("prettier/plugins/estree"),
+      import("prettier/plugins/postcss"),
+      import("prettier-plugin-marko"),
+    ]);
+
+  // Marko embeds js/ts/css, so those plugins come along for the embedded code.
+  const plugins =
+    parser === "marko"
+      ? [marko, babel.default, estree.default, postcss.default]
+      : parser === "css"
+        ? [postcss.default]
+        : [babel.default, estree.default];
+
+  return { format, formatWithCursor, options: { parser, plugins } };
 }
