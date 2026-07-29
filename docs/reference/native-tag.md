@@ -24,20 +24,33 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 In addition to strings, Marko supports passing arrays and objects to the `class=` attribute.
 
 ```marko
-<!-- String -->
+// string
 <div class="a c"/>
 
-<!-- Object -->
+// object
 <div class={ a: true, b: false, c: true }/>
 
-<!-- Array -->
+// array
 <div class=["a", null, { c: true }]/>
 ```
 
-All examples above result in the same HTML:
+All three render the same HTML:
 
 ```html
 <div class="a c"></div>
+```
+
+Each key of an object is a class name, included when its value is truthy. Every falsy value drops the class. Objects are read one level deep: a value is only tested for truthiness, never traversed.
+
+Arrays may be nested to any depth and spread, and their falsy entries are skipped. Class names are not deduplicated, and when nothing remains the attribute is omitted entirely.
+
+```marko
+<let/query="">
+
+<input
+  value:=query
+  class=["field", query && ["field-filled", { "field-error": !query.trim() }]]
+>
 ```
 
 ### `style=`
@@ -45,21 +58,45 @@ All examples above result in the same HTML:
 In addition to strings, Marko supports passing arrays and objects to the `style=` attribute.
 
 ```marko
-<!-- String -->
+// string
 <div style="display:block;margin-right:16px"/>
 
-<!-- Object -->
-<div style={ display: "block", color: false, "margin-right": 16 }/>
+// object
+<div style={ display: "block", "margin-right": "16px" }/>
 
-<!-- Array -->
-<div style=["display:block", null, { "margin-right": 16 }]/>
+// array
+<div style=["display:block", null, { "margin-right": "16px" }]/>
 ```
 
-All examples above result in the same HTML:
+All three produce the declaration list `display:block;margin-right:16px`. Declarations are joined with `;`, and no trailing `;` is added.
 
-```html
-<div style="display:block;margin-right:16px;"></div>
-```
+Object keys are written out verbatim, so they must be hyphen-case CSS property names.
+
+> [!WARNING]
+> Unlike [the DOM `style` API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style), keys are never converted, so a camelCased key renders as invalid CSS the browser ignores.
+>
+> ```marko
+> // ❌ (INCORRECT) renders `backgroundColor:red`
+> <div style={ backgroundColor: "red" }/>
+>
+> // ✅
+> <div style={ "background-color": "red" }/>
+> ```
+>
+> The compiler warns on camelCased keys it can see statically, and debug builds warn at runtime for keys from dynamic objects. Both suggest the hyphen-case name.
+
+Values are stringified as-is, with no unit inference: `style={ "margin-right": 16 }` renders `margin-right:16`, not `margin-right:16px`. Numbers are only meaningful for unitless properties such as `line-height` or `z-index`, and the TypeScript types reject any number other than `0` for length properties.
+
+A declaration is dropped when its value is `false`, `null`, `undefined` or an empty string, but `0` is kept, so `style={ width: 0 }` renders `width:0`. This differs from `class=` objects, where every falsy value drops the class.
+
+> [!TIP]
+> The TypeScript types reject `false` as an object value, so conditional declarations belong at the array level.
+>
+> ```marko
+> <div style=["display:block", isError && { color: "red" }]/>
+> ```
+
+Arrays nest and spread exactly as they do for [`class=`](#class). Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
 
 ### Event Handlers
 

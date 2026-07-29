@@ -257,6 +257,8 @@ declare global {
 
 ### Registering CSS Properties (eg for custom properties)
 
+The [`style=` object](./native-tag.md#style) is typed with `Marko.CSS.Properties`, which extends [csstype](https://github.com/frenic/csstype)'s `PropertiesHyphen`, so keys are hyphen-case CSS property names.
+
 ```ts
 declare global {
   namespace Marko {
