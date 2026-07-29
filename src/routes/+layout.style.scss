@@ -141,7 +141,10 @@ pre {
 code {
   font-family: "Ubuntu Mono", monospace;
   line-height: 1.5;
-  text-wrap: nowrap;
+
+  pre > & {
+    text-wrap: nowrap;
+  }
 
   :not(pre) > & {
     color: var(--section-color);
