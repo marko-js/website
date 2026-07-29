@@ -119,12 +119,17 @@ $fixed-controls-height: 8rem;
       width: 100%;
 
       ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1.5rem;
+
         li {
           border-bottom: 1px solid var(--color-red-dim);
           width: 100%;
           padding: 0.5rem 0;
         }
 
+        li:nth-last-of-type(-n + 2):nth-of-type(odd),
         li:last-of-type {
           border-bottom: 0;
         }
@@ -134,11 +139,16 @@ $fixed-controls-height: 8rem;
     a {
       border: none;
       padding: 0;
+
+      &[aria-current="true"] {
+        color: var(--color-red);
+        font-weight: 500;
+      }
     }
 
     strong {
       display: block;
-      font-size: 1.125rem;
+      font-size: 1.25rem;
       margin: 0.75rem 0 0.25rem;
     }
   }
