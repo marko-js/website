@@ -48,9 +48,14 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-const projectDir = "/app";
-const packageJsonPath = `${projectDir}/package.json`;
-const rootDir = `${projectDir}/tags/`;
+// Files sit at the root of the virtual filesystem, so a playground file is at
+// the path the author typed rather than under scaffolding they never asked
+// for. `marko.json` is what buys that: without it the compiler only discovers
+// custom tags inside a directory literally named `tags` or `components`.
+const rootDir = "/";
+const packageJsonPath = `${rootDir}package.json`;
+const markoJsonPath = `${rootDir}marko.json`;
+const markoJson = JSON.stringify({ "tags-dir": "." });
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args
@@ -149,6 +154,8 @@ export async function update(
     server: undefined,
     logs: [],
   });
+  // Written first so an author who adds their own `marko.json` tab still wins.
+  fs.files[markoJsonPath] = markoJson;
   for (const file of files) {
     fs.files[
       file.path === "package.json" ? packageJsonPath : rootDir + file.path
@@ -163,7 +170,7 @@ export async function update(
       if (signal.aborted) return;
       versions = nodeModules.versions;
       for (const path in nodeModules.files) {
-        fs.files[projectDir + path] = nodeModules.files[path];
+        fs.files[path] = nodeModules.files[path];
       }
     }
 

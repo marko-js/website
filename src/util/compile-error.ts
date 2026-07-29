@@ -1,7 +1,7 @@
 /**
  * Marko's `CompileError` carries a Babel-style code frame inside its message:
  *
- *     at app/tags/index.marko:1:2
+ *     at index.marko:1:2
  *     > 1 | <log/>
  *         |  ^^^ The [`<log>` tag](https://markojs.com/docs/...) requires ...
  *       2 |

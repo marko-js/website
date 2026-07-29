@@ -18,7 +18,7 @@ function compileError(
   });
 }
 
-const FILE = "/app/tags/index.marko";
+const FILE = "/index.marko";
 
 test("reads position and message off the error rather than its frame text", () => {
   const files = { [FILE]: "<div>\n<span>\n" };
@@ -32,7 +32,7 @@ test("reads position and message off the error rather than its frame text", () =
 
   const [parsed] = normalizeErrors([err], files);
   expect(parsed.message).toBe('Missing ending "span" tag');
-  expect(parsed.frame?.file).toBe("app/tags/index.marko");
+  expect(parsed.frame?.file).toBe("index.marko");
   expect(parsed.frame?.line).toBe(2);
   expect(parsed.frame?.col).toBe(1);
 
@@ -84,7 +84,7 @@ test("gives each error in an aggregate its own entry", () => {
 });
 
 test("normalizes a Rollup-shaped error, which reports a flat position", () => {
-  const file = "/app/tags/util.js";
+  const file = "/util.js";
   const files = { [file]: "const a = 1;\nexport default a(\n" };
   const err = Object.assign(new Error("Unexpected token"), {
     name: "SyntaxError",
@@ -94,14 +94,14 @@ test("normalizes a Rollup-shaped error, which reports a flat position", () => {
 
   const [parsed] = normalizeErrors([err], files);
   expect(parsed.message).toBe("Unexpected token");
-  expect(parsed.frame?.file).toBe("app/tags/util.js");
+  expect(parsed.frame?.file).toBe("util.js");
   expect(parsed.frame?.line).toBe(2);
 });
 
 test("falls back to the frame text when there is no usable metadata", () => {
   const raw = [
     "",
-    "    at app/tags/index.marko:1:2",
+    "    at index.marko:1:2",
     "    > 1 | <log/>",
     "        |  ^^^ The [`<log>` tag](https://markojs.com/docs/x) requires a value",
     "      2 |",
@@ -110,7 +110,7 @@ test("falls back to the frame text when there is no usable metadata", () => {
     Object.assign(new Error(raw), { name: "CompileError" }),
   );
 
-  expect(parsed.frame?.file).toBe("app/tags/index.marko");
+  expect(parsed.frame?.file).toBe("index.marko");
   expect(parsed.message).toMatch(/requires a value$/);
 });
 
