@@ -40,3 +40,9 @@ branch whose only content is a commented-out line. Only the final
 read as if they carry behavior and slow down anyone tracing how tokens are
 transformed; collapsing the chain to a single `if (token.type === "link")`
 preserves behavior. Re-verify by reading the chain and running `pnpm test`.
+
+## Remove the dead `strong` rule in the mobile menu controls
+
+`src/tags/app-menu/app-menu.style.module.scss` › `#controls` | 2026-07-29 | impact:low | effort:low
+
+The `#controls` block contains a `strong { color: var(--color-foreground); font-weight: 700; }` rule, but the controls markup in `app-menu.marko` (a version `label` with a `select`, plus two `app-switch` tags) renders no `strong` element; `app-switch.marko` renders only `label`, `span`, and `input`. The rule ships in the bundle and misleads readers into thinking the controls contain a heading. Deleting it should be a no-op. Re-verify with `grep -n "strong" src/tags/app-menu/app-menu.marko src/tags/app-switch/app-switch.marko` (no matches) before removing.
