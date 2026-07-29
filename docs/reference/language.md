@@ -274,6 +274,8 @@ Attributes are merged from left to right, with later spreads overriding earlier 
 <button onClick(e) { console.log(e.target) }>Click Me</button>
 ```
 
+Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
+
 ### Shorthand Change Handlers (Two-Way Binding)
 
 The change handler shorthand (`:=`) provides both a value for an attribute and a change handler with the attribute's name suffixed by "Change".
