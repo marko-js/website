@@ -98,6 +98,94 @@ A declaration is dropped when its value is `false`, `null`, `undefined` or an em
 
 Arrays nest and spread exactly as they do for [`class=`](#class). Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
 
+### `content=`
+
+Native tags accept their body content as a `content=` attribute. The value may be a [`<define>`](./core-tag.md#define) tag variable, an imported template, or the [content](./language.md#tag-content) the surrounding template received.
+
+Because `content` arrives as part of `input`, a [spread](./language.md#spread-attributes) is enough to implement a tag that wraps an element around the content it receives.
+
+```marko
+/* field-row.marko */
+<fieldset ...input/>
+```
+
+```marko
+/* signup.marko */
+<field-row class="row">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email">
+</field-row>
+```
+
+The spread applies `class` to the `<fieldset>` and renders the content inside it:
+
+```html
+<fieldset class="row"><label for="email">Email</label><input id="email" name="email" type="email"></fieldset>
+```
+
+Passing the attribute explicitly places the content on a specific element, such as an inner wrapper:
+
+```marko
+<section class="card">
+  <h2>${input.title}</h2>
+  <div class="card-body" content=input.content/>
+</section>
+```
+
+`content=` is reactive. Swapping the value replaces the rendered content in place, leaving the element itself untouched.
+
+```marko
+<let/expanded=false>
+<define/Summary>
+  <h2>${input.title}</h2>
+</define>
+<define/Details>
+  <h2>${input.title}</h2>
+  <p>${input.description}</p>
+</define>
+
+<article content=(expanded ? Details : Summary)/>
+
+<button onClick() { expanded = !expanded }>toggle</button>
+```
+
+> [!WARNING]
+> A literal body takes precedence over `content=`, which is then never rendered. Any body counts, including one that produces no output of its own, such as a body holding only a [comment](./language.md#comments).
+>
+> ```marko
+> <div content=Summary>
+>   // this comment is body content, so `Summary` never renders
+> </div>
+> ```
+
+Attributes are merged from left to right, so ordering decides the result when `content=` accompanies a spread. Setting it after a spread overrides the content coming from that spread, and `content=undefined` forwards every other attribute while dropping the content entirely.
+
+```marko
+<div ...input content=undefined/>
+```
+
+Tags that cannot contain markup reject the attribute at compile time. [Void elements](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) such as `<img>` report:
+
+```text
+The `<img>` tag cannot have content, so it does not support the `content` attribute.
+```
+
+`<textarea>` and `<title>` take their body as text, and report:
+
+```text
+The `<textarea>` tag takes its content from its body as text, so it does not support the `content` attribute.
+```
+
+> [!NOTE]
+> On [`<meta>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta), `content` is a real HTML attribute and keeps that meaning, including when applied through a spread. It is the only native tag whose `content` is written to the element instead of rendered as content.
+>
+> ```marko
+> <let/height=630>
+> <meta property="og:image:height" content=height>
+> ```
+
+For typing content on a custom tag, see [Typing `content`](./typescript.md#typing-content).
+
 ### Event Handlers
 
 Attributes on native tags that begin with `on` followed by `-` or a capital letter are attached as [event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
@@ -151,6 +239,35 @@ The value for the attribute must be either a function or a [falsy](https://devel
 > ```marko
 > <button onclick="this.innerHTML++">0</button>
 > ```
+
+#### Handler Arguments
+
+An event handler receives two arguments: the [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) and the element the handler was attached to.
+
+```marko
+<form onSubmit(event, form) {
+  event.preventDefault();
+  fetch("/subscribe", { method: "POST", body: new FormData(form) });
+}>
+  <input name="email" type="email">
+  <button>Subscribe</button>
+</form>
+```
+
+The second argument matters when an event originates from a descendant. `event.target` is the element the event was dispatched on, which for a click inside a `<button>` may be an inner `<span>`, while the second argument is always the element carrying the `on*` attribute.
+
+> [!WARNING]
+> [`event.currentTarget`](https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget) is not available in Marko event handlers. Because handlers are [delegated](#delegation), `currentTarget` is the `document` in an optimized build, and in a debug build reading it logs an error to the console and evaluates to `null`. The second argument, or an [element reference](#element-references), replaces it.
+
+#### Delegation
+
+Marko does not call `addEventListener` for each element. The first time a handler for an event type is attached, a single listener for that type is registered on the `document` with [capture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture) enabled. When the event fires, that listener invokes the handler on the event's target and then, for events that bubble, the handler on each of its ancestors.
+
+This has a few observable effects.
+
+- Marko handlers run before listeners added with `addEventListener` on the element itself or on any ancestor below the `document`.
+- `event.stopPropagation()` in a Marko handler prevents handlers on ancestor elements from running, and stops the event before it reaches any `addEventListener` listener below the `document`, including one on the same element. Calling it from a listener attached below the `document` has no effect on Marko handlers, which have already run.
+- Events that do not bubble, such as `focus`, `blur`, and `load`, only reach a handler on the element the event was dispatched on. A handler on an ancestor is never called for them.
 
 ### Tags with Enhanced `value` Attributes
 

@@ -37,7 +37,7 @@ A JavaScript object globally available in every template that gives access to th
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file. The signal only exists in the browser.
 
 It is aborted when
 
@@ -45,6 +45,17 @@ It is aborted when
 2. The template or [tag content](#tag-content) is removed from the DOM
 
 This is primarily to handle cleaning up side effects.
+
+> [!CAUTION]
+> `$signal` has no server equivalent. In HTML output it compiles to an expression that throws `Cannot use $signal in a server render.` An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) that references it fails a server render.
+>
+> ```marko
+> <const/results=fetch("/api/search", { signal: $signal })> // throws during a server render
+> ```
+>
+> Code that needs a signal belongs where it only runs in the browser, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+<!---->
 
 > [!TIP]
 > Many built-in APIs like [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal) include the option to pass a signal for cleanup.
@@ -274,6 +285,8 @@ Attributes are merged from left to right, with later spreads overriding earlier 
 <button onClick(e) { console.log(e.target) }>Click Me</button>
 ```
 
+Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
+
 ### Shorthand Change Handlers (Two-Way Binding)
 
 The change handler shorthand (`:=`) provides both a value for an attribute and a change handler with the attribute's name suffixed by "Change".
@@ -403,6 +416,8 @@ export interface Input {
   <${input.content}/>
 </div>
 ```
+
+[Native tags](./native-tag.md#content) also accept content as an attribute, so the wrapper above can be written as `<div content=input.content/>`.
 
 ### Dynamic Text
 

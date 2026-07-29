@@ -238,6 +238,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 </button>
 ```
 
+Because updates are queued, reassigning `count` does not recompute `doubleCount` until the queue is flushed. Reading `doubleCount` inside the handler yields the value computed from the previous `count`, as described in [Stale Derived Values](./reactivity.md#stale-derived-values).
+
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 

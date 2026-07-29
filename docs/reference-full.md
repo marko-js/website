@@ -43,7 +43,7 @@ A JavaScript object globally available in every template that gives access to th
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file. The signal only exists in the browser.
 
 It is aborted when
 
@@ -51,6 +51,17 @@ It is aborted when
 2. The template or [tag content](#tag-content) is removed from the DOM
 
 This is primarily to handle cleaning up side effects.
+
+> [!CAUTION]
+> `$signal` has no server equivalent. In HTML output it compiles to an expression that throws `Cannot use $signal in a server render.` An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) that references it fails a server render.
+>
+> ```marko
+> <const/results=fetch("/api/search", { signal: $signal })> // throws during a server render
+> ```
+>
+> Code that needs a signal belongs where it only runs in the browser, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+<!---->
 
 > [!TIP]
 > Many built-in APIs like [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal) include the option to pass a signal for cleanup.
@@ -280,6 +291,8 @@ Attributes are merged from left to right, with later spreads overriding earlier 
 <button onClick(e) { console.log(e.target) }>Click Me</button>
 ```
 
+Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
+
 ### Shorthand Change Handlers (Two-Way Binding)
 
 The change handler shorthand (`:=`) provides both a value for an attribute and a change handler with the attribute's name suffixed by "Change".
@@ -409,6 +422,8 @@ export interface Input {
   <${input.content}/>
 </div>
 ```
+
+[Native tags](./native-tag.md#content) also accept content as an attribute, so the wrapper above can be written as `<div content=input.content/>`.
 
 ### Dynamic Text
 
@@ -1113,6 +1128,30 @@ If additional updates are scheduled after the queue is consumed but _before the 
 - It is not possible to lock up the application in an infinite update loop.
 - The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).
 
+### Stale Derived Values
+
+Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immediately, so the tag variable reads back the new value on the next line. Everything derived from it, including [`<const>`](./core-tag.md#const) tag variables and the rendered output, is recomputed only when the queue is flushed, so for the remainder of the handler those values are still the ones computed from the previous state.
+
+```marko
+<let/quantity=1>
+<const/subtotal=quantity * input.unitPrice>
+
+<button onClick() {
+  quantity++;
+
+  // `quantity` is already the new value, so the reported total is
+  // recomputed from it rather than read from `subtotal`.
+  input.onQuantityChange(quantity, quantity * input.unitPrice);
+}>
+  Add one
+</button>
+
+<output>${subtotal}</output>
+```
+
+> [!WARNING]
+> Passing `subtotal` here would report the total for the previous `quantity`. Reading the rendered total back out of the DOM has the same problem, since the DOM has not been updated yet.
+
 
 ----------
 
@@ -1357,6 +1396,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
   And the double is ${doubleCount}
 </button>
 ```
+
+Because updates are queued, reassigning `count` does not recompute `doubleCount` until the queue is flushed. Reading `doubleCount` inside the handler yields the value computed from the previous `count`, as described in [Stale Derived Values](./reactivity.md#stale-derived-values).
 
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
@@ -1900,6 +1941,94 @@ A declaration is dropped when its value is `false`, `null`, `undefined` or an em
 
 Arrays nest and spread exactly as they do for [`class=`](#class). Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
 
+### `content=`
+
+Native tags accept their body content as a `content=` attribute. The value may be a [`<define>`](./core-tag.md#define) tag variable, an imported template, or the [content](./language.md#tag-content) the surrounding template received.
+
+Because `content` arrives as part of `input`, a [spread](./language.md#spread-attributes) is enough to implement a tag that wraps an element around the content it receives.
+
+```marko
+/* field-row.marko */
+<fieldset ...input/>
+```
+
+```marko
+/* signup.marko */
+<field-row class="row">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email">
+</field-row>
+```
+
+The spread applies `class` to the `<fieldset>` and renders the content inside it:
+
+```html
+<fieldset class="row"><label for="email">Email</label><input id="email" name="email" type="email"></fieldset>
+```
+
+Passing the attribute explicitly places the content on a specific element, such as an inner wrapper:
+
+```marko
+<section class="card">
+  <h2>${input.title}</h2>
+  <div class="card-body" content=input.content/>
+</section>
+```
+
+`content=` is reactive. Swapping the value replaces the rendered content in place, leaving the element itself untouched.
+
+```marko
+<let/expanded=false>
+<define/Summary>
+  <h2>${input.title}</h2>
+</define>
+<define/Details>
+  <h2>${input.title}</h2>
+  <p>${input.description}</p>
+</define>
+
+<article content=(expanded ? Details : Summary)/>
+
+<button onClick() { expanded = !expanded }>toggle</button>
+```
+
+> [!WARNING]
+> A literal body takes precedence over `content=`, which is then never rendered. Any body counts, including one that produces no output of its own, such as a body holding only a [comment](./language.md#comments).
+>
+> ```marko
+> <div content=Summary>
+>   // this comment is body content, so `Summary` never renders
+> </div>
+> ```
+
+Attributes are merged from left to right, so ordering decides the result when `content=` accompanies a spread. Setting it after a spread overrides the content coming from that spread, and `content=undefined` forwards every other attribute while dropping the content entirely.
+
+```marko
+<div ...input content=undefined/>
+```
+
+Tags that cannot contain markup reject the attribute at compile time. [Void elements](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) such as `<img>` report:
+
+```text
+The `<img>` tag cannot have content, so it does not support the `content` attribute.
+```
+
+`<textarea>` and `<title>` take their body as text, and report:
+
+```text
+The `<textarea>` tag takes its content from its body as text, so it does not support the `content` attribute.
+```
+
+> [!NOTE]
+> On [`<meta>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta), `content` is a real HTML attribute and keeps that meaning, including when applied through a spread. It is the only native tag whose `content` is written to the element instead of rendered as content.
+>
+> ```marko
+> <let/height=630>
+> <meta property="og:image:height" content=height>
+> ```
+
+For typing content on a custom tag, see [Typing `content`](./typescript.md#typing-content).
+
 ### Event Handlers
 
 Attributes on native tags that begin with `on` followed by `-` or a capital letter are attached as [event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
@@ -1953,6 +2082,35 @@ The value for the attribute must be either a function or a [falsy](https://devel
 > ```marko
 > <button onclick="this.innerHTML++">0</button>
 > ```
+
+#### Handler Arguments
+
+An event handler receives two arguments: the [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) and the element the handler was attached to.
+
+```marko
+<form onSubmit(event, form) {
+  event.preventDefault();
+  fetch("/subscribe", { method: "POST", body: new FormData(form) });
+}>
+  <input name="email" type="email">
+  <button>Subscribe</button>
+</form>
+```
+
+The second argument matters when an event originates from a descendant. `event.target` is the element the event was dispatched on, which for a click inside a `<button>` may be an inner `<span>`, while the second argument is always the element carrying the `on*` attribute.
+
+> [!WARNING]
+> [`event.currentTarget`](https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget) is not available in Marko event handlers. Because handlers are [delegated](#delegation), `currentTarget` is the `document` in an optimized build, and in a debug build reading it logs an error to the console and evaluates to `null`. The second argument, or an [element reference](#element-references), replaces it.
+
+#### Delegation
+
+Marko does not call `addEventListener` for each element. The first time a handler for an event type is attached, a single listener for that type is registered on the `document` with [capture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture) enabled. When the event fires, that listener invokes the handler on the event's target and then, for events that bubble, the handler on each of its ancestors.
+
+This has a few observable effects.
+
+- Marko handlers run before listeners added with `addEventListener` on the element itself or on any ancestor below the `document`.
+- `event.stopPropagation()` in a Marko handler prevents handlers on ancestor elements from running, and stops the event before it reaches any `addEventListener` listener below the `document`, including one on the same element. Calling it from a listener attached below the `document` has no effect on Marko handlers, which have already run.
+- Events that do not bubble, such as `focus`, `blur`, and `load`, only reach a handler on the element the event was dispatched on. A handler on an ancestor is never called for them.
 
 ### Tags with Enhanced `value` Attributes
 
@@ -2615,7 +2773,7 @@ export interface Input extends Marko.HTML.Button {
 ```
 
 > [!TIP]
-> Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+> Since Marko 6, native tags have supported including [`content`](./native-tag.md#content) as an attribute so there is no need to inject manually
 >
 > ```marko
 > <button style=`color: ${color}` ...attrs>
