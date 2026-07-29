@@ -16,6 +16,8 @@ Most standard data types can be serialized, including:
 
 ... and many more.
 
+State reaches the client automatically when something there depends on it. [`$global`](../reference/language.md#global) does not: it is server data until a property is named in [`$global.serializedGlobals`](../reference/template.md#globalserializedglobals), which is what makes request-scoped values such as a locale readable after hydration.
+
 ## Unserializable Data
 
 Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.

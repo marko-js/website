@@ -21,7 +21,7 @@ The context is passed to middleware and handler functions as the first parameter
 | `parent`   | The calling context when the request was made with [`ctx.fetch`](#fetch), otherwise `undefined`                                                  |
 
 > [!NOTE]
-> In templates, `$global.params` and `$global.url` are serialized to the browser by default, so client-side code can read them after hydration. Other context properties can be included by setting them in `ctx.serializedGlobals`.
+> In templates, `$global.params` and `$global.url` are serialized to the browser by default, so client-side code can read them after hydration. Other context properties can be included by setting them in `ctx.serializedGlobals`, which is the same list described under [`$global.serializedGlobals`](../reference/template.md#globalserializedglobals).
 
 ## Context Methods
 
