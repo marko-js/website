@@ -240,6 +240,35 @@ The value for the attribute must be either a function or a [falsy](https://devel
 > <button onclick="this.innerHTML++">0</button>
 > ```
 
+#### Handler Arguments
+
+An event handler receives two arguments: the [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) and the element the handler was attached to.
+
+```marko
+<form onSubmit(event, form) {
+  event.preventDefault();
+  fetch("/subscribe", { method: "POST", body: new FormData(form) });
+}>
+  <input name="email" type="email">
+  <button>Subscribe</button>
+</form>
+```
+
+The second argument matters when an event originates from a descendant. `event.target` is the element the event was dispatched on, which for a click inside a `<button>` may be an inner `<span>`, while the second argument is always the element carrying the `on*` attribute.
+
+> [!WARNING]
+> [`event.currentTarget`](https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget) is not available in Marko event handlers. Because handlers are [delegated](#delegation), `currentTarget` is the `document` in an optimized build, and in a debug build reading it logs an error to the console and evaluates to `null`. The second argument, or an [element reference](#element-references), replaces it.
+
+#### Delegation
+
+Marko does not call `addEventListener` for each element. The first time a handler for an event type is attached, a single listener for that type is registered on the `document` with [capture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture) enabled. When the event fires, that listener invokes the handler on the event's target and then, for events that bubble, the handler on each of its ancestors.
+
+This has a few observable effects.
+
+- Marko handlers run before listeners added with `addEventListener` on the element itself or on any ancestor below the `document`.
+- `event.stopPropagation()` in a Marko handler prevents handlers on ancestor elements from running, and stops the event before it reaches any `addEventListener` listener below the `document`, including one on the same element. Calling it from a listener attached below the `document` has no effect on Marko handlers, which have already run.
+- Events that do not bubble, such as `focus`, `blur`, and `load`, only reach a handler on the element the event was dispatched on. A handler on an ancestor is never called for them.
+
 ### Tags with Enhanced `value` Attributes
 
 The HTML `<input>` tag has a `value=` attribute that reflects the state of the `<input>`. Marko adds this attribute to a few other tags that hold internal state.
