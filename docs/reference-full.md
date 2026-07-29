@@ -3055,6 +3055,33 @@ When a template is rendered via the [`render`](#templaterenderinput) or [`mount`
 
 Some properties on the `$global` are picked up by Marko itself and have predefined functionality.
 
+### `$global.serializedGlobals`
+
+> `string[] | Record<string, boolean> | undefined`
+
+`$global` stays on the server. Naming a property here also writes its value into the page, which makes it readable as [`$global`](./language.md#global) from client code such as an event handler.
+
+```js
+Template.render({
+  $global: {
+    locale: "en-GB",
+    apiToken: "secret",
+    serializedGlobals: ["locale"],
+  },
+});
+```
+
+Above, `$global.locale` can be read in the browser and `$global.apiToken` cannot. An object selects the same properties and suits a list assembled in more than one place, which is how [Marko Run](../marko-run/runtime.md#context) exposes it as `ctx.serializedGlobals`.
+
+```js
+serializedGlobals: { locale: true, apiToken: false }
+```
+
+A named property holding `undefined` is left out.
+
+> [!WARNING]
+> Serialized values are written into the HTML and can be read by anyone who loads the page. Secrets belong in properties left off the list.
+
 ### `$global.signal`
 
 > <code>[AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) | undefined</code>
