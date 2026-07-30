@@ -1321,6 +1321,18 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
+The `step=` attribute may be negative, counting down from a larger `from=`, or fractional.
+
+```marko
+<for|num| from=10 to=0 step=-5>${num}</for>
+// 10 5 0
+
+<for|num| from=0 to=1 step=0.25>${num}</for>
+// 0 0.25 0.5 0.75 1
+```
+
+A nullish `of=` or `in=` renders nothing, so an optional value such as a [repeated attribute tag](./language.md#repeated-attribute-tags) may be iterated directly.
+
 The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
 
 ```marko
@@ -1340,6 +1352,11 @@ This means the previous example can simplified to:
   ${user.firstName} ${user.lastName}
 </for>
 ```
+
+Each key must be a string or a number, and must be unique within a single loop. An object item is keyed by a stable identifier it carries, such as the `id` above.
+
+> [!WARNING]
+> The `by=` attribute keys a `<for>` that renders [content](./language.md#tag-content). Including it on a `<for>` that [applies attribute tags](./language.md#conditional-attribute-tags) is a compile error.
 
 ## `<let>`
 
@@ -2395,9 +2412,6 @@ The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) a
 ```
 
 Selecting a member calls the change handler with the new value, and the rendered selection follows the `checkedValue=` that results. A handler that ignores the new value keeps the current selection.
-
-> [!WARNING]
-> An `<input>` supports only one of `checkedChange=`, `checkedValue=`/`checkedValueChange=`, and `valueChange=`. Combining two of them, or `checked=` with `checkedValue=`/`checkedValueChange=`, is a compile error.
 
 #### `<select>` (`valueChange=`)
 

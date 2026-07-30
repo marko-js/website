@@ -465,9 +465,6 @@ The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) a
 
 Selecting a member calls the change handler with the new value, and the rendered selection follows the `checkedValue=` that results. A handler that ignores the new value keeps the current selection.
 
-> [!WARNING]
-> An `<input>` supports only one of `checkedChange=`, `checkedValue=`/`checkedValueChange=`, and `valueChange=`. Combining two of them, or `checked=` with `checkedValue=`/`checkedValueChange=`, is a compile error.
-
 #### `<select>` (`valueChange=`)
 
 The `<select>` tag has a change handler for [Marko's added `value=` attribute](#select).
