@@ -169,7 +169,7 @@ instance.value = "#0080ff";
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
 
-Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, and extending [`Marko.Global`](./typescript.md#typing-global) types them wherever `$global` is read.
+Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, typed by extending [`Marko.Global`](./typescript.md#typing-global).
 
 ### `$global.serializedGlobals`
 

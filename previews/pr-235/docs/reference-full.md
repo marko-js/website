@@ -2667,7 +2667,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
-  - Application specific properties are added by [extending the interface](#typing-global)
+  - Extended with [application specific properties](#typing-global)
 - **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
   - `ReturnType<Marko.Template["render"]>`
@@ -2676,10 +2676,10 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
   - An object containing all [native tags](./native-tag.md) and their types
-  - Each entry is a `Marko.NativeTag`, so the attributes of a tag are `Marko.NativeTags["div"]["input"]`
+  - Each entry is a `Marko.NativeTag`, so `div` attributes are `Marko.NativeTags["div"]["input"]`
 - **`Marko.NativeTag<Input, Return>`**
   - The type of a single entry in `Marko.NativeTags`
-  - `Input` types the attributes of the tag, `Return` types the element provided by its [tag variable](./native-tag.md#element-references)
+  - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -2789,7 +2789,7 @@ export interface Input extends Marko.HTML.Button {
 
 ### Registering a new native tag (e.g. for custom elements)
 
-Tag names are resolved through [tag discovery](./custom-tag.md), so a custom element is declared as an HTML tag in the project's `marko.json`:
+A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
 
 ```json
 /* marko.json */
@@ -2798,7 +2798,7 @@ Tag names are resolved through [tag discovery](./custom-tag.md), so a custom ele
 }
 ```
 
-Its types come from the `Marko.NativeTags` interface, where each entry is a `Marko.NativeTag<Input, Return>`:
+Its types are added to the `Marko.NativeTags` interface:
 
 ```ts
 /* star-rating.ts */
@@ -2820,7 +2820,7 @@ declare global {
 }
 ```
 
-Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers. The second `Marko.NativeTag` parameter types the element provided by the [tag variable](./native-tag.md#element-references).
+Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers.
 
 ```marko
 /* index.marko */
@@ -2859,7 +2859,7 @@ declare global {
 
 ### Typing `$global`
 
-`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), and undeclared properties are read back as `unknown`. Declaring them keeps `$global` typed in every template that reads it and in every [render call](./template.md#inputglobal) that passes it. In a dedicated declaration file, the leading `export {}` is what makes `declare global` apply.
+`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), but undeclared properties read back as `unknown`. Declaring them types `$global` in every template and [render call](./template.md#inputglobal). In a dedicated declaration file, the leading `export {}` makes `declare global` apply.
 
 ```ts
 export {};
@@ -2875,7 +2875,7 @@ declare global {
 ```
 
 > [!WARNING]
-> A property declared without `?` is required in every `$global` object passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`. Optional properties keep existing call sites valid.
+> A property declared without `?` is required in every `$global` passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`.
 
 ## TypeScript Syntax in `.marko`
 
@@ -3300,7 +3300,7 @@ instance.value = "#0080ff";
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
 
-Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, and extending [`Marko.Global`](./typescript.md#typing-global) types them wherever `$global` is read.
+Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, typed by extending [`Marko.Global`](./typescript.md#typing-global).
 
 ### `$global.serializedGlobals`
 
