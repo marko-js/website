@@ -1553,6 +1553,46 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 <div>${value}</div> // value is always transformed to uppercase
 ```
 
+### Content Return
+
+[Tag content](./language.md#tag-content) may hold its own `<return>`, which is read through a [tag variable](./language.md#tag-variables) on the tag that renders that content.
+
+A [`<define>`](#define) can hold state alongside its markup and expose it where the snippet is rendered.
+
+```marko
+<define/ZoomControls>
+  <let/level=1>
+  <button onClick() { level = Math.max(0.5, level - 0.25) }>Zoom out</button>
+  <button onClick() { level = Math.min(3, level + 0.25) }>Zoom in</button>
+  <return=level/>
+</define>
+
+<ZoomControls/zoom/>
+<img alt="Floor plan" src="/blueprint.png" style=`scale: ${zoom}`>
+```
+
+Content received by a [custom tag](./custom-tag.md) is read the same way. The second type argument of [`Marko.Body`](./typescript.md#typing-content) declares the attributes of the `<return>`, so the tag variable is typed by its `value`.
+
+```marko
+/* char-limit.marko */
+export interface Input {
+  max: number;
+  content: Marko.Body<[], { value: string }>;
+}
+
+<${input.content}/entry/>
+<small>${input.max - entry.length} characters left</small>
+```
+
+```marko
+/* index.marko */
+<char-limit max=140>
+  <let/bio="">
+  <return=bio/>
+  <textarea value:=bio/>
+</char-limit>
+```
+
 ## `<script>`
 
 The `<script>` tag has special behavior in Marko.
@@ -1735,7 +1775,7 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)). A `<return>` in the body is exposed separately, at the tag that renders the snippet (see [Content Return](#content-return)).
 
 > [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
