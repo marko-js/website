@@ -525,7 +525,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
 
 ```marko
 /* textbox.marko */
@@ -537,7 +537,7 @@ export interface Input {
 <id/id=input.id>
 
 <input aria-describedby=id>
-<span id=id>${description}</span>
+<span id=id>${input.description}</span>
 ```
 
 ## `<log>`
