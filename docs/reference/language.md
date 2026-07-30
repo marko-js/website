@@ -688,7 +688,7 @@ Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return
 
 ### Tag Var Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), so a variable declared deep in the tree is in scope everywhere in the template except in [module statements](#statements).
 
 ```marko
 <form>
@@ -700,6 +700,16 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
   console.log(myInput())
 </script>
 ```
+
+Hoisting determines where a tag variable may be referenced, not when its value may be read. A hoisted read, including an [element reference](./native-tag.md#element-references), belongs in code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+> [!WARNING]
+> An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) is evaluated during the render, before a hoisted value may be read.
+>
+> ```marko
+> // ❌ (INCORRECT) `myInput` is read while the template renders
+> <div>${myInput().value}</div>
+> ```
 
 ### Repeated Tag Vars
 

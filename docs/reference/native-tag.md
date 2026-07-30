@@ -15,7 +15,7 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 ```
 
 > [!CAUTION]
-> The node reference is only available in the browser. Attempting to access a DOM node from the server will result in an error.
+> The DOM node exists only in the browser, and the getter is readable only from code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](#event-handlers). An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](./language.md#dynamic-text) is evaluated earlier in the render.
 
 ## Enhanced Attributes
 

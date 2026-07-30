@@ -78,7 +78,7 @@ export interface Input {
 
 ## Element Refs
 
-Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), native tags [expose a tag variable](../reference/native-tag.md#element-references) with a getter to the DOM node. Since it is a function it can be used anywhere in the template.
+Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), native tags [expose a tag variable](../reference/native-tag.md#element-references) with a getter to the DOM node. It is in scope throughout the template, and a [`<script>`](../reference/core-tag.md#script) body or [event handler](../reference/native-tag.md#event-handlers) reads the node by calling it.
 
 ```marko
 <input/$el/>
