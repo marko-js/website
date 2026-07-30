@@ -2227,6 +2227,8 @@ Radio and checkbox inputs support a `checkedValue=` attribute. When this attribu
 
 `checkedValue=` may be set to a string, in which case only one value will match (for use with `type="radio"`), or an array of strings, in which case multiple values may match (for use with `type="checkbox"`).
 
+Multiple radios sharing one `checkedValue=` are coordinated through it, while `name=` keeps its native role of grouping radios for form submission and keyboard navigation.
+
 #### `<select>`
 
 The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
@@ -2392,12 +2394,24 @@ The `checked=` attribute may be controlled with `checkedChange=`
 <input type="checkbox" checked=checked checkedChange(value) { checked = value }>
 ```
 
-The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.
+The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler. Each radio in a group carries its own `value=` and binds the same `checkedValue=`.
 
 ```marko
-<let/checked="foo">
-<input type="radio" value="foo" checkedValue:=checked>
+<let/speed="ground">
+
+<form>
+  <label>
+    <input type="radio" name="speed" value="ground" checkedValue:=speed>
+    Ground
+  </label>
+  <label>
+    <input type="radio" name="speed" value="overnight" checkedValue:=speed>
+    Overnight
+  </label>
+</form>
 ```
+
+Selecting a member calls the change handler with the new value, and the rendered selection follows the `checkedValue=` that results. A handler that ignores the new value keeps the current selection.
 
 #### `<select>` (`valueChange=`)
 
