@@ -438,17 +438,17 @@ export interface Input {
 
 #### Skipped Values
 
-If an interpolated value is `null`, `undefined`, `false`, `""`, `NaN` or the bigint `0n` it renders as nothing. Every other value is coerced with string concatenation, so `0` renders `0`, `true` renders `true`, and an array renders its comma-joined entries. The same rules apply to interpolations in the body of an [`<html-script>` or `<html-style>`](./native-tag.md#enhanced-tags).
+An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders nothing. Every other value is coerced with string concatenation: `0` renders `0`, `true` renders `true`, an array renders its comma-joined entries. The same rules apply inside [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags) bodies.
 
 > [!NOTE]
-> These rules differ from [skipped attributes](#skipped-attributes), where `NaN`, `""` and `0n` are still written. Only `null`, `undefined` and `false` are skipped in both places.
+> These rules differ from [skipped attributes](#skipped-attributes), which still write `NaN`, `""` and `0n`. Only `null`, `undefined` and `false` are skipped in both places.
 
 <!---->
 
 > [!WARNING]
-> A debug build throws when an interpolated value has no useful string form, such as a symbol or an object that stringifies to `[object Object]` or `[object Map]`. A plain object throws ``Text content cannot be a plain object (it would render as `[object Object]`).`` and a promise throws ``Text content cannot be a promise (use the `<await>` tag to render its resolved value).``
+> A debug build throws on values with no useful string form, such as symbols and objects that stringify to `[object Object]` or `[object Map]`. A plain object throws ``Text content cannot be a plain object (it would render as `[object Object]`).`` and a promise throws ``Text content cannot be a promise (use the `<await>` tag to render its resolved value).``
 >
-> These checks are debug only. An optimized build renders `[object Object]` for a plain object and `[object Promise]` for a promise, and coercing a symbol throws a native `TypeError`.
+> An optimized build instead renders `[object Object]` or `[object Promise]`, and coercing a symbol throws a native `TypeError`.
 
 #### Unescaped Text
 
