@@ -514,6 +514,42 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
 
+## Attribute Spreads
+
+A [spread](./language.md#spread-attributes) supplies a native tag's attributes as an object, and that object owns the element's attribute set. An attribute the object stops providing is removed on the next update.
+
+```marko
+<let/link={ href: "/report.csv", download: "report.csv" }>
+
+<a ...link>Quarterly report</a>
+
+<button onClick() { link = { href: "/report.csv" } }>Open in browser</button>
+```
+
+Clicking the button leaves `<a href="/report.csv">`, with `download` removed.
+
+> [!WARNING]
+> Removal covers every attribute present on the element, including any written by code outside Marko. An attribute that must survive an update belongs in the spread object or after the spread.
+
+Attributes written after a spread are excluded from what the spread owns. The compiler records their names, so the spread neither overrides nor removes them, which is how a tag keeps part of an element fixed while forwarding the rest of its `input`.
+
+```marko
+<a ...input class=["external", input.class] target="_blank" rel="noreferrer"/>
+```
+
+`target` and `rel` hold regardless of what `input` carries, and `class=` composes the caller's value with the tag's own. An attribute written before a spread is merged into the object instead, so the spread's value for that name wins.
+
+[`class=`](#class) and [`style=`](#style) keep their object and array handling when supplied by a spread, and a [change handler](#change-handlers) still pairs with its attribute when both arrive in the object.
+
+```marko
+<let/note="">
+<const/composer={ rows: 4, value: note, valueChange(next) { note = next } }>
+
+<textarea ...composer/>
+```
+
+An [event handler](#event-handlers) written after a spread claims its event, so an entry in the object naming that same event is not attached. The object still carries it, which is how a tag wraps a handler it was passed.
+
 ## Enhanced Tags
 
 Some native tags have special meaning in Marko, and don't behave exactly like their HTML counterpart.
