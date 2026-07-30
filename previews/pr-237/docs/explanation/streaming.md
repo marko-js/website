@@ -194,7 +194,6 @@ http
     });
 
     const gzip = zlib.createGzip({ flush: zlib.constants.Z_PARTIAL_FLUSH });
-    gzip.on("error", (err) => response.destroy(err));
     gzip.pipe(response);
 
     Template.render({}).pipe(gzip);
@@ -202,4 +201,4 @@ http
   .listen(80);
 ```
 
-[`pipe()`](../reference/template.md#pipe) calls `flush()` on its target after every chunk, so each chunk of HTML moves through the compressor instead of waiting for its internal buffer to fill. The `error` listener matters as well: an aborted render is reported on the compressor and Marko never calls `end()`, so the request stays open until the listener closes it.
+[`pipe()`](../reference/template.md#pipe) calls `flush()` on its target after every chunk, so each chunk of HTML moves through the compressor instead of waiting for its internal buffer to fill.

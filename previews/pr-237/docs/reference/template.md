@@ -40,17 +40,11 @@ import http from "node:http";
 
 http
   .createServer((req, res) => {
-    res.on("error", (err) => console.error(err));
     // Stream rendered html into the server response.
     Template.render({}).pipe(res);
   })
   .listen(3000);
 ```
-
-When the render aborts, `pipe()` emits an `error` event on the target carrying the abort reason, leaves `end()` uncalled, and calls `destroySoon()` on the target's `socket` when it has one. An `http.ServerResponse` therefore drops the connection and the client sees a truncated response.
-
-> [!WARNING]
-> An aborted render becomes an uncaught exception when the target has no listener for the `error` event, which terminates the process under Node's default handling. Targets other than the response itself, such as a compression stream piped into the response, leave the socket untouched, so the response also stays open until the listener closes it.
 
 ### ReadableStream
 
