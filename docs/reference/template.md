@@ -219,7 +219,24 @@ This is used to, for example, prevent continued rendering after an incoming requ
 
 > `string | undefined`
 
-This value should be a string that represents a valid [csp nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce). Marko will automatically set this value as the `nonce` on all assets (`<script>`, `<style>`, etc) rendered by the template.
+Marko writes this [CSP nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce) as the `nonce` attribute on the `<script>` and `<style>` elements it renders: the [`<html-script>` and `<html-style>`](./core-tag.md#html-script--html-style) tags, the `<style>` element rendered for a [`<style>` tag with dynamic values](./core-tag.md#dynamic-values), and the inline scripts written to stream and resume the page.
+
+An explicit `nonce`, written on the element or supplied by a [spread](./language.md#spread-attributes), takes precedence over the injected value.
+
+A `<script>` or `<style>` rendered in the browser reads `cspNonce` from the client [`$global`](./language.md#global), which holds the properties named in [`serializedGlobals`](#globalserializedglobals).
+
+```js
+const cspNonce = crypto.randomUUID();
+
+res.setHeader(
+  "Content-Security-Policy",
+  `script-src 'nonce-${cspNonce}'; style-src 'nonce-${cspNonce}'`,
+);
+
+Template.render({
+  $global: { cspNonce, serializedGlobals: ["cspNonce"] },
+}).pipe(res);
+```
 
 ### `$global.renderId`
 

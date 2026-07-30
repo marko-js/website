@@ -7,16 +7,39 @@ Most standard data types can be serialized, including:
 
 - Primitives: `null`, `boolean`, `number`, `string`, `bigint`
 - Arrays and plain objects with serializable values
-- Dates
+- Dates and regular expressions
 - Map, Set
 - Typed arrays and ArrayBuffer/DataView
 - URL and URLSearchParams
+- Headers, FormData, Request, Response
+- Built-in error types, including AggregateError
+- Intl formatters and Temporal values
+- Well-known and registered symbols
+- Generators, async generators, and ReadableStream
 - Additional built-in JS and Browser objects
   - For a complete list, see the [serializer file](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/html/serializer.ts) from source
 
-... and many more.
-
 State reaches the client automatically when something there depends on it. [`$global`](../reference/language.md#global) does not: it is server data until a property is named in [`$global.serializedGlobals`](../reference/template.md#globalserializedglobals), which is what makes request-scoped values such as a locale readable after hydration.
+
+## Shared References
+
+The payload is JavaScript, not JSON, so a value reached twice is written once and referenced everywhere else. Identity carries over with it: objects that are the same on the server are the same object in the browser, and cyclic structures are restored as cycles.
+
+Consider a comment list where several comments share one author record:
+
+```marko
+<let/muted=null>
+<ul>
+  <for|comment| of=input.comments>
+    <li class=(comment.author === muted && "muted")>
+      ${comment.text}
+      <button onClick() { muted = comment.author }>mute</button>
+    </li>
+  </for>
+</ul>
+```
+
+Every comment by one author points at a single serialized record, so muting one of them dims the rest without comparing ids. The same holds across [streaming](./streaming.md) flushes, where a later chunk refers back to a value an earlier chunk already sent.
 
 ## Unserializable Data
 
