@@ -178,7 +178,7 @@ Some [Akamai features designed to mitigate slow backends can ironically slow dow
 
 #### Node.js itself
 
-For extreme cases where [Node streams very small HTML chunks with its built-in compression modules](https://github.com/marko-js/marko/pull/1641), the compressor stream settings may need tweaking. Here’s an example with `createGzip` and its `Z_PARTIAL_FLUSH` flag:
+For extreme cases where [Node streams very small HTML chunks with its built-in compression modules](https://github.com/marko-js/marko/pull/1641), the compressor stream settings may need tweaking, such as the `Z_PARTIAL_FLUSH` flag on `createGzip`:
 
 ```js
 import http from "node:http";
@@ -201,4 +201,4 @@ http
   .listen(80);
 ```
 
-[`pipe()`](../reference/template.md#pipe) calls `flush()` on its target after every chunk, so each chunk of HTML moves through the compressor instead of waiting for its internal buffer to fill.
+[`pipe()`](../reference/template.md#pipe) calls `flush()` on its target after every chunk, so each chunk moves through the compressor instead of waiting for its buffer to fill.
