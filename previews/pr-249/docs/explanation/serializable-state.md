@@ -15,7 +15,7 @@ Most standard data types can be serialized, including:
 - Built-in error types, including AggregateError
 - Intl formatters and Temporal values
 - Well-known and registered symbols
-- Promises, generators, async generators, and ReadableStream
+- Generators, async generators, and ReadableStream
 - Additional built-in JS and Browser objects
   - For a complete list, see the [serializer file](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/html/serializer.ts) from source
 
@@ -40,24 +40,6 @@ Consider a comment list where several comments share one author record:
 ```
 
 Every comment by one author points at a single serialized record, so muting one of them dims the rest without comparing ids. The same holds across [streaming](./streaming.md) flushes, where a later chunk refers back to a value an earlier chunk already sent.
-
-## Pending Promises
-
-An unsettled promise is serializable. It reaches the browser pending and settles when the server settles it, delivering either the resolved value or the rejection reason.
-
-```marko
-<let/quote="pending">
-<script>
-  try {
-    quote = (await input.quote).total;
-  } catch {
-    quote = "unavailable";
-  }
-</script>
-<p>${quote}</p>
-```
-
-Passing a promise rather than awaiting it first keeps the response moving, since the HTML flushes while the work is in flight and the result follows on a later chunk. [Marko Run](../marko-run/data-loading.md) handlers pass promises through `next` for the same reason.
 
 ## Unserializable Data
 
