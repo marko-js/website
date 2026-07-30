@@ -3,6 +3,8 @@
 All `.marko` files expose the same API on their [default export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export).
 These methods are used to generate an HTML string on the server, and to modify the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) in the browser.
 
+[Targeted compilation](../explanation/targeted-compilation.md) puts [`render`](#templaterenderinput) in server output and [`mount`](#templatemountinput-node-position) in browser output, so each build carries the method for its environment.
+
 ## `Template.render(input)`
 
 | Parameter | Default | Details                                                                                                                 |
@@ -139,7 +141,7 @@ The `.update()` method allows providing new [`input`](./language.md#input) to th
 instance.update({ name: "bar" });
 ```
 
-This update to the `input` is applied synchronously.
+This update to the `input` is applied synchronously. The instance's [`$global`](#inputglobal) is fixed at mount, so a `$global` on the update input is stripped and ignored.
 
 #### instance.destroy()
 

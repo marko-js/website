@@ -2857,6 +2857,9 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.NativeTag<Input, Return>`**
   - The type of a single entry in `Marko.NativeTags`
   - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
+- **`Marko.HTMLAttributes<T>`** and **`Marko.SVGAttributes<T>`**
+  - The global attributes and events shared by all HTML tags and all SVG tags, respectively
+  - `T` types the element passed to `on*` handlers, defaulting to `Element`
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -2964,6 +2967,18 @@ export interface Input extends Marko.HTML.Button {
 > </button>
 > ```
 
+SVG tag types live in the parallel `Marko.SVG` namespace.
+
+```marko
+export interface Input extends Marko.SVG.Path {
+  dashed: boolean;
+}
+
+<const/{ dashed, ...attrs }=input>
+
+<path fill="none" stroke-dasharray=dashed && "6 3" ...attrs/>
+```
+
 ### Registering a new native tag (e.g. for custom elements)
 
 A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
@@ -3017,6 +3032,8 @@ declare global {
   }
 }
 ```
+
+SVG tags take their global attributes from `Marko.SVGAttributes`, augmented the same way.
 
 ### Registering CSS Properties (eg for custom properties)
 
@@ -3311,6 +3328,8 @@ div
 All `.marko` files expose the same API on their [default export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export).
 These methods are used to generate an HTML string on the server, and to modify the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) in the browser.
 
+[Targeted compilation](../explanation/targeted-compilation.md) puts [`render`](#templaterenderinput) in server output and [`mount`](#templatemountinput-node-position) in browser output, so each build carries the method for its environment.
+
 ## `Template.render(input)`
 
 | Parameter | Default | Details                                                                                                                 |
@@ -3447,7 +3466,7 @@ The `.update()` method allows providing new [`input`](./language.md#input) to th
 instance.update({ name: "bar" });
 ```
 
-This update to the `input` is applied synchronously.
+This update to the `input` is applied synchronously. The instance's [`$global`](#inputglobal) is fixed at mount, so a `$global` on the update input is stripped and ignored.
 
 #### instance.destroy()
 
