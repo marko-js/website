@@ -238,27 +238,27 @@ A custom element is declared as an HTML tag in the project's `marko.json`, which
 ```json
 /* marko.json */
 {
-  "<star-rating>": { "html": true }
+  "<range-slider>": { "html": true }
 }
 ```
 
 Its types are added to the `Marko.NativeTags` interface:
 
 ```ts
-/* star-rating.ts */
-export class StarRatingElement extends HTMLElement {
+/* range-slider.ts */
+export class RangeSliderElement extends HTMLElement {
   value = 0;
 }
 
-interface StarRatingAttributes extends Marko.HTMLAttributes<StarRatingElement> {
+interface RangeSliderAttributes extends Marko.HTMLAttributes<RangeSliderElement> {
   value?: number;
-  max?: number;
+  step?: number;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      "star-rating": Marko.NativeTag<StarRatingAttributes, StarRatingElement>;
+      "range-slider": Marko.NativeTag<RangeSliderAttributes, RangeSliderElement>;
     }
   }
 }
@@ -268,9 +268,9 @@ Extending `Marko.HTMLAttributes` carries over the global HTML attributes and eve
 
 ```marko
 /* index.marko */
-<let/score=4/>
-<star-rating/ratingEl value=score max=5 onChange(evt, target) { score = target.value }/>
-<button onClick() { ratingEl().focus() }>Rate</button>
+<let/threshold=20/>
+<range-slider/sliderEl value=threshold step=5 onChange(evt, target) { threshold = target.value }/>
+<button onClick() { sliderEl().focus() }>Adjust</button>
 ```
 
 ### Registering new "global" HTML Attributes
