@@ -41,6 +41,36 @@ Consider a comment list where several comments share one author record:
 
 Every comment by one author points at a single serialized record, so muting one of them dims the rest without comparing ids. The same holds across [streaming](./streaming.md) flushes, where a later chunk refers back to a value an earlier chunk already sent.
 
+## Shared Functions
+
+Functions reach the browser because the compiler registers them, and a named export of a `.marko` file registers like any function written inside a template. One registration is reserved per exported function, every importer resolves to that same registration, and state holding the function serializes as a reference to it.
+
+```marko
+/* tags/table-sorts.marko */
+export function byDueDate(a, b) {
+  return a.dueAt - b.dueAt;
+}
+```
+
+```marko
+/* task-table.marko */
+import { byDueDate } from "<table-sorts>"
+
+<let/compare=byDueDate>
+<let/tasks=input.tasks>
+<button onClick() { tasks = [...tasks].sort(compare) }>due date</button>
+<ul>
+  <for|task| of=tasks>
+    <li>${task.title}</li>
+  </for>
+</ul>
+```
+
+`compare` survives resume, and a second template importing `byDueDate` resolves to the same registration. Re-exports resolve to it as well, so `export { byDueDate } from "./table-sorts.marko"` in a third template keeps every importer in agreement. Registration is emitted only where the function value itself reaches the browser, so an exported function that is merely called during a render adds no registration.
+
+> [!WARNING]
+> Only a function declaration or a `const` binding registers as a shared export. A function exported through `let` or `var` may be reassigned, so its identity is not carried to the browser.
+
 ## Unserializable Data
 
 Some values cannot be serialized. When these values are encountered the Marko runtime will provide a helpful message to locate the relevant code.
@@ -48,7 +78,7 @@ Some values cannot be serialized. When these values are encountered the Marko ru
 Examples of unserializable data include:
 
 - Closures (top level functions are fine!)
-- Functions that come from arbitrary javascript code or imports
+- Functions that come from arbitrary javascript code, such as a `.js` or `.ts` module
 - Class instances (except built-ins explicitly supported by the runtime)
 - DOM nodes and elements
 

@@ -125,6 +125,28 @@ export function getAnswer() {
 <div>${getAnswer()}</div>
 ```
 
+#### Shared Exports
+
+Named exports sit alongside the default export, which is the template itself. Another template imports them like any module, including through the [tag `import` shorthand](#tag-import-shorthand).
+
+```marko
+/* tags/post-text.marko */
+export function excerpt(body, max = 140) {
+  return body.length > max ? body.slice(0, max).trimEnd() + "..." : body;
+}
+```
+
+```marko
+/* article-card.marko */
+import { excerpt } from "<post-text>"
+
+<p>${excerpt(input.post.body)}</p>
+```
+
+Markup is optional, so a `.marko` file may exist purely to hold shared code, and `export { excerpt } from "./post-text.marko"` re-exports another template's export.
+
+Exported functions are also [serializable](../explanation/serializable-state.md#shared-functions), so one held in state resumes in the browser.
+
 ### `static`
 
 Statements prefixed with `static` allow running JavaScript expressions in module scope. The statements will run when the template loaded on the server and in the browser.
