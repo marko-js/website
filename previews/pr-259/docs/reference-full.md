@@ -843,6 +843,24 @@ This means you cannot access the tag parameters outside the body of the tag.
 > [!CAUTION]
 > Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
 
+## Doctype
+
+A [doctype](https://developer.mozilla.org/en-US/docs/Glossary/Doctype) is written into the HTML output exactly as authored, so a page template declares one the same way an HTML file does.
+
+```marko
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <status-board/>
+  </body>
+</html>
+```
+
+The doctype applies to the document as a whole, so it belongs in the template that renders the entire page.
+
 ## Comments
 
 Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment) comments are supported.
@@ -940,6 +958,13 @@ import MyTag from "./my-tag.marko"
 
 <${MyTag}/>
 ```
+
+> [!WARNING]
+> A dot in a tag name is the [`class` shorthand](#shorthand-class-and-id), so `<Toolbar.Undo/>` renders the tag held in `Toolbar` and passes `class="Undo"`. A property is reached with the [dynamic tag](#dynamic-tags) syntax.
+>
+> ```marko
+> <${Toolbar.Undo}/>
+> ```
 
 
 ----------
@@ -1528,6 +1553,46 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 <div>${value}</div> // value is always transformed to uppercase
 ```
 
+### Content Return
+
+[Tag content](./language.md#tag-content) may hold its own `<return>`, which is read through a [tag variable](./language.md#tag-variables) on the tag that renders that content.
+
+A [`<define>`](#define) can hold state alongside its markup and expose it where the snippet is rendered.
+
+```marko
+<define/ZoomControls>
+  <let/level=1>
+  <button onClick() { level = Math.max(0.5, level - 0.25) }>Zoom out</button>
+  <button onClick() { level = Math.min(3, level + 0.25) }>Zoom in</button>
+  <return=level/>
+</define>
+
+<ZoomControls/zoom/>
+<img alt="Floor plan" src="/blueprint.png" style=`scale: ${zoom}`>
+```
+
+Content received by a [custom tag](./custom-tag.md) is read the same way. The second type argument of [`Marko.Body`](./typescript.md#typing-content) declares the attributes of the `<return>`, so the tag variable is typed by its `value`.
+
+```marko
+/* char-limit.marko */
+export interface Input {
+  max: number;
+  content: Marko.Body<[], { value: string }>;
+}
+
+<${input.content}/entry/>
+<small>${input.max - entry.length} characters left</small>
+```
+
+```marko
+/* index.marko */
+<char-limit max=140>
+  <let/bio="">
+  <return=bio/>
+  <textarea value:=bio/>
+</char-limit>
+```
+
 ## `<script>`
 
 The `<script>` tag has special behavior in Marko.
@@ -1710,7 +1775,7 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)). A `<return>` in the body is exposed separately, at the tag that renders the snippet (see [Content Return](#content-return)).
 
 > [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
@@ -2479,6 +2544,26 @@ Without `openChange=`, `open=` applies only on the render that creates the eleme
 
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
+
+#### Form Reset
+
+Resetting a form, through a `<button type="reset">` or [`form.reset()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset), returns each controlled form element to the value it was first rendered with. Later updates to the bound state change the element without changing that default. Marko calls the change handler of every element the reset changed, passing the restored value, so the bound state follows the element back.
+
+```marko
+<let/tracking="1Z999AA10">
+
+<form>
+  <input value:=tracking>
+  <button type="reset">Reset</button>
+</form>
+
+<div>${tracking}</div>
+```
+
+Editing the field and resetting the form restores `1Z999AA10` to both the `<input>` and `tracking`.
+
+> [!NOTE]
+> The change handlers run in an animation frame after the reset, so the element updates immediately while the bound state follows on the next frame. Calling `preventDefault()` on the `reset` event cancels the reset along with those handler calls.
 
 ## Attribute Spreads
 

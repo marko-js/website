@@ -532,6 +532,26 @@ Without `openChange=`, `open=` applies only on the render that creates the eleme
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
 
+#### Form Reset
+
+Resetting a form, through a `<button type="reset">` or [`form.reset()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset), returns each controlled form element to the value it was first rendered with. Later updates to the bound state change the element without changing that default. Marko calls the change handler of every element the reset changed, passing the restored value, so the bound state follows the element back.
+
+```marko
+<let/tracking="1Z999AA10">
+
+<form>
+  <input value:=tracking>
+  <button type="reset">Reset</button>
+</form>
+
+<div>${tracking}</div>
+```
+
+Editing the field and resetting the form restores `1Z999AA10` to both the `<input>` and `tracking`.
+
+> [!NOTE]
+> The change handlers run in an animation frame after the reset, so the element updates immediately while the bound state follows on the next frame. Calling `preventDefault()` on the `reset` event cancels the reset along with those handler calls.
+
 ## Attribute Spreads
 
 A [spread](./language.md#spread-attributes) supplies a native tag's attributes as an object, and that object owns the element's attribute set. An attribute the object stops providing is removed on the next update.
