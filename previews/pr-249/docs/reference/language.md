@@ -563,7 +563,7 @@ export interface Input {
 
 ### Nested Attribute tags
 
-Attribute tags may be nested in other attribute tags.
+Attribute tags may be nested in other attribute tags. A nested attribute tag becomes a property on its parent attribute tag, alongside the parent's own attributes.
 
 ```marko
 <my-tag>
@@ -578,7 +578,7 @@ Would provide the following as input
 ```js
 {
   a: {
-    value: 2,
+    value: 1,
     b: { value: 2 }
   }
 }

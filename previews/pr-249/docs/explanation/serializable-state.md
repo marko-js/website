@@ -41,22 +41,6 @@ Consider a comment list where several comments share one author record:
 
 Every comment by one author points at a single serialized record, so muting one of them dims the rest without comparing ids. The same holds across [streaming](./streaming.md) flushes, where a later chunk refers back to a value an earlier chunk already sent.
 
-## Streaming Values
-
-Marko serializes a ReadableStream or an async generator while it is still producing. Each value is written into a later chunk of the same response as it is produced, so client code sees values arrive rather than waiting for the whole sequence.
-
-Consider a build log delivered as an async generator:
-
-```marko
-<let/progress=null>
-<script>
-  for await (const update of input.buildLog) {
-    progress = update;
-  }
-</script>
-<p>${progress?.step ?? "queued"}</p>
-```
-
 ## Pending Promises
 
 An unsettled promise is serializable. It reaches the browser pending and settles when the server settles it, delivering either the resolved value or the rejection reason.
