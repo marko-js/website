@@ -111,6 +111,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
+  - Extended with [application specific properties](#typing-global)
 - **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
   - `ReturnType<Marko.Template["render"]>`
@@ -118,7 +119,11 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
   - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
-  - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
+  - An object containing all [native tags](./native-tag.md) and their types
+  - Each entry is a `Marko.NativeTag`, so `div` attributes are `Marko.NativeTags["div"]["input"]`
+- **`Marko.NativeTag<Input, Return>`**
+  - The type of a single entry in `Marko.NativeTags`
+  - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -228,19 +233,44 @@ export interface Input extends Marko.HTML.Button {
 
 ### Registering a new native tag (e.g. for custom elements)
 
+A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
+
+```json
+/* marko.json */
+{
+  "<range-slider>": { "html": true }
+}
+```
+
+Its types are added to the `Marko.NativeTags` interface:
+
 ```ts
-interface MyCustomElementAttributes {
-  // ...
+/* range-slider.ts */
+export class RangeSliderElement extends HTMLElement {
+  value = 0;
+}
+
+interface RangeSliderAttributes extends Marko.HTMLAttributes<RangeSliderElement> {
+  value?: number;
+  step?: number;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      // By adding this entry, you can now use `my-custom-element` as a native html tag.
-      "my-custom-element": MyCustomElementAttributes;
+      "range-slider": Marko.NativeTag<RangeSliderAttributes, RangeSliderElement>;
     }
   }
 }
+```
+
+Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers.
+
+```marko
+/* index.marko */
+<let/threshold=20/>
+<range-slider/sliderEl value=threshold step=5 onChange(evt, target) { threshold = target.value }/>
+<button onClick() { sliderEl().focus() }>Adjust</button>
 ```
 
 ### Registering new "global" HTML Attributes
@@ -270,6 +300,26 @@ declare global {
   }
 }
 ```
+
+### Typing `$global`
+
+`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), but undeclared properties read back as `unknown`. Declaring them types `$global` in every template and [render call](./template.md#inputglobal). In a dedicated declaration file, the leading `export {}` makes `declare global` apply.
+
+```ts
+export {};
+
+declare global {
+  namespace Marko {
+    interface Global {
+      locale?: string;
+      requestId?: string;
+    }
+  }
+}
+```
+
+> [!WARNING]
+> A property declared without `?` is required in every `$global` passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`.
 
 ## TypeScript Syntax in `.marko`
 
