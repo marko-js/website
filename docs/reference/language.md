@@ -270,6 +270,8 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
+On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the element's attribute set, so an attribute it stops providing is removed on update.
+
 > [!NOTE]
 > The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
 >
