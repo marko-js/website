@@ -276,6 +276,8 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
+On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the element's attribute set, so an attribute it stops providing is removed on update.
+
 > [!NOTE]
 > The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
 >
@@ -470,6 +472,28 @@ export interface Input {
 
 > [!CAUTION]
 > Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
+
+## Whitespace
+
+A run of whitespace in markup collapses to a single space. Whitespace that begins with a line break is removed entirely at the start and end of a tag's content and between two tags, so indentation stays out of the output.
+
+```marko no-format
+<p>
+  Build finished in
+  <strong>12s</strong> <em>from cache</em>
+</p>
+```
+
+This example renders:
+
+```html
+<p>Build finished in <strong>12s</strong> <em>from cache</em></p>
+```
+
+> [!WARNING]
+> A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
 
 ## Attribute Tags
 
@@ -694,7 +718,7 @@ Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return
 
 ### Tag Var Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), so a variable declared deep in the tree is in scope everywhere in the template except in [module statements](#statements).
 
 ```marko
 <form>
@@ -706,6 +730,16 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
   console.log(myInput())
 </script>
 ```
+
+Hoisting determines where a tag variable may be referenced, not when its value may be read. A hoisted read, including an [element reference](./native-tag.md#element-references), belongs in code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+> [!WARNING]
+> An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) is evaluated during the render, before a hoisted value may be read.
+>
+> ```marko
+> // ❌ (INCORRECT) `myInput` is read while the template renders
+> <div>${myInput().value}</div>
+> ```
 
 ### Repeated Tag Vars
 
@@ -1506,6 +1540,45 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
 </script>
 ```
 
+### Function Value
+
+The effect may also be supplied through the `value=` attribute, usually written with the `=` shorthand. The function receives no arguments and re-runs under the same conditions as a body.
+
+```marko
+<video/clip src=input.src controls/>
+
+<script=() => (clip().muted = input.muted)/>
+```
+
+A function declared elsewhere, such as a [`<const>`](#const), may be referenced directly.
+
+```marko
+<const/remember() {
+  sessionStorage.setItem("sidebar", input.collapsed);
+}>
+
+<script=remember/>
+```
+
+### Await
+
+An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so later effects run without waiting for it.
+
+```marko
+<img/photo>
+<script>
+  const signal = $signal;
+  photo().src = input.src;
+  await photo().decode();
+  if (!signal.aborted) photo().classList.add("loaded");
+</script>
+```
+
+> [!WARNING]
+> Each [`$signal`](./language.md#signal) reference resolves to the current run's signal, so after an `await` it may no longer belong to the suspended body. Capture it in a local before awaiting.
+
+<!---->
+
 > [!TIP]
 > There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
 
@@ -1696,7 +1769,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
 
 ```marko
 /* textbox.marko */
@@ -1708,7 +1781,7 @@ export interface Input {
 <id/id=input.id>
 
 <input aria-describedby=id>
-<span id=id>${description}</span>
+<span id=id>${input.description}</span>
 ```
 
 ## `<log>`
@@ -1870,7 +1943,7 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 ```
 
 > [!CAUTION]
-> The node reference is only available in the browser. Attempting to access a DOM node from the server will result in an error.
+> The DOM node exists only in the browser, and the getter is readable only from code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](#event-handlers). An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](./language.md#dynamic-text) is evaluated earlier in the render.
 
 ## Enhanced Attributes
 
@@ -2368,6 +2441,42 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
 
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
+
+## Attribute Spreads
+
+A [spread](./language.md#spread-attributes) supplies a native tag's attributes as an object, and that object owns the element's attribute set. An attribute the object stops providing is removed on the next update.
+
+```marko
+<let/link={ href: "/report.csv", download: "report.csv" }>
+
+<a ...link>Quarterly report</a>
+
+<button onClick() { link = { href: "/report.csv" } }>Open in browser</button>
+```
+
+Clicking the button leaves `<a href="/report.csv">`, with `download` removed.
+
+> [!WARNING]
+> Removal covers every attribute present on the element, including any written by code outside Marko. An attribute that must survive an update belongs in the spread object or after the spread.
+
+Attributes written after a spread are excluded from what the spread owns. The compiler records their names, so the spread neither overrides nor removes them, which is how a tag keeps part of an element fixed while forwarding the rest of its `input`.
+
+```marko
+<a ...input class=["external", input.class] target="_blank" rel="noreferrer"/>
+```
+
+`target` and `rel` hold regardless of what `input` carries, and `class=` composes the caller's value with the tag's own. An attribute written before a spread is merged into the object instead, so the spread's value for that name wins.
+
+[`class=`](#class) and [`style=`](#style) keep their object and array handling when supplied by a spread, and a [change handler](#change-handlers) still pairs with its attribute when both arrive in the object.
+
+```marko
+<let/note="">
+<const/composer={ rows: 4, value: note, valueChange(next) { note = next } }>
+
+<textarea ...composer/>
+```
+
+An [event handler](#event-handlers) written after a spread claims its event, so an entry in the object naming that same event is not attached. The object still carries it, which is how a tag wraps a handler it was passed.
 
 ## Enhanced Tags
 

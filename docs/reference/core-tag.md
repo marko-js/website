@@ -335,6 +335,45 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
 </script>
 ```
 
+### Function Value
+
+The effect may also be supplied through the `value=` attribute, usually written with the `=` shorthand. The function receives no arguments and re-runs under the same conditions as a body.
+
+```marko
+<video/clip src=input.src controls/>
+
+<script=() => (clip().muted = input.muted)/>
+```
+
+A function declared elsewhere, such as a [`<const>`](#const), may be referenced directly.
+
+```marko
+<const/remember() {
+  sessionStorage.setItem("sidebar", input.collapsed);
+}>
+
+<script=remember/>
+```
+
+### Await
+
+An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so later effects run without waiting for it.
+
+```marko
+<img/photo>
+<script>
+  const signal = $signal;
+  photo().src = input.src;
+  await photo().decode();
+  if (!signal.aborted) photo().classList.add("loaded");
+</script>
+```
+
+> [!WARNING]
+> Each [`$signal`](./language.md#signal) reference resolves to the current run's signal, so after an `await` it may no longer belong to the suspended body. Capture it in a local before awaiting.
+
+<!---->
+
 > [!TIP]
 > There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
 
@@ -525,7 +564,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
 
 ```marko
 /* textbox.marko */
@@ -537,7 +576,7 @@ export interface Input {
 <id/id=input.id>
 
 <input aria-describedby=id>
-<span id=id>${description}</span>
+<span id=id>${input.description}</span>
 ```
 
 ## `<log>`

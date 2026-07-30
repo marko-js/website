@@ -270,6 +270,8 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
+On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the element's attribute set, so an attribute it stops providing is removed on update.
+
 > [!NOTE]
 > The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
 >
@@ -464,6 +466,28 @@ export interface Input {
 
 > [!CAUTION]
 > Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
+
+## Whitespace
+
+A run of whitespace in markup collapses to a single space. Whitespace that begins with a line break is removed entirely at the start and end of a tag's content and between two tags, so indentation stays out of the output.
+
+```marko no-format
+<p>
+  Build finished in
+  <strong>12s</strong> <em>from cache</em>
+</p>
+```
+
+This example renders:
+
+```html
+<p>Build finished in <strong>12s</strong> <em>from cache</em></p>
+```
+
+> [!WARNING]
+> A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
 
 ## Attribute Tags
 
@@ -688,7 +712,7 @@ Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return
 
 ### Tag Var Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), so a variable declared deep in the tree is in scope everywhere in the template except in [module statements](#statements).
 
 ```marko
 <form>
@@ -700,6 +724,16 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
   console.log(myInput())
 </script>
 ```
+
+Hoisting determines where a tag variable may be referenced, not when its value may be read. A hoisted read, including an [element reference](./native-tag.md#element-references), belongs in code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+> [!WARNING]
+> An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) is evaluated during the render, before a hoisted value may be read.
+>
+> ```marko
+> // ❌ (INCORRECT) `myInput` is read while the template renders
+> <div>${myInput().value}</div>
+> ```
 
 ### Repeated Tag Vars
 
