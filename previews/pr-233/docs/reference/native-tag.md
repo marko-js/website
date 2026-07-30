@@ -285,7 +285,7 @@ The `<select>` tag is unique in that its state is internally synchronized with t
 
 `value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with `<select multiple>`).
 
-Marko renders `selected` on each nested `<option>` whose `value=` matches, rather than writing an attribute to the `<select>`. The comparison is between strings: `value=25` matches `<option value="25">`, and `undefined` or `null` matches an `<option>` with an empty `value=`.
+Marko renders `selected` on each nested `<option>` whose `value=` matches, rather than writing an attribute to the `<select>`. The comparison is between strings: `value=25` matches `<option value="25">`, and `undefined` or `null` matches an `<option>` with an empty `value=`. An array matches element-wise, selecting every `<option>` whose value it contains.
 
 Every `<option>` inside a `<select>` that has `value=` or `valueChange=` must carry its own `value=`, including options nested in [`<optgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup) or a control flow tag such as [`<for>`](./core-tag.md#for). An `<option>` without one is a compile error.
 
@@ -477,7 +477,7 @@ The handler receives the selected option's value as a string, or an array of the
 ```
 
 > [!WARNING]
-> A controlled `value` matching no `<option>` leaves the browser's default selection in place instead of the value held in state. Debug builds log an error naming the unmatched value, from the server render and from the browser as the `<select>` renders or updates; an empty value is exempt.
+> A controlled `value` matching no `<option>` leaves the browser's default selection in place instead of the value held in state.
 
 #### `<textarea>` (`valueChange=`)
 
