@@ -2331,9 +2331,6 @@ The handler receives the selected option's value as a string. When `value=` is a
 </select>
 ```
 
-> [!WARNING]
-> A controlled `value` matching no `<option>` leaves the browser's default selection in place instead of the value held in state.
-
 #### `<textarea>` (`valueChange=`)
 
 The `<textarea>` tag has a change handler for [Marko's added `value=` attribute](#textarea).
