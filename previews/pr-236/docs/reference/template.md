@@ -216,17 +216,24 @@ This value should be a string that represents a valid [csp nonce](https://develo
 
 > `string | undefined`
 
-The `renderId` isolates one render from every other render sharing a runtime in the same document, and is always assigned a value, `"_"` by default. A template that contains no `html`, `head`, or `body` tag and is compiled with the `linkAssets` compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures instead receives a fresh random value on every [`render()`](#templaterenderinput) call, so several such renders can be embedded in one document without colliding. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
+The `renderId` isolates one render from every other render sharing a runtime in the same document. It always has a value, `"_"` by default.
 
-An explicit value is worth setting when more than one render of a page template is combined into a single document. A reused value is detected in the browser as the second render resumes, where a debug build throws `Marko rendered multiple times with $global.runtimeId as "M" and $global.renderId as "_". Ensure each render into a page has a unique $global.renderId.`
+A template with no `html`, `head`, or `body` tag, compiled with the `linkAssets` compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
+
+Set an explicit value when several renders of a page template share a document. A debug build catches reuse as the second render resumes, throwing `Marko rendered multiple times with $global.runtimeId as "M" and $global.renderId as "_". Ensure each render into a page has a unique $global.renderId.`
 
 > [!WARNING]
-> `renderId` and `runtimeId` become JavaScript identifiers in the inline scripts that carry resume data, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A UUID, or a hyphenated name such as `my-app`, is rejected by `render()` and `mount()` in a debug build. An optimized build performs no check and emits the value as written, producing an inline script such as `M.my-app.w()` that fails in the browser.
+> `renderId` and `runtimeId` become JavaScript identifiers in the inline resume-data scripts, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A debug build rejects a UUID or a hyphenated name such as `my-app`; an optimized build emits it as written, producing an inline script such as `M.my-app.w()` that fails in the browser.
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `runtimeId` names the global variable holding the resume data for every render in the document, and defaults to `"M"`. Overriding it isolates multiple copies of Marko sharing a page, and it follows the same identifier rule as [`renderId`](#globalrenderid).
+The `runtimeId` names the global variable holding the resume data for every render in the document, and defaults to `"M"`. Overriding it isolates multiple copies of Marko sharing a page. It follows the same identifier rule as [`renderId`](#globalrenderid).
 
-The server and browser builds must agree on the value, so it belongs in the bundler configuration rather than in a single render. [`@marko/vite`](https://github.com/marko-js/vite) accepts a `runtimeId` option, validates it while compiling, and bakes it into the generated server and browser entries. The compiled server entry applies its own value to `$global.runtimeId`. A debug build throws `$global.runtimeId ("app") conflicts with the runtimeId this entry was compiled with ("myApp").` when a render supplies a conflicting non-default value, and `Marko initialized multiple times with different $global.runtimeId's.` when the browser runtime is initialized under two ids.
+Server and browser builds must agree on the value, so it belongs in the bundler configuration. [`@marko/vite`](https://github.com/marko-js/vite) accepts a `runtimeId` option and bakes it into the generated entries, which apply it to `$global.runtimeId`.
+
+A debug build throws:
+
+- `$global.runtimeId ("app") conflicts with the runtimeId this entry was compiled with ("myApp").` when a render supplies a conflicting non-default value.
+- `Marko initialized multiple times with different $global.runtimeId's.` when the browser runtime is initialized under two ids.
