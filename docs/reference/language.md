@@ -837,6 +837,24 @@ This means you cannot access the tag parameters outside the body of the tag.
 > [!CAUTION]
 > Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
 
+## Doctype
+
+A [doctype](https://developer.mozilla.org/en-US/docs/Glossary/Doctype) is written into the HTML output exactly as authored, so a page template declares one the same way an HTML file does.
+
+```marko
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <status-board/>
+  </body>
+</html>
+```
+
+The doctype applies to the document as a whole, so it belongs in the template that renders the entire page.
+
 ## Comments
 
 Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment) comments are supported.
@@ -934,3 +952,10 @@ import MyTag from "./my-tag.marko"
 
 <${MyTag}/>
 ```
+
+> [!WARNING]
+> A dot in a tag name is the [`class` shorthand](#shorthand-class-and-id), so `<Toolbar.Undo/>` renders the tag held in `Toolbar` and passes `class="Undo"`. A property is reached with the [dynamic tag](#dynamic-tags) syntax.
+>
+> ```marko
+> <${Toolbar.Undo}/>
+> ```
