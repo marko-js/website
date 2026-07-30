@@ -1,5 +1,20 @@
 # Marko Documentation Writing Guidelines
 
+## What to Document
+
+- Describe what Marko does, never what it lacks. No "there is no X", and no workarounds that route around the framework.
+- Do not document compile errors. The compiler reports them with a code frame. This covers content that reframes them, such as a table mapping another framework's attribute names onto Marko's.
+- Do not document errors, warnings, or checks that only a `MARKO_DEBUG` build produces. State the rule, not the message.
+- Never document a known bug as intended behavior. Grep `agent-feedback/bugs.md` in the `marko` repo first; a hit means file the defect and leave the docs alone.
+- Drop a topic that loses its main claim to the rule above. What remains is the least verified part of it.
+- Prefer filing a defect to writing a caveat that teaches readers to live with one.
+
+## Verifying Claims
+
+- Verify behavior against runtime source, a fixture snapshot, or a compiled probe. An audit, an issue, or an existing docs sentence is not evidence.
+- Verify examples render, not only that they compile.
+- Grep `docs/` for the scenario and the variable names to check example uniqueness. Reading the edited page is not enough.
+
 ## Voice and Tone
 
 - Use formal, technical tone without being overly academic
@@ -76,12 +91,12 @@
 - Use backticks for code elements, file names, and API references
 - Use **bold** sparingly for the most important key terms only
 - Use _italics_ sparingly for emphasis
-- Never use emdash (—); use periods, commas, or restructure sentences instead
+- Never use emdash (—); use periods, commas, or restructure sentences instead. A spaced hyphen doing the same job counts, so grep `' - '` too.
 
 ## Cross-References and Links
 
 - Link to related concepts in other documents
-- Reference specific sections using anchors
+- Reference specific sections using anchors. Slugs come from heading text, so headings that collide (`attr=` and `<attr>` both give `#attr`) leave the second as `#attr-1`. Check the target file's headings.
 - Link to external resources (MDN, etc.) for web standards
 - Maintain consistency in how concepts are referenced
 - When discussing removed or changed APIs, link to the old documentation (e.g., v5.markojs.com) so readers can understand what is being replaced
