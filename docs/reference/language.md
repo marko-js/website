@@ -686,7 +686,7 @@ Here, `<my-select>` unconditionally receives the first `@option`, and also all o
 
 Tag variables expose a value from a tag to be used within a template (from a custom tag, the variable is taken from its [`<return>`](./core-tag.md#return)). These variables are not _quite_ like JavaScript variables, as they are used to power [Marko's compiled reactivity](./reactivity.md).
 
-Tag Variables use a `/` followed by a valid JavaScript [identifier](https://developer.mozilla.org/en-US/docs/Glossary/Identifier) or [destructure assignment pattern](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) after the tag name.
+Tag Variables use a `/` followed by a valid JavaScript [identifier](https://developer.mozilla.org/en-US/docs/Glossary/Identifier) after the tag name. A [destructure assignment pattern](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) may be used in that position on [custom tags](./custom-tag.md), [`<const>`](./core-tag.md#const), and [`<style>`](./core-tag.md#style).
 
 ```marko
 <my-tag/foo/>

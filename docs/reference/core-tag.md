@@ -138,7 +138,7 @@ This means the previous example can simplified to:
 
 ## `<let>`
 
-The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables).
+The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables), which is named with a plain identifier.
 
 ```marko
 <let/x=1>
@@ -157,6 +157,8 @@ When a tag variable is updated, everywhere it is used also re-runs. This is the 
 ```
 
 In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#tag-variables), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
+
+Assignment belongs inside a function body, such as the [event handler](./native-tag.md#event-handlers) above, a [`<script>`](#script), or a [`<lifecycle>`](#lifecycle) hook. Attribute values and [interpolations](./language.md#dynamic-text) are evaluated during the render, so an assignment written directly in one is a compile error.
 
 > [!NOTE]
 > The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
