@@ -296,7 +296,30 @@ Every `<option>` inside a `<select>` that has `value=` or `valueChange=` must ca
 
 #### `<textarea>`
 
-In HTML, `<textarea>` holds its value inside its body. In Marko, this state can also be held in the `value=` attribute, which is useful for the textarea change handler.
+In HTML, `<textarea>` holds its value inside its body. In Marko, this state can also be held in the `value=` attribute, which pairs with the [`valueChange=` handler](#textarea-valuechange).
+
+The compiler folds a body into `value=`. A body holds text and [interpolations](./language.md#dynamic-text), and an interpolated body updates like an interpolated `value=`.
+
+```marko no-format
+<textarea name="reply">Hi ${input.author},
+
+Thanks for the review.</textarea>
+```
+
+Whitespace in a body is preserved rather than [collapsed](./language.md#whitespace). The HTML parser drops a single newline directly after the start tag: the compiler removes that newline from a body, and a value that begins with one is rendered with a second so it survives parsing.
+
+> [!WARNING]
+> Only that one newline is dropped, so an indented body carries its indentation into the value.
+>
+> ```marko no-format
+> // ❌ (INCORRECT) the value is `"  Ready to publish\n"`
+> <textarea>
+>   Ready to publish
+> </textarea>
+>
+> // ✅
+> <textarea>Ready to publish</textarea>
+> ```
 
 ### Change Handlers
 

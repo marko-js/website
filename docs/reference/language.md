@@ -487,7 +487,7 @@ This example renders:
 > [!WARNING]
 > A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
 
-Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre), [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags). A [`<title>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title) body is text, but its whitespace collapses.
 
 ## Attribute Tags
 
