@@ -48,7 +48,7 @@ Some values cannot be serialized. When these values are encountered the Marko ru
 Examples of unserializable data include:
 
 - Closures (top level functions are fine!)
-- Functions that come from arbitrary javascript code or imports
+- Functions that come from arbitrary javascript code, such as a `.js` or `.ts` module
 - Class instances (except built-ins explicitly supported by the runtime)
 - DOM nodes and elements
 
