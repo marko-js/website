@@ -231,7 +231,7 @@ Attributes can be thought of as JavaScript objects in Marko which are passed to 
 If an attribute value is `null`, `undefined` or `false` it will not be written to the html.
 
 > [!NOTE]
-> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written.
+> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written. [Dynamic text](#skipped-values) follows different rules.
 
 ### Boolean Attributes
 
@@ -435,6 +435,18 @@ export interface Input {
 
 > [!NOTE]
 > The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
+
+#### Skipped Values
+
+An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders nothing. Every other value is coerced with string concatenation: `0` renders `0`, `true` renders `true`, an array renders its comma-joined entries. The same rules apply inside [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags) bodies.
+
+> [!NOTE]
+> These rules differ from [skipped attributes](#skipped-attributes), which still write `NaN`, `""` and `0n`. Only `null`, `undefined` and `false` are skipped in both places.
+
+<!---->
+
+> [!WARNING]
+> A value with no useful string form, such as a plain object, renders as `[object Object]`. Render a promise's resolved value with the [`<await>` tag](./core-tag.md#await) rather than interpolating the promise itself.
 
 #### Unescaped Text
 

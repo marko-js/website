@@ -237,7 +237,7 @@ Attributes can be thought of as JavaScript objects in Marko which are passed to 
 If an attribute value is `null`, `undefined` or `false` it will not be written to the html.
 
 > [!NOTE]
-> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written.
+> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written. [Dynamic text](#skipped-values) follows different rules.
 
 ### Boolean Attributes
 
@@ -441,6 +441,18 @@ export interface Input {
 
 > [!NOTE]
 > The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
+
+#### Skipped Values
+
+An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders nothing. Every other value is coerced with string concatenation: `0` renders `0`, `true` renders `true`, an array renders its comma-joined entries. The same rules apply inside [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags) bodies.
+
+> [!NOTE]
+> These rules differ from [skipped attributes](#skipped-attributes), which still write `NaN`, `""` and `0n`. Only `null`, `undefined` and `false` are skipped in both places.
+
+<!---->
+
+> [!WARNING]
+> A value with no useful string form, such as a plain object, renders as `[object Object]`. Render a promise's resolved value with the [`<await>` tag](./core-tag.md#await) rather than interpolating the promise itself.
 
 #### Unescaped Text
 
@@ -2307,15 +2319,15 @@ The `<select>` tag has a change handler for [Marko's added `value=` attribute](#
 </select>
 ```
 
-The handler receives the selected option's value as a string, or an array of the selected values when `value=` is an array. Other state types are converted in the handler.
+The handler receives the selected option's value as a string. When `value=` is an array the handler receives an array of the selected values, which is how [`<select multiple>`](#select) is controlled.
 
 ```marko
-<let/pageSize=25>
+<let/topics=["runtime"]>
 
-<select value=pageSize valueChange(size) { pageSize = +size }>
-  <for|n| of=[10, 25, 50]>
-    <option value=n>${n} per page</option>
-  </for>
+<select multiple value:=topics>
+  <option value="runtime">Runtime</option>
+  <option value="compiler">Compiler</option>
+  <option value="tooling">Tooling</option>
 </select>
 ```
 
@@ -2689,6 +2701,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
+  - Extended with [application specific properties](#typing-global)
 - **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
   - `ReturnType<Marko.Template["render"]>`
@@ -2696,7 +2709,11 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
   - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
-  - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
+  - An object containing all [native tags](./native-tag.md) and their types
+  - Each entry is a `Marko.NativeTag`, so `div` attributes are `Marko.NativeTags["div"]["input"]`
+- **`Marko.NativeTag<Input, Return>`**
+  - The type of a single entry in `Marko.NativeTags`
+  - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -2806,19 +2823,44 @@ export interface Input extends Marko.HTML.Button {
 
 ### Registering a new native tag (e.g. for custom elements)
 
+A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
+
+```json
+/* marko.json */
+{
+  "<star-rating>": { "html": true }
+}
+```
+
+Its types are added to the `Marko.NativeTags` interface:
+
 ```ts
-interface MyCustomElementAttributes {
-  // ...
+/* star-rating.ts */
+export class StarRatingElement extends HTMLElement {
+  value = 0;
+}
+
+interface StarRatingAttributes extends Marko.HTMLAttributes<StarRatingElement> {
+  value?: number;
+  max?: number;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      // By adding this entry, you can now use `my-custom-element` as a native html tag.
-      "my-custom-element": MyCustomElementAttributes;
+      "star-rating": Marko.NativeTag<StarRatingAttributes, StarRatingElement>;
     }
   }
 }
+```
+
+Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers.
+
+```marko
+/* index.marko */
+<let/score=4/>
+<star-rating/ratingEl value=score max=5 onChange(evt, target) { score = target.value }/>
+<button onClick() { ratingEl().focus() }>Rate</button>
 ```
 
 ### Registering new "global" HTML Attributes
@@ -2848,6 +2890,26 @@ declare global {
   }
 }
 ```
+
+### Typing `$global`
+
+`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), but undeclared properties read back as `unknown`. Declaring them types `$global` in every template and [render call](./template.md#inputglobal). In a dedicated declaration file, the leading `export {}` makes `declare global` apply.
+
+```ts
+export {};
+
+declare global {
+  namespace Marko {
+    interface Global {
+      locale?: string;
+      requestId?: string;
+    }
+  }
+}
+```
+
+> [!WARNING]
+> A property declared without `?` is required in every `$global` passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`.
 
 ## TypeScript Syntax in `.marko`
 
@@ -3114,6 +3176,9 @@ These methods are used to generate an HTML string on the server, and to modify t
 
 For use on the **server**, the `.render()` API on a Marko template provides an object containing a variety of ways to generate an HTML string. Its first parameter becomes the [`input`](./language.md#input) available within the template.
 
+> [!WARNING]
+> A render result holds a single render and the first consumer takes it. Every consumer after that fails with `Cannot read from a consumed render result`, thrown, rejected, or raised as a stream error depending on the consumer. Awaiting more than once is the exception, since the first `await` caches the promise and later ones resolve with the same string.
+
 ### Async Iterator
 
 The render result contains an [async iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols), which allows consumption through a [`for await` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of).
@@ -3126,9 +3191,13 @@ for await (const chunk of Template.render({})) {
 }
 ```
 
+Each iteration yields the HTML flushed since the previous one; a render with no asynchronous content yields a single chunk.
+
+Abandoning the loop with `break`, `return`, or a thrown exception aborts a pending render with the error `Iterator returned before consumed.`, and a later pull rejects with it. The iterator's `throw(reason)` method aborts with the given reason instead.
+
 ### Pipe
 
-The `.pipe()` method in the render result object sends an HTML string into a [NodeJS `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable).
+The `.pipe()` method in the render result object sends the HTML into a [NodeJS `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable). Any object with `write(chunk)` and `end()` serves as a target, and a `flush()` method, if present, is called after every chunk to keep a buffering transform such as [`zlib.createGzip()`](https://nodejs.org/api/zlib.html#zlibcreategzipoptions) streaming.
 
 ```js
 import Template from "./template.marko";
@@ -3152,6 +3221,8 @@ const webHTMLResponse = new Response(Template.render({}).toReadable(), {
 });
 ```
 
+Reading is deferred to the stream's first pull, so wrapping it in a `Response` that is never read leaves the result unconsumed. Cancelling the stream aborts the render with the cancellation reason.
+
 ### Thenable
 
 The render result is a [thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#thenables), so the `.then()`, `.catch()` or `.finally()` methods return a `Promise<string>` that resolves with a buffered HTML string. This may be handled implicitly with the [`await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await) keyword.
@@ -3161,7 +3232,7 @@ const html = await Template.render({});
 ```
 
 > [!NOTE]
-> By using thenable and `await`, you are opting out of Marko's streaming capabilities.
+> Awaiting buffers the entire document into a string, opting out of streaming.
 
 #### toString
 
@@ -3172,7 +3243,7 @@ const html = Template.render({}).toString();
 ```
 
 > [!CAUTION]
-> If there is any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) this method will throw.
+> Any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) makes this method throw `Cannot consume asynchronous render with 'toString'` instead of returning partial HTML. An already aborted render, for example through an aborted [`$global.signal`](#globalsignal), throws the abort reason.
 
 ## `Template.mount(input, node, position?)`
 
@@ -3272,7 +3343,7 @@ instance.value = "#0080ff";
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
 
-Some properties on the `$global` are picked up by Marko itself and have predefined functionality.
+Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, typed by extending [`Marko.Global`](./typescript.md#typing-global).
 
 ### `$global.serializedGlobals`
 
@@ -3319,10 +3390,19 @@ This value should be a string that represents a valid [csp nonce](https://develo
 
 > `string | undefined`
 
-The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
+The `renderId` isolates one render from every other render sharing a runtime in the same document. It always has a value, `"_"` by default.
+
+A template with no `html`, `head`, or `body` tag, compiled with the `linkAssets` compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
+
+Set an explicit value when several renders of a page template share a document, so each one resumes against its own data.
+
+> [!WARNING]
+> `renderId` and `runtimeId` become JavaScript identifiers in the inline resume-data scripts, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A UUID, or a hyphenated name such as `my-app`, is not a valid value.
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
+The `runtimeId` names the global variable holding the resume data for every render in the document, and defaults to `"M"`. Overriding it isolates multiple copies of Marko sharing a page. It follows the same identifier rule as [`renderId`](#globalrenderid).
+
+Server and browser builds must agree on the value, so it belongs in the bundler configuration rather than an individual render. [`@marko/vite`](https://github.com/marko-js/vite) accepts a `runtimeId` option and bakes it into the generated entries, which apply it to `$global.runtimeId`.

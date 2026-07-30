@@ -464,15 +464,15 @@ The `<select>` tag has a change handler for [Marko's added `value=` attribute](#
 </select>
 ```
 
-The handler receives the selected option's value as a string, or an array of the selected values when `value=` is an array. Other state types are converted in the handler.
+The handler receives the selected option's value as a string. When `value=` is an array the handler receives an array of the selected values, which is how [`<select multiple>`](#select) is controlled.
 
 ```marko
-<let/pageSize=25>
+<let/topics=["runtime"]>
 
-<select value=pageSize valueChange(size) { pageSize = +size }>
-  <for|n| of=[10, 25, 50]>
-    <option value=n>${n} per page</option>
-  </for>
+<select multiple value:=topics>
+  <option value="runtime">Runtime</option>
+  <option value="compiler">Compiler</option>
+  <option value="tooling">Tooling</option>
 </select>
 ```
 
