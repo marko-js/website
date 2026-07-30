@@ -206,6 +206,8 @@ serializedGlobals: { locale: true, apiToken: false }
 
 A named property holding `undefined` is left out.
 
+The selected values are written into the page alongside the state it resumes, so a page with no client state carries none of them.
+
 > [!WARNING]
 > Serialized values are written into the HTML and can be read by anyone who loads the page. Secrets belong in properties left off the list.
 
