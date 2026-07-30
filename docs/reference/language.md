@@ -465,6 +465,28 @@ export interface Input {
 > [!CAUTION]
 > Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
 
+## Whitespace
+
+A run of whitespace in markup collapses to a single space. Whitespace that begins with a line break is removed entirely at the start and end of a tag's content and between two tags, so indentation stays out of the output.
+
+```marko no-format
+<p>
+  Build finished in
+  <strong>12s</strong> <em>from cache</em>
+</p>
+```
+
+This example renders:
+
+```html
+<p>Build finished in <strong>12s</strong> <em>from cache</em></p>
+```
+
+> [!WARNING]
+> A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
+
 ## Attribute Tags
 
 Tags prefixed with an `@` are not rendered, but instead passed alongside attributes in [`input`](./language.md#input). Attribute tags allow for passing named or repeated [content](#tag-content) as additional attributes.
