@@ -446,9 +446,7 @@ An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders
 <!---->
 
 > [!WARNING]
-> A debug build throws on values with no useful string form, such as symbols and objects that stringify to `[object Object]` or `[object Map]`. A plain object throws ``Text content cannot be a plain object (it would render as `[object Object]`).`` and a promise throws ``Text content cannot be a promise (use the `<await>` tag to render its resolved value).``
->
-> An optimized build instead renders `[object Object]` or `[object Promise]`, and coercing a symbol throws a native `TypeError`.
+> A value with no useful string form, such as a plain object, renders as `[object Object]`. Render a promise's resolved value with the [`<await>` tag](./core-tag.md#await) rather than interpolating the promise itself.
 
 #### Unescaped Text
 
