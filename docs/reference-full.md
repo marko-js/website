@@ -2138,7 +2138,14 @@ Radio and checkbox inputs support a `checkedValue=` attribute. When this attribu
 
 The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
 
-`value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with`<select multiple>`).
+`value=` may be set to a string, in which case it mirrors the `<select>`'s `.value` property, the value of the selected `<option>`. It may also be set to an array of strings, in which case multiple `<option>`s may be selected (for use with `<select multiple>`).
+
+Marko renders `selected` on each nested `<option>` whose `value=` matches, rather than writing an attribute to the `<select>`. The comparison is between strings: `value=25` matches `<option value="25">`, and `undefined` or `null` matches an `<option>` with an empty `value=`. An array matches element-wise, selecting every `<option>` whose value it contains.
+
+Every `<option>` inside a `<select>` that has `value=` or `valueChange=` must carry its own `value=`, including options nested in [`<optgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup) or a control flow tag such as [`<for>`](./core-tag.md#for). An `<option>` without one is a compile error.
+
+> [!WARNING]
+> `selected=` on an `<option>` inside such a `<select>` is also a compile error. The initial selection comes from the select's `value=`.
 
 #### `<textarea>`
 
@@ -2301,14 +2308,26 @@ The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) a
 
 #### `<select>` (`valueChange=`)
 
-Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#select), which is also controllable with a `Change` handler.
+The `<select>` tag has a change handler for [Marko's added `value=` attribute](#select).
 
 ```marko
-<let/selected="en">
-<select value:=selected>
+<let/language="en">
+<select value:=language>
   <option value="en">English</option>
   <option value="pt-br">Portuguese (Brazil)</option>
   <option value="it">Italian</option>
+</select>
+```
+
+The handler receives the selected option's value as a string. When `value=` is an array the handler receives an array of the selected values, which is how [`<select multiple>`](#select) is controlled.
+
+```marko
+<let/topics=["runtime"]>
+
+<select multiple value:=topics>
+  <option value="runtime">Runtime</option>
+  <option value="compiler">Compiler</option>
+  <option value="tooling">Tooling</option>
 </select>
 ```
 
