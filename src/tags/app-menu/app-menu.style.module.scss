@@ -1,7 +1,7 @@
 @use "app/styles/sticky" as sticky;
 @use "app/styles/colors" as colors;
 
-$fixed-controls-height: 8rem;
+$fixed-controls-height: 5.5rem;
 
 .menu {
   position: sticky;
@@ -204,6 +204,10 @@ $fixed-controls-height: 8rem;
     margin: 0;
     padding: 0 var(--root-gap);
     height: $fixed-controls-height;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.25rem;
     justify-content: center;
   }
 }
