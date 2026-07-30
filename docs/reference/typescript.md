@@ -124,6 +124,9 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
 - **`Marko.NativeTag<Input, Return>`**
   - The type of a single entry in `Marko.NativeTags`
   - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
+- **`Marko.HTMLAttributes<T>`** and **`Marko.SVGAttributes<T>`**
+  - The global attributes and events shared by all HTML tags and all SVG tags, respectively
+  - `T` types the element passed to `on*` handlers, defaulting to `Element`
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -231,6 +234,18 @@ export interface Input extends Marko.HTML.Button {
 > </button>
 > ```
 
+SVG tag types live in the parallel `Marko.SVG` namespace.
+
+```marko
+export interface Input extends Marko.SVG.Path {
+  dashed: boolean;
+}
+
+<const/{ dashed, ...attrs }=input>
+
+<path fill="none" stroke-dasharray=dashed && "6 3" ...attrs/>
+```
+
 ### Registering a new native tag (e.g. for custom elements)
 
 A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
@@ -284,6 +299,8 @@ declare global {
   }
 }
 ```
+
+SVG tags take their global attributes from `Marko.SVGAttributes`, augmented the same way.
 
 ### Registering CSS Properties (eg for custom properties)
 
