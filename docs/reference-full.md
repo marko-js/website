@@ -1481,6 +1481,9 @@ The return value may then be used in the parent template:
 <div>${value}</div>
 ```
 
+> [!WARNING]
+> A template or [tag content](./language.md#tag-content) holds at most one `<return>`, at its top level. A value that varies is expressed within `value=` rather than by nesting a `<return>` under [`<if>`](#if--else) or [`<for>`](#for).
+
 ### Assignable Return Value
 
 By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
