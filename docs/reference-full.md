@@ -2806,27 +2806,27 @@ A custom element is declared as an HTML tag in the project's `marko.json`, which
 ```json
 /* marko.json */
 {
-  "<star-rating>": { "html": true }
+  "<range-slider>": { "html": true }
 }
 ```
 
 Its types are added to the `Marko.NativeTags` interface:
 
 ```ts
-/* star-rating.ts */
-export class StarRatingElement extends HTMLElement {
+/* range-slider.ts */
+export class RangeSliderElement extends HTMLElement {
   value = 0;
 }
 
-interface StarRatingAttributes extends Marko.HTMLAttributes<StarRatingElement> {
+interface RangeSliderAttributes extends Marko.HTMLAttributes<RangeSliderElement> {
   value?: number;
-  max?: number;
+  step?: number;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      "star-rating": Marko.NativeTag<StarRatingAttributes, StarRatingElement>;
+      "range-slider": Marko.NativeTag<RangeSliderAttributes, RangeSliderElement>;
     }
   }
 }
@@ -2836,9 +2836,9 @@ Extending `Marko.HTMLAttributes` carries over the global HTML attributes and eve
 
 ```marko
 /* index.marko */
-<let/score=4/>
-<star-rating/ratingEl value=score max=5 onChange(evt, target) { score = target.value }/>
-<button onClick() { ratingEl().focus() }>Rate</button>
+<let/threshold=20/>
+<range-slider/sliderEl value=threshold step=5 onChange(evt, target) { threshold = target.value }/>
+<button onClick() { sliderEl().focus() }>Adjust</button>
 ```
 
 ### Registering new "global" HTML Attributes
@@ -3370,9 +3370,15 @@ This value should be a string that represents a valid [csp nonce](https://develo
 
 The `renderId` isolates one render from every other render sharing a runtime in the same document. It always has a value, `"_"` by default.
 
-A template with no `html`, `head`, or `body` tag, compiled with the `linkAssets` compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
+A template with no `html`, `head`, or `body` tag, compiled with the [`linkAssets`](./lazy-loading.md#bundler-support) compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
 
 Set an explicit value when several renders of a page template share a document, so each one resumes against its own data.
+
+```js
+Template.render({
+  $global: { renderId: "cart" },
+});
+```
 
 > [!WARNING]
 > `renderId` and `runtimeId` become JavaScript identifiers in the inline resume-data scripts, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A UUID, or a hyphenated name such as `my-app`, is not a valid value.
