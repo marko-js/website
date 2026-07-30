@@ -2525,6 +2525,8 @@ The `<details>` tag has a change handler for its `open=` attribute.
 </button>
 ```
 
+Without `openChange=`, `open=` applies only on the render that creates the element, and the browser owns the state from then on. `open:=` keeps the value and the element in sync.
+
 #### `<dialog>` (`openChange=`)
 
 The `<dialog>` tag has a change handler for its `open=` attribute.
@@ -2537,6 +2539,8 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
   Toggle
 </button>
 ```
+
+Without `openChange=`, `open=` applies only on the render that creates the element, as on [`<details>`](#details-openchange).
 
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
