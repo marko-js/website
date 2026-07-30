@@ -283,7 +283,7 @@ Radio and checkbox inputs support a `checkedValue=` attribute. When this attribu
 
 The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
 
-`value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with `<select multiple>`).
+`value=` may be set to a string, in which case it mirrors the `<select>`'s `.value` property, the value of the selected `<option>`. It may also be set to an array of strings, in which case multiple `<option>`s may be selected (for use with `<select multiple>`).
 
 Marko renders `selected` on each nested `<option>` whose `value=` matches, rather than writing an attribute to the `<select>`. The comparison is between strings: `value=25` matches `<option value="25">`, and `undefined` or `null` matches an `<option>` with an empty `value=`. An array matches element-wise, selecting every `<option>` whose value it contains.
 
