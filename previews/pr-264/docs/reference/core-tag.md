@@ -8,7 +8,6 @@ An `<if>` is applied when its `value=` attribute ([shorthand used below](./langu
 
 The `<else>` tag may have its own condition as an `if=` attribute.
 When it has a condition, the condition is checked before the `<else>` is applied and another `<else>` may follow.
-The `<else-if>` tag carries its condition directly and is equivalent to an `<else>` with an `if=` attribute.
 
 Expressions in the if/else chain are evaluated in order.
 
@@ -19,11 +18,8 @@ Expressions in the if/else chain are evaluated in order.
 <else if=ANOTHER_EXPRESSION>
   Body B
 </else>
-<else-if=THIRD_EXPRESSION>
-  Body C
-</else-if>
 <else>
-  Body D
+  Body C
 </else>
 ```
 

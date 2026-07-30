@@ -1238,7 +1238,6 @@ An `<if>` is applied when its `value=` attribute ([shorthand used below](./langu
 
 The `<else>` tag may have its own condition as an `if=` attribute.
 When it has a condition, the condition is checked before the `<else>` is applied and another `<else>` may follow.
-The `<else-if>` tag carries its condition directly and is equivalent to an `<else>` with an `if=` attribute.
 
 Expressions in the if/else chain are evaluated in order.
 
@@ -1249,11 +1248,8 @@ Expressions in the if/else chain are evaluated in order.
 <else if=ANOTHER_EXPRESSION>
   Body B
 </else>
-<else-if=THIRD_EXPRESSION>
-  Body C
-</else-if>
 <else>
-  Body D
+  Body C
 </else>
 ```
 
@@ -2544,6 +2540,26 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
 
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
+
+#### Form Reset
+
+Resetting a form, through a `<button type="reset">` or [`form.reset()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset), returns each controlled form element to the value it was first rendered with. Later updates to the bound state change the element without changing that default. Marko calls the change handler of every element the reset changed, passing the restored value, so the bound state follows the element back.
+
+```marko
+<let/tracking="1Z999AA10">
+
+<form>
+  <input value:=tracking>
+  <button type="reset">Reset</button>
+</form>
+
+<div>${tracking}</div>
+```
+
+Editing the field and resetting the form restores `1Z999AA10` to both the `<input>` and `tracking`.
+
+> [!NOTE]
+> The change handlers run in an animation frame after the reset, so the element updates immediately while the bound state follows on the next frame. Calling `preventDefault()` on the `reset` event cancels the reset along with those handler calls.
 
 ## Attribute Spreads
 
