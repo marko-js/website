@@ -12,7 +12,7 @@
 <link>https://markojs.com/docs/newsletter/july-2026</link>
 <guid>https://markojs.com/docs/newsletter/july-2026</guid>
 <pubDate>Wed, 01 Jul 2026 00:00:00 GMT</pubDate>
-<description>Marko Run gained request validation, a data loading pattern, and typed URLs A new &lt;show&gt; tag toggles content without unmounting it or shipping its template The compiler shrank by 22%, and pages ship less JavaScript &lt;style&gt; tags accept ${...} interpolations for per-instance values Compiler diagnostics suggest the correct form, and packages ship a cheat sheet for coding agents</description>
+<description>Marko Run gained request validation, a data loading pattern, and typed URLs Pages ship less JavaScript, and the compiler itself shrank by 22% &lt;style&gt; tags accept ${...} interpolations for per-instance values Compiler diagnostics suggest the correct form, and packages ship a cheat sheet for coding agents</description>
 </item>
 <item>
 <title>Marko in June 2026</title>
