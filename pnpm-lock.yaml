@@ -52,11 +52,11 @@ importers:
         specifier: ^5.41.15
         version: 5.41.15
       '@marko/run':
-        specifier: ^0.11.6
-        version: 0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+        specifier: ^0.11.8
+        version: 0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
       '@marko/run-adapter-static':
         specifier: ^2.0.7
-        version: 2.0.7(@marko/run@0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)
+        version: 2.0.7(@marko/run@0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)
       '@marko/type-check':
         specifier: ^3.1.5
         version: 3.1.5
@@ -1023,8 +1023,8 @@ packages:
     peerDependencies:
       '@marko/run': ^0.7||^0.8||^0.9||^0.10||^0.11
 
-  '@marko/run@0.11.6':
-    resolution: {integrity: sha512-rnGOW8WqusNMRX/A3EMw5SgedSj4gYracG7C6q8p/0RI12bjdnNA8/Y7BOecGZZEzodwoixMGKKS6JyayFDT7g==}
+  '@marko/run@0.11.8':
+    resolution: {integrity: sha512-71mJFLgG6YZvegpC6RD4Mcm8jvQScnwShZ/XNT9HHuYb7Ftbuio5t+pIXLaUH0iZS3RiPY4l9lRHLJnNkUSp2A==}
     hasBin: true
     peerDependencies:
       marko: 5 - 6
@@ -1184,6 +1184,9 @@ packages:
     cpu: [x64]
     os: [win32]
     libc: [null]
+
+  '@oxc-project/types@0.136.0':
+    resolution: {integrity: sha512-39Al/B3v9esnHCX7S8l9Se2+s2tb9b2jcMd+bZ2L659VG73kNyGPpPrL5Zi/p0ty7p4pTTU2/Dd+g27hv94XCg==}
 
   '@oxc-project/types@0.139.0':
     resolution: {integrity: sha512-r9gHphtCs+1M7J0pw6Sn/hh/Wpa/iQrOOkrNAlVLF/gHq+/CJmHIWKKUUhdWjcD6CIa8idarspCsASiXCXvFUw==}
@@ -4195,9 +4198,9 @@ snapshots:
       htmljs-parser: 5.12.1
       relative-import-path: 1.0.1
 
-  '@marko/run-adapter-static@2.0.7(@marko/run@0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)':
+  '@marko/run-adapter-static@2.0.7(@marko/run@0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))(supports-color@10.2.2)':
     dependencies:
-      '@marko/run': 0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+      '@marko/run': 0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
       compression: 1.8.1(supports-color@10.2.2)
       htmlparser2: 10.1.0
       sirv: 1.0.19
@@ -4205,14 +4208,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@marko/run-explorer@2.0.4(@marko/run@0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
+  '@marko/run-explorer@2.0.4(@marko/run@0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))':
     dependencies:
-      '@marko/run': 0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
+      '@marko/run': 0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
 
-  '@marko/run@0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)':
+  '@marko/run@0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)':
     dependencies:
-      '@marko/run-explorer': 2.0.4(@marko/run@0.11.6(@marko/compiler@5.41.15)(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
+      '@marko/compiler': 5.41.15
+      '@marko/run-explorer': 2.0.4(@marko/run@0.11.8(@types/node@26.1.2)(esbuild@0.27.7)(marko@6.3.29)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
       '@marko/vite': 6.1.9(@marko/compiler@5.41.15)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0))
+      '@oxc-project/types': 0.136.0
       '@remix-run/form-data-parser': 0.17.4
       '@standard-schema/spec': 1.1.0
       browserslist: 4.28.7
@@ -4227,13 +4232,13 @@ snapshots:
       kleur: 4.1.5
       marko: 6.3.29
       parse-node-args: 1.1.3
+      rolldown: 1.1.5
       sade: 1.8.1
       serve-static: 2.2.1(supports-color@10.2.2)
       supports-color: 10.2.2
       vite: 8.1.5(@types/node@26.1.2)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)(yaml@2.9.0)
       warp10: 2.1.0
     transitivePeerDependencies:
-      - '@marko/compiler'
       - '@types/node'
       - '@vitejs/devtools'
       - esbuild
@@ -4368,6 +4373,8 @@ snapshots:
 
   '@oxc-parser/binding-win32-x64-msvc@0.8.0':
     optional: true
+
+  '@oxc-project/types@0.136.0': {}
 
   '@oxc-project/types@0.139.0': {}
 
