@@ -40,9 +40,3 @@ branch whose only content is a commented-out line. Only the final
 read as if they carry behavior and slow down anyone tracing how tokens are
 transformed; collapsing the chain to a single `if (token.type === "link")`
 preserves behavior. Re-verify by reading the chain and running `pnpm test`.
-
-## Drop the `//` resolution-root workaround once resolve-sync probes the root
-
-`src/util/workspace/modules-shim.ts` › `resolveRoot` | 2026-08-03 | impact:low | effort:low
-
-`modules-shim.ts` and `main-plugin.ts` pass `root: "//"` to `resolveSync` and collapse leading doubled slashes in their `fs` adapters so the resolver's upward walk gets one extra iteration that probes the root-level `node_modules` (its walk otherwise builds `//node_modules/...` from root files and stops before the root from nested files, which broke every playground `package.json` dependency after the workspace remounted at `/`). This rides on resolve-sync internals: the walk terminates only via the `parent === dir` guard added in 1.2.1, so the dependency must stay `>=1.2.1`. Once `resolve-sync` itself probes the root directory's `node_modules`, delete `resolveRoot`/`collapseResolveRoot`, the `root:` options, and the `realpath` shims, keeping the plain `file in fs.files` adapters. Re-verify after removal with `npx vitest run src/util/workspace/modules-shim.test.ts`, which pins the behavior either way.

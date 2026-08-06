@@ -2,7 +2,7 @@ import type { Plugin, RollupFsModule } from "@rollup/browser";
 
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 import type { Workspace } from "../workspace";
-import { collapseResolveRoot, resolveRoot } from "./modules-shim";
+import { collapseRoot, resolveRoot } from "./modules-shim";
 
 export interface MainPluginOptions {
   ws: Workspace;
@@ -40,16 +40,11 @@ export function mainPlugin({
     writeFile: unsupported,
   };
 
-  // Rooted at "//" with the doubled slash collapsed so the resolver's upward
-  // walk can reach the root-level node_modules; see the note in modules-shim.
+  // Rooted at "//" so the resolver reaches /node_modules; see modules-shim.
   const resolveFs: ResolveOptions["fs"] = {
-    isFile(file: string) {
-      return collapseResolveRoot(file) in fs.files;
-    },
-    readPkg(file: string) {
-      return JSON.parse(fs.files[collapseResolveRoot(file)] || "");
-    },
-    realpath: collapseResolveRoot,
+    isFile: (file) => collapseRoot(file) in fs.files,
+    readPkg: (file) => JSON.parse(fs.files[collapseRoot(file)] || ""),
+    realpath: collapseRoot,
   };
 
   return {

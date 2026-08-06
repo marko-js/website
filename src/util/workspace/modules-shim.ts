@@ -10,25 +10,17 @@ export function setResolveFileSystem(fs: FileSystem) {
   currentFS = fs;
 }
 
-// `resolveSync`'s upward walk never probes the root directory itself: from a
-// root-level file it builds "//node_modules/..." (which an exact-match file
-// map misses), and from a nested file the walk stops the moment it reaches
-// the root. Rooting resolution at "//" keeps the walk alive for one final
-// probe of "//node_modules/...", and collapsing the doubled slash maps that
-// probe back onto the real "/"-keyed files. Drop both once resolve-sync
-// probes the root directory's node_modules.
+// resolve-sync's upward walk stops before probing the root directory's
+// node_modules. Rooting resolution at "//" restores that final probe; the
+// doubled slash is collapsed on lookups and on the resolved path. Drop once
+// resolve-sync probes the root itself.
 export const resolveRoot = "//";
-export const collapseResolveRoot = (file: string) =>
-  file.replace(/^\/{2,}/, "/");
+export const collapseRoot = (file: string) => file.replace(/^\/\//, "/");
 
 const resolveFS: ResolveOptions["fs"] = {
-  isFile(file: string) {
-    return !!currentFS && collapseResolveRoot(file) in currentFS.files;
-  },
-  readPkg(file: string) {
-    return JSON.parse(currentFS!.files[collapseResolveRoot(file)] || "");
-  },
-  realpath: collapseResolveRoot,
+  isFile: (file) => !!currentFS && collapseRoot(file) in currentFS.files,
+  readPkg: (file) => JSON.parse(currentFS!.files[collapseRoot(file)] || ""),
+  realpath: collapseRoot,
 };
 
 function tryResolve(id: string, from = "/") {
@@ -37,8 +29,7 @@ function tryResolve(id: string, from = "/") {
   // path -- which is what the taglib records for a discovered tag -- has to be
   // looked up directly or it never resolves.
   if (id.startsWith("/")) {
-    const file = collapseResolveRoot(id);
-    return file in currentFS.files ? file : undefined;
+    return id in currentFS.files ? id : undefined;
   }
   try {
     const resolved = resolveSync(id, {
