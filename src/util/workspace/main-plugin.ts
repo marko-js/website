@@ -3,6 +3,13 @@ import type { Plugin, RollupFsModule } from "@rollup/browser";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 import type { Workspace } from "../workspace";
 
+// A root no directory ever equals plus slash-collapsing lookups, so the walk
+// reaches the workspace's top-level `node_modules`; see modules-shim.ts.
+const resolveRoot = "\0";
+function collapse(file: string) {
+  return file[0] === "/" && file[1] === "/" ? file.slice(1) : file;
+}
+
 export interface MainPluginOptions {
   ws: Workspace;
   code: string;
@@ -41,11 +48,12 @@ export function mainPlugin({
 
   const resolveFs: ResolveOptions["fs"] = {
     isFile(file: string) {
-      return file in fs.files;
+      return collapse(file) in fs.files;
     },
     readPkg(file: string) {
-      return JSON.parse(fs.files[file] || "");
+      return JSON.parse(fs.files[collapse(file)] || "");
     },
+    realpath: collapse,
   };
 
   return {
@@ -80,6 +88,7 @@ export function mainPlugin({
         silent: true,
         fs: resolveFs,
         from: importer || mainId,
+        root: resolveRoot,
         exts: [".js", ".json", ".css"],
       });
 
