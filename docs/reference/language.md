@@ -226,7 +226,7 @@ Attributes can be thought of as JavaScript objects in Marko which are passed to 
 > <my-tag value=(1 > 2)></my-tag>
 > ```
 >
-> The `>=` operator and the `=>` of an arrow function are not ambiguous and need no parentheses:
+> A `>=` preceded by whitespace and the `=>` of an arrow function are not ambiguous and need no parentheses:
 >
 > ```marko
 > <my-tag value=count >= 10></my-tag>
