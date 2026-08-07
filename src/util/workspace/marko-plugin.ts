@@ -2,10 +2,7 @@ import path from "path";
 import type { Plugin } from "@rollup/browser";
 import * as compiler from "@marko/compiler";
 import * as translator from "marko/translator";
-import runtimeDOM from "marko/dom?raw";
-import runtimeHTML from "marko/html?raw";
-import runtimeDebugDOM from "marko/debug/dom?raw";
-import runtimeDebugHTML from "marko/debug/html?raw";
+import runtimeFiles from "virtual:marko-runtime-files";
 
 import type { Workspace } from "../workspace";
 import { attachErrorFile } from "../compile-error";
@@ -22,12 +19,22 @@ declare module "../workspace" {
 
 const cache = new Map();
 const knownTemplatesForWS = new WeakMap<Workspace, string[]>();
-const runtimeModules: Record<string, string> = {
-  "marko/dom": runtimeDOM,
-  "marko/html": runtimeHTML,
-  "marko/debug/dom": runtimeDebugDOM,
-  "marko/debug/html": runtimeDebugHTML,
-};
+
+// Map a runtime import onto the captured dist files: a bare specifier like
+// `marko/dom` or `marko/dom/controllable-input.feat` gets its `.mjs`
+// appended, and a chunk import (`./dom-Cj4HQ7T_.mjs`) is joined against the
+// importing runtime module's id.
+function resolveRuntimeModule(id: string, importer?: string) {
+  if (id[0] === ".") {
+    if (!(importer && importer in runtimeFiles)) return;
+    id = path.join(importer, "..", id);
+  } else if (!id.startsWith("marko/")) {
+    return;
+  }
+  if (id in runtimeFiles) return id;
+  const withExtension = `${id}.mjs`;
+  if (withExtension in runtimeFiles) return withExtension;
+}
 
 // Shim currently needed because @marko/compiler uses `lasso-package-root`.
 (globalThis as any).process = {
@@ -109,12 +116,10 @@ export function markoPlugin({ ws, browser }: MarkoPluginOptions): Plugin {
           .getTag(tagName);
         return tagDef && (tagDef.template || tagDef.renderer);
       }
-      if (id in runtimeModules) {
-        return id;
-      }
+      return resolveRuntimeModule(id, importer);
     },
     load(id) {
-      return runtimeModules[id];
+      return runtimeFiles[id];
     },
     transform(code, id) {
       const suffix = /\?.*$/.exec(id)?.[0];
