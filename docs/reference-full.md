@@ -226,10 +226,17 @@ Even with `<my-tag str="Hello">` the `"Hello"` string is a JavaScript string lit
 Attributes can be thought of as JavaScript objects in Marko which are passed to a tag.
 
 > [!CAUTION]
-> Values cannot contain an unenclosed `>` since it is ambiguous. These expressions must use parentheses:
+> Values cannot contain an unenclosed `>` since it is ambiguous with the end of the tag. These expressions must use parentheses:
 >
 > ```marko
 > <my-tag value=(1 > 2)></my-tag>
+> ```
+>
+> A `>=` preceded by whitespace and the `=>` of an arrow function are not ambiguous and need no parentheses:
+>
+> ```marko
+> <my-tag value=count >= 10></my-tag>
+> <my-tag fn=x => x * 2></my-tag>
 > ```
 
 ### Skipped Attributes
