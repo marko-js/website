@@ -296,6 +296,12 @@ On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the el
 
 Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
 
+Prefix the method with `async` to `await` inside its body.
+
+```marko
+<button async onClick() { await save() }>Save</button>
+```
+
 ### Shorthand Change Handlers (Two-Way Binding)
 
 The change handler shorthand (`:=`) provides both a value for an attribute and a change handler with the attribute's name suffixed by "Change".
