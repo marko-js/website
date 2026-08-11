@@ -405,14 +405,6 @@ The [method shorthand](#shorthand-methods) can be combined with the value attrib
 // Received by the child as { value() { ... } }
 ```
 
-This form takes `async` as well, written before the parentheses.
-
-```marko
-<my-tag async () {
-  await save();
-}/>
-```
-
 ### Attribute Termination
 
 Attributes can be terminated with a comma. This is useful in [concise mode](./concise-syntax.md#attributes-on-multiple-lines).
