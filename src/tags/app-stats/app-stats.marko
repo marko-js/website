@@ -1,25 +1,38 @@
-client let stars: undefined | number;
-client let downloads: undefined | number;
+import { loadStars, loadDownloads } from "./stats";
 
-script --
-  getStars().then((stars) =>
-    document.documentElement.style.setProperty("--stars", stars.toString()),
-  );
-  getDownloads().then((downloads) => {
-    document.documentElement.style.setProperty(
-      "--downloads",
-      downloads.toString(),
-    );
-  });
-client async function getStars() {
-  return (stars ??= (
-    await (await fetch("https://api.github.com/repos/marko-js/marko")).json()
-  ).stargazers_count as number);
+// Resolved during the server render and serialized to the browser. The GitHub API
+// allows 60 unauthenticated requests/hour per IP, so a visitor's own request often
+// comes back rate limited; falling back to these keeps a real count on screen.
+server async function loadFallbacks() {
+  const [stars, downloads] = await Promise.all([
+    loadStars().catch(warn),
+    loadDownloads().catch(warn),
+  ]);
+  return { stars, downloads };
 }
-client async function getDownloads() {
-  return (downloads ??= (
-    await (
-      await fetch("https://api.npmjs.org/downloads/point/last-month/marko")
-    ).json()
-  ).downloads as number);
+
+server function warn(err: unknown) {
+  console.warn("app-stats: could not load a count at build time", err);
+  return undefined;
+}
+
+<await|fallback|=loadFallbacks()>
+  <script>
+    setCount("--stars", loadStars, fallback.stars);
+    setCount("--downloads", loadDownloads, fallback.downloads);
+  </script>
+</await>
+
+// Each visitor loads the counts so they stay current between deploys. When that
+// fails the serialized fallback is used, and when there is no fallback either the
+// counter keeps the initial value declared in app-stats.style.scss.
+client async function setCount(
+  name: string,
+  load: () => Promise<number>,
+  fallback: undefined | number,
+) {
+  const count = await load().catch(() => fallback);
+  if (count !== undefined) {
+    document.documentElement.style.setProperty(name, `${count}`);
+  }
 }
