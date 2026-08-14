@@ -4,7 +4,7 @@ Handlers and middleware are written using the verb helpers defined on the global
 
 ## Verb Helpers
 
-Each verb helper (`Run.GET`, `Run.HEAD`, `Run.POST`, `Run.PUT`, `Run.DELETE`, `Run.PATCH`, `Run.OPTIONS`, and `Run.ALL`) accepts a handler function or an array of handler functions, optionally preceded by validation options:
+Each verb helper (`Run.GET`, `Run.HEAD`, `Run.POST`, `Run.PUT`, `Run.DELETE`, `Run.PATCH`, `Run.OPTIONS`, `Run.QUERY`, and `Run.ALL`) accepts a handler function or an array of handler functions, optionally preceded by validation options:
 
 ```ts
 Run.POST(handler); // a handler function
@@ -58,7 +58,7 @@ Validators are lazy. `ctx.params` and `ctx.search` do not run their validators u
 
 ## Request Bodies
 
-`POST`, `PUT`, and `PATCH` handlers declare how request bodies are read with the `json` and `form` options. When either is configured, `ctx.body` is a promise for the parsed and validated body. Otherwise `ctx.body` is `undefined`.
+`POST`, `PUT`, `PATCH`, and `QUERY` handlers declare how request bodies are read with the `json` and `form` options. When either is configured, `ctx.body` is a promise for the parsed and validated body. Otherwise `ctx.body` is `undefined`.
 
 ```ts
 import * as v from "valibot";

@@ -34,7 +34,7 @@ export interface Input {
 
 ### `+handler.*`
 
-These files establish a route at the current directory path that can respond to any HTTP method: exported functions named `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, or `OPTIONS` handle requests with the matching method.
+These files establish a route at the current directory path that can respond to any HTTP method: exported functions named `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` handle requests with the matching method.
 
 Typically, these will be `.js` or `.ts` files, depending on the project. Like pages, only one handler file may exist for any served path.
 
@@ -112,7 +112,7 @@ export default Run.ALL(async (ctx, next) => {
 
 These files represent static metadata to attach to the route. This metadata will be automatically provided as `ctx.meta` when the route is invoked. When the file is a non-JSON file, its default export will be used.
 
-Metadata supports verb-specific overrides when it is an object (e.g. a JSON file or `export default { ... }`). Top-level keys that match one of `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, or `OPTIONS` are shallowly merged into the base object for requests of that method, overriding any existing values. These keys are excluded from the base object, and ignored when their value is not an object. For example, given a `+meta.json` file:
+Metadata supports verb-specific overrides when it is an object (e.g. a JSON file or `export default { ... }`). Top-level keys that match one of `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` are shallowly merged into the base object for requests of that method, overriding any existing values. These keys are excluded from the base object, and ignored when their value is not an object. For example, given a `+meta.json` file:
 
 ```json
 {
