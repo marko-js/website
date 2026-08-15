@@ -11,7 +11,7 @@ The router only recognizes certain filenames, all prefixed with `+`. The followi
 
 ### `+page.marko`
 
-These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
+These files establish a route at the current directory path, which will be served for `GET` and `QUERY` requests with the HTML content of the page. Only one page may exist for any served path.
 
 ### `+layout.marko`
 
@@ -50,7 +50,7 @@ export const POST = Run.POST(async (ctx, next) => {
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
 - `ctx` contains the WHATWG request object, path parameters, URL, and route metadata (see [Context](./runtime.md#context))
-- `next` renders the page for `GET`, `HEAD`, and `POST` requests where applicable, or returns a `204` response. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+- `next` renders the page for `GET`, `HEAD`, `POST`, and `QUERY` requests where applicable, or returns a `204` response. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
 
 A handler function may return (or throw) a WHATWG response, or return `undefined`. If the function returns `undefined`, `next` will be automatically called and used as the response.
 
