@@ -50,7 +50,7 @@ export const POST = Run.POST(async (ctx, next) => {
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
 - `ctx` contains the WHATWG request object, path parameters, URL, and route metadata (see [Context](./runtime.md#context))
-- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for HEAD requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for `HEAD` requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
 
 A handler function may return (or throw) a WHATWG response, or return `undefined`. If the function returns `undefined`, `next` will be automatically called and used as the response.
 
