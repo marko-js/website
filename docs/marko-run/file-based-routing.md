@@ -54,7 +54,7 @@ export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
 - `ctx` contains the WHATWG request object, path parameters, URL, route metadata, and the [validated body](./validation.md#request-bodies) (see [Context](./runtime.md#context))
-- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for HEAD requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for `HEAD` requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
 
 > [!TIP]
 > Configure the [`json` or `form` option](./validation.md#request-bodies) to read validated request body content with `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and any configured size limits. Using [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) makes it easy to return JSON encoded data.
