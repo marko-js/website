@@ -11,7 +11,7 @@ The router only recognizes certain filenames, all prefixed with `+`. The followi
 
 ### `+page.marko`
 
-These files establish a route at the current directory path, which will be served for `GET` and `QUERY` requests with the HTML content of the page. Only one page may exist for any served path.
+These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
 
 ### `+layout.marko`
 
