@@ -57,7 +57,7 @@ Handler functions are synchronous or asynchronous functions that receive two arg
 - `next` renders the page for `GET`, `HEAD`, and `POST` requests where applicable, or returns a `204` response. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
 
 > [!TIP]
-> Request bodies are declared, not read manually. Configure the [`json` or `form` option](./validation.md#request-bodies) and read `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and the configured size limits. Likewise, respond with [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) rather than serializing JSON into a `Response` by hand.
+> Configure the [`json` or `form` option](./validation.md#request-bodies) to read validated body content with `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and any configured size limits. Using [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) makes it easy to return JSON encoded data.
 
 A handler function may return (or throw) a WHATWG response, or return `undefined`. If the function returns `undefined`, `next` will be automatically called and used as the response.
 
