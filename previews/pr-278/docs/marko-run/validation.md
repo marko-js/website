@@ -103,8 +103,16 @@ The declared body and the platform's [`Response.json`](https://developer.mozilla
 
 ```ts
 // ✅ Parsed, validated, and typed
-export const POST = Run.POST({ json: assertNote }, async (ctx) => {
-  return Response.json(createNote(await ctx.body), { status: 201 });
+import * as v from "valibot";
+
+const NoteSchema = v.object({ text: v.pipe(v.string(), v.nonEmpty()) });
+
+export const POST = Run.POST({ json: NoteSchema }, async (ctx) => {
+  const [note, issues] = await ctx.body;
+  if (issues) {
+    return Response.json({ issues }, { status: 422 });
+  }
+  return Response.json(createNote(note), { status: 201 });
 });
 ```
 
