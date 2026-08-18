@@ -41,8 +41,11 @@ Typically, these will be `.js` or `.ts` files, depending on the project. Like pa
 Handlers are created with the global [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, etc.), which add request validation, typed bodies, and [data loading](./data-loading.md):
 
 ```ts
-export const POST = Run.POST({ json: assertReminder }, async (ctx) => {
-  const reminder = await ctx.body; // parsed and validated by the `json` option
+export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
+  const [reminder, issues] = await ctx.body; // parsed and validated by the `json` option
+  if (issues) {
+    return Response.json({ issues }, { status: 422 });
+  }
   await saveReminder(ctx.params.listId, reminder);
   return Response.json(reminder, { status: 201 });
 });
