@@ -87,7 +87,7 @@ Function validators resolve `ctx.body` to their return value. Standard Schema va
 > [!NOTE]
 > `ctx.body` is a promise, not a function. Read the parsed body with `await ctx.body`, there is nothing to call.
 
-Handlers ported from other frameworks often parse and serialize JSON by hand:
+Aside from runtime safety and typing convenience, validation makes reading request bodies declarative and avoids manual parsing.
 
 ```ts
 // ❌ Bypasses validation and the size limits below
@@ -98,8 +98,6 @@ export const POST = Run.POST(async (ctx) => {
   });
 });
 ```
-
-The declared body and the platform's [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) replace both steps:
 
 ```ts
 // ✅ Parsed, validated, and typed
