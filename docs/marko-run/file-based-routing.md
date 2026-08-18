@@ -41,16 +41,23 @@ Typically, these will be `.js` or `.ts` files, depending on the project. Like pa
 Handlers are created with the global [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, etc.), which add request validation, typed bodies, and [data loading](./data-loading.md):
 
 ```ts
-export const POST = Run.POST(async (ctx, next) => {
-  const { request, params, url, meta } = ctx;
-  return new Response("Successfully updated", { status: 200 });
+export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
+  const [reminder, issues] = await ctx.body; // parsed and validated by the `json` option
+  if (issues) {
+    return Response.json({ issues }, { status: 422 });
+  }
+  await saveReminder(ctx.params.listId, reminder);
+  return Response.json(reminder, { status: 201 });
 });
 ```
 
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
-- `ctx` contains the WHATWG request object, path parameters, URL, and route metadata (see [Context](./runtime.md#context))
+- `ctx` contains the WHATWG request object, path parameters, URL, route metadata, and the [validated body](./validation.md#request-bodies) (see [Context](./runtime.md#context))
 - `next` renders the page for `GET`, `HEAD`, and `POST` requests where applicable, or returns a `204` response. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+
+> [!TIP]
+> Configure the [`json` or `form` option](./validation.md#request-bodies) to read validated request body content with `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and any configured size limits. Using [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) makes it easy to return JSON encoded data.
 
 A handler function may return (or throw) a WHATWG response, or return `undefined`. If the function returns `undefined`, `next` will be automatically called and used as the response.
 

@@ -87,6 +87,33 @@ Function validators resolve `ctx.body` to their return value. Standard Schema va
 > [!NOTE]
 > `ctx.body` is a promise, not a function. Read the parsed body with `await ctx.body`, there is nothing to call.
 
+Aside from runtime safety and typing convenience, validation makes reading request bodies declarative and avoids manual parsing.
+
+```ts
+// ❌ Bypasses validation and the size limits below
+export const POST = Run.POST(async (ctx) => {
+  const note = await ctx.request.json();
+  return new Response(JSON.stringify(createNote(note)), {
+    headers: { "content-type": "application/json" },
+  });
+});
+```
+
+```ts
+// ✅ Parsed, validated, and typed
+import * as v from "valibot";
+
+const NoteSchema = v.object({ text: v.pipe(v.string(), v.nonEmpty()) });
+
+export const POST = Run.POST({ json: NoteSchema }, async (ctx) => {
+  const [note, issues] = await ctx.body;
+  if (issues) {
+    return Response.json({ issues }, { status: 422 });
+  }
+  return Response.json(createNote(note), { status: 201 });
+});
+```
+
 ### `json`
 
 Handles requests with an `application/json` content type. The option can be a validator, or an options object:
