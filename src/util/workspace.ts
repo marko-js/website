@@ -310,21 +310,39 @@ export async function update(
       }
 
       frame.addEventListener("error", onRuntimeError, { signal });
+      // Errors and console output are forwarded from a bootstrap script inside
+      // the iframe rather than via listeners attached on its window: those can
+      // only attach once the frame has loaded, which is after the preview
+      // modules have already evaluated (and possibly thrown).
+      window.addEventListener(
+        "message",
+        (ev) => {
+          if (ev.source !== frame.contentWindow) return;
+          const data = ev.data;
+          if (data && typeof data === "object") {
+            if ("__mlog" in data) {
+              pushLog("client", data.__mlog.method, data.__mlog.text);
+            } else if ("__merr" in data && !signal.aborted) {
+              let err = data.__merr;
+              if (!(err instanceof Error)) {
+                err = Object.assign(
+                  new Error(err?.message || "Unknown error"),
+                  err,
+                );
+              }
+              ws.runtimeErrors = ws.runtimeErrors
+                ? [...ws.runtimeErrors, err]
+                : [err];
+              emit();
+            }
+          }
+        },
+        { signal },
+      );
       frame.addEventListener(
         "load",
         async () => {
-          const win = frame.contentWindow! as Window & typeof globalThis;
-          if (typeof window.console === "object") {
-            consoleInjection(win.console, "client", "#c2185b", (method, args) =>
-              pushLog("client", method, formatLogArgs(args)),
-            );
-          }
-          win.addEventListener("error", onRuntimeError, { signal });
-          win.addEventListener("unhandledrejection", onRuntimeError, {
-            signal,
-          });
           if (csr) {
-            ws.runtimeErrors = undefined;
             ws.previewReady = true;
             emit();
             return;
@@ -335,7 +353,6 @@ export async function update(
 
           const domWriter = WritableDOMStream(frame.contentDocument!.body);
           let rawHTML = "";
-          ws.runtimeErrors = undefined;
           server.onmessage = (ev) => {
             if (signal.aborted) return;
             const data = ev.data;
@@ -362,6 +379,41 @@ export async function update(
         { signal },
       );
       frame.srcdoc =
+        `<script>(() => {
+          const post = (data) => {
+            try {
+              parent.postMessage(data, "*");
+            } catch {
+              parent.postMessage(
+                { __merr: { message: String(data.__merr) } },
+                "*",
+              );
+            }
+          };
+          const postError = (err, fallbackMessage) => {
+            if (err && typeof err === "object") {
+              if ("detail" in err) err = err.detail;
+            } else if (err !== undefined) {
+              err = { message: String(err) };
+            }
+            post({ __merr: err || { message: fallbackMessage } });
+          };
+          addEventListener("error", (e) => {
+            if (e.defaultPrevented) return;
+            postError(
+              e.error,
+              e.message + "\\n" + e.filename + ":" + e.lineno + "," + e.colno,
+            );
+          });
+          addEventListener("unhandledrejection", (e) => {
+            if (e.defaultPrevented) return;
+            postError(e.reason, "Unknown error");
+          });
+          (${consoleInjection.toString()})(console, "client", "#c2185b", (method, args) =>
+            post({ __mlog: { method, text: (${formatLogArgs.toString()})(args) } }),
+          );
+        })()</scr` +
+        `ipt>` +
         (cssCode
           ? `<link rel=stylesheet href="${toAssetURL(
               cssFile,
