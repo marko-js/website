@@ -171,6 +171,7 @@ export async function update(
   // Read before `workspace` is reassigned below: this holds the only reference
   // to the running preview server, which stays up until this build replaces it.
   const previous = workspace;
+  if (csr) previous?.server?.terminate();
   const ws: Workspace = (workspace = {
     fs,
     optimize,
@@ -205,7 +206,6 @@ export async function update(
       }
     }
 
-    if (csr) previous?.server?.terminate();
     const serverBuild = csr
       ? undefined
       : (async function buildServer() {
@@ -344,13 +344,13 @@ export async function update(
         (ev) => {
           const data = ev.source === frame.contentWindow && ev.data;
           if (!data || typeof data !== "object") return;
-          if ("__mlog" in data) {
-            pushLog("client", data.__mlog.method, data.__mlog.text);
-          } else if ("__merr" in data) {
-            const { name, message, stack } = data.__merr;
-            const err = new Error(message);
-            if (name) err.name = name;
-            if (stack) err.stack = stack;
+          const { __mlog: mlog, __merr: merr } = data;
+          if (mlog && typeof mlog === "object") {
+            pushLog("client", String(mlog.method), String(mlog.text));
+          } else if (merr && typeof merr === "object") {
+            const err = new Error(String(merr.message));
+            if (merr.name) err.name = String(merr.name);
+            if (merr.stack) err.stack = String(merr.stack);
             pushRuntimeError(err);
           }
         },
