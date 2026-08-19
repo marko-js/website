@@ -84,11 +84,13 @@ let/debug=!!debugParam
     debugParam = debug ? "1" : null;
   }
 
+static const serverOutputTypes = ["previewHTML", "html"];
+
 let-search-param/csrParam key="csr"
 let/csr=!!csrParam
   ,valueChange(csr) {
     csrParam = csr ? "1" : null;
-    if (csr && (outputType === "html" || outputType === "previewHTML")) {
+    if (csr && serverOutputTypes.includes(outputType)) {
       outputType = "preview";
     }
   }

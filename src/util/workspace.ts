@@ -116,6 +116,36 @@ const consoleInjection = (
   };
 };
 
+const consoleInjectionScript = (ns: string, color: string, post: string) =>
+  `(${consoleInjection.toString()})(console,${JSON.stringify(ns)},${JSON.stringify(color)},(method,args)=>${post}({__mlog:{method,text:(${formatLogArgs.toString()})(args)}}))`;
+
+const frameBootstrap =
+  `<script>{
+    const post = (data) => parent.postMessage(data, "*");
+    const postError = (err) => {
+      if (err && typeof err === "object" && "detail" in err) err = err.detail;
+      post({
+        __merr: {
+          name: err && err.name,
+          message: String((err && err.message) ?? err ?? "Unknown error"),
+          stack: err && err.stack,
+        },
+      });
+    };
+    addEventListener("error", (e) => {
+      if (!e.defaultPrevented) {
+        postError(
+          e.error ??
+            e.message + "\\n" + e.filename + ":" + e.lineno + "," + e.colno,
+        );
+      }
+    });
+    addEventListener("unhandledrejection", (e) => {
+      if (!e.defaultPrevented) postError(e.reason);
+    });
+    ${consoleInjectionScript("client", "#c2185b", "post")}
+  }</scr` + `ipt>`;
+
 export function subscribe(
   handler: (workspace: Workspace) => void,
   signal: AbortSignal,
@@ -175,73 +205,72 @@ export async function update(
       }
     }
 
-    const serverBuild = (async function buildServer() {
-      if (csr) {
-        previous?.server?.terminate();
-        return;
-      }
-      const file = "server.js";
-      const build = await rollup({
-        plugins: [
-          mainPlugin({
-            ws,
-            browser: false,
-            code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n(${consoleInjection.toString()})(console, "server", "#00FFFF", (method, args) => postMessage({ __mlog: { method, text: (${formatLogArgs.toString()})(args) } }))`,
-          }),
-          markoPlugin({
-            ws,
-            browser: false,
-          }),
-          cssPlugin({ browser: false }),
-          cdnPlugin({ versions }),
-          minifyScriptPlugin(),
-        ],
-      });
+    if (csr) previous?.server?.terminate();
+    const serverBuild = csr
+      ? undefined
+      : (async function buildServer() {
+          const file = "server.js";
+          const build = await rollup({
+            plugins: [
+              mainPlugin({
+                ws,
+                browser: false,
+                code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n${consoleInjectionScript("server", "#00FFFF", "postMessage")}`,
+              }),
+              markoPlugin({
+                ws,
+                browser: false,
+              }),
+              cssPlugin({ browser: false }),
+              cdnPlugin({ versions }),
+              minifyScriptPlugin(),
+            ],
+          });
 
-      if (signal.aborted) return;
+          if (signal.aborted) return;
 
-      const { output } = await build.generate({
-        file,
-        format: "es",
-        compact: optimize,
-        sourcemap: "hidden",
-        inlineDynamicImports: true,
-      });
+          const { output } = await build.generate({
+            file,
+            format: "es",
+            compact: optimize,
+            sourcemap: "hidden",
+            inlineDynamicImports: true,
+          });
 
-      if (signal.aborted) return;
+          if (signal.aborted) return;
 
-      const code = getAssetCode(output, file);
-      previous?.server?.terminate();
+          const code = getAssetCode(output, file);
+          previous?.server?.terminate();
 
-      if (!code) {
-        return;
-      }
+          if (!code) {
+            return;
+          }
 
-      const server = new Worker(
-        toAssetURL(
-          file,
-          "application/javascript",
-          code +
-            "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" +
-            getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
-        ),
-        {
-          name: file,
-          type: "module",
-        },
-      );
+          const server = new Worker(
+            toAssetURL(
+              file,
+              "application/javascript",
+              code +
+                "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" +
+                getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+            ),
+            {
+              name: file,
+              type: "module",
+            },
+          );
 
-      // An abort between the check above and here would otherwise strand this
-      // worker: `workspace` already points at a newer build, so nothing else
-      // holds a reference to terminate it.
-      if (signal.aborted) {
-        server.terminate();
-        return;
-      }
+          // An abort between the check above and here would otherwise strand this
+          // worker: `workspace` already points at a newer build, so nothing else
+          // holds a reference to terminate it.
+          if (signal.aborted) {
+            server.terminate();
+            return;
+          }
 
-      ws.server = server;
-      server.addEventListener("error", onRuntimeError, { signal });
-    })();
+          ws.server = server;
+          server.addEventListener("error", onRuntimeError, { signal });
+        })();
     const browserBuild = (async function buildClient() {
       const file = "client.js";
       const cssFile = "client.css";
@@ -310,31 +339,19 @@ export async function update(
       }
 
       frame.addEventListener("error", onRuntimeError, { signal });
-      // Errors and console output are forwarded from a bootstrap script inside
-      // the iframe rather than via listeners attached on its window: those can
-      // only attach once the frame has loaded, which is after the preview
-      // modules have already evaluated (and possibly thrown).
       window.addEventListener(
         "message",
         (ev) => {
-          if (ev.source !== frame.contentWindow) return;
-          const data = ev.data;
-          if (data && typeof data === "object") {
-            if ("__mlog" in data) {
-              pushLog("client", data.__mlog.method, data.__mlog.text);
-            } else if ("__merr" in data && !signal.aborted) {
-              let err = data.__merr;
-              if (!(err instanceof Error)) {
-                err = Object.assign(
-                  new Error(err?.message || "Unknown error"),
-                  err,
-                );
-              }
-              ws.runtimeErrors = ws.runtimeErrors
-                ? [...ws.runtimeErrors, err]
-                : [err];
-              emit();
-            }
+          const data = ev.source === frame.contentWindow && ev.data;
+          if (!data || typeof data !== "object") return;
+          if ("__mlog" in data) {
+            pushLog("client", data.__mlog.method, data.__mlog.text);
+          } else if ("__merr" in data) {
+            const { name, message, stack } = data.__merr;
+            const err = new Error(message);
+            if (name) err.name = name;
+            if (stack) err.stack = stack;
+            pushRuntimeError(err);
           }
         },
         { signal },
@@ -379,41 +396,7 @@ export async function update(
         { signal },
       );
       frame.srcdoc =
-        `<script>(() => {
-          const post = (data) => {
-            try {
-              parent.postMessage(data, "*");
-            } catch {
-              parent.postMessage(
-                { __merr: { message: String(data.__merr) } },
-                "*",
-              );
-            }
-          };
-          const postError = (err, fallbackMessage) => {
-            if (err && typeof err === "object") {
-              if ("detail" in err) err = err.detail;
-            } else if (err !== undefined) {
-              err = { message: String(err) };
-            }
-            post({ __merr: err || { message: fallbackMessage } });
-          };
-          addEventListener("error", (e) => {
-            if (e.defaultPrevented) return;
-            postError(
-              e.error,
-              e.message + "\\n" + e.filename + ":" + e.lineno + "," + e.colno,
-            );
-          });
-          addEventListener("unhandledrejection", (e) => {
-            if (e.defaultPrevented) return;
-            postError(e.reason, "Unknown error");
-          });
-          (${consoleInjection.toString()})(console, "client", "#c2185b", (method, args) =>
-            post({ __mlog: { method, text: (${formatLogArgs.toString()})(args) } }),
-          );
-        })()</scr` +
-        `ipt>` +
+        frameBootstrap +
         (cssCode
           ? `<link rel=stylesheet href="${toAssetURL(
               cssFile,
@@ -461,9 +444,14 @@ export async function update(
         err = new Error("Unknown error");
       }
 
-      ws.runtimeErrors = ws.runtimeErrors ? [...ws.runtimeErrors, err] : [err];
-      emit();
+      pushRuntimeError(err);
     }
+  }
+
+  function pushRuntimeError(err: Error) {
+    if (signal.aborted) return;
+    ws.runtimeErrors = ws.runtimeErrors ? [...ws.runtimeErrors, err] : [err];
+    emit();
   }
 
   function pushLog(ns: LogEntry["ns"], method: string, text: string) {
