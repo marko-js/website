@@ -139,19 +139,17 @@ div class=styles.result
           option value="preview" -- Preview
           option value="previewJS" -- Bundled JS
           option value="previewCSS" -- Bundled CSS
-          if=!csr
-            option value="previewHTML" -- Rendered HTML
+          option value="previewHTML" disabled=csr -- Rendered HTML
         optgroup label="Compiled"
           option value="dom" -- Client JS
-          if=!csr
-            option value="html" -- Server JS
+          option value="html" disabled=csr -- Server JS
     div class=styles.control
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
     div class=styles.control
       label class=styles.checkbox
-        -- CSR only
+        abbr title="Client-side rendering only (no server build)" -- CSR
         input type="checkbox" checked:=csr
     span class=styles.version -- v${markoVersion}
 
