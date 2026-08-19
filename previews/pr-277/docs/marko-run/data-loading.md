@@ -38,7 +38,7 @@ Independent data sources are best kept as separate promises. Two `<await>` secti
 
 ## Rendering and Responses
 
-The `next` function renders the page for `GET`, `HEAD`, and `POST` requests where applicable, or returns a `204` response when there is no page. A handler decides what to do with that result:
+The `next` function renders the page for `GET`, `POST`, and `QUERY` requests where applicable, returns a `200` response for `HEAD` requests, or a `204` response when there is no page. A handler decides what to do with that result:
 
 ```ts
 export const GET = Run.GET((ctx, next) => {
