@@ -135,6 +135,7 @@ export async function update(
   frame: HTMLIFrameElement,
   files: File[],
   optimize: boolean,
+  csr: boolean,
 ) {
   const fs = new FileSystem({});
   // Read before `workspace` is reassigned below: this holds the only reference
@@ -175,6 +176,10 @@ export async function update(
     }
 
     const serverBuild = (async function buildServer() {
+      if (csr) {
+        previous?.server?.terminate();
+        return;
+      }
       const file = "server.js";
       const build = await rollup({
         plugins: [
@@ -245,7 +250,9 @@ export async function update(
           mainPlugin({
             ws,
             browser: true,
-            code: `import "${rootDir}index.marko?hydrate"`,
+            code: csr
+              ? `import t from "${rootDir}index.marko";t.mount({}, document.body)`
+              : `import "${rootDir}index.marko?hydrate"`,
           }),
           markoPlugin({ ws, browser: true }),
           cssPlugin({ browser: true }),
@@ -316,6 +323,12 @@ export async function update(
           win.addEventListener("unhandledrejection", onRuntimeError, {
             signal,
           });
+          if (csr) {
+            ws.runtimeErrors = undefined;
+            ws.previewReady = true;
+            emit();
+            return;
+          }
           await serverBuild;
           const { server } = ws;
           if (!server || signal.aborted) return;

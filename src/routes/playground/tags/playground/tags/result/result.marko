@@ -84,6 +84,15 @@ let/debug=!!debugParam
     debugParam = debug ? "1" : null;
   }
 
+let-search-param/csrParam key="csr"
+let/csr=!!csrParam
+  ,valueChange(csr) {
+    csrParam = csr ? "1" : null;
+    if (csr && (outputType === "html" || outputType === "previewHTML")) {
+      outputType = "preview";
+    }
+  }
+
 let-search-param/fullscreenParam key="fullscreen"
 let/fullscreen=!!fullscreenParam
   ,valueChange(fullscreen) {
@@ -130,14 +139,20 @@ div class=styles.result
           option value="preview" -- Preview
           option value="previewJS" -- Bundled JS
           option value="previewCSS" -- Bundled CSS
-          option value="previewHTML" -- Rendered HTML
+          if=!csr
+            option value="previewHTML" -- Rendered HTML
         optgroup label="Compiled"
           option value="dom" -- Client JS
-          option value="html" -- Server JS
+          if=!csr
+            option value="html" -- Server JS
     div class=styles.control
       label class=styles.checkbox
         -- Debug
         input type="checkbox" checked:=debug
+    div class=styles.control
+      label class=styles.checkbox
+        -- CSR only
+        input type="checkbox" checked:=csr
     span class=styles.version -- v${markoVersion}
 
   div class=styles.output
@@ -166,7 +181,7 @@ div class=styles.result
         [styles.hide]: !showPreview,
       }
     if=files.length
-      script -- update($signal, $frame(), files, !debug);
+      script -- update($signal, $frame(), files, !debug, csr);
 
     if=showPreview && !ws.previewReady
       div class=styles.loading role="status"
