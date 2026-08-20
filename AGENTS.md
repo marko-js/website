@@ -5,7 +5,7 @@
 - Describe what Marko does, never what it lacks. No "there is no X", and no workarounds that route around the framework.
 - Do not document compile errors. The compiler reports them with a code frame. This covers content that reframes them, such as a table mapping another framework's attribute names onto Marko's.
 - Do not document errors, warnings, or checks that only a `MARKO_DEBUG` build produces. State the rule, not the message.
-- Never document a known bug as intended behavior. Grep `agent-feedback/bugs.md` in the `marko` repo first; a hit means file the defect and leave the docs alone.
+- Never document a known bug as intended behavior. Grep `agent-feedback/` in the `marko` repo first; a hit means file the defect and leave the docs alone.
 - Drop a topic that loses its main claim to the rule above. What remains is the least verified part of it.
 - Prefer filing a defect to writing a caveat that teaches readers to live with one.
 
@@ -121,4 +121,4 @@
 
 ## Agent feedback
 
-Anything actionable but out of scope for the current task — a suspected bug, cleanup, a perf/size win, tooling friction, or code that was confusing — must be recorded in [`agent-feedback/`](agent-feedback/README.md) before finishing. Don't silently drop it, and don't fix it inside an unrelated diff.
+Anything actionable but out of scope for the current task (suspected bug, cleanup, perf or size win, tooling friction, confusing code) must be filed in [`agent-feedback/`](agent-feedback/README.md) before finishing. Never drop it silently. Never fix it inside an unrelated diff.
