@@ -34,7 +34,7 @@ export interface Input {
 
 ### `+handler.*`
 
-These files establish a route at the current directory path that can respond to any HTTP method: exported functions named `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, or `OPTIONS` handle requests with the matching method.
+These files establish a route at the current directory path that can respond to any HTTP method: exported functions named `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` handle requests with the matching method.
 
 Typically, these will be `.js` or `.ts` files, depending on the project. Like pages, only one handler file may exist for any served path.
 
@@ -54,7 +54,7 @@ export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
 Handler functions are synchronous or asynchronous functions that receive two arguments:
 
 - `ctx` contains the WHATWG request object, path parameters, URL, route metadata, and the [validated body](./validation.md#request-bodies) (see [Context](./runtime.md#context))
-- `next` renders the page for `GET`, `HEAD`, and `POST` requests where applicable, or returns a `204` response. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for `HEAD` requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
 
 > [!TIP]
 > Configure the [`json` or `form` option](./validation.md#request-bodies) to read validated request body content with `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and any configured size limits. Using [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) makes it easy to return JSON encoded data.
@@ -112,7 +112,7 @@ export default Run.ALL(async (ctx, next) => {
 
 These files represent static metadata to attach to the route. This metadata will be automatically provided as `ctx.meta` when the route is invoked. When the file is a non-JSON file, its default export will be used.
 
-Metadata supports verb-specific overrides when it is an object (e.g. a JSON file or `export default { ... }`). Top-level keys that match one of `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, or `OPTIONS` are shallowly merged into the base object for requests of that method, overriding any existing values. These keys are excluded from the base object, and ignored when their value is not an object. For example, given a `+meta.json` file:
+Metadata supports verb-specific overrides when it is an object (e.g. a JSON file or `export default { ... }`). Top-level keys that match one of `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` are shallowly merged into the base object for requests of that method, overriding any existing values. These keys are excluded from the base object, and ignored when their value is not an object. For example, given a `+meta.json` file:
 
 ```json
 {
