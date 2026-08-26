@@ -53,10 +53,10 @@ importers:
         version: 5.42.3
       '@marko/run':
         specifier: ^0.11.12
-        version: 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
+        version: 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
       '@marko/run-adapter-static':
         specifier: ^2.0.10
-        version: 2.0.10(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))(supports-color@10.2.2)
+        version: 2.0.10(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))(supports-color@10.2.2)
       '@marko/type-check':
         specifier: ^3.2.0
         version: 3.2.0
@@ -124,8 +124,8 @@ importers:
         specifier: ^18.0.10
         version: 18.0.10
       marko:
-        specifier: ^6.3.45
-        version: 6.3.45
+        specifier: ^6.3.46
+        version: 6.3.46
       path:
         specifier: ./shim/path
         version: link:shim/path
@@ -2387,8 +2387,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marko@6.3.45:
-    resolution: {integrity: sha512-2/KRbwfWH86OVVl1VeuxHq4RNhzl/wGDpdsxnj8QseYSiFk7l+2xDymXoeUkVdA5g5Fwff1QUQAxU2k6RRnMqQ==}
+  marko@6.3.46:
+    resolution: {integrity: sha512-JzUsor1gACk1TZbrAdg60O2E2H9rtHeWtt4Xb5Tu4nV5nyNmIKEsDyiyWmTHqP4TJ+K6/iHawwhS4f4oRWzZMA==}
     engines: {node: '>=22'}
 
   mdast-util-to-hast@13.2.1:
@@ -4160,9 +4160,9 @@ snapshots:
       htmljs-parser: 5.15.0
       relative-import-path: 1.0.1
 
-  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))(supports-color@10.2.2)':
+  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))(supports-color@10.2.2)':
     dependencies:
-      '@marko/run': 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
+      '@marko/run': 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
       compression: 1.8.1(supports-color@10.2.2)
       htmlparser2: 10.1.0
       kleur: 4.1.5
@@ -4171,14 +4171,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@marko/run-explorer@2.0.5(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))':
+  '@marko/run-explorer@2.0.5(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))':
     dependencies:
-      '@marko/run': 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
+      '@marko/run': 0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)
 
-  '@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)':
+  '@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0)':
     dependencies:
       '@marko/compiler': 5.42.3
-      '@marko/run-explorer': 2.0.5(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.45)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))
+      '@marko/run-explorer': 2.0.5(@marko/run@0.11.12(@types/node@26.2.0)(esbuild@0.27.7)(marko@6.3.46)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))
       '@marko/vite': 6.1.11(@marko/compiler@5.42.3)(vite@8.2.2(@types/node@26.2.0)(esbuild@0.27.7)(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)(yaml@2.9.0))
       '@oxc-project/types': 0.136.0
       '@remix-run/form-data-parser': 0.17.5
@@ -4193,7 +4193,7 @@ snapshots:
       glob: 13.0.6
       human-format: 1.2.1
       kleur: 4.1.5
-      marko: 6.3.45
+      marko: 6.3.46
       parse-node-args: 1.1.3
       rolldown: 1.2.5
       sade: 1.8.1
@@ -5429,7 +5429,7 @@ snapshots:
 
   marked@18.0.10: {}
 
-  marko@6.3.45:
+  marko@6.3.46:
     dependencies:
       '@marko/compiler': 5.42.3
       csstype: 3.2.3
