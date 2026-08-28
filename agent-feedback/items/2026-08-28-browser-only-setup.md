@@ -1,0 +1,12 @@
+---
+type: dx
+impact: med
+effort: low
+site: docs/introduction/installation.md › ## Manual Setup
+---
+
+# Document the browser-only setup (`marko({ linked: false })`, `index.html`, `Template.mount`) under Manual Setup
+
+`docs/introduction/installation.md` › ## Manual Setup walks through Vite plus `marko()` plus an express SSR server, and the browser-only alternative survives as a parenthetical on the "Add a server" step ("this can be disabled with the Marko plugin's `linked` option"). `linked` appears in one other place under `docs/`, the `docs/reference/lazy-loading.md` note that `linked: false` cannot code-split; `docs/introduction/integrations.md` covers bundlers with no browser build; and `docs/reference/template.md` › ## `Template.mount(input, node, position?)` documents the API, warning that it is "primarily intended to be used in exclusively client rendered environments", without tying it to a build setup. Following Manual Setup and dropping the server file without also passing `linked: false` fails the build with `[marko-vite:pre] You must run the "ssr" build before the "browser" build.`, an error the docs do not explain. Add a Manual Setup subsection assembling the three files a client-only app needs, a `vite.config.ts` with `marko({ linked: false })`, an `index.html` holding a mount node and a module script, and an entry module calling `Template.mount`; carry the lazy-loading note that `linked: false` cannot code-split and link the `Template.mount` section. The site already runs this mode itself in the playground (`src/util/workspace.ts`).
+
+Check: `grep -rn '\blinked\b' docs` prints only `docs/introduction/installation.md:88` (the parenthetical) and `docs/reference/lazy-loading.md:180`, and `grep -rni 'client-only\|SPA' docs` prints nothing. In a scratch dir with marko 6.3.46, @marko/vite 6.1.11 and vite 8.2.2, with `vite.config.ts` = `export default defineConfig({ plugins: [marko({ linked: false })] })`, `index.html` = `<div id="app"></div><script type="module" src="/src/main.ts"></script>`, `src/app.marko` = `<let/count=input.start ?? 0><button onClick() { count++ }>Clicked ${count}</button>` and `src/main.ts` = `App.mount({ start: 3 }, document.getElementById("app")!)`, `npx vite build` prints `✓ 7 modules transformed` plus `dist/assets/index-*.js 4.76 kB` and `npx vite preview` serves a page whose button goes from `Clicked 3` to `Clicked 4` with no server file. The same project with plain `marko()` fails `npx vite build` with `You must run the "ssr" build before the "browser" build.`

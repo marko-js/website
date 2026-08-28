@@ -1,0 +1,12 @@
+---
+type: dx
+impact: low
+effort: low
+site: docs/reference/typescript.md › ### Registering a new native tag (e.g. for custom elements)
+---
+
+# Show how to declare a custom element's `CustomEvent` handler in the native tag registration
+
+`AttrEventHandler` (marko `packages/runtime-tags/tags-html.d.ts`) brands a handler's event as `Event` intersected with a `currentTarget` string literal carrying the delegation guidance, deliberate since #3817. Any `currentTarget` brand makes that type non-comparable with `CustomEvent<T>`, so a handler inherited from `Marko.HTMLAttributes` cannot reach a custom element's `detail` the ordinary way: `(e as CustomEvent<string>).detail` is TS2352, annotating the parameter is TS2322, and re-declaring `onChange` in an interface that extends `Marko.HTMLAttributes<T>` is TS2430; only a widening double cast compiles. The supported route is to declare the event on the attributes interface, which for a custom name needs nothing extra (`interface XAttrs extends Marko.HTMLAttributes<T> { onDatepickerChange?: (e: CustomEvent<string>, target: T) => void }`) and for a name colliding with a standard DOM event needs `extends Omit<Marko.HTMLAttributes<T>, "onChange">`. Add both spellings, and the collision rule, to the registration section, which today shows `onChange(evt, target) { target.value }` alone.
+
+Check: in a project with `@marko/type-check` 3.2.0 and `marko.json` `{ "<x-datepicker>": { "html": true } }`, `npx mtc -p tsconfig.json -d condensed` over `<div onChange(e) { const d: string = (e as CustomEvent<string>).detail }/>` reports `error TS2352 Conversion of type 'Event & { currentTarget: "Marko delegates events, ..."; }' to type 'CustomEvent<string>' may be a mistake`, and over `<div onChange(e: CustomEvent<string>) { console.log(e.detail) }/>` reports `error TS2322 Type '(e: CustomEvent<string>) => void' is not assignable to type 'AttrEventHandler<Event, HTMLDivElement>'`, while `e as Event as CustomEvent<string>` and `e as unknown as CustomEvent<string>` report nothing. Registering `interface DatepickerAttributes extends Omit<Marko.HTMLAttributes<DatepickerElement>, "onChange"> { value?: string; onChange?: (e: CustomEvent<string>, target: DatepickerElement) => void }` as `Marko.NativeTags["x-datepicker"]` leaves `<x-datepicker value=picked onChange(e, target) { const d: string = e.detail } onClick(e, target) { console.log(e.clientX, target.value) }/>` clean, while `e.clientX` inside `onChange` still reports TS2339.
