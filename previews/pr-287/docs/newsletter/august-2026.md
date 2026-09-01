@@ -142,7 +142,20 @@ Consider a page with a server-driven banner beside a client-side counter.
 </main>
 ```
 
-The first render is ordinary HTML. On a normal navigation every later render is too: the server sends the whole document again and the counter starts over at zero. On a persisted page, after the user has clicked twice and the server drops the promo, the wire carries only this (debug output, with the template path shortened):
+The first render is ordinary Marko HTML, with the same markers a resumable page already carries. Those markers are the holes the server can write into later.
+
+```html
+<main>
+  <h1>Store<!--M_$1 a--></h1>
+  <!--M_[-->
+  <aside class="promo banner">Sale<!--M_$2 a--></aside>
+  <!--M_]1 b 2-->
+  <button>Count <!>0<!--M_$1 d--></button><!--M_$1 c-->
+</main>
+<script>/* resume data */</script>
+```
+
+On a normal navigation every later render looks like this too: the server sends the whole document again and the counter starts over at zero. On a persisted page, after the user has clicked twice and the server drops the promo, the wire carries only this (debug output, with the template path shortened):
 
 ```js
 { "PatchText:#text/0": "Store!", "PatchBranch:#text/1": 0 }
