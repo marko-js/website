@@ -36,6 +36,15 @@ A series of changes made the runtime tree-shake around what a page actually uses
 
 The client entry is more selective about what it links. A page entry now links the topmost templates that have client work rather than the root template, so a layout or root that has no interactivity of its own stays out of the client bundle entirely, and the resume runtime is only initialized when the page has something to resume ([marko#4037](https://github.com/marko-js/marko/pull/4037)).
 
+```marko
+client console.log("hello from the browser");
+
+<h1>${input.title}</h1>
+<p>${input.body}</p>
+```
+
+A page like this one, whose only client-side code is a [`client`](../reference/language.md#server-and-client) statement, now bundles just that statement. No Marko runtime is loaded and nothing is resumed, because there is nothing to resume.
+
 Runtime that a page has no use for is dropped. A page that never uses `$signal` or subscribes to anything no longer carries the teardown sweeps that exist to clean those up, and a page without [lazy tags](../reference/lazy-loading.md) no longer carries the bookkeeping that lets a lazily loaded module enable a branch after resume. Most pages use neither, so most pages get both savings ([marko#3969](https://github.com/marko-js/marko/pull/3969), [marko#3971](https://github.com/marko-js/marko/pull/3971)).
 
 Smaller changes point the same direction: empty template setups are skipped, inert resume metadata is left out of the payload, async render completions in the same turn flush once, forms that use a single kind of control tree-shake the reset handling for the others, and the server runtime carries pure annotations so bundlers can drop the parts a server bundle never reaches ([marko#3960](https://github.com/marko-js/marko/pull/3960), [marko#3962](https://github.com/marko-js/marko/pull/3962), [marko#3963](https://github.com/marko-js/marko/pull/3963), [marko#3964](https://github.com/marko-js/marko/pull/3964), [marko#4055](https://github.com/marko-js/marko/pull/4055)).
