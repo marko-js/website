@@ -2,7 +2,6 @@
   "version": "0.2",
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
   "words": [
-    "codemod",
     "activedescendant",
     "afterbegin",
     "afterend",
@@ -22,6 +21,7 @@
     "cheatsheet",
     "cheatsheets",
     "codegen",
+    "codemod",
     "codespan",
     "contenteditable",
     "datepicker",
@@ -58,6 +58,7 @@
     "merr",
     "microtask",
     "mlog",
+    "navigations",
     "nbsp",
     "noindex",
     "noopener",
@@ -82,6 +83,7 @@
     "shikijs",
     "sortability",
     "srcset",
+    "svallory",
     "tabindex",
     "tablist",
     "taglib",
@@ -96,7 +98,8 @@
     "webkitdirectory",
     "webp",
     "webpro",
-    "WHATWG"
+    "WHATWG",
+    "zagjs"
   ],
   "ignoreRegExpList": [],
   "files": ["*", "docs/**/*", "src/**/*"],

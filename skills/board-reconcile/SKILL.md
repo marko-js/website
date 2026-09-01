@@ -41,7 +41,7 @@ Run `coverage 2026-01 2026-07` for the same comparison across a range of months.
 Two things need a person, and both are printed by `check`:
 
 - **A repository with no `Epic` mapping.** Add it to `EPIC_BY_REPO` in the script rather than tagging by hand, so the next month is automatic. Ask which epic a genuinely ambiguous repository belongs to instead of picking one.
-- **A title with no conventional-commit prefix.** These default to `Chore`, which is right for build and tooling work and wrong for anything user-facing. Read the list. A title like `Support ${...} interpolation in <style> tags` is a `Feat`, not a `Chore`, and needs correcting on the board afterwards.
+- **A title with no recognized conventional-commit prefix.** The script infers a Task from the title (agent-feedback bookkeeping and docs, fixes, then features, in that order) and only unmatched titles default to `Chore`. Read the printed list, which shows the inferred Task per title. A title like `Support ${...} interpolation in <style> tags` is a `Feat`, not a `Chore`, and needs correcting on the board afterwards.
 
 ## Step 3 — Apply
 
