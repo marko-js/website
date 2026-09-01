@@ -8,7 +8,7 @@
 > - More compiler diagnostics name the variable, the rule, and the fix
 > - Work is well underway on persisted pages, which keep browser state alive across navigations
 
-August paired a small syntax addition with a large amount of hardening. Shorthand methods can now be `async`, a round of tree-shaking work cut what pages and servers load, Marko Run tightened its HTTP handling, and the compiler's error messages kept getting more specific. Behind the scenes, most of the month went into persisted pages, which are still in progress.
+August paired a small syntax addition with a large amount of hardening. Shorthand methods can now be `async`, a round of tree-shaking work cut what pages and servers load, Marko Run tightened its HTTP handling, and the compiler's error messages kept getting more specific. Behind the scenes, most of the month went into persisted pages, which are not finished yet and are covered under Coming Soon.
 
 ## Async Methods
 
@@ -34,16 +34,15 @@ Tooling shipped alongside the syntax. The language server type checks the body a
 
 A series of changes made the runtime tree-shake around what a page actually uses, so pages ship less without changing a line of their templates.
 
-The client entry is more selective about what it links. A page entry now links the topmost templates that have client work rather than the root template, so a layout or root that has no interactivity of its own stays out of the client bundle entirely, and the resume runtime is only initialized when the page has something to resume ([marko#4037](https://github.com/marko-js/marko/pull/4037)).
+Two changes to the client entry work together. First, templates with no interactivity of their own are pruned from it: a page entry now links the topmost templates that have client work rather than the root template, so a layout or root that only renders HTML stays out of the client bundle entirely. Second, a `client` statement no longer implies reactivity. Running code in the browser and resuming a page are different things, and a page that only does the former no longer loads the resume runtime to do it ([marko#4037](https://github.com/marko-js/marko/pull/4037)).
 
 ```marko
 client console.log("hello from the browser");
 
 <h1>${input.title}</h1>
-<p>${input.body}</p>
 ```
 
-A page like this one, whose only client-side code is a [`client`](../reference/language.md#server-and-client) statement, now bundles just that statement. No Marko runtime is loaded and nothing is resumed, because there is nothing to resume.
+A page like this one, whose only client-side code is a [`client`](../reference/language.md#server-and-client) statement, now bundles just that statement and none of Marko's runtime.
 
 Runtime that a page has no use for is dropped. A page that never uses `$signal` or subscribes to anything no longer carries the teardown sweeps that exist to clean those up, and a page without [lazy tags](../reference/lazy-loading.md) no longer carries the bookkeeping that lets a lazily loaded module enable a branch after resume. Most pages use neither, so most pages get both savings ([marko#3969](https://github.com/marko-js/marko/pull/3969), [marko#3971](https://github.com/marko-js/marko/pull/3971)).
 
@@ -75,14 +74,6 @@ Several tags check their inputs more carefully. `<show if=condition>` is rejecte
 Errors also surface from more places. A child template that fails to compile reports its own error on the parent build rather than disappearing behind a "tag not found" ([marko#4035](https://github.com/marko-js/marko/pull/4035)). In debug mode, an unserializable value is named by the variable, attribute, or handler it came from instead of an internal slot id ([marko#3888](https://github.com/marko-js/marko/pull/3888)), a client-reactive read of a `$global` key missing from `serializedGlobals` says so ([marko#4025](https://github.com/marko-js/marko/pull/4025)), and a lazy module that fails to load logs which server-rendered content cannot become interactive ([marko#4048](https://github.com/marko-js/marko/pull/4048)). Links inside error messages point at the current reference docs again ([marko#3791](https://github.com/marko-js/marko/pull/3791)).
 
 The agent fix guide appended to compile errors, which tells a coding agent to read the cheat sheet before attempting a fix, can be forced on or off with a `MARKO_AGENT_FIX_GUIDE` override, and it now reaches editors through recovered diagnostics as well ([marko#3784](https://github.com/marko-js/marko/pull/3784), [marko#3943](https://github.com/marko-js/marko/pull/3943)).
-
-## Persisted Pages
-
-Most of the month's engineering went into persisted pages, a mode in which a page stays alive across navigations. When the URL changes, the server renders the next page as it always has, but instead of replacing the document it sends only what changed, and the browser patches the live page in place.
-
-The effect is that state in the browser survives while server-driven content updates around it. A counter keeps counting, an open menu stays open, and text in an input stays put, while the heading, the list, and the promo banner the server decides on all change underneath. There is no client-side router to adopt and no rendering logic to duplicate: templates are ordinary Marko, the compiler works out which structure the server drives and which the browser owns, and anything the patch cannot express faithfully falls back to a full navigation, so a page is never left half updated.
-
-This is not available to try yet. The work lives on the [`persisted-pages`](https://github.com/marko-js/marko/tree/persisted-pages) branch, where August built out the patch protocol and the analysis behind it, and an experimental release is expected in September.
 
 ## Improvements
 
@@ -131,11 +122,19 @@ A catch boundary in `<try>` aborts with its parent render, so a disconnected str
 
 Full details for every change are in the release notes of each package on [GitHub](https://github.com/marko-js).
 
+## Coming Soon
+
+Most of the month's engineering went into persisted pages, a mode in which a page stays alive across navigations. When the URL changes, the server renders the next page as it always has, but instead of replacing the document it sends only what changed, and the browser patches the live page in place.
+
+The effect is that state in the browser survives while server-driven content updates around it. A counter keeps counting, an open menu stays open, and text in an input stays put, while the heading, the list, and the promo banner the server decides on all change underneath. There is no client-side router to adopt and no rendering logic to duplicate: templates are ordinary Marko, the compiler works out which structure the server drives and which the browser owns, and anything the patch cannot express faithfully falls back to a full navigation, so a page is never left half updated.
+
+This is not available to try yet. The work lives on the [`persisted-pages`](https://github.com/marko-js/marko/tree/persisted-pages) branch, where August built out the patch protocol and the analysis behind it, and an experimental release is expected in September.
+
 ## Project Velocity
 
 The volume behind this edition is not an accident. Marko merged 36 pull requests in January, 357 in July, and 323 in August, and two changes to how the project works account for most of the difference.
 
-The first is the test suite. In January the full `marko` suite ran serially in about four minutes; a parallel runner in July fanned it across CPU cores to about 87 seconds, later trimmed to around 81, with the snapshot and size output byte-identical to the serial run ([marko#3326](https://github.com/marko-js/marko/pull/3326), [marko#3387](https://github.com/marko-js/marko/pull/3387)). August bounded the runner's memory so that workers stay inside a 2 GB budget instead of growing past 3 GB, let concurrent runs share CPU slots rather than fighting over them, and made the Class API suite about 20% faster through a shared resolution cache ([marko#4066](https://github.com/marko-js/marko/pull/4066)). A suite that finishes in a minute and a half gets run on every change, including by agents.
+The first is the test suite. In January the full `marko` suite ran serially in about four minutes; a parallel runner in July fanned it across CPU cores to about 87 seconds, later trimmed to around 81, with the snapshot and size output byte-identical to the serial run ([marko#3326](https://github.com/marko-js/marko/pull/3326), [marko#3387](https://github.com/marko-js/marko/pull/3387)). August capped the runner's memory, let concurrent runs share CPU rather than fight over it, and made the Class API suite about 20% faster ([marko#4066](https://github.com/marko-js/marko/pull/4066)). A suite that finishes in a minute and a half gets run on every change, including by agents.
 
 The second is agent feedback. Every marko-js repository carries an `agent-feedback/` directory where an agent that notices something actionable outside its current task, a suspected bug, a confusing error, a missing type, files it as a small item with a reproduction rather than fixing it in an unrelated diff or dropping it. A triage pass then works the backlog one item per pull request: reproduce, fix with a guarding test, delete the item. In `marko` alone, August filed 137 items and closed 30, and a large share of this edition's diagnostics and correctness fixes started life that way. The convention and the skills that drive it are now public at [dylanPiercey/skills](https://github.com/dylanPiercey/skills), so any project can adopt the same loop ([marko#4003](https://github.com/marko-js/marko/pull/4003)).
 
