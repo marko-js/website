@@ -3,7 +3,7 @@
 > [!TLDR]
 >
 > - Shorthand methods accept `async`, with parser, editor, and formatter support landing together
-> - Layouts without interactivity stay out of the client bundle, and runtime a page does not use is tree-shaken away
+> - Layouts without interactivity stay out of the client bundle, and runtime that a page does not use is tree-shaken away
 > - Marko Run supports the `QUERY` method and answers malformed requests with proper status codes
 > - More compiler diagnostics name the variable, the rule, and the fix
 > - Work is well underway on persisted pages, which keep browser state alive across navigations
@@ -146,9 +146,9 @@ The first render is ordinary Marko HTML, with the same markers a resumable page 
 
 ```html
 <main>
-  <h1>Store<!--M_$1 a--></h1>
-  <aside class="promo banner">Sale<!--M_$2 a--></aside><!--M_|1 b 2-->
-  <button>Count <!>0<!--M_$1 d--></button><!--M_$1 c-->
+  <h1>Store<!...></h1>
+  <aside class="promo banner">Sale<!...></aside><!...>
+  <button>Count <!>0<!...></button><!...>
 </main>
 <script>/* resume data */</script>
 ```

@@ -12,7 +12,7 @@
 <link>https://markojs.com/docs/newsletter/august-2026</link>
 <guid>https://markojs.com/docs/newsletter/august-2026</guid>
 <pubDate>Sat, 01 Aug 2026 00:00:00 GMT</pubDate>
-<description>Shorthand methods accept async, with parser, editor, and formatter support landing together Layouts without interactivity stay out of the client bundle, and runtime a page does not use is tree-shaken away Marko Run supports the QUERY method and answers malformed requests with proper status codes More compiler diagnostics name the variable, the rule, and the fix Work is well underway on persisted pages, which keep browser state alive across navigations</description>
+<description>Shorthand methods accept async, with parser, editor, and formatter support landing together Layouts without interactivity stay out of the client bundle, and runtime that a page does not use is tree-shaken away Marko Run supports the QUERY method and answers malformed requests with proper status codes More compiler diagnostics name the variable, the rule, and the fix Work is well underway on persisted pages, which keep browser state alive across navigations</description>
 </item>
 <item>
 <title>Marko in July 2026</title>
