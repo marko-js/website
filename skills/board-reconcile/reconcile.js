@@ -45,6 +45,7 @@ const EPIC_BY_REPO = {
   "language-server": "Language Tools",
   "htmljs-parser": "Language Tools",
   prettier: "Language Tools",
+  eslint: "Language Tools",
   "tree-sitter": "Language Tools",
   zed: "Language Tools",
   vite: "Integrations",
@@ -236,6 +237,31 @@ const prefixOf = (title) => {
   return m ? m[1] : null;
 };
 
+// Fallback for titles without a conventional-commit prefix. Ordered: the
+// first matching rule wins. Anything unmatched still defaults to Chore and is
+// listed by `check` for a person to read.
+const TASK_BY_TITLE = [
+  // agent-feedback backlog bookkeeping (adding or dropping items) is tooling work.
+  [/^agent-feedback:|\bagent-feedback item\b/i, "Chore"],
+  [
+    /^(docs?|cheatsheet|documentation)\b|^(document|note|say|record|explain|clarify)\b|\bwon't-fix\b|\bcheat ?sheet\b|\bdocs\b|\breadme\b/i,
+    "Docs",
+  ],
+  [/\b(sizes\.json|snapshots?|devDependency|fixtures?|ci)\b/i, "Chore"],
+  [
+    /^(fix|error|report|guard|escape|decode|keep|stop|forward|resolve|diagnose|disambiguate|bound|match|only|await|detect|correct|handle|prevent|avoid|preserve|restore|reject|mint|emit|hoist|name|drop|mark|decide)\b|\bfix(es)?\b/i,
+    "Fix",
+  ],
+  [
+    /^(add|support|suggest|serve|persisted pages|implement|introduce|allow|enable)\b/i,
+    "Feat",
+  ],
+];
+const taskFromTitle = (title) => {
+  for (const [re, task] of TASK_BY_TITLE) if (re.test(title ?? "")) return task;
+  return null;
+};
+
 function parseMonth(ym) {
   if (!/^\d{4}-\d{2}$/.test(ym ?? "")) {
     throw new Error("Expected a month as YYYY-MM, e.g. 2026-07");
@@ -357,8 +383,11 @@ function plan(merged, board, iterationTitle) {
       continue;
     }
     const prefix = prefixOf(pr.title);
-    const task = prefix ? TASK_BY_PREFIX[prefix] : null;
-    if (!task) unprefixed.push({ ref, title: pr.title });
+    let task = prefix ? TASK_BY_PREFIX[prefix] : null;
+    if (!task) {
+      task = taskFromTitle(pr.title);
+      unprefixed.push({ ref, title: pr.title, task: task ?? DEFAULT_TASK });
+    }
     const existing = board.byRef.get(ref);
     rows.push({
       ref,
@@ -434,12 +463,10 @@ function report(month, merged, board, planned, iterationTitle) {
   }
   if (unprefixed.length) {
     console.log(
-      `\n  ${unprefixed.length} title(s) with no conventional-commit prefix, defaulting to ${DEFAULT_TASK}:`,
+      `\n  ${unprefixed.length} title(s) with no recognized conventional-commit prefix (Task inferred from the title, else ${DEFAULT_TASK}):`,
     );
-    for (const u of unprefixed.slice(0, 40))
-      console.log(`    ${u.ref}\t${u.title}`);
-    if (unprefixed.length > 40)
-      console.log(`    ... and ${unprefixed.length - 40} more`);
+    for (const u of unprefixed)
+      console.log(`    ${u.task.padEnd(5)} ${u.ref}\t${u.title}`);
   }
   if (stale.length) {
     console.log(
