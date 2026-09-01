@@ -128,6 +128,50 @@ Most of the month's engineering went into persisted pages, a mode in which a pag
 
 The effect is that state in the browser survives while server-driven content updates around it. A counter keeps counting, an open menu stays open, and text in an input stays put, while the heading, the list, and the promo banner the server decides on all change underneath. There is no client-side router to adopt and no rendering logic to duplicate: templates are ordinary Marko, the compiler works out which structure the server drives and which the browser owns, and anything the patch cannot express faithfully falls back to a full navigation, so a page is never left half updated.
 
+Consider a page with a server-driven banner beside a client-side counter.
+
+```marko
+<let/count=0/>
+
+<main>
+  <h1>${input.title}</h1>
+  <if=input.promo>
+    <aside class="promo banner">${input.promo}</aside>
+  </if>
+  <button onClick() { count++ }>Count ${count}</button>
+</main>
+```
+
+The first render is ordinary HTML. On a normal navigation every later render is too: the server sends the whole document again and the counter starts over at zero. On a persisted page, after the user has clicked twice and the server drops the promo, the wire carries only this (debug output, with the template path shortened):
+
+```js
+{ "PatchText:#text/0": "Store!", "PatchBranch:#text/1": 0 }
+```
+
+The heading's text hole gets its new value and the branch is told to hide. `count` is never mentioned, because the browser owns it. When the promo comes back, the frame carries the branch's markup once, as a shell the browser can build from, along with the values for its holes:
+
+```js
+[
+  `template.marko_1*shell;D ;<aside class="promo banner"> </aside>`,
+  {
+    "PatchText:#text/0": "Store!",
+    "PatchBranch:#text/1": [{ "PatchText:#text/0": "Back" }, "template.marko_1*shell"],
+  },
+]
+```
+
+In optimized output the same two frames shrink to single-letter kinds and accessors, the same ones the resumed page already uses to find its nodes:
+
+```js
+{ ta: "Store!", bb: 0 }
+```
+
+```js
+[`a0;D ;<aside class="promo banner"> </aside>`, { ta: "Store!", bb: [{ ta: "Back" }, "a0"] }]
+```
+
+In the test this is taken from, three such frames together come to 122 bytes after brotli, against 311 for the initial HTML, and the counter reads 2 the whole way through. The format is still being worked on and will change before release.
+
 This is not available to try yet. The work lives on the [`persisted-pages`](https://github.com/marko-js/marko/tree/persisted-pages) branch, where August built out the patch protocol and the analysis behind it, and an experimental release is expected in September.
 
 ## Project Velocity
