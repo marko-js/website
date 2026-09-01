@@ -146,9 +146,9 @@ The first render is ordinary Marko HTML, with the same markers a resumable page 
 
 ```html
 <main>
-  <h1>Store<!--M_$1 a--></h1><!--M_[-->
-  <aside class="promo banner">Sale<!--M_$2 a--></aside>
-  <!--M_]1 b 2--><button>Count <!>0<!--M_$1 d--></button><!--M_$1 c-->
+  <h1>Store<!--M_$1 a--></h1>
+  <aside class="promo banner">Sale<!--M_$2 a--></aside><!--M_|1 b 2-->
+  <button>Count <!>0<!--M_$1 d--></button><!--M_$1 c-->
 </main>
 <script>/* resume data */</script>
 ```
