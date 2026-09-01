@@ -1,0 +1,27 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index af71211f1035532c423c59dce35fb15e84ed19a1..07463f0bfd441bf407b12f28f7a3e2e0a2620f39 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -435,6 +435,9 @@ var Builder = class {
+ 			start: range.start,
+ 			end: range.end
+ 		};
++		// The `async` keyword sits before the attr name, so the attr must start
++		// there or an exact print of the attr drops it.
++		if (range.async) parent.start = range.start;
+ 		parent.end = range.end;
+ 	}
+ 	onAttrSpread(range) {
+@@ -1207,7 +1210,11 @@ function printBody(path, opts, print) {
+ 	}
+ }
+ function printExact(path, opts) {
+-	return read(path.node, opts);
++	const { node } = path;
++	// A default attr's exact text starts with `async`, which needs a space
++	// from the tag name where a bare parameter list does not.
++	if (node.type === 10 && node.value?.type === 14 && node.value.async && isDefaultAttr(node)) return [" ", read(node, opts)];
++	return read(node, opts);
+ }
+ async function templateToDoc(toDoc, path, opts) {
+ 	const { expressions, quasis } = path.node;

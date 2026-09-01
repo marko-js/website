@@ -4,3 +4,6 @@ allowBuilds:
 
 # This repo depends on same-day marko releases; disable pnpm's release-age gate.
 minimumReleaseAge: 0
+
+patchedDependencies:
+  prettier-plugin-marko@4.1.0: patches/prettier-plugin-marko@4.1.0.patch
