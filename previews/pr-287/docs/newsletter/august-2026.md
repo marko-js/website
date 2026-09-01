@@ -124,7 +124,7 @@ Full details for every change are in the release notes of each package on [GitHu
 
 ## Coming Soon
 
-Most of the month's engineering went into persisted pages, a mode in which a page stays alive across navigations. When the URL changes, the server renders the next page as it always has, but instead of replacing the document it sends only what changed, and the browser patches the live page in place.
+Most of the month's engineering went into persisted pages, a mode in which a page stays alive across navigations. When the URL changes, the server renders the next page as it always has, but instead of replacing the document it sends only what changed, and the browser patches the live page in place. There is no HTML diff involved on either side. The compiler already knows every hole a server value can land in, so the server writes new values straight to those holes and the browser applies them straight to the nodes it already resumed, the same way an in-page update works today.
 
 The effect is that state in the browser survives while server-driven content updates around it. A counter keeps counting, an open menu stays open, and text in an input stays put, while the heading, the list, and the promo banner the server decides on all change underneath. There is no client-side router to adopt and no rendering logic to duplicate: templates are ordinary Marko, the compiler works out which structure the server drives and which the browser owns, and anything the patch cannot express faithfully falls back to a full navigation, so a page is never left half updated.
 
