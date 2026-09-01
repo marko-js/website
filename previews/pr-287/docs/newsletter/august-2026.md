@@ -170,7 +170,7 @@ In optimized output the same two frames shrink to single-letter kinds and access
 [`a0;D ;<aside class="promo banner"> </aside>`, { ta: "Store!", bb: [{ ta: "Back" }, "a0"] }]
 ```
 
-In the test this is taken from, three such frames together come to 122 bytes after brotli, against 311 for the initial HTML, and the counter reads 2 the whole way through. The format is still being worked on and will change before release.
+Later renders cost a fraction of the HTML they replace, and nothing else about the page changes to get there. It is still streamed and resumed the same way, updates stay as fine grained as they are today, and the client bundle grows by only a small amount to apply the frames. The format is still being worked on and will change before release.
 
 This is not available to try yet. The work lives on the [`persisted-pages`](https://github.com/marko-js/marko/tree/persisted-pages) branch, where August built out the patch protocol and the analysis behind it, and an experimental release is expected in September.
 
