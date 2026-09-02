@@ -1,4 +1,4 @@
-# `<let>` vs `<const>` vs `static`
+# `<let>` vs `<const>`
 
 > [!TLDR]
 >
