@@ -66,6 +66,31 @@ main {
     -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
     line-height: 1.2em;
+
+    code {
+      background: linear-gradient(
+        to bottom,
+        var(--section-color),
+        color-mix(in srgb, var(--section-color-alt), var(--section-color))
+      );
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      padding-left: 0.75ch;
+      padding-right: 0.75ch;
+
+      &::before {
+        content: "";
+        position: absolute;
+        background-color: var(--section-color-alt-dim);
+        inset: 0;
+        border-radius: 1em;
+        z-index: -1;
+      }
+      &::after {
+        content: "";
+      }
+    }
   }
 
   h2 {
