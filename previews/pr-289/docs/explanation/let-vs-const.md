@@ -6,7 +6,7 @@
 > - [`<const>`](../reference/core-tag.md#const): derived value, pure, recomputes with dependencies
 > - [`static const`](../reference/language.md#static): module-level constant, initialized once, not reactive
 
-In JavaScript, `let` and `const` differ only in whether a binding may be reassigned. Marko borrows both keywords, as the [`<let>`](../reference/core-tag.md#let) and [`<const>`](../reference/core-tag.md#const) tags and the [`static`](../reference/language.md#static) statement prefix, and gives each a distinct role in the [reactive system](../reference/reactivity.md). The choice comes down to one question: when should this value change, and what should change with it?
+A `.marko` template has a few ways to introduce a variable, and the choice describes how the value updates: a [`<let>`](../reference/core-tag.md#let) is reassigned and everything reading it [reacts](../reference/reactivity.md), while a [`<const>`](../reference/core-tag.md#const) recomputes when its dependencies change. Sometimes a reactive tag variable is not required at all; a value that never changes belongs in a [`static`](../reference/language.md#static) statement instead, evaluated once when the module loads.
 
 ## Mutable State
 
