@@ -56,6 +56,29 @@ main {
   }
 
   h1 {
+    margin-bottom: 1rem;
+    line-height: 1.2em;
+  }
+
+  h2 {
+    margin-top: 1.5em;
+  }
+
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 1em;
+    margin-bottom: 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--section-color);
     background: linear-gradient(
       to bottom,
@@ -64,15 +87,9 @@ main {
     );
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
-    line-height: 1.2em;
 
     code {
-      background: linear-gradient(
-        to bottom,
-        var(--section-color),
-        color-mix(in srgb, var(--section-color-alt), var(--section-color))
-      );
+      background: inherit;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       position: relative;
@@ -91,55 +108,9 @@ main {
         content: "";
       }
     }
-  }
-
-  h2 {
-    margin-top: 1.5em;
-  }
-
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: var(--section-color);
-    background: linear-gradient(
-      to bottom,
-      var(--section-color),
-      color-mix(in srgb, var(--section-color-alt), var(--section-color))
-    );
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-top: 1em;
-    margin-bottom: 1rem;
 
     > a {
       color: var(--section-color);
-
-      code {
-        background: linear-gradient(
-          to bottom,
-          var(--section-color),
-          color-mix(in srgb, var(--section-color-alt), var(--section-color))
-        );
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        position: relative;
-        padding-left: 0.75ch;
-        padding-right: 0.75ch;
-
-        &::before {
-          content: "";
-          position: absolute;
-          background-color: var(--section-color-alt-dim);
-          inset: 0;
-          border-radius: 1em;
-          z-index: -1;
-        }
-        &::after {
-          content: "";
-        }
-      }
 
       &:hover {
         color: var(--section-color);
