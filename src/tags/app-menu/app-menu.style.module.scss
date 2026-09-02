@@ -62,6 +62,17 @@ $fixed-controls-height: 8rem;
     white-space: nowrap;
   }
 
+  code {
+    color: inherit;
+    background-color: transparent;
+    padding: 0;
+
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
   a {
     color: var(--color-foreground);
     font-weight: 400;
