@@ -1,7 +1,7 @@
 @use "app/styles/sticky" as sticky;
 @use "app/styles/colors" as colors;
 
-$fixed-controls-height: 8rem;
+$fixed-controls-height: 5.5rem;
 
 .menu {
   position: sticky;
@@ -131,9 +131,9 @@ $fixed-controls-height: 8rem;
 
       ul {
         li {
-          border-bottom: 3px solid var(--color-red-dim);
+          border-bottom: 1px solid var(--color-red-dim);
           width: 100%;
-          padding: 1rem 0;
+          padding: 0.5rem 0;
         }
 
         li:last-of-type {
@@ -149,8 +149,8 @@ $fixed-controls-height: 8rem;
 
     strong {
       display: block;
-      font-size: 1.5rem;
-      margin: 1.5rem 0;
+      font-size: 1.125rem;
+      margin: 0.75rem 0 0.25rem;
     }
   }
   > ul {
@@ -215,6 +215,10 @@ $fixed-controls-height: 8rem;
     margin: 0;
     padding: 0 var(--root-gap);
     height: $fixed-controls-height;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.25rem;
     justify-content: center;
   }
 }
