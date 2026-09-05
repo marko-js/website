@@ -1,7 +1,7 @@
 @use "app/styles/sticky" as sticky;
 @use "app/styles/colors" as colors;
 
-$fixed-controls-height: 8rem;
+$fixed-controls-height: 5.5rem;
 
 .menu {
   position: sticky;
@@ -129,15 +129,29 @@ $fixed-controls-height: 8rem;
       transform: none !important;
       width: 100%;
 
-      ul {
-        li {
-          border-bottom: 3px solid var(--color-red-dim);
-          width: 100%;
-          padding: 1rem 0;
-        }
+      > li {
+        border-bottom: 1px solid var(--color-red-dim);
+        padding-bottom: 1rem;
 
-        li:last-of-type {
+        &:last-of-type {
           border-bottom: 0;
+        }
+      }
+
+      ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        column-gap: 0.5rem;
+
+        li {
+          width: auto;
+          padding: 0.375rem 0;
+
+          &:not(:last-of-type)::after {
+            content: "·";
+            color: var(--color-gray);
+            margin-left: 0.5rem;
+          }
         }
       }
     }
@@ -145,12 +159,17 @@ $fixed-controls-height: 8rem;
     a {
       border: none;
       padding: 0;
+
+      &[aria-current="true"] {
+        color: var(--color-red);
+        font-weight: 500;
+      }
     }
 
     strong {
       display: block;
-      font-size: 1.5rem;
-      margin: 1.5rem 0;
+      font-size: 1.25rem;
+      margin: 0.75rem 0 0.25rem;
     }
   }
   > ul {
@@ -215,6 +234,10 @@ $fixed-controls-height: 8rem;
     margin: 0;
     padding: 0 var(--root-gap);
     height: $fixed-controls-height;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.25rem;
     justify-content: center;
   }
 }
