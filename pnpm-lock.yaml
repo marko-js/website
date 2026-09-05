@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  prettier-plugin-marko@4.1.0: 089ff4ed37bdce099d10eaf7fb0624bc82222c7a3442febb8feb207c3e7cabf0
+
 importers:
 
   .:
@@ -146,7 +149,7 @@ importers:
         version: 3.9.6
       prettier-plugin-marko:
         specifier: ^4.1.0
-        version: 4.1.0
+        version: 4.1.0(patch_hash=089ff4ed37bdce099d10eaf7fb0624bc82222c7a3442febb8feb207c3e7cabf0)
       prettier-plugin-packagejson:
         specifier: ^3.0.2
         version: 3.0.2(prettier@3.9.6)
@@ -6023,7 +6026,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prettier-plugin-marko@4.1.0:
+  prettier-plugin-marko@4.1.0(patch_hash=089ff4ed37bdce099d10eaf7fb0624bc82222c7a3442febb8feb207c3e7cabf0):
     dependencies:
       htmljs-parser: 5.15.0
 
