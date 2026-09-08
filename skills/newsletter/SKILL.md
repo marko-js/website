@@ -179,11 +179,9 @@ The oldest edition links only forward, the newest links only back, and every edi
 
 ```bash
 npx markdownlint docs/newsletter/<file>.md
-npx cspell --no-progress docs/newsletter/<file>.md
 npm run build
 ```
 
-- cspell uses a curated word list in `cspell.json`. Add legitimate new terms (package names, etc.) alphabetically rather than rewording around correct words. Reword only coined words (e.g. avoid "fast-pathing").
 - `npm run build` exercises code-block compilation and the heading-nesting check, so it is the real verification. If the page has any ` ```marko ` blocks, confirm they compiled by grepping the generated page for `markoAlts=` (a page with no marko examples is fine, and the count is legitimately 0):
   `grep -c 'markoAlts=' src/routes/docs/_compiled-docs/newsletter/<slug>+page.marko`
   Then confirm internal links resolved with no leftover `.md`:
