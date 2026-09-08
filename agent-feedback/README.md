@@ -60,6 +60,6 @@ The markojs.com site: docs as markdown under `docs/`, a `@marko/run` app under `
 
 **Guard tests.** `pnpm test` (`vitest run`). A docs-structure claim (every page indexed, every anchor resolving) is best guarded by a test that walks `docs/**/*.md`, not by a snapshot of one page.
 
-**Pre-ship.** `pnpm run lint` (markdownlint over `docs/**/*.md`, then cspell) and `pnpm run type-check` (`marko-type-check`). `pnpm run build` when the change can affect generated output.
+**Pre-ship.** `pnpm run lint` (markdownlint over `docs/**/*.md`) and `pnpm run type-check` (`marko-type-check`). `pnpm run build` when the change can affect generated output.
 
-**Gotchas.** `pnpm run lint` runs cspell, which has a Node engine floor above some default installs and aborts on the version check before checking anything; the husky pre-commit hook hits the same wall. Never document a known Marko bug as intended behavior: file the defect instead. Never use an em dash in docs, and grep `' - '` too, since a spaced hyphen doing the same job is the same problem.
+**Gotchas.** Never document a known Marko bug as intended behavior: file the defect instead. Never use an em dash in docs, and grep `' - '` too, since a spaced hyphen doing the same job is the same problem.
