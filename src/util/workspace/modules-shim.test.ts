@@ -9,7 +9,9 @@ import { setResolveFileSystem } from "./modules-shim";
 function libraryWorkspace() {
   return new FileSystem({
     [`${rootDir}marko.json`]: JSON.stringify({ "tags-dir": "." }),
-    [`${rootDir}package.json`]: JSON.stringify({ dependencies: { "ui-lib": "1.0.0" } }),
+    [`${rootDir}package.json`]: JSON.stringify({
+      dependencies: { "ui-lib": "1.0.0" },
+    }),
     [`${rootDir}index.marko`]: "<ui-badge/>",
     [`${rootDir}node_modules/ui-lib/package.json`]: JSON.stringify({
       name: "ui-lib",
@@ -20,7 +22,8 @@ function libraryWorkspace() {
       "taglib-id": "ui-lib",
       "tags-dir": "./tags",
     }),
-    [`${rootDir}node_modules/ui-lib/tags/ui-badge/index.marko`]: "<span>badge</span>",
+    [`${rootDir}node_modules/ui-lib/tags/ui-badge/index.marko`]:
+      "<span>badge</span>",
   });
 }
 
