@@ -55,3 +55,29 @@ describe("modules-shim", () => {
     expect(code).toContain("badge");
   });
 });
+
+describe("modules-shim deep importers", () => {
+  // A module inside one installed package importing from another installed
+  // package: the node_modules walk has to reach the workspace root's
+  // `/node_modules` even though the importer is nested several directories
+  // deep (this is how a component library's `style.js` pulls in its peer
+  // dependency's CSS).
+  it("resolves a peer package from inside node_modules", () => {
+    const fs = libraryWorkspace();
+    fs.files["/node_modules/ui-lib/tags/ui-badge/style.js"] =
+      'import "theme/badge";';
+    fs.files["/node_modules/theme/package.json"] = JSON.stringify({
+      name: "theme",
+      version: "1.0.0",
+      main: "./index.js",
+    });
+    fs.files["/node_modules/theme/badge.css"] = ".badge{}";
+    setResolveFileSystem(fs);
+    expect(
+      markoModules.tryResolve!(
+        "theme/badge.css",
+        "/node_modules/ui-lib/tags/ui-badge",
+      ),
+    ).toBe("/node_modules/theme/badge.css");
+  });
+});

@@ -86,6 +86,9 @@ export function mainPlugin({
         silent: true,
         fs: resolveFs,
         from: importer || mainId,
+        // See modules-shim.ts: keeps the workspace root's `/node_modules` in
+        // the walk for deep importers; "//" itself is never reached.
+        root: "//",
         exts: [".js", ".json", ".css"],
       });
 

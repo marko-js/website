@@ -39,6 +39,13 @@ function tryResolve(id: string, from = "/") {
   try {
     const resolved = resolveSync(id, {
       from: `${from.endsWith("/") ? from : `${from}/`}_`,
+      // `resolveSync` stops its node_modules walk once the directory reaches
+      // `root`, so with the default root of "/" a deep importer never probes
+      // the workspace root's own `/node_modules`. "//" is never reached
+      // (termination happens at "/" via the parent check), which keeps the
+      // root directory in the walk; the extra slashes it introduces are
+      // collapsed by `normalize`.
+      root: "//",
       silent: true,
       fs: resolveFS,
     });
