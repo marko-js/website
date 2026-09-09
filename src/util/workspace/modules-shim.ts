@@ -2,7 +2,7 @@ import markoModules from "@marko/compiler/modules";
 import lassoPackageRoot from "lasso-package-root";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 
-import type { FileSystem } from "./fs";
+import { rootDir, type FileSystem } from "./fs";
 
 let currentFS: FileSystem | undefined;
 
@@ -10,25 +10,16 @@ export function setResolveFileSystem(fs: FileSystem) {
   currentFS = fs;
 }
 
-// `resolveSync` joins paths with plain string concatenation, so resolving a
-// bare specifier from the workspace root produces `//node_modules/...`. A real
-// filesystem collapses the duplicate slash; the virtual file map keys are
-// exact strings, so it has to be collapsed here or nothing under
-// `node_modules` ever resolves.
-function normalize(file: string) {
-  return file.replace(/\/{2,}/g, "/");
-}
-
 const resolveFS: ResolveOptions["fs"] = {
   isFile(file: string) {
-    return !!currentFS && normalize(file) in currentFS.files;
+    return !!currentFS && file in currentFS.files;
   },
   readPkg(file: string) {
-    return JSON.parse(currentFS!.files[normalize(file)] || "");
+    return JSON.parse(currentFS!.files[file] || "");
   },
 };
 
-function tryResolve(id: string, from = "/") {
+function tryResolve(id: string, from = rootDir) {
   if (!currentFS) return undefined;
   // `resolveSync` only understands relative and bare specifiers, so an absolute
   // path -- which is what the taglib records for a discovered tag -- has to be
@@ -39,24 +30,17 @@ function tryResolve(id: string, from = "/") {
   try {
     const resolved = resolveSync(id, {
       from: `${from.endsWith("/") ? from : `${from}/`}_`,
-      // `resolveSync` stops its node_modules walk once the directory reaches
-      // `root`, so with the default root of "/" a deep importer never probes
-      // the workspace root's own `/node_modules`. "//" is never reached
-      // (termination happens at "/" via the parent check), which keeps the
-      // root directory in the walk; the extra slashes it introduces are
-      // collapsed by `normalize`.
-      root: "//",
       silent: true,
       fs: resolveFS,
     });
-    return typeof resolved === "string" ? normalize(resolved) : undefined;
+    return typeof resolved === "string" ? resolved : undefined;
   } catch {
     return undefined;
   }
 }
 
-markoModules.cwd = "/";
-markoModules.root = "/";
+markoModules.cwd = rootDir;
+markoModules.root = rootDir;
 markoModules.tryResolve = tryResolve;
 markoModules.resolve = (id, from) => {
   const resolved = tryResolve(id, from);

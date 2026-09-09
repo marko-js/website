@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 
 import { attachErrorFile, normalizeErrors, parseError } from "./compile-error";
+import { rootDir } from "./workspace/fs";
 
 /** Shaped like the `CompileError` the Marko compiler raises. */
 function compileError(
@@ -18,7 +19,7 @@ function compileError(
   });
 }
 
-const FILE = "/index.marko";
+const FILE = `${rootDir}index.marko`;
 
 test("reads position and message off the error rather than its frame text", () => {
   const files = { [FILE]: "<div>\n<span>\n" };
@@ -84,7 +85,7 @@ test("gives each error in an aggregate its own entry", () => {
 });
 
 test("normalizes a Rollup-shaped error, which reports a flat position", () => {
-  const file = "/util.js";
+  const file = `${rootDir}util.js`;
   const files = { [file]: "const a = 1;\nexport default a(\n" };
   const err = Object.assign(new Error("Unexpected token"), {
     name: "SyntaxError",

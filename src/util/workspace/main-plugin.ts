@@ -39,18 +39,12 @@ export function mainPlugin({
     writeFile: unsupported,
   };
 
-  // `resolveSync` joins paths with plain string concatenation, so resolving a
-  // bare specifier from a file at the workspace root produces
-  // `//node_modules/...`. The virtual file map keys are exact strings, so the
-  // duplicate slash has to be collapsed for the lookup (and in the resolved id
-  // handed back to rollup) or nothing under `node_modules` resolves.
-  const normalize = (file: string) => file.replace(/\/{2,}/g, "/");
   const resolveFs: ResolveOptions["fs"] = {
     isFile(file: string) {
-      return normalize(file) in fs.files;
+      return file in fs.files;
     },
     readPkg(file: string) {
-      return JSON.parse(fs.files[normalize(file)] || "");
+      return JSON.parse(fs.files[file] || "");
     },
   };
 
@@ -86,9 +80,6 @@ export function mainPlugin({
         silent: true,
         fs: resolveFs,
         from: importer || mainId,
-        // See modules-shim.ts: keeps the workspace root's `/node_modules` in
-        // the walk for deep importers; "//" itself is never reached.
-        root: "//",
         exts: [".js", ".json", ".css"],
       });
 
@@ -97,7 +88,7 @@ export function mainPlugin({
       }
 
       if (resolved) {
-        return normalize(resolved) + (suffix || "");
+        return resolved + (suffix || "");
       }
     },
     load(id) {

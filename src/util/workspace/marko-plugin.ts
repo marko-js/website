@@ -6,6 +6,7 @@ import runtimeFiles from "virtual:marko-runtime-files";
 
 import type { Workspace } from "../workspace";
 import { attachErrorFile } from "../compile-error";
+import { rootDir } from "./fs";
 import { setResolveFileSystem } from "./modules-shim";
 
 declare module "../workspace" {
@@ -43,7 +44,7 @@ function resolveRuntimeModule(id: string, importer?: string) {
     NODE_ENV: "production",
   },
   cwd() {
-    return "/";
+    return rootDir;
   },
 };
 
