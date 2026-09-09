@@ -39,12 +39,18 @@ export function mainPlugin({
     writeFile: unsupported,
   };
 
+  // `resolveSync` joins paths with plain string concatenation, so resolving a
+  // bare specifier from a file at the workspace root produces
+  // `//node_modules/...`. The virtual file map keys are exact strings, so the
+  // duplicate slash has to be collapsed for the lookup (and in the resolved id
+  // handed back to rollup) or nothing under `node_modules` resolves.
+  const normalize = (file: string) => file.replace(/\/{2,}/g, "/");
   const resolveFs: ResolveOptions["fs"] = {
     isFile(file: string) {
-      return file in fs.files;
+      return normalize(file) in fs.files;
     },
     readPkg(file: string) {
-      return JSON.parse(fs.files[file] || "");
+      return JSON.parse(fs.files[normalize(file)] || "");
     },
   };
 
@@ -88,7 +94,7 @@ export function mainPlugin({
       }
 
       if (resolved) {
-        return resolved + (suffix || "");
+        return normalize(resolved) + (suffix || "");
       }
     },
     load(id) {

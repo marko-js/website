@@ -10,12 +10,21 @@ export function setResolveFileSystem(fs: FileSystem) {
   currentFS = fs;
 }
 
+// `resolveSync` joins paths with plain string concatenation, so resolving a
+// bare specifier from the workspace root produces `//node_modules/...`. A real
+// filesystem collapses the duplicate slash; the virtual file map keys are
+// exact strings, so it has to be collapsed here or nothing under
+// `node_modules` ever resolves.
+function normalize(file: string) {
+  return file.replace(/\/{2,}/g, "/");
+}
+
 const resolveFS: ResolveOptions["fs"] = {
   isFile(file: string) {
-    return !!currentFS && file in currentFS.files;
+    return !!currentFS && normalize(file) in currentFS.files;
   },
   readPkg(file: string) {
-    return JSON.parse(currentFS!.files[file] || "");
+    return JSON.parse(currentFS!.files[normalize(file)] || "");
   },
 };
 
@@ -33,7 +42,7 @@ function tryResolve(id: string, from = "/") {
       silent: true,
       fs: resolveFS,
     });
-    return typeof resolved === "string" ? resolved : undefined;
+    return typeof resolved === "string" ? normalize(resolved) : undefined;
   } catch {
     return undefined;
   }
