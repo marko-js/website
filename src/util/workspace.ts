@@ -200,7 +200,6 @@ export async function update(
       const nodeModules = await fetchNodeModules(packageJson);
       if (signal.aborted) return;
       versions = nodeModules.versions;
-      // Tarball paths are workspace-relative (`/node_modules/...`).
       for (const path in nodeModules.files) {
         fs.files[rootDir.slice(0, -1) + path] = nodeModules.files[path];
       }

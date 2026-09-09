@@ -1,10 +1,4 @@
-// The workspace lives one directory below the virtual filesystem's root
-// rather than at `/` itself. Node resolution walks parent directories with
-// `dir + "/node_modules/" + name` and stops once `dir` reaches the root, so a
-// workspace at `/` is the one location whose own `node_modules` is both
-// mis-joined (`//node_modules/...`) and skipped entirely for imports coming
-// from nested modules. At `/app/` every probe is a well-formed path that gets
-// checked before the walk terminates.
+// Not `/`: resolve-sync never probes the filesystem root's node_modules.
 export const rootDir = "/app/";
 
 export class FileSystem {

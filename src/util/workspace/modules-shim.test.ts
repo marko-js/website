@@ -6,9 +6,6 @@ import markoModules from "@marko/compiler/modules";
 import { FileSystem, rootDir } from "./fs";
 import { setResolveFileSystem } from "./modules-shim";
 
-// A workspace with a component library installed under `node_modules`, the
-// shape `fetchNodeModules` produces for a package.json dependency that ships
-// a `marko.json`.
 function libraryWorkspace() {
   return new FileSystem({
     [`${rootDir}marko.json`]: JSON.stringify({ "tags-dir": "." }),
@@ -54,12 +51,6 @@ describe("modules-shim", () => {
 });
 
 describe("modules-shim deep importers", () => {
-  // A module inside one installed package importing from another installed
-  // package: the node_modules walk has to reach the workspace's own
-  // `node_modules` even though the importer is nested several directories
-  // deep (this is how a component library's `style.js` pulls in its peer
-  // dependency's CSS). Depends on the workspace not sitting at `/` -- see
-  // the `rootDir` comment in fs.ts.
   it("resolves a peer package from inside node_modules", () => {
     const fs = libraryWorkspace();
     fs.files[`${rootDir}node_modules/ui-lib/tags/ui-badge/style.js`] =
