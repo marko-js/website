@@ -8,7 +8,7 @@ site: src/util/workspace/fs.ts › rootDir
 # Upstream resolve-sync cannot walk node_modules into the filesystem root
 
 `resolve-sync@1.2.2` terminates its package walk with `while (dir !==
-root)` *before* probing the root directory, joins candidate paths by
+root)` _before_ probing the root directory, joins candidate paths by
 concatenation (yielding `//node_modules/...` when a walk starts at
 `/`), and coerces an explicit `root: ""` back to `/` via `opts.root ||
 "/"`. The playground sidesteps all three by hosting the virtual
