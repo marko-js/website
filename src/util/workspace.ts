@@ -13,7 +13,7 @@ import { markoPlugin } from "./workspace/marko-plugin";
 import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
-import { FileSystem } from "./workspace/fs";
+import { FileSystem, rootDir } from "./workspace/fs";
 import { prettyPrintHTML } from "./pretty-print-html";
 
 export interface File {
@@ -48,11 +48,10 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-// Files sit at the root of the virtual filesystem, so a playground file is at
+// Files sit directly in the workspace directory, so a playground file is at
 // the path the author typed rather than under scaffolding they never asked
 // for. `marko.json` is what buys that: without it the compiler only discovers
 // custom tags inside a directory literally named `tags` or `components`.
-const rootDir = "/";
 const packageJsonPath = `${rootDir}package.json`;
 const markoJsonPath = `${rootDir}marko.json`;
 const markoJson = JSON.stringify({ "tags-dir": "." });
@@ -202,7 +201,7 @@ export async function update(
       if (signal.aborted) return;
       versions = nodeModules.versions;
       for (const path in nodeModules.files) {
-        fs.files[path] = nodeModules.files[path];
+        fs.files[rootDir.slice(0, -1) + path] = nodeModules.files[path];
       }
     }
 

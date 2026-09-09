@@ -12,6 +12,8 @@
  * carets on a real grid, and turn the links into links.
  */
 
+import { rootDir } from "./workspace/fs";
+
 /** `at <file>:<line>:<col>` */
 const LOCATION_ROW = /^\s*at (.+?):(\d+):(\d+)\s*$/;
 /** `> 1 | <source>` for the offending line, `  2 | <source>` for context. */
@@ -218,9 +220,9 @@ function numberOr(value: unknown, fallback: number) {
   return typeof value === "number" ? value : fallback;
 }
 
-/** Workspace paths are absolute; the leading slash is noise in the header. */
+/** Workspace paths are absolute; the workspace prefix is noise in the header. */
 function displayPath(file: string) {
-  return file.replace(/^\//, "");
+  return file.startsWith(rootDir) ? file.slice(rootDir.length) : file;
 }
 
 export function parseError(

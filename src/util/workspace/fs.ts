@@ -1,3 +1,6 @@
+// Not `/`: resolve-sync never probes the filesystem root's node_modules.
+export const rootDir = "/app/";
+
 export class FileSystem {
   constructor(public files: Record<string, string>) {}
   statSync(entry: string) {

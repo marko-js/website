@@ -2,7 +2,7 @@ import markoModules from "@marko/compiler/modules";
 import lassoPackageRoot from "lasso-package-root";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 
-import type { FileSystem } from "./fs";
+import { rootDir, type FileSystem } from "./fs";
 
 let currentFS: FileSystem | undefined;
 
@@ -19,7 +19,7 @@ const resolveFS: ResolveOptions["fs"] = {
   },
 };
 
-function tryResolve(id: string, from = "/") {
+function tryResolve(id: string, from = rootDir) {
   if (!currentFS) return undefined;
   // `resolveSync` only understands relative and bare specifiers, so an absolute
   // path -- which is what the taglib records for a discovered tag -- has to be
@@ -39,8 +39,8 @@ function tryResolve(id: string, from = "/") {
   }
 }
 
-markoModules.cwd = "/";
-markoModules.root = "/";
+markoModules.cwd = rootDir;
+markoModules.root = rootDir;
 markoModules.tryResolve = tryResolve;
 markoModules.resolve = (id, from) => {
   const resolved = tryResolve(id, from);
