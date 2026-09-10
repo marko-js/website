@@ -15,6 +15,7 @@ client import highlighter from "app/util/shiki";
 client import "terser";
 client import { clearLogs, update, type File } from "app/util/workspace";
 import { bytesToUnits } from "app/util/sizes";
+import { rootDir } from "app/util/workspace/fs";
 import { styleToClass } from "app/util/style-to-class";
 import styles from "./result.style.module.scss";
 export interface Input {
@@ -118,11 +119,11 @@ const/compiledCode=(() => {
     switch (outputType) {
       case "dom": {
         return debug
-          ? ws.markoCompiled?.dom?.[`/${selectedFile}`]?.code
-          : ws.previewModules?.[`/${selectedFile}`]?.code;
+          ? ws.markoCompiled?.dom?.[rootDir + selectedFile]?.code
+          : ws.previewModules?.[rootDir + selectedFile]?.code;
       }
       case "html":
-        return ws.markoCompiled?.html?.[`/${selectedFile}`]?.code;
+        return ws.markoCompiled?.html?.[rootDir + selectedFile]?.code;
       case "previewJS":
         return ws.previewJS;
       case "previewCSS":
