@@ -88,7 +88,8 @@ function lspDiagnostics(client: LspClient, path: string) {
             from,
             to: to > from ? to : from,
             severity: SEVERITY[d.severity ?? 1] ?? "error",
-            message: d.message,
+            // LSP 3.18 widened a diagnostic message to markup.
+            message: markupToMarkdown(d.message),
             source: d.source,
             actions: actions?.length ? actions : undefined,
           };
@@ -191,7 +192,11 @@ function applyWorkspaceEdit(
   } else if (edit.documentChanges) {
     for (const change of edit.documentChanges) {
       if ("textDocument" in change && change.textDocument.uri === uri) {
-        edits = (edits ?? []).concat(change.edits);
+        // `SnippetTextEdit`s carry a snippet rather than plain `newText`;
+        // CodeMirror has no equivalent, so they are skipped.
+        edits = (edits ?? []).concat(
+          change.edits.filter((e): e is TextEdit => "newText" in e),
+        );
       }
     }
   }
