@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
+  <g fill="#4d2b31" stroke="#4d2b31" stroke-width="5" stroke-linecap="round">
+    <path d="M-40 130q-6 150 10 300" fill="none"></path>
+    <path d="M-30 430q-13-7-26 12t-5 26q5 4 28-24 8-11 3-14"></path>
+    <path d="M-10 130q-2 90 8 164 32-30 70-50" stroke-linejoin="round" fill="none"></path>
+    <path d="M68 244q-5 14 17 23t26 0q3-6-28-23-12-6-15-0"></path>
+  </g>
+
+  <path fill="url(#a)" d="M-130-140h86c7 0 10-9 8-13s-10-12-10-28c0-22 19-46 46-46s46 24 46 46c0 16-8 24-10 28s1 13 8 13h86a10 10 0 0 1 10 10v84c0 3-3 5-6 3s-10-9-30-9C83-52 53-36 53 0s30 52 51 52c20 0 27-7 30-9s6 0 6 3v84a10 10 0 0 1-10 10h-260a10 10 0 0 1-10-10v-260a10 10 0 0 1 10-10"/>
+  <defs>
+    <linearGradient id="a" gradientTransform="rotate(70)">
+      <stop offset="5%" stop-color="#ff5467"/>
+      <stop offset="95%" stop-color="#f23f67"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(-110 70)">
+    <circle r="43" fill="#fff"/>
+    <path d="M18-12q6-10 16-10t14 8 0 17-30 28Q-8 12-12 3t0-17 14-8 16 10">
+      <animateTransform attributeName="transform" dur="5s" keyTimes="0; 0.75; 0.8; 0.85; 0.9; 0.95; 1" repeatCount="indefinite" type="scale" values="1; 1; 0.9; 1.15; 1.05; 1.15; 1"/>
+    </path>
+  </g>
+  <g transform="translate(-10 70)">
+    <circle r="43" fill="#fff"/>
+    <path d="M18-12q6-10 16-10t14 8 0 17-30 28Q-8 12-12 3t0-17 14-8 16 10">
+      <animateTransform attributeName="transform" dur="5s" keyTimes="0; 0.75; 0.8; 0.85; 0.9; 0.95; 1" repeatCount="indefinite" type="scale" values="1; 1; 0.9; 1.15; 1.05; 1.15; 1"/>
+    </path>
+  </g>
+  <path fill="#4d2b31" d="m50-140 13-8q-14-30 6-50 71 19 96 82 17-14 28 0 6 9 1 16-4 4-11-2-4-3-13 0 26 101 0 115-13 6-21-13-56-123-99-140"/>
+</svg>
