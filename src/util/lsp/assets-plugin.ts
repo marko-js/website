@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
@@ -13,12 +14,30 @@ import type { Plugin } from "vite";
 // `project-defaults` (`Project.setDefaultTypePaths`).
 const VIRTUAL_ID = "virtual:marko-lsp-assets";
 
-// The website's node_modules (flat install). Resolving package directories from
-// here avoids `require.resolve("<pkg>/package.json")`, which fails for packages
-// whose `exports` don't expose `./package.json` (eg typescript).
 const lspDir = path.dirname(fileURLToPath(import.meta.url));
-const nodeModules = path.resolve(lspDir, "../../../node_modules");
-const pkgDir = (name: string) => path.join(nodeModules, ...name.split("/"));
+
+/**
+ * Directory an installed package lives in. Resolved through Node rather than
+ * joined onto a `node_modules` path: pnpm only links direct dependencies at the
+ * top level, so a transitive package is reachable only from the dependent that
+ * pulls it in (pass that package's directory as `from`).
+ */
+function pkgDir(name: string, from = lspDir): string {
+  const { resolve } = createRequire(path.join(from, "index.js"));
+  try {
+    return path.dirname(resolve(`${name}/package.json`));
+  } catch {
+    // Packages whose `exports` hide `./package.json` (eg typescript): walk up
+    // from the resolved entry point until the manifest turns up.
+    let dir = path.dirname(resolve(name));
+    for (;;) {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+      const parent = path.dirname(dir);
+      if (parent === dir) throw new Error(`cannot locate package "${name}"`);
+      dir = parent;
+    }
+  }
+}
 
 // Node builtins the language server (and its bundled deps) import, mapped to the
 // worker-local browser stand-ins in `node-shims/`. Applied only inside browser
@@ -63,23 +82,12 @@ export function markoLspResolve(): Plugin {
   };
 }
 
-// Node builtins whose browser shims the pre-bundled `@marko/compiler` needs at
-// dependency-optimization time (see `markoLspOptimizeShims`). Only the `fs`
-// family: the compiler's taglib finder scans the disk synchronously for sibling
-// `.marko` tags, and the optimizer otherwise externalizes `fs` to a stub that
-// throws, so discovery silently finds nothing.
-const OPTIMIZE_SHIMS: Record<string, string> = {
-  fs: shim("fs.ts"),
-  "node:fs": shim("fs.ts"),
-  "fs/promises": shim("fs-promises.ts"),
-  "node:fs/promises": shim("fs-promises.ts"),
-};
-
 /**
- * Point the dependency optimizer's Node-builtin resolution at the browser
+ * Point the dependency optimizer's Node-builtin resolution at the same browser
  * shims. The optimizer (dev pre-bundle) runs before `markoLspResolve`'s
- * `resolveId` hook and externalizes builtins to throwing stubs, so the bundled
- * `@marko/compiler` would otherwise get an empty `fs`. Registered as an
+ * `resolveId` hook and externalizes builtins to stubs that throw on use, so a
+ * pre-bundled language server would get an empty `fs` for the compiler's taglib
+ * scan and a `url` whose `fileURLToPath` is not a function. Registered as an
  * `optimizeDeps.rolldownOptions` plugin (client optimizer only, so the Node
  * server build is untouched); the production build has no optimizer and relies
  * on `markoLspResolve` instead. The shared virtual disk survives being bundled
@@ -89,7 +97,7 @@ export function markoLspOptimizeShims() {
   return {
     name: "marko-lsp-optimize-shims",
     resolveId(id: string) {
-      return OPTIMIZE_SHIMS[id];
+      return WORKER_SHIMS[id];
     },
   };
 }
@@ -102,22 +110,23 @@ export function markoLspAssets(): Plugin {
     },
     load(id) {
       if (id !== "\0" + VIRTUAL_ID) return;
-      return `export default ${JSON.stringify(collectAssets())};`;
+      return `export default ${assetsModule()};`;
     },
   };
+}
+
+// The seed is a few megabytes of `.d.ts` read off disk, and the plugin is
+// registered for both the worker and the client graph, so the serialized module
+// is built once per process rather than per load.
+let serializedAssets: string | undefined;
+function assetsModule(): string {
+  return (serializedAssets ??= JSON.stringify(collectAssets()));
 }
 
 function collectAssets(): Record<string, string> {
   const assets: Record<string, string> = {};
 
-  // Every `lib.*.d.ts` TypeScript ships, seeded at the virtual root so the
-  // default-lib resolution (which falls back to `__dirname` === "/") finds them.
-  const tsLibDir = path.join(pkgDir("typescript"), "lib");
-  for (const entry of fs.readdirSync(tsLibDir)) {
-    if (/^lib\..*\.d\.ts$/.test(entry)) {
-      assets["/" + entry] = fs.readFileSync(path.join(tsLibDir, entry), "utf8");
-    }
-  }
+  collectLibs(assets);
 
   // Marko's own type definitions, laid out under a virtual `node_modules/marko`
   // so relative (`./tags-html`) and bare (`csstype`) references resolve.
@@ -150,9 +159,10 @@ function collectAssets(): Record<string, string> {
     types: "index.d.ts",
   });
 
-  // csstype backs Marko's `style`/HTML attribute typings.
+  // csstype backs Marko's `style`/HTML attribute typings. It is marko's
+  // dependency, not the website's, so it resolves from marko's directory.
   assets["/node_modules/csstype/index.d.ts"] = fs.readFileSync(
-    path.join(pkgDir("csstype"), "index.d.ts"),
+    path.join(pkgDir("csstype", markoDir), "index.d.ts"),
     "utf8",
   );
   assets["/node_modules/csstype/package.json"] = JSON.stringify({
@@ -167,19 +177,66 @@ function collectAssets(): Record<string, string> {
       "utf8",
     );
 
-  assets["/tsconfig.json"] = JSON.stringify({
-    compilerOptions: {
-      target: "ESNext",
-      module: "ESNext",
-      moduleResolution: "Bundler",
-      lib: ["DOM", "DOM.Iterable", "ESNext"],
-      strict: true,
-      jsx: "preserve",
-      allowJs: true,
-      skipLibCheck: true,
-    },
-    include: [],
-  });
+  assets["/tsconfig.json"] = JSON.stringify(TSCONFIG);
 
   return assets;
+}
+
+// The project the language server type-checks. Its `lib` list is also what
+// decides which of TypeScript's `lib.*.d.ts` files reach the worker.
+const TSCONFIG = {
+  compilerOptions: {
+    target: "ESNext",
+    module: "ESNext",
+    moduleResolution: "Bundler",
+    lib: ["DOM", "DOM.Iterable", "ESNext"],
+    strict: true,
+    jsx: "preserve",
+    allowJs: true,
+    skipLibCheck: true,
+  },
+  include: [],
+};
+
+// What TypeScript reaches for when a program asks for the default lib rather
+// than the configured one, so it is seeded alongside the declared libs.
+const DEFAULT_LIB = "esnext.full";
+
+/**
+ * Seed the `lib.*.d.ts` files the project can actually reach: the ones its
+ * `lib` setting names, plus everything those pull in through
+ * `/// <reference lib="..." />`. TypeScript ships libs for every target and
+ * host it supports, and the unreachable ones (`webworker`, `scripthost`, the
+ * older `*.full` entry points) are close to a megabyte of dead weight in the
+ * worker bundle.
+ *
+ * They sit at the virtual root because default-lib resolution falls back to
+ * `__dirname`, which is "/" on the virtual disk.
+ */
+function collectLibs(assets: Record<string, string>): void {
+  const tsLibDir = path.join(pkgDir("typescript"), "lib");
+  const pending = [
+    ...TSCONFIG.compilerOptions.lib.map((lib) => lib.toLowerCase()),
+    DEFAULT_LIB,
+  ];
+  const seen = new Set<string>();
+
+  while (pending.length) {
+    const name = pending.pop()!;
+    if (seen.has(name)) continue;
+    seen.add(name);
+
+    const entry = `lib.${name}.d.ts`;
+    let content;
+    try {
+      content = fs.readFileSync(path.join(tsLibDir, entry), "utf8");
+    } catch {
+      continue; // A reference to a lib this TypeScript version does not ship.
+    }
+
+    assets["/" + entry] = content;
+    for (const [, ref] of content.matchAll(/<reference lib="([^"]+)"/g)) {
+      pending.push(ref);
+    }
+  }
 }

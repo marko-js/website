@@ -111,8 +111,10 @@ interface Scope {
 
 export interface StartOptions {
   /**
-   * Virtual-disk seed files, keyed by absolute path: the bundled `lib.*.d.ts`,
-   * the Marko type definitions and a project `tsconfig.json`.
+   * Virtual-disk seed files, keyed by absolute path: the reachable
+   * `lib.*.d.ts`, the Marko type definitions and the project `tsconfig.json`.
+   * Assembled at build time by the `marko-lsp-assets` Vite plugin, which owns
+   * the compiler options the server type-checks against.
    */
   assets: Record<string, string>;
 }
@@ -124,10 +126,6 @@ export function start(scope: Scope, { assets }: StartOptions): void {
     // Also seed as a (non-open) document so the TypeScript host reads the libs
     // and type definitions directly, without depending on the Node `fs` shim.
     documents.preload(pathToUri(path), languageIdForPath(path), assets[path]);
-  }
-
-  if (!vfs.fileExists("/tsconfig.json")) {
-    vfs.writeFile("/tsconfig.json", DEFAULT_TSCONFIG);
   }
 
   // Same `tags-dir` marker the preview build writes, so the compiler's taglib
@@ -252,18 +250,3 @@ function languageIdForPath(path: string): string {
       return "typescript";
   }
 }
-
-const DEFAULT_TSCONFIG = JSON.stringify({
-  compilerOptions: {
-    target: "ESNext",
-    module: "ESNext",
-    moduleResolution: "Bundler",
-    lib: ["DOM", "DOM.Iterable", "ESNext"],
-    strict: true,
-    jsx: "preserve",
-    allowJs: true,
-    checkJs: false,
-    skipLibCheck: true,
-  },
-  include: [],
-});

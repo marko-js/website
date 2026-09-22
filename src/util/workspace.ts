@@ -14,12 +14,7 @@ import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
 import { scriptPlugin } from "./workspace/script-plugin";
 
 import { toByteSizes, type Sizes } from "./sizes";
-import {
-  FileSystem,
-  markoJson,
-  markoJsonPath,
-  rootDir,
-} from "./workspace/fs";
+import { FileSystem, markoJson, markoJsonPath, rootDir } from "./workspace/fs";
 import { prettyPrintHTML } from "./pretty-print-html";
 
 export interface File {
