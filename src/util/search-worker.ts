@@ -35,6 +35,20 @@ function init(blocks: SearchBlock[]) {
   }
 }
 
+// ── Symbol queries ───────────────────────────────────────────────────
+
+// FlexSearch's encoder drops punctuation from both the index and the query, so
+// a query made only of symbols reaches the index as nothing and matches no
+// block. Each of these is a documented syntax, so the query is rewritten to the
+// name the docs use for it before it is searched and scored.
+const symbolAliases: Record<string, string> = {
+  "@": "attribute tags",
+  "${": "dynamic text",
+  "${}": "dynamic text",
+  "|": "tag parameters",
+  "/": "tag variables",
+};
+
 // ── Scoring helpers ──────────────────────────────────────────────────
 
 function escapeRegex(s: string) {
@@ -99,13 +113,16 @@ function buildSnippet(content: string, query: string): string | undefined {
 // ── Search ───────────────────────────────────────────────────────────
 
 function search(query: string, limit = 25): SearchHit[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return [];
 
+  // A symbol query is replaced outright so that retrieval, scoring, and the
+  // snippet all run against the name rather than against the symbol.
+  const q = symbolAliases[trimmed] || trimmed;
   const qEscaped = escapeRegex(q);
   const scored: SearchHit[] = [];
 
-  for (const id of index.search(query, { limit: 200 })) {
+  for (const id of index.search(q, { limit: 200 })) {
     const href = String(id);
     const block = blockMap.get(href);
     if (!block) continue;
