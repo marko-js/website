@@ -37,10 +37,6 @@ function init(blocks: SearchBlock[]) {
 
 // ── Symbol queries ───────────────────────────────────────────────────
 
-// FlexSearch's encoder drops punctuation from both the index and the query, so
-// a query made only of symbols reaches the index as nothing and matches no
-// block. Each of these is a documented syntax, so the query is rewritten to the
-// name the docs use for it before it is searched and scored.
 const symbolAliases: Record<string, string> = {
   "@": "attribute tags",
   "${": "dynamic text",
@@ -116,8 +112,6 @@ function search(query: string, limit = 25): SearchHit[] {
   const trimmed = query.trim().toLowerCase();
   if (!trimmed) return [];
 
-  // A symbol query is replaced outright so that retrieval, scoring, and the
-  // snippet all run against the name rather than against the symbol.
   const q = symbolAliases[trimmed] || trimmed;
   const qEscaped = escapeRegex(q);
   const scored: SearchHit[] = [];
