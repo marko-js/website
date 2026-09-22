@@ -1107,7 +1107,7 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 }
 ```
 
-This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package.
+This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package. Tags written in TypeScript ship their types as `.d.marko` files, as described in [TypeScript](./typescript.md#enabling-typescript-in-your-marko-project).
 
 > [!TIP]
 > Often a tag library will have "private tags" and "exported tags". A common way to achieve this is to have a `tags/` folder _within_ the exported `tags/` folder 🤯.
@@ -2849,23 +2849,12 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   tsconfig.json
   ```
 
-- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, the `"script-lang"` attribute must be set to `"ts"` in the `marko.json`:
-
-  ```json
-  /* marko.json */
-  {
-    "script-lang": "ts"
-  }
-  ```
-
-  This will automatically expose type-checking and autocomplete for the published tags.
+- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, publish the output of [`@marko/type-check`](#ci-type-checking). Next to each `.marko` file it emits a `.d.marko` file holding the tag's types, which exposes type-checking and autocomplete for the published tags.
 
 > [!TIP]
-> You can also use the `script-lang` method for sites and apps.
+> A codebase that mixes JavaScript and TypeScript, such as one migrating incrementally, can override these defaults by setting `"script-lang"` to `"ts"` or `"js"` in a `marko.json`.
 >
-> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined.
->
-> This helps when incrementally migrating to TypeScript allowing folders to opt-in or opt-out of strict type checking.
+> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined, allowing folders to opt in to or out of TypeScript.
 
 ## Typing `input`
 
