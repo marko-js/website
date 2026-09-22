@@ -37,7 +37,7 @@ A JavaScript object globally available in every template that gives access to th
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file. The signal only exists in the browser.
 
 It is aborted when
 
@@ -45,6 +45,17 @@ It is aborted when
 2. The template or [tag content](#tag-content) is removed from the DOM
 
 This is primarily to handle cleaning up side effects.
+
+> [!CAUTION]
+> `$signal` has no server equivalent. In HTML output it compiles to an expression that throws `Cannot use $signal in a server render.` An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) that references it fails a server render.
+>
+> ```marko
+> <const/results=fetch("/api/search", { signal: $signal })> // throws during a server render
+> ```
+>
+> Code that needs a signal belongs where it only runs in the browser, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+<!---->
 
 > [!TIP]
 > Many built-in APIs like [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal) include the option to pass a signal for cleanup.
@@ -209,10 +220,17 @@ Even with `<my-tag str="Hello">` the `"Hello"` string is a JavaScript string lit
 Attributes can be thought of as JavaScript objects in Marko which are passed to a tag.
 
 > [!CAUTION]
-> Values cannot contain an unenclosed `>` since it is ambiguous. These expressions must use parentheses:
+> Values cannot contain an unenclosed `>` since it is ambiguous with the end of the tag. These expressions must use parentheses:
 >
 > ```marko
 > <my-tag value=(1 > 2)></my-tag>
+> ```
+>
+> A `>=` preceded by whitespace and the `=>` of an arrow function are not ambiguous and need no parentheses:
+>
+> ```marko
+> <my-tag value=count >= 10></my-tag>
+> <my-tag fn=x => x * 2></my-tag>
 > ```
 
 ### Skipped Attributes
@@ -220,7 +238,7 @@ Attributes can be thought of as JavaScript objects in Marko which are passed to 
 If an attribute value is `null`, `undefined` or `false` it will not be written to the html.
 
 > [!NOTE]
-> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written.
+> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written. [Dynamic text](#skipped-values) follows different rules.
 
 ### Boolean Attributes
 
@@ -259,6 +277,8 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
+On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the element's attribute set, so an attribute it stops providing is removed on update.
+
 > [!NOTE]
 > The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
 >
@@ -272,6 +292,14 @@ Attributes are merged from left to right, with later spreads overriding earlier 
 
 ```marko
 <button onClick(e) { console.log(e.target) }>Click Me</button>
+```
+
+Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
+
+Prefix the method with `async` to `await` inside its body.
+
+```marko
+<button async onClick() { await save() }>Save</button>
 ```
 
 ### Shorthand Change Handlers (Two-Way Binding)
@@ -404,6 +432,8 @@ export interface Input {
 </div>
 ```
 
+[Native tags](./native-tag.md#content) also accept content as an attribute, so the wrapper above can be written as `<div content=input.content/>`.
+
 ### Dynamic Text
 
 Dynamic text content can be `${interpolated}` in the tag content. This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
@@ -420,6 +450,57 @@ export interface Input {
 
 > [!NOTE]
 > The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
+
+#### Skipped Values
+
+An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders nothing. Every other value is coerced with string concatenation: `0` renders `0`, `true` renders `true`, an array renders its comma-joined entries. The same rules apply inside [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags) bodies.
+
+> [!NOTE]
+> These rules differ from [skipped attributes](#skipped-attributes), which still write `NaN`, `""` and `0n`. Only `null`, `undefined` and `false` are skipped in both places.
+
+<!---->
+
+> [!WARNING]
+> A value with no useful string form, such as a plain object, renders as `[object Object]`. Render a promise's resolved value with the [`<await>` tag](./core-tag.md#await) rather than interpolating the promise itself.
+
+#### Unescaped Text
+
+Prefixing the interpolation with `!` outputs the value without escaping. This is intended for markup that was already generated and sanitized elsewhere, such as compiled markdown.
+
+```marko
+export interface Input {
+  articleHtml: string;
+}
+
+<article>
+  $!{input.articleHtml}
+</article>
+```
+
+> [!CAUTION]
+> Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
+
+## Whitespace
+
+A run of whitespace in markup collapses to a single space. Whitespace that begins with a line break is removed entirely at the start and end of a tag's content and between two tags, so indentation stays out of the output.
+
+```marko no-format
+<p>
+  Build finished in
+  <strong>12s</strong> <em>from cache</em>
+</p>
+```
+
+This example renders:
+
+```html
+<p>Build finished in <strong>12s</strong> <em>from cache</em></p>
+```
+
+> [!WARNING]
+> A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
 
 ## Attribute Tags
 
@@ -495,7 +576,7 @@ export interface Input {
 
 ### Nested Attribute tags
 
-Attribute tags may be nested in other attribute tags.
+Attribute tags may be nested in other attribute tags. A nested attribute tag becomes a property on its parent attribute tag, alongside the parent's own attributes.
 
 ```marko
 <my-tag>
@@ -510,7 +591,7 @@ Would provide the following as input
 ```js
 {
   a: {
-    value: 2,
+    value: 1,
     b: { value: 2 }
   }
 }
@@ -644,7 +725,7 @@ Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return
 
 ### Tag Var Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), so a variable declared deep in the tree is in scope everywhere in the template except in [module statements](#statements).
 
 ```marko
 <form>
@@ -656,6 +737,16 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
   console.log(myInput())
 </script>
 ```
+
+Hoisting determines where a tag variable may be referenced, not when its value may be read. A hoisted read, including an [element reference](./native-tag.md#element-references), belongs in code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+> [!WARNING]
+> An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) is evaluated during the render, before a hoisted value may be read.
+>
+> ```marko
+> // ❌ (INCORRECT) `myInput` is read while the template renders
+> <div>${myInput().value}</div>
+> ```
 
 ### Repeated Tag Vars
 
@@ -759,6 +850,24 @@ This means you cannot access the tag parameters outside the body of the tag.
 > [!CAUTION]
 > Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
 
+## Doctype
+
+A [doctype](https://developer.mozilla.org/en-US/docs/Glossary/Doctype) is written into the HTML output exactly as authored, so a page template declares one the same way an HTML file does.
+
+```marko
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <status-board/>
+  </body>
+</html>
+```
+
+The doctype applies to the document as a whole, so it belongs in the template that renders the entire page.
+
 ## Comments
 
 Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment) comments are supported.
@@ -792,6 +901,9 @@ export interface Input {
 // Dynamically output a native tag.
 <${"h" + input.headingSize}>Hello!</>
 ```
+
+> [!CAUTION]
+> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use user-provided content as a dynamic tag name.
 
 ### Dynamic Custom Tags
 
@@ -853,3 +965,10 @@ import MyTag from "./my-tag.marko"
 
 <${MyTag}/>
 ```
+
+> [!WARNING]
+> A dot in a tag name is the [`class` shorthand](#shorthand-class-and-id), so `<Toolbar.Undo/>` renders the tag held in `Toolbar` and passes `class="Undo"`. A property is reached with the [dynamic tag](#dynamic-tags) syntax.
+>
+> ```marko
+> <${Toolbar.Undo}/>
+> ```

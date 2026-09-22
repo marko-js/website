@@ -15,7 +15,7 @@ Frameworks and languages for the web address these issues through concepts like 
 
 ## Declarative Language
 
-Marko embraces a declarative approach, allowing developers to describe what the UI should look like instead of how it should be rendered. This paradigm enables powerful compiler optimizations and simplifies state management.
+Marko embraces a [declarative approach](https://en.wikipedia.org/wiki/Declarative_programming), allowing developers to describe what the UI should look like instead of how it should be rendered. This paradigm enables powerful compiler optimizations and simplifies state management.
 
 ### Components
 

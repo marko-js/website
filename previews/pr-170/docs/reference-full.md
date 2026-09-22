@@ -43,7 +43,7 @@ A JavaScript object globally available in every template that gives access to th
 
 ### `$signal`
 
-An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file.
+An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) is available in all JavaScript statements, expressions, and blocks in a `.marko` file. The signal only exists in the browser.
 
 It is aborted when
 
@@ -51,6 +51,17 @@ It is aborted when
 2. The template or [tag content](#tag-content) is removed from the DOM
 
 This is primarily to handle cleaning up side effects.
+
+> [!CAUTION]
+> `$signal` has no server equivalent. In HTML output it compiles to an expression that throws `Cannot use $signal in a server render.` An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) that references it fails a server render.
+>
+> ```marko
+> <const/results=fetch("/api/search", { signal: $signal })> // throws during a server render
+> ```
+>
+> Code that needs a signal belongs where it only runs in the browser, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+<!---->
 
 > [!TIP]
 > Many built-in APIs like [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#signal) include the option to pass a signal for cleanup.
@@ -215,10 +226,17 @@ Even with `<my-tag str="Hello">` the `"Hello"` string is a JavaScript string lit
 Attributes can be thought of as JavaScript objects in Marko which are passed to a tag.
 
 > [!CAUTION]
-> Values cannot contain an unenclosed `>` since it is ambiguous. These expressions must use parentheses:
+> Values cannot contain an unenclosed `>` since it is ambiguous with the end of the tag. These expressions must use parentheses:
 >
 > ```marko
 > <my-tag value=(1 > 2)></my-tag>
+> ```
+>
+> A `>=` preceded by whitespace and the `=>` of an arrow function are not ambiguous and need no parentheses:
+>
+> ```marko
+> <my-tag value=count >= 10></my-tag>
+> <my-tag fn=x => x * 2></my-tag>
 > ```
 
 ### Skipped Attributes
@@ -226,7 +244,7 @@ Attributes can be thought of as JavaScript objects in Marko which are passed to 
 If an attribute value is `null`, `undefined` or `false` it will not be written to the html.
 
 > [!NOTE]
-> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written.
+> Not _all_ [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) values are skipped. `0`, `NaN`, and `""` will still be written. [Dynamic text](#skipped-values) follows different rules.
 
 ### Boolean Attributes
 
@@ -265,6 +283,8 @@ In this case `<my-tag>` would receive the attributes as an object like `{ ...inp
 
 Attributes are merged from left to right, with later spreads overriding earlier ones if there are conflicts.
 
+On a [native tag](./native-tag.md#attribute-spreads) the spread also owns the element's attribute set, so an attribute it stops providing is removed on update.
+
 > [!NOTE]
 > The value after the `...` (like [in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals)) can be any valid JavaScript expression. This means it can be used to leverage shorthand property names:
 >
@@ -278,6 +298,14 @@ Attributes are merged from left to right, with later spreads overriding earlier 
 
 ```marko
 <button onClick(e) { console.log(e.target) }>Click Me</button>
+```
+
+Native tag event handlers receive [a second argument](./native-tag.md#handler-arguments) with the element the handler was attached to.
+
+Prefix the method with `async` to `await` inside its body.
+
+```marko
+<button async onClick() { await save() }>Save</button>
 ```
 
 ### Shorthand Change Handlers (Two-Way Binding)
@@ -410,6 +438,8 @@ export interface Input {
 </div>
 ```
 
+[Native tags](./native-tag.md#content) also accept content as an attribute, so the wrapper above can be written as `<div content=input.content/>`.
+
 ### Dynamic Text
 
 Dynamic text content can be `${interpolated}` in the tag content. This uses the same syntax as [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript.
@@ -426,6 +456,57 @@ export interface Input {
 
 > [!NOTE]
 > The interpolated value is automatically escaped to avoid [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS).
+
+#### Skipped Values
+
+An interpolated `null`, `undefined`, `false`, `""`, `NaN` or bigint `0n` renders nothing. Every other value is coerced with string concatenation: `0` renders `0`, `true` renders `true`, an array renders its comma-joined entries. The same rules apply inside [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags) bodies.
+
+> [!NOTE]
+> These rules differ from [skipped attributes](#skipped-attributes), which still write `NaN`, `""` and `0n`. Only `null`, `undefined` and `false` are skipped in both places.
+
+<!---->
+
+> [!WARNING]
+> A value with no useful string form, such as a plain object, renders as `[object Object]`. Render a promise's resolved value with the [`<await>` tag](./core-tag.md#await) rather than interpolating the promise itself.
+
+#### Unescaped Text
+
+Prefixing the interpolation with `!` outputs the value without escaping. This is intended for markup that was already generated and sanitized elsewhere, such as compiled markdown.
+
+```marko
+export interface Input {
+  articleHtml: string;
+}
+
+<article>
+  $!{input.articleHtml}
+</article>
+```
+
+> [!CAUTION]
+> Unescaped interpolations are written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use `$!{...}` with user-provided content.
+
+## Whitespace
+
+A run of whitespace in markup collapses to a single space. Whitespace that begins with a line break is removed entirely at the start and end of a tag's content and between two tags, so indentation stays out of the output.
+
+```marko no-format
+<p>
+  Build finished in
+  <strong>12s</strong> <em>from cache</em>
+</p>
+```
+
+This example renders:
+
+```html
+<p>Build finished in <strong>12s</strong> <em>from cache</em></p>
+```
+
+> [!WARNING]
+> A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
 
 ## Attribute Tags
 
@@ -501,7 +582,7 @@ export interface Input {
 
 ### Nested Attribute tags
 
-Attribute tags may be nested in other attribute tags.
+Attribute tags may be nested in other attribute tags. A nested attribute tag becomes a property on its parent attribute tag, alongside the parent's own attributes.
 
 ```marko
 <my-tag>
@@ -516,7 +597,7 @@ Would provide the following as input
 ```js
 {
   a: {
-    value: 2,
+    value: 1,
     b: { value: 2 }
   }
 }
@@ -650,7 +731,7 @@ Using the [core `<return>` tag](./core-tag.md#return), any custom tag can return
 
 ### Tag Var Scope
 
-Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) and can be accessed anywhere in the template except for in [module statements](#statements). This means that it is possible to read tag variables from anywhere in the tree.
+Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), so a variable declared deep in the tree is in scope everywhere in the template except in [module statements](#statements).
 
 ```marko
 <form>
@@ -662,6 +743,16 @@ Tag variables are automatically [hoisted](https://developer.mozilla.org/en-US/do
   console.log(myInput())
 </script>
 ```
+
+Hoisting determines where a tag variable may be referenced, not when its value may be read. A hoisted read, including an [element reference](./native-tag.md#element-references), belongs in code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](./native-tag.md#event-handlers).
+
+> [!WARNING]
+> An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](#dynamic-text) is evaluated during the render, before a hoisted value may be read.
+>
+> ```marko
+> // ❌ (INCORRECT) `myInput` is read while the template renders
+> <div>${myInput().value}</div>
+> ```
 
 ### Repeated Tag Vars
 
@@ -765,6 +856,24 @@ This means you cannot access the tag parameters outside the body of the tag.
 > [!CAUTION]
 > Tag parameters cannot be accessed by [attribute tags](#attribute-tags) since they are evaluated as attributes.
 
+## Doctype
+
+A [doctype](https://developer.mozilla.org/en-US/docs/Glossary/Doctype) is written into the HTML output exactly as authored, so a page template declares one the same way an HTML file does.
+
+```marko
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <status-board/>
+  </body>
+</html>
+```
+
+The doctype applies to the document as a whole, so it belongs in the template that renders the entire page.
+
 ## Comments
 
 Both [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML/Comments) and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/API/Comment) comments are supported.
@@ -798,6 +907,9 @@ export interface Input {
 // Dynamically output a native tag.
 <${"h" + input.headingSize}>Hello!</>
 ```
+
+> [!CAUTION]
+> A string tag name is written into the document as-is, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never use user-provided content as a dynamic tag name.
 
 ### Dynamic Custom Tags
 
@@ -859,6 +971,13 @@ import MyTag from "./my-tag.marko"
 
 <${MyTag}/>
 ```
+
+> [!WARNING]
+> A dot in a tag name is the [`class` shorthand](#shorthand-class-and-id), so `<Toolbar.Undo/>` renders the tag held in `Toolbar` and passes `class="Undo"`. A property is reached with the [dynamic tag](#dynamic-tags) syntax.
+>
+> ```marko
+> <${Toolbar.Undo}/>
+> ```
 
 
 ----------
@@ -988,7 +1107,7 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 }
 ```
 
-This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package.
+This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package. Tags written in TypeScript ship their types as `.d.marko` files, as described in [TypeScript](./typescript.md#enabling-typescript-in-your-marko-project).
 
 > [!TIP]
 > Often a tag library will have "private tags" and "exported tags". A common way to achieve this is to have a `tags/` folder _within_ the exported `tags/` folder 🤯.
@@ -1092,6 +1211,30 @@ If additional updates are scheduled after the queue is consumed but _before the 
 - Content ready to display to the user is not blocked.
 - It is not possible to lock up the application in an infinite update loop.
 - The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).
+
+### Stale Derived Values
+
+Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immediately, so the tag variable reads back the new value on the next line. Everything derived from it, including [`<const>`](./core-tag.md#const) tag variables and the rendered output, is recomputed only when the queue is flushed, so for the remainder of the handler those values are still the ones computed from the previous state.
+
+```marko
+<let/quantity=1>
+<const/subtotal=quantity * input.unitPrice>
+
+<button onClick() {
+  quantity++;
+
+  // `quantity` is already the new value, so the reported total is
+  // recomputed from it rather than read from `subtotal`.
+  input.onQuantityChange(quantity, quantity * input.unitPrice);
+}>
+  Add one
+</button>
+
+<output>${subtotal}</output>
+```
+
+> [!WARNING]
+> Passing `subtotal` here would report the total for the previous `quantity`. Reading the rendered total back out of the DOM has the same problem, since the DOM has not been updated yet.
 
 
 ----------
@@ -1216,6 +1359,18 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
+The `step=` attribute may be negative, counting down from a larger `from=`, or fractional.
+
+```marko
+<for|num| from=10 to=0 step=-5>${num}</for>
+// 10 5 0
+
+<for|num| from=0 to=1 step=0.25>${num}</for>
+// 0 0.25 0.5 0.75 1
+```
+
+A nullish `of=` or `in=` renders nothing, so an optional value such as a [repeated attribute tag](./language.md#repeated-attribute-tags) may be iterated directly.
+
 The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
 
 ```marko
@@ -1235,6 +1390,11 @@ This means the previous example can simplified to:
   ${user.firstName} ${user.lastName}
 </for>
 ```
+
+Each key must be a string or a number, and must be unique within a single loop. An object item is keyed by a stable identifier it carries, such as the `id` above.
+
+> [!WARNING]
+> The `by=` attribute keys a `<for>` that renders [content](./language.md#tag-content). Including it on a `<for>` that [applies attribute tags](./language.md#conditional-attribute-tags) is a compile error.
 
 ## `<let>`
 
@@ -1338,6 +1498,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 </button>
 ```
 
+Because updates are queued, reassigning `count` does not recompute `doubleCount` until the queue is flushed. Reading `doubleCount` inside the handler yields the value computed from the previous `count`, as described in [Stale Derived Values](./reactivity.md#stale-derived-values).
+
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 
@@ -1374,6 +1536,9 @@ The return value may then be used in the parent template:
 <div>${value}</div>
 ```
 
+> [!WARNING]
+> A template or [tag content](./language.md#tag-content) holds at most one `<return>`, at its top level. A value that varies is expressed within `value=` rather than by nesting a `<return>` under [`<if>`](#if--else) or [`<for>`](#for).
+
 ### Assignable Return Value
 
 By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
@@ -1399,6 +1564,46 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 <uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
 <div>${value}</div> // value is always transformed to uppercase
+```
+
+### Content Return
+
+[Tag content](./language.md#tag-content) may hold its own `<return>`, which is read through a [tag variable](./language.md#tag-variables) on the tag that renders that content.
+
+A [`<define>`](#define) can hold state alongside its markup and expose it where the snippet is rendered.
+
+```marko
+<define/ZoomControls>
+  <let/level=1>
+  <button onClick() { level = Math.max(0.5, level - 0.25) }>Zoom out</button>
+  <button onClick() { level = Math.min(3, level + 0.25) }>Zoom in</button>
+  <return=level/>
+</define>
+
+<ZoomControls/zoom/>
+<img alt="Floor plan" src="/blueprint.png" style=`scale: ${zoom}`>
+```
+
+Content received by a [custom tag](./custom-tag.md) is read the same way. The second type argument of [`Marko.Body`](./typescript.md#typing-content) declares the attributes of the `<return>`, so the tag variable is typed by its `value`.
+
+```marko
+/* char-limit.marko */
+export interface Input {
+  max: number;
+  content: Marko.Body<[], { value: string }>;
+}
+
+<${input.content}/entry/>
+<small>${input.max - entry.length} characters left</small>
+```
+
+```marko
+/* index.marko */
+<char-limit max=140>
+  <let/bio="">
+  <return=bio/>
+  <textarea value:=bio/>
+</char-limit>
 ```
 
 ## `<script>`
@@ -1432,6 +1637,45 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
   $signal.onabort = () => clearInterval(intervalId);
 </script>
 ```
+
+### Function Value
+
+The effect may also be supplied through the `value=` attribute, usually written with the `=` shorthand. The function receives no arguments and re-runs under the same conditions as a body.
+
+```marko
+<video/clip src=input.src controls/>
+
+<script=() => (clip().muted = input.muted)/>
+```
+
+A function declared elsewhere, such as a [`<const>`](#const), may be referenced directly.
+
+```marko
+<const/remember() {
+  sessionStorage.setItem("sidebar", input.collapsed);
+}>
+
+<script=remember/>
+```
+
+### Await
+
+An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so later effects run without waiting for it.
+
+```marko
+<img/photo>
+<script>
+  const signal = $signal;
+  photo().src = input.src;
+  await photo().decode();
+  if (!signal.aborted) photo().classList.add("loaded");
+</script>
+```
+
+> [!WARNING]
+> Each [`$signal`](./language.md#signal) reference resolves to the current run's signal, so after an `await` it may no longer belong to the suspended body. Capture it in a local before awaiting.
+
+<!---->
 
 > [!TIP]
 > There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
@@ -1544,7 +1788,7 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)). A `<return>` in the body is exposed separately, at the tag that renders the snippet (see [Content Return](#content-return)).
 
 > [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
@@ -1573,7 +1817,7 @@ The `<lifecycle>` tag is used to synchronize side-effects from imperative client
 />
 ```
 
-The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be mutated.
+The `this` is consistent across the lifetime of the `<lifecycle>` tag. It contains all attributes of the tag, plus any properties in the object returned from `onMount`. Returning from `onMount` is the way to keep instances of imperative APIs around for the other handlers, and their types are inferred automatically.
 
 ```marko
 client import { WorldMap } from "world-map-api";
@@ -1581,13 +1825,12 @@ client import { WorldMap } from "world-map-api";
 <let/latitude = 0>
 <let/longitude = 0>
 <div/container/>
-<lifecycle<{ map: WorldMap }>
+<lifecycle
   onMount() {
-    this.map = new WorldMap(container(), { latitude, longitude, zoom });
+    return { map: new WorldMap(container(), { latitude, longitude }) };
   }
   onUpdate() {
     this.map.setCoords(latitude, longitude);
-    this.map.setZoom(zoom);
   }
   onDestroy() {
     this.map.destroy();
@@ -1595,8 +1838,24 @@ client import { WorldMap } from "world-map-api";
 />
 ```
 
-> [!TIP]
-> All attributes on the `<lifecycle>` tag attributes available as the `this` in any of the event handler attributes.
+> [!WARNING]
+> Attributes of the `<lifecycle>` tag are reassigned onto `this` on every update, so `onMount` must not overwrite existing properties, whether by assignment or from its returned object. In development, doing so throws an error.
+
+`this` may also be extended by direct assignment, providing the extra properties as an explicit type argument.
+
+```marko
+client import { BarChart } from "bar-chart";
+
+<canvas/canvas/>
+<lifecycle<{ chart?: BarChart }>
+  onMount() {
+    this.chart = new BarChart(canvas());
+  }
+  onDestroy() {
+    this.chart?.destroy();
+  }
+/>
+```
 
 ## `<id>`
 
@@ -1608,7 +1867,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
 
 ```marko
 /* textbox.marko */
@@ -1620,7 +1879,7 @@ export interface Input {
 <id/id=input.id>
 
 <input aria-describedby=id>
-<span id=id>${description}</span>
+<span id=id>${input.description}</span>
 ```
 
 ## `<log>`
@@ -1757,6 +2016,9 @@ Though not typically needed, vanilla versions of these tags may be written via t
 </html-style>
 ```
 
+> [!CAUTION]
+> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.
+
 
 ----------
 
@@ -1779,7 +2041,7 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 ```
 
 > [!CAUTION]
-> The node reference is only available in the browser. Attempting to access a DOM node from the server will result in an error.
+> The DOM node exists only in the browser, and the getter is readable only from code that runs after render, such as a [`<script>`](./core-tag.md#script) body, a [`<lifecycle>`](./core-tag.md#lifecycle) hook, or an [event handler](#event-handlers). An attribute value, a [`<const>`](./core-tag.md#const), or an [interpolation](./language.md#dynamic-text) is evaluated earlier in the render.
 
 ## Enhanced Attributes
 
@@ -1788,20 +2050,33 @@ All native tags expose a [Tag Variable](./language.md#tag-variables) that provid
 In addition to strings, Marko supports passing arrays and objects to the `class=` attribute.
 
 ```marko
-<!-- String -->
+// string
 <div class="a c"/>
 
-<!-- Object -->
+// object
 <div class={ a: true, b: false, c: true }/>
 
-<!-- Array -->
+// array
 <div class=["a", null, { c: true }]/>
 ```
 
-All examples above result in the same HTML:
+All three render the same HTML:
 
 ```html
 <div class="a c"></div>
+```
+
+Each key of an object is a class name, included when its value is truthy. Every falsy value drops the class. Objects are read one level deep: a value is only tested for truthiness, never traversed.
+
+Arrays may be nested to any depth and spread, and their falsy entries are skipped. Class names are not deduplicated, and when nothing remains the attribute is omitted entirely.
+
+```marko
+<let/query="">
+
+<input
+  value:=query
+  class=["field", query && ["field-filled", { "field-error": !query.trim() }]]
+>
 ```
 
 ### `style=`
@@ -1809,21 +2084,133 @@ All examples above result in the same HTML:
 In addition to strings, Marko supports passing arrays and objects to the `style=` attribute.
 
 ```marko
-<!-- String -->
+// string
 <div style="display:block;margin-right:16px"/>
 
-<!-- Object -->
-<div style={ display: "block", color: false, "margin-right": 16 }/>
+// object
+<div style={ display: "block", "margin-right": "16px" }/>
 
-<!-- Array -->
-<div style=["display:block", null, { "margin-right": 16 }]/>
+// array
+<div style=["display:block", null, { "margin-right": "16px" }]/>
 ```
 
-All examples above result in the same HTML:
+All three produce the declaration list `display:block;margin-right:16px`. Declarations are joined with `;`, and no trailing `;` is added.
+
+Object keys are written out verbatim, so they must be hyphen-case CSS property names.
+
+> [!WARNING]
+> Unlike [the DOM `style` API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style), keys are never converted, so a camelCased key renders as invalid CSS the browser ignores.
+>
+> ```marko
+> // ❌ (INCORRECT) renders `backgroundColor:red`
+> <div style={ backgroundColor: "red" }/>
+>
+> // ✅
+> <div style={ "background-color": "red" }/>
+> ```
+>
+> The compiler warns on camelCased keys it can see statically, and debug builds warn at runtime for keys from dynamic objects. Both suggest the hyphen-case name.
+
+Values are stringified as-is, with no unit inference: `style={ "margin-right": 16 }` renders `margin-right:16`, not `margin-right:16px`. Numbers are only meaningful for unitless properties such as `line-height` or `z-index`, and the TypeScript types reject any number other than `0` for length properties.
+
+A declaration is dropped when its value is `false`, `null`, `undefined` or an empty string, but `0` is kept, so `style={ width: 0 }` renders `width:0`. This differs from `class=` objects, where every falsy value drops the class.
+
+> [!TIP]
+> The TypeScript types reject `false` as an object value, so conditional declarations belong at the array level.
+>
+> ```marko
+> <div style=["display:block", isError && { color: "red" }]/>
+> ```
+
+Arrays nest and spread exactly as they do for [`class=`](#class). Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
+
+### `content=`
+
+Native tags accept their body content as a `content=` attribute. The value may be a [`<define>`](./core-tag.md#define) tag variable, an imported template, or the [content](./language.md#tag-content) the surrounding template received.
+
+Because `content` arrives as part of `input`, a [spread](./language.md#spread-attributes) is enough to implement a tag that wraps an element around the content it receives.
+
+```marko
+/* field-row.marko */
+<fieldset ...input/>
+```
+
+```marko
+/* signup.marko */
+<field-row class="row">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email">
+</field-row>
+```
+
+The spread applies `class` to the `<fieldset>` and renders the content inside it:
 
 ```html
-<div style="display:block;margin-right:16px;"></div>
+<fieldset class="row"><label for="email">Email</label><input id="email" name="email" type="email"></fieldset>
 ```
+
+Passing the attribute explicitly places the content on a specific element, such as an inner wrapper:
+
+```marko
+<section class="card">
+  <h2>${input.title}</h2>
+  <div class="card-body" content=input.content/>
+</section>
+```
+
+`content=` is reactive. Swapping the value replaces the rendered content in place, leaving the element itself untouched.
+
+```marko
+<let/expanded=false>
+<define/Summary>
+  <h2>${input.title}</h2>
+</define>
+<define/Details>
+  <h2>${input.title}</h2>
+  <p>${input.description}</p>
+</define>
+
+<article content=(expanded ? Details : Summary)/>
+
+<button onClick() { expanded = !expanded }>toggle</button>
+```
+
+> [!WARNING]
+> A literal body takes precedence over `content=`, which is then never rendered. Any body counts, including one that produces no output of its own, such as a body holding only a [comment](./language.md#comments).
+>
+> ```marko
+> <div content=Summary>
+>   // this comment is body content, so `Summary` never renders
+> </div>
+> ```
+
+Attributes are merged from left to right, so ordering decides the result when `content=` accompanies a spread. Setting it after a spread overrides the content coming from that spread, and `content=undefined` forwards every other attribute while dropping the content entirely.
+
+```marko
+<div ...input content=undefined/>
+```
+
+Tags that cannot contain markup reject the attribute at compile time. [Void elements](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) such as `<img>` report:
+
+```text
+The `<img>` tag cannot have content, so it does not support the `content` attribute.
+```
+
+`<textarea>` and `<title>` take their body as text, and report:
+
+```text
+The `<textarea>` tag takes its content from its body as text, so it does not support the `content` attribute.
+```
+
+> [!NOTE]
+> On [`<meta>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta), `content` is a real HTML attribute and keeps that meaning, including when applied through a spread. It is the only native tag whose `content` is written to the element instead of rendered as content.
+>
+> ```marko
+> <let/height=630>
+> <meta property="og:image:height" content=height>
+> ```
+
+For typing content on a custom tag, see [Typing `content`](./typescript.md#typing-content).
 
 ### Event Handlers
 
@@ -1879,6 +2266,35 @@ The value for the attribute must be either a function or a [falsy](https://devel
 > <button onclick="this.innerHTML++">0</button>
 > ```
 
+#### Handler Arguments
+
+An event handler receives two arguments: the [`Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event) and the element the handler was attached to.
+
+```marko
+<form onSubmit(event, form) {
+  event.preventDefault();
+  fetch("/subscribe", { method: "POST", body: new FormData(form) });
+}>
+  <input name="email" type="email">
+  <button>Subscribe</button>
+</form>
+```
+
+The second argument matters when an event originates from a descendant. `event.target` is the element the event was dispatched on, which for a click inside a `<button>` may be an inner `<span>`, while the second argument is always the element carrying the `on*` attribute.
+
+> [!WARNING]
+> [`event.currentTarget`](https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget) is not available in Marko event handlers. Because handlers are [delegated](#delegation), `currentTarget` is the `document` in an optimized build, and in a debug build reading it logs an error to the console and evaluates to `null`. The second argument, or an [element reference](#element-references), replaces it.
+
+#### Delegation
+
+Marko does not call `addEventListener` for each element. The first time a handler for an event type is attached, a single listener for that type is registered on the `document` with [capture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture) enabled. When the event fires, that listener invokes the handler on the event's target and then, for events that bubble, the handler on each of its ancestors.
+
+This has a few observable effects.
+
+- Marko handlers run before listeners added with `addEventListener` on the element itself or on any ancestor below the `document`.
+- `event.stopPropagation()` in a Marko handler prevents handlers on ancestor elements from running, and stops the event before it reaches any `addEventListener` listener below the `document`, including one on the same element. Calling it from a listener attached below the `document` has no effect on Marko handlers, which have already run.
+- Events that do not bubble, such as `focus`, `blur`, and `load`, only reach a handler on the element the event was dispatched on. A handler on an ancestor is never called for them.
+
 ### Tags with Enhanced `value` Attributes
 
 The HTML `<input>` tag has a `value=` attribute that reflects the state of the `<input>`. Marko adds this attribute to a few other tags that hold internal state.
@@ -1889,11 +2305,20 @@ Radio and checkbox inputs support a `checkedValue=` attribute. When this attribu
 
 `checkedValue=` may be set to a string, in which case only one value will match (for use with `type="radio"`), or an array of strings, in which case multiple values may match (for use with `type="checkbox"`).
 
+Multiple radios sharing one `checkedValue=` are coordinated through it, while `name=` keeps its native role of grouping radios for form submission and keyboard navigation.
+
 #### `<select>`
 
 The `<select>` tag is unique in that its state is internally synchronized with the `<option>` tags in its body. Marko exposes this state via the `value=` attribute.
 
-`value=` may be set to a string in which case it mirrors the `<select>`'s `.value` property - the value of the selected `<option>`. It may also be set to an array of strings in which case multiple `<option>`s may be selected (for use with`<select multiple>`).
+`value=` may be set to a string, in which case it mirrors the `<select>`'s `.value` property, the value of the selected `<option>`. It may also be set to an array of strings, in which case multiple `<option>`s may be selected (for use with `<select multiple>`).
+
+Marko renders `selected` on each nested `<option>` whose `value=` matches, rather than writing an attribute to the `<select>`. The comparison is between strings: `value=25` matches `<option value="25">`, and `undefined` or `null` matches an `<option>` with an empty `value=`. An array matches element-wise, selecting every `<option>` whose value it contains.
+
+Every `<option>` inside a `<select>` that has `value=` or `valueChange=` must carry its own `value=`, including options nested in [`<optgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup) or a control flow tag such as [`<for>`](./core-tag.md#for). An `<option>` without one is a compile error.
+
+> [!WARNING]
+> `selected=` on an `<option>` inside such a `<select>` is also a compile error. The initial selection comes from the select's `value=`.
 
 #### `<textarea>`
 
@@ -2047,23 +2472,47 @@ The `checked=` attribute may be controlled with `checkedChange=`
 <input type="checkbox" checked=checked checkedChange(value) { checked = value }>
 ```
 
-The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler.
+The [added `checkedValue=` attribute](#input-typeradio-and-input-typecheckbox) also has a change handler. Each radio in a group carries its own `value=` and binds the same `checkedValue=`.
 
 ```marko
-<let/checked="foo">
-<input type="radio" value="foo" checkedValue:=checked>
+<let/speed="ground">
+
+<form>
+  <label>
+    <input type="radio" name="speed" value="ground" checkedValue:=speed>
+    Ground
+  </label>
+  <label>
+    <input type="radio" name="speed" value="overnight" checkedValue:=speed>
+    Overnight
+  </label>
+</form>
 ```
+
+Selecting a member calls the change handler with the new value, and the rendered selection follows the `checkedValue=` that results. A handler that ignores the new value keeps the current selection.
 
 #### `<select>` (`valueChange=`)
 
-Traditionally, the value of a `<select>` is controlled via the `selected=` attribute in its `<option>` tags. Marko adds an additional way to control the `<select>` using [a new `value=` attribute](#select), which is also controllable with a `Change` handler.
+The `<select>` tag has a change handler for [Marko's added `value=` attribute](#select).
 
 ```marko
-<let/selected="en">
-<select value:=selected>
+<let/language="en">
+<select value:=language>
   <option value="en">English</option>
   <option value="pt-br">Portuguese (Brazil)</option>
   <option value="it">Italian</option>
+</select>
+```
+
+The handler receives the selected option's value as a string. When `value=` is an array the handler receives an array of the selected values, which is how [`<select multiple>`](#select) is controlled.
+
+```marko
+<let/topics=["runtime"]>
+
+<select multiple value:=topics>
+  <option value="runtime">Runtime</option>
+  <option value="compiler">Compiler</option>
+  <option value="tooling">Tooling</option>
 </select>
 ```
 
@@ -2089,6 +2538,8 @@ The `<details>` tag has a change handler for its `open=` attribute.
 </button>
 ```
 
+Without `openChange=`, `open=` applies only on the render that creates the element, and the browser owns the state from then on. `open:=` keeps the value and the element in sync.
+
 #### `<dialog>` (`openChange=`)
 
 The `<dialog>` tag has a change handler for its `open=` attribute.
@@ -2102,8 +2553,66 @@ The `<dialog>` tag has a change handler for its `open=` attribute.
 </button>
 ```
 
+Without `openChange=`, `open=` applies only on the render that creates the element, as on [`<details>`](#details-openchange).
+
 > [!Warning]
 > The `open` attribute of the `<dialog>` tag can be used to control a non-modal dialog. However if you need a modal dialog, you should use [the `.showModal()` method](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) directly. Calling this method will _not_ cause `openChange` to fire as the HTML `<dialog>` only fires an event on `close`.
+
+#### Form Reset
+
+Resetting a form, through a `<button type="reset">` or [`form.reset()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset), returns each controlled form element to the value it was first rendered with. Later updates to the bound state change the element without changing that default. Marko calls the change handler of every element the reset changed, passing the restored value, so the bound state follows the element back.
+
+```marko
+<let/tracking="1Z999AA10">
+
+<form>
+  <input value:=tracking>
+  <button type="reset">Reset</button>
+</form>
+
+<div>${tracking}</div>
+```
+
+Editing the field and resetting the form restores `1Z999AA10` to both the `<input>` and `tracking`.
+
+> [!NOTE]
+> The change handlers run in an animation frame after the reset, so the element updates immediately while the bound state follows on the next frame. Calling `preventDefault()` on the `reset` event cancels the reset along with those handler calls.
+
+## Attribute Spreads
+
+A [spread](./language.md#spread-attributes) supplies a native tag's attributes as an object, and that object owns the element's attribute set. An attribute the object stops providing is removed on the next update.
+
+```marko
+<let/link={ href: "/report.csv", download: "report.csv" }>
+
+<a ...link>Quarterly report</a>
+
+<button onClick() { link = { href: "/report.csv" } }>Open in browser</button>
+```
+
+Clicking the button leaves `<a href="/report.csv">`, with `download` removed.
+
+> [!WARNING]
+> Removal covers every attribute present on the element, including any written by code outside Marko. An attribute that must survive an update belongs in the spread object or after the spread.
+
+Attributes written after a spread are excluded from what the spread owns. The compiler records their names, so the spread neither overrides nor removes them, which is how a tag keeps part of an element fixed while forwarding the rest of its `input`.
+
+```marko
+<a ...input class=["external", input.class] target="_blank" rel="noreferrer"/>
+```
+
+`target` and `rel` hold regardless of what `input` carries, and `class=` composes the caller's value with the tag's own. An attribute written before a spread is merged into the object instead, so the spread's value for that name wins.
+
+[`class=`](#class) and [`style=`](#style) keep their object and array handling when supplied by a spread, and a [change handler](#change-handlers) still pairs with its attribute when both arrive in the object.
+
+```marko
+<let/note="">
+<const/composer={ rows: 4, value: note, valueChange(next) { note = next } }>
+
+<textarea ...composer/>
+```
+
+An [event handler](#event-handlers) written after a spread claims its event, so an entry in the object naming that same event is not attached. The object still carries it, which is how a tag wraps a handler it was passed.
 
 ## Enhanced Tags
 
@@ -2171,7 +2680,7 @@ Most triggers accept a [CSS selector](https://developer.mozilla.org/en-US/docs/W
 The selector is matched with [`document.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector), so any selector works, not only IDs: `visible#hero`, `visible.hero`, and `visible[data-hero]` each watch their matching element. Because the selector follows immediately after the trigger name, a bare type selector like `section` must be separated from it with a space, as in `visible section`.
 
 > [!NOTE]
-> If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately (with a warning in development).
+> If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately.
 
 ### `render`
 
@@ -2266,6 +2775,9 @@ import ChatWidget from "<chat-widget>" with { load: "on-mouseover#chat | idle?ti
 
 A `load` import applies only at the import site, so every consumer of a tag must opt in to lazy loading individually. A tag can instead be made _always_ lazy by wrapping it in a facade: a small tag that lazily imports the real implementation and forwards its input.
 
+> [!WARNING]
+> All import sites of a lazily loaded tag share one bundle, so a tag imported with `load` in more than one template should declare the same trigger at each import site. A facade keeps that trigger in one place.
+
 Placing that implementation in a nested [`tags/` directory](./custom-tag.md#relative-custom-tags) keeps it private to the facade, so the rest of the application can only reach the lazy version.
 
 ```text
@@ -2313,6 +2825,9 @@ import PriceChart from "<price-chart>" with { load: "visible.chart" }
 
 Lazy loading is coordinated with the bundler through the `linkAssets` compiler option. [`@marko/vite`](https://github.com/marko-js/vite) (and therefore [Marko Run](../marko-run/getting-started.md)) configures this automatically, so no setup is required.
 
+> [!NOTE]
+> Integrations that do not configure `linkAssets`, such as `@marko/vite` with `linked: false` (used by Storybook), cannot code-split. A `with { load }` import then compiles as a normal eager import, so templates that render a lazily-loaded component still build and render normally.
+
 
 ----------
 
@@ -2334,23 +2849,12 @@ There are two (non-exclusive) ways to add TypeScript to a Marko project:
   tsconfig.json
   ```
 
-- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, the `"script-lang"` attribute must be set to `"ts"` in the `marko.json`:
-
-  ```json
-  /* marko.json */
-  {
-    "script-lang": "ts"
-  }
-  ```
-
-  This will automatically expose type-checking and autocomplete for the published tags.
+- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, publish the output of [`@marko/type-check`](#ci-type-checking). Next to each `.marko` file it emits a `.d.marko` file holding the tag's types, which exposes type-checking and autocomplete for the published tags.
 
 > [!TIP]
-> You can also use the `script-lang` method for sites and apps.
+> A codebase that mixes JavaScript and TypeScript, such as one migrating incrementally, can override these defaults by setting `"script-lang"` to `"ts"` or `"js"` in a `marko.json`.
 >
-> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined.
->
-> This helps when incrementally migrating to TypeScript allowing folders to opt-in or opt-out of strict type checking.
+> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined, allowing folders to opt in to or out of TypeScript.
 
 ## Typing `input`
 
@@ -2431,6 +2935,7 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
 - **`Marko.Global`**
   - The type of [the `$global` object](./language.md#global)
+  - Extended with [application specific properties](#typing-global)
 - **`Marko.RenderedTemplate`**
   - The result of [rendering a Marko template](./template.md#templaterenderinput)
   - `ReturnType<Marko.Template["render"]>`
@@ -2438,7 +2943,14 @@ Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/m
   - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
   - `ReturnType<Marko.Template["mount"]>`
 - **`Marko.NativeTags`**
-  - `Marko.NativeTags`: An object containing all [native tags](./native-tag.md) and their types
+  - An object containing all [native tags](./native-tag.md) and their types
+  - Each entry is a `Marko.NativeTag`, so `div` attributes are `Marko.NativeTags["div"]["input"]`
+- **`Marko.NativeTag<Input, Return>`**
+  - The type of a single entry in `Marko.NativeTags`
+  - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
+- **`Marko.HTMLAttributes<T>`** and **`Marko.SVGAttributes<T>`**
+  - The global attributes and events shared by all HTML tags and all SVG tags, respectively
+  - `T` types the element passed to `on*` handlers, defaulting to `Element`
 - **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
   - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
 - **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
@@ -2492,7 +3004,7 @@ export interface Input {
   content: Marko.Body<[number]>
 }
 
-<for|i| from=0 to=input.to by=2>
+<for|i| from=0 to=input.to step=2>
   <${input.content}(i)/>
 </for>
 ```
@@ -2537,7 +3049,7 @@ export interface Input extends Marko.HTML.Button {
 ```
 
 > [!TIP]
-> Since Marko 6, native tags have supported including [`content`](./language.md#tag-content) as an attribute so there is no need to inject manually
+> Since Marko 6, native tags have supported including [`content`](./native-tag.md#content) as an attribute so there is no need to inject manually
 >
 > ```marko
 > <button style=`color: ${color}` ...attrs>
@@ -2546,21 +3058,58 @@ export interface Input extends Marko.HTML.Button {
 > </button>
 > ```
 
+SVG tag types live in the parallel `Marko.SVG` namespace.
+
+```marko
+export interface Input extends Marko.SVG.Path {
+  dashed: boolean;
+}
+
+<const/{ dashed, ...attrs }=input>
+
+<path fill="none" stroke-dasharray=dashed && "6 3" ...attrs/>
+```
+
 ### Registering a new native tag (e.g. for custom elements)
 
+A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
+
+```json
+/* marko.json */
+{
+  "<range-slider>": { "html": true }
+}
+```
+
+Its types are added to the `Marko.NativeTags` interface:
+
 ```ts
-interface MyCustomElementAttributes {
-  // ...
+/* range-slider.ts */
+export class RangeSliderElement extends HTMLElement {
+  value = 0;
+}
+
+interface RangeSliderAttributes extends Marko.HTMLAttributes<RangeSliderElement> {
+  value?: number;
+  step?: number;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      // By adding this entry, you can now use `my-custom-element` as a native html tag.
-      "my-custom-element": MyCustomElementAttributes;
+      "range-slider": Marko.NativeTag<RangeSliderAttributes, RangeSliderElement>;
     }
   }
 }
+```
+
+Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers.
+
+```marko
+/* index.marko */
+<let/threshold=20/>
+<range-slider/sliderEl value=threshold step=5 onChange(evt, target) { threshold = target.value }/>
+<button onClick() { sliderEl().focus() }>Adjust</button>
 ```
 
 ### Registering new "global" HTML Attributes
@@ -2575,7 +3124,11 @@ declare global {
 }
 ```
 
+SVG tags take their global attributes from `Marko.SVGAttributes`, augmented the same way.
+
 ### Registering CSS Properties (eg for custom properties)
+
+The [`style=` object](./native-tag.md#style) is typed with `Marko.CSS.Properties`, which extends [csstype](https://github.com/frenic/csstype)'s `PropertiesHyphen`, so keys are hyphen-case CSS property names.
 
 ```ts
 declare global {
@@ -2588,6 +3141,26 @@ declare global {
   }
 }
 ```
+
+### Typing `$global`
+
+`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), but undeclared properties read back as `unknown`. Declaring them types `$global` in every template and [render call](./template.md#inputglobal). In a dedicated declaration file, the leading `export {}` makes `declare global` apply.
+
+```ts
+export {};
+
+declare global {
+  namespace Marko {
+    interface Global {
+      locale?: string;
+      requestId?: string;
+    }
+  }
+}
+```
+
+> [!WARNING]
+> A property declared without `?` is required in every `$global` passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`.
 
 ## TypeScript Syntax in `.marko`
 
@@ -2846,6 +3419,8 @@ div
 All `.marko` files expose the same API on their [default export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export).
 These methods are used to generate an HTML string on the server, and to modify the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) in the browser.
 
+[Targeted compilation](../explanation/targeted-compilation.md) puts [`render`](#templaterenderinput) in server output and [`mount`](#templatemountinput-node-position) in browser output, so each build carries the method for its environment.
+
 ## `Template.render(input)`
 
 | Parameter | Default | Details                                                                                                                 |
@@ -2853,6 +3428,9 @@ These methods are used to generate an HTML string on the server, and to modify t
 | `input`   | `{}`    | The [`input` object](./language.md#input) for the template. May also include [`$global`](#inputglobal) for global state |
 
 For use on the **server**, the `.render()` API on a Marko template provides an object containing a variety of ways to generate an HTML string. Its first parameter becomes the [`input`](./language.md#input) available within the template.
+
+> [!WARNING]
+> A render result holds a single render and the first consumer takes it. Every consumer after that fails with `Cannot read from a consumed render result`, thrown, rejected, or raised as a stream error depending on the consumer. Awaiting more than once is the exception, since the first `await` caches the promise and later ones resolve with the same string.
 
 ### Async Iterator
 
@@ -2866,9 +3444,13 @@ for await (const chunk of Template.render({})) {
 }
 ```
 
+Each iteration yields the HTML flushed since the previous one; a render with no asynchronous content yields a single chunk.
+
+Abandoning the loop with `break`, `return`, or a thrown exception aborts a pending render with the error `Iterator returned before consumed.`, and a later pull rejects with it. The iterator's `throw(reason)` method aborts with the given reason instead.
+
 ### Pipe
 
-The `.pipe()` method in the render result object sends an HTML string into a [NodeJS `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable).
+The `.pipe()` method in the render result object sends the HTML into a [NodeJS `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable). Any object with `write(chunk)` and `end()` serves as a target, and a `flush()` method, if present, is called after every chunk to keep a buffering transform such as [`zlib.createGzip()`](https://nodejs.org/api/zlib.html#zlibcreategzipoptions) streaming.
 
 ```js
 import Template from "./template.marko";
@@ -2892,6 +3474,8 @@ const webHTMLResponse = new Response(Template.render({}).toReadable(), {
 });
 ```
 
+Reading is deferred to the stream's first pull, so wrapping it in a `Response` that is never read leaves the result unconsumed. Cancelling the stream aborts the render with the cancellation reason.
+
 ### Thenable
 
 The render result is a [thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#thenables), so the `.then()`, `.catch()` or `.finally()` methods return a `Promise<string>` that resolves with a buffered HTML string. This may be handled implicitly with the [`await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await) keyword.
@@ -2901,7 +3485,7 @@ const html = await Template.render({});
 ```
 
 > [!NOTE]
-> By using thenable and `await`, you are opting out of Marko's streaming capabilities.
+> Awaiting buffers the entire document into a string, opting out of streaming.
 
 #### toString
 
@@ -2912,7 +3496,7 @@ const html = Template.render({}).toString();
 ```
 
 > [!CAUTION]
-> If there is any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) this method will throw.
+> Any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) makes this method throw `Cannot consume asynchronous render with 'toString'` instead of returning partial HTML. An already aborted render, for example through an aborted [`$global.signal`](#globalsignal), throws the abort reason.
 
 ## `Template.mount(input, node, position?)`
 
@@ -2973,7 +3557,7 @@ The `.update()` method allows providing new [`input`](./language.md#input) to th
 instance.update({ name: "bar" });
 ```
 
-This update to the `input` is applied synchronously.
+This update to the `input` is applied synchronously. The instance's [`$global`](#inputglobal) is fixed at mount, so a `$global` on the update input is stripped and ignored.
 
 #### instance.destroy()
 
@@ -3012,7 +3596,34 @@ instance.value = "#0080ff";
 
 When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
 
-Some properties on the `$global` are picked up by Marko itself and have predefined functionality.
+Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, typed by extending [`Marko.Global`](./typescript.md#typing-global).
+
+### `$global.serializedGlobals`
+
+> `string[] | Record<string, boolean> | undefined`
+
+`$global` stays on the server. Naming a property here also writes its value into the page, which makes it readable as [`$global`](./language.md#global) from client code such as an event handler.
+
+```js
+Template.render({
+  $global: {
+    locale: "en-GB",
+    apiToken: "secret",
+    serializedGlobals: ["locale"],
+  },
+});
+```
+
+Above, `$global.locale` can be read in the browser and `$global.apiToken` cannot. An object selects the same properties and suits a list assembled in more than one place, which is how [Marko Run](../marko-run/runtime.md#context) exposes it as `ctx.serializedGlobals`.
+
+```js
+serializedGlobals: { locale: true, apiToken: false }
+```
+
+A named property holding `undefined` is left out.
+
+> [!WARNING]
+> Serialized values are written into the HTML and can be read by anyone who loads the page. Secrets belong in properties left off the list.
 
 ### `$global.signal`
 
@@ -3026,16 +3637,48 @@ This is used to, for example, prevent continued rendering after an incoming requ
 
 > `string | undefined`
 
-This value should be a string that represents a valid [csp nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce). Marko will automatically set this value as the `nonce` on all assets (`<script>`, `<style>`, etc) rendered by the template.
+Marko writes this [CSP nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce) as the `nonce` attribute on the `<script>` and `<style>` elements it renders: the [`<html-script>` and `<html-style>`](./core-tag.md#html-script--html-style) tags, the `<style>` element rendered for a [`<style>` tag with dynamic values](./core-tag.md#dynamic-values), and the inline scripts written to stream and resume the page.
+
+An explicit `nonce`, written on the element or supplied by a [spread](./language.md#spread-attributes), takes precedence over the injected value.
+
+A `<script>` or `<style>` rendered in the browser reads `cspNonce` from the client [`$global`](./language.md#global), which holds the properties named in [`serializedGlobals`](#globalserializedglobals).
+
+```js
+const cspNonce = crypto.randomUUID();
+
+res.setHeader(
+  "Content-Security-Policy",
+  `script-src 'nonce-${cspNonce}'; style-src 'nonce-${cspNonce}'`,
+);
+
+Template.render({
+  $global: { cspNonce, serializedGlobals: ["cspNonce"] },
+}).pipe(res);
+```
 
 ### `$global.renderId`
 
 > `string | undefined`
 
-The `renderId` is used to isolate distinct server renders (using the same runtime) and is not automatically set. This value should be set such that all server rendered segments of `html` have a unique `renderId` string to avoid conflicts. This is particularly useful for solutions such as [micro-frame](https://github.com/marko-js/micro-frame).
+The `renderId` isolates one render from every other render sharing a runtime in the same document. It always has a value, `"_"` by default.
+
+A template with no `html`, `head`, or `body` tag, compiled with the [`linkAssets`](./lazy-loading.md#bundler-support) compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
+
+Set an explicit value when several renders of a page template share a document, so each one resumes against its own data.
+
+```js
+Template.render({
+  $global: { renderId: "cart" },
+});
+```
+
+> [!WARNING]
+> `renderId` and `runtimeId` become JavaScript identifiers in the inline resume-data scripts, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A UUID, or a hyphenated name such as `my-app`, is not a valid value.
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `runtimeId` is used to isolate runtimes when there are multiple copies on the same page, and is generally not necessary as `@marko/vite` and `@marko/webpack` plugins will automatically provide one based off of the project level `package.json` name.
+The `runtimeId` names the global variable holding the resume data for every render in the document, and defaults to `"M"`. Overriding it isolates multiple copies of Marko sharing a page. It follows the same identifier rule as [`renderId`](#globalrenderid).
+
+Server and browser builds must agree on the value, so it belongs in the bundler configuration rather than an individual render. [`@marko/vite`](https://github.com/marko-js/vite) accepts a `runtimeId` option and bakes it into the generated entries, which apply it to `$global.runtimeId`.

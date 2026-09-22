@@ -47,3 +47,27 @@ If additional updates are scheduled after the queue is consumed but _before the 
 - Content ready to display to the user is not blocked.
 - It is not possible to lock up the application in an infinite update loop.
 - The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).
+
+### Stale Derived Values
+
+Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immediately, so the tag variable reads back the new value on the next line. Everything derived from it, including [`<const>`](./core-tag.md#const) tag variables and the rendered output, is recomputed only when the queue is flushed, so for the remainder of the handler those values are still the ones computed from the previous state.
+
+```marko
+<let/quantity=1>
+<const/subtotal=quantity * input.unitPrice>
+
+<button onClick() {
+  quantity++;
+
+  // `quantity` is already the new value, so the reported total is
+  // recomputed from it rather than read from `subtotal`.
+  input.onQuantityChange(quantity, quantity * input.unitPrice);
+}>
+  Add one
+</button>
+
+<output>${subtotal}</output>
+```
+
+> [!WARNING]
+> Passing `subtotal` here would report the total for the previous `quantity`. Reading the rendered total back out of the DOM has the same problem, since the DOM has not been updated yet.

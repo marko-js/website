@@ -31,7 +31,7 @@ Most triggers accept a [CSS selector](https://developer.mozilla.org/en-US/docs/W
 The selector is matched with [`document.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector), so any selector works, not only IDs: `visible#hero`, `visible.hero`, and `visible[data-hero]` each watch their matching element. Because the selector follows immediately after the trigger name, a bare type selector like `section` must be separated from it with a space, as in `visible section`.
 
 > [!NOTE]
-> If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately (with a warning in development).
+> If a trigger's selector does not match any element on the page, the tag's JavaScript is loaded immediately.
 
 ### `render`
 
@@ -126,6 +126,9 @@ import ChatWidget from "<chat-widget>" with { load: "on-mouseover#chat | idle?ti
 
 A `load` import applies only at the import site, so every consumer of a tag must opt in to lazy loading individually. A tag can instead be made _always_ lazy by wrapping it in a facade: a small tag that lazily imports the real implementation and forwards its input.
 
+> [!WARNING]
+> All import sites of a lazily loaded tag share one bundle, so a tag imported with `load` in more than one template should declare the same trigger at each import site. A facade keeps that trigger in one place.
+
 Placing that implementation in a nested [`tags/` directory](./custom-tag.md#relative-custom-tags) keeps it private to the facade, so the rest of the application can only reach the lazy version.
 
 ```text
@@ -172,3 +175,6 @@ import PriceChart from "<price-chart>" with { load: "visible.chart" }
 ## Bundler Support
 
 Lazy loading is coordinated with the bundler through the `linkAssets` compiler option. [`@marko/vite`](https://github.com/marko-js/vite) (and therefore [Marko Run](../marko-run/getting-started.md)) configures this automatically, so no setup is required.
+
+> [!NOTE]
+> Integrations that do not configure `linkAssets`, such as `@marko/vite` with `linked: false` (used by Storybook), cannot code-split. A `with { load }` import then compiles as a normal eager import, so templates that render a lazily-loaded component still build and render normally.

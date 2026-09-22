@@ -116,6 +116,18 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
+The `step=` attribute may be negative, counting down from a larger `from=`, or fractional.
+
+```marko
+<for|num| from=10 to=0 step=-5>${num}</for>
+// 10 5 0
+
+<for|num| from=0 to=1 step=0.25>${num}</for>
+// 0 0.25 0.5 0.75 1
+```
+
+A nullish `of=` or `in=` renders nothing, so an optional value such as a [repeated attribute tag](./language.md#repeated-attribute-tags) may be iterated directly.
+
 The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
 
 ```marko
@@ -135,6 +147,11 @@ This means the previous example can simplified to:
   ${user.firstName} ${user.lastName}
 </for>
 ```
+
+Each key must be a string or a number, and must be unique within a single loop. An object item is keyed by a stable identifier it carries, such as the `id` above.
+
+> [!WARNING]
+> The `by=` attribute keys a `<for>` that renders [content](./language.md#tag-content). Including it on a `<for>` that [applies attribute tags](./language.md#conditional-attribute-tags) is a compile error.
 
 ## `<let>`
 
@@ -238,6 +255,8 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 </button>
 ```
 
+Because updates are queued, reassigning `count` does not recompute `doubleCount` until the queue is flushed. Reading `doubleCount` inside the handler yields the value computed from the previous `count`, as described in [Stale Derived Values](./reactivity.md#stale-derived-values).
+
 > [!NOTE]
 > The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
 
@@ -274,6 +293,9 @@ The return value may then be used in the parent template:
 <div>${value}</div>
 ```
 
+> [!WARNING]
+> A template or [tag content](./language.md#tag-content) holds at most one `<return>`, at its top level. A value that varies is expressed within `value=` rather than by nesting a `<return>` under [`<if>`](#if--else) or [`<for>`](#for).
+
 ### Assignable Return Value
 
 By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
@@ -299,6 +321,46 @@ In the above example, the exposed tag variable is initialized to an UPPERCASE ve
 <uppercase/value=""/>
 <input onInput(e) { value = e.target.value }/>
 <div>${value}</div> // value is always transformed to uppercase
+```
+
+### Content Return
+
+[Tag content](./language.md#tag-content) may hold its own `<return>`, which is read through a [tag variable](./language.md#tag-variables) on the tag that renders that content.
+
+A [`<define>`](#define) can hold state alongside its markup and expose it where the snippet is rendered.
+
+```marko
+<define/ZoomControls>
+  <let/level=1>
+  <button onClick() { level = Math.max(0.5, level - 0.25) }>Zoom out</button>
+  <button onClick() { level = Math.min(3, level + 0.25) }>Zoom in</button>
+  <return=level/>
+</define>
+
+<ZoomControls/zoom/>
+<img alt="Floor plan" src="/blueprint.png" style=`scale: ${zoom}`>
+```
+
+Content received by a [custom tag](./custom-tag.md) is read the same way. The second type argument of [`Marko.Body`](./typescript.md#typing-content) declares the attributes of the `<return>`, so the tag variable is typed by its `value`.
+
+```marko
+/* char-limit.marko */
+export interface Input {
+  max: number;
+  content: Marko.Body<[], { value: string }>;
+}
+
+<${input.content}/entry/>
+<small>${input.max - entry.length} characters left</small>
+```
+
+```marko
+/* index.marko */
+<char-limit max=140>
+  <let/bio="">
+  <return=bio/>
+  <textarea value:=bio/>
+</char-limit>
 ```
 
 ## `<script>`
@@ -332,6 +394,45 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
   $signal.onabort = () => clearInterval(intervalId);
 </script>
 ```
+
+### Function Value
+
+The effect may also be supplied through the `value=` attribute, usually written with the `=` shorthand. The function receives no arguments and re-runs under the same conditions as a body.
+
+```marko
+<video/clip src=input.src controls/>
+
+<script=() => (clip().muted = input.muted)/>
+```
+
+A function declared elsewhere, such as a [`<const>`](#const), may be referenced directly.
+
+```marko
+<const/remember() {
+  sessionStorage.setItem("sidebar", input.collapsed);
+}>
+
+<script=remember/>
+```
+
+### Await
+
+An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so later effects run without waiting for it.
+
+```marko
+<img/photo>
+<script>
+  const signal = $signal;
+  photo().src = input.src;
+  await photo().decode();
+  if (!signal.aborted) photo().classList.add("loaded");
+</script>
+```
+
+> [!WARNING]
+> Each [`$signal`](./language.md#signal) reference resolves to the current run's signal, so after an `await` it may no longer belong to the suspended body. Capture it in a local before awaiting.
+
+<!---->
 
 > [!TIP]
 > There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
@@ -444,7 +545,7 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)).
+The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)). A `<return>` in the body is exposed separately, at the tag that renders the snippet (see [Content Return](#content-return)).
 
 > [!TIP]
 > The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
@@ -473,7 +574,7 @@ The `<lifecycle>` tag is used to synchronize side-effects from imperative client
 />
 ```
 
-The `this` is consistent across the lifetime of the `<lifecycle>` tag and can be mutated.
+The `this` is consistent across the lifetime of the `<lifecycle>` tag. It contains all attributes of the tag, plus any properties in the object returned from `onMount`. Returning from `onMount` is the way to keep instances of imperative APIs around for the other handlers, and their types are inferred automatically.
 
 ```marko
 client import { WorldMap } from "world-map-api";
@@ -481,13 +582,12 @@ client import { WorldMap } from "world-map-api";
 <let/latitude = 0>
 <let/longitude = 0>
 <div/container/>
-<lifecycle<{ map: WorldMap }>
+<lifecycle
   onMount() {
-    this.map = new WorldMap(container(), { latitude, longitude, zoom });
+    return { map: new WorldMap(container(), { latitude, longitude }) };
   }
   onUpdate() {
     this.map.setCoords(latitude, longitude);
-    this.map.setZoom(zoom);
   }
   onDestroy() {
     this.map.destroy();
@@ -495,8 +595,24 @@ client import { WorldMap } from "world-map-api";
 />
 ```
 
-> [!TIP]
-> All attributes on the `<lifecycle>` tag attributes available as the `this` in any of the event handler attributes.
+> [!WARNING]
+> Attributes of the `<lifecycle>` tag are reassigned onto `this` on every update, so `onMount` must not overwrite existing properties, whether by assignment or from its returned object. In development, doing so throws an error.
+
+`this` may also be extended by direct assignment, providing the extra properties as an explicit type argument.
+
+```marko
+client import { BarChart } from "bar-chart";
+
+<canvas/canvas/>
+<lifecycle<{ chart?: BarChart }>
+  onMount() {
+    this.chart = new BarChart(canvas());
+  }
+  onDestroy() {
+    this.chart?.destroy();
+  }
+/>
+```
 
 ## `<id>`
 
@@ -508,7 +624,7 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-If the `value=` attribute contains a non-nullable value, it will be used instead of the generated one.
+The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
 
 ```marko
 /* textbox.marko */
@@ -520,7 +636,7 @@ export interface Input {
 <id/id=input.id>
 
 <input aria-describedby=id>
-<span id=id>${description}</span>
+<span id=id>${input.description}</span>
 ```
 
 ## `<log>`
@@ -656,3 +772,6 @@ Though not typically needed, vanilla versions of these tags may be written via t
   @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 </html-style>
 ```
+
+> [!CAUTION]
+> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.

@@ -162,7 +162,7 @@ export interface Input {
 <let/count=input.count valueChange=input.countChange>
 
 <button onClick() { count++ }>
-  Count: ${input.count}
+  Count: ${count}
 </button>
 ```
 
@@ -196,7 +196,7 @@ export interface Input {
 <let/count:=input.count>
 
 <button onClick() { count++ }>
-  Count: ${input.count}
+  Count: ${count}
 </button>
 ```
 
@@ -206,7 +206,7 @@ export interface Input {
 
 <counter count:=parentCount/>
 
-<output>${count}</output>
+<output>${parentCount}</output>
 ```
 
 ### Refining Functions

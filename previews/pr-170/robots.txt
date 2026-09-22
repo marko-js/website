@@ -1,1 +1,8 @@
-# Algolia-Crawler-Verif: 77E0315D7AB50620
+User-agent: *
+Allow: /
+
+# PR previews are served from markojs.com/previews/pr-N/ and are left crawlable
+# on purpose: each one sends `<meta name=robots content=noindex>`, which a
+# crawler can only act on if it is allowed to fetch the page.
+
+Sitemap: https://markojs.com/sitemap.xml
