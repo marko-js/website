@@ -121,7 +121,7 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 }
 ```
 
-This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package.
+This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package. Tags written in TypeScript ship their types as `.d.marko` files, as described in [TypeScript](./typescript.md#enabling-typescript-in-your-marko-project).
 
 > [!TIP]
 > Often a tag library will have "private tags" and "exported tags". A common way to achieve this is to have a `tags/` folder _within_ the exported `tags/` folder 🤯.
