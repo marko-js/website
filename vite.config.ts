@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
 import markodown from "./src/util/markodown";
 import markoRuntimeFiles from "./src/util/marko-runtime-files";
+import {
+  markoLspAssets,
+  markoLspOptimizeShims,
+  markoLspResolve,
+} from "./src/util/lsp/assets-plugin";
 
 export default defineConfig({
   // BASE_URL is set to "/previews/pr-N/" by the PR Preview workflow so the site can be
@@ -26,6 +31,13 @@ export default defineConfig({
       external: ["browserslist"],
     },
   },
+  // The playground language server runs in a Web Worker built from
+  // `@marko/language-server`'s browser entry. These plugins are scoped to worker
+  // bundles so the Node builtin shims never leak into the client or server build.
+  worker: {
+    format: "es",
+    plugins: () => [markoLspResolve(), markoLspAssets()],
+  },
   resolve: {
     alias: [
       // marko/translator uses `node:path` which must be shimmed for browser environments.
@@ -47,8 +59,21 @@ export default defineConfig({
   optimizeDeps: {
     include: ["flexsearch"],
     exclude: ["@rollup/browser", "lightningcss-wasm"],
+    // The browser language server bundles `@marko/compiler`; its taglib finder
+    // scans the virtual disk for sibling `.marko` tags through `require("fs")`,
+    // which the optimizer would otherwise stub out. Shim it here so custom-tag
+    // discovery works in the pre-bundled worker.
+    rolldownOptions: {
+      plugins: [markoLspOptimizeShims()],
+    },
   },
-  plugins: [markoRuntimeFiles(), markodown(), marko()],
+  plugins: [
+    markoRuntimeFiles(),
+    markoLspResolve(),
+    markoLspAssets(),
+    markodown(),
+    marko(),
+  ],
   css: {
     modules: {
       generateScopedName:

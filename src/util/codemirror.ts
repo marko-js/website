@@ -24,9 +24,7 @@ import {
 } from "@codemirror/commands";
 import {
   acceptCompletion,
-  autocompletion,
   closeBrackets,
-  completeAnyWord,
   completionKeymap,
 } from "@codemirror/autocomplete";
 import { foldGutter, foldService } from "@codemirror/language";
@@ -68,7 +66,6 @@ export default [
   highlightActiveLine(),
   highlightSelectionMatches(),
   highlightActiveLineGutter(),
-  autocompletion({ override: [completeAnyWord] }),
   EditorState.allowMultipleSelections.of(true),
   EditorState.languageData.of(() => baseLanguageData),
   langConfig.of(shiki()),
