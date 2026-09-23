@@ -2,6 +2,7 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "rootDir": "src",
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["dom", "ESNext"],
     "module": "ESNext",

@@ -13,14 +13,14 @@ import { format } from "prettier/standalone";
 import * as prettierMarko from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
 import { glob } from "glob";
-import type { HeadingList } from "../types";
-import { buildSearchIndex } from "./search-index-builder";
+import type { HeadingList } from "../types.ts";
+import { buildSearchIndex } from "./search-index-builder.ts";
 import {
   defaultBannerSources,
   docsBannerSources,
   renderDefaultBanner,
   renderDocsBanner,
-} from "./og-banner";
+} from "./og-banner.ts";
 
 export default function markodownPlugin(): PluginOption {
   return {

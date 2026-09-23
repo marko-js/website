@@ -3,7 +3,7 @@ import path from "path";
 import { glob } from "glob";
 import GithubSlugger from "github-slugger";
 import { marked, type Token, type Tokens } from "marked";
-import type { SearchBlock } from "./search-worker";
+import type { SearchBlock } from "./search-worker.ts";
 
 /**
  * Category metadata: weight (base search score) + display label.
