@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 44">
+  <marker id="a" markerHeight="8" markerWidth="5" orient="46" refX="3" refY="4">
+    <path fill="none" stroke="#000" stroke-linecap="round" d="M1 1 L4 4 L1 7"/>
+  </marker>
+  <path fill="none" stroke="#000" stroke-linecap="round" stroke-width="6" marker-end="url(#a)" d="M4 30C30 0 50 0 80 36"/>
+</svg>
