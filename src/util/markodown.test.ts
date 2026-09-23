@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractDescription } from "./markodown";
+import { extractDescription, formatMarkoCode } from "./markodown";
 
 describe("extractDescription", () => {
   it("uses the paragraph that opens the doc", () => {
@@ -63,5 +63,26 @@ describe("extractDescription", () => {
 
     expect(description.length).toBeLessThanOrEqual(160);
     expect(description).toMatch(/word…$/);
+  });
+});
+
+describe("formatMarkoCode", () => {
+  it("shows the source in both variants when it has no types", async () => {
+    const code = await formatMarkoCode(
+      "<let/degF=80>\n\n<input value=degF valueChange(value) { degF = parseFloat(value) }>\n",
+    );
+    expect(code.html).toBe(code.htmlTS);
+    expect(code.concise).toBe(code.conciseTS);
+    expect(code.html).toContain("\n\n<input");
+  });
+
+  it("formats the JavaScript form of typed source", async () => {
+    const code = await formatMarkoCode(
+      "<div>\n  <button onClick(event: MouseEvent) { handle(event as Event) }>go</button>\n</div>\n",
+    );
+    expect(code.htmlTS).toContain("event: MouseEvent");
+    expect(code.html).toBe(
+      "<div>\n  <button onClick(event) {\n    handle(event);\n  }>\n    go\n  </button>\n</div>",
+    );
   });
 });
