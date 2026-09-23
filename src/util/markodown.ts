@@ -10,6 +10,8 @@ import {
 import GithubSlugger from "github-slugger";
 import { type PluginOption } from "vite";
 import { format } from "prettier/standalone";
+import * as babel from "prettier/plugins/babel";
+import * as estree from "prettier/plugins/estree";
 import * as prettierMarko from "prettier-plugin-marko";
 import * as compiler from "@marko/compiler";
 import { glob } from "glob";
@@ -368,49 +370,10 @@ function markoDocs(): MarkedExtension {
           if (!modifiers.includes("no-format")) {
             const unlock = await acquireMutexLock();
             try {
-              const text = (() => {
-                try {
-                  return compiler.compileSync(
-                    token.text,
-                    token.filename || "temp.marko",
-                    {
-                      output: "source",
-                      stripTypes: true,
-                      sourceMaps: false,
-                    },
-                  ).code;
-                } catch {
-                  return token.text;
-                }
-              })();
-
-              const [htmlFormat, conciseFormat, htmlTSFormat, conciseTSFormat] =
-                await Promise.all([
-                  format(text, {
-                    parser: "marko",
-                    plugins: [prettierMarko],
-                    markoSyntax: "html",
-                  }),
-                  format(text, {
-                    parser: "marko",
-                    plugins: [prettierMarko],
-                    markoSyntax: "concise",
-                  }),
-                  format(token.text, {
-                    parser: "marko",
-                    plugins: [prettierMarko],
-                    markoSyntax: "html",
-                  }),
-                  format(token.text, {
-                    parser: "marko",
-                    plugins: [prettierMarko],
-                    markoSyntax: "concise",
-                  }),
-                ]);
-              token.html = htmlFormat.trim();
-              token.concise = conciseFormat.trim();
-              token.htmlTS = htmlTSFormat.trim();
-              token.conciseTS = conciseTSFormat.trim();
+              Object.assign(
+                token,
+                await formatMarkoCode(token.text, token.filename),
+              );
             } catch (cause) {
               // Prettier's error says nothing about where the snippet came
               // from, and this is the only place that knows.
@@ -547,6 +510,55 @@ function headingSections(headings: HeadingList): MarkedExtension {
 }
 
 let lock: Promise<void> | undefined;
+/**
+ * Formats a `marko` code block as the HTML and concise variants of its source,
+ * and of its JavaScript form, which is the same source when it has no types.
+ */
+export async function formatMarkoCode(source: string, filename?: string) {
+  const html = { parser: "marko", markoSyntax: "html" } as const;
+  const concise = { ...html, markoSyntax: "concise" } as const;
+  const tsPlugins = { plugins: [prettierMarko] };
+  // The JS text is the compiler's reprint, which only the JS parsers lay out.
+  const jsPlugins = { plugins: [prettierMarko, babel, estree] };
+  const js = stripTypes(source, filename);
+  const [htmlTS, conciseTS] = await Promise.all([
+    format(source, { ...html, ...tsPlugins }),
+    format(source, { ...concise, ...tsPlugins }),
+  ]);
+  const [htmlJS, conciseJS] = js
+    ? await Promise.all([
+        format(js, { ...html, ...jsPlugins }),
+        format(js, { ...concise, ...jsPlugins }),
+      ])
+    : [htmlTS, conciseTS];
+
+  return {
+    html: htmlJS.trim(),
+    concise: conciseJS.trim(),
+    htmlTS: htmlTS.trim(),
+    conciseTS: conciseTS.trim(),
+  };
+}
+
+// The source with its types stripped, or undefined when it has none, or does
+// not compile, since the compiler's reprint also drops its layout.
+function stripTypes(source: string, filename = "temp.marko") {
+  try {
+    const opts = { output: "source", sourceMaps: false } as const;
+    const js = compiler.compileSync(source, filename, {
+      ...opts,
+      stripTypes: true,
+    }).code;
+    const ts = compiler.compileSync(source, filename, {
+      ...opts,
+      stripTypes: false,
+    }).code;
+    return js === ts ? undefined : js;
+  } catch {
+    return undefined;
+  }
+}
+
 async function acquireMutexLock() {
   const currLock = lock;
   let resolve!: () => void;

@@ -49,14 +49,14 @@ importers:
         specifier: ^0.3.11
         version: 0.3.11
       '@marko/compiler':
-        specifier: ^5.42.6
-        version: 5.42.6
+        specifier: ^5.42.8
+        version: 5.42.8
       '@marko/run':
         specifier: ^0.11.12
-        version: 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
+        version: 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
       '@marko/run-adapter-static':
         specifier: ^2.0.10
-        version: 2.0.10(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)
+        version: 2.0.10(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)
       '@marko/type-check':
         specifier: ^3.2.1
         version: 3.2.1
@@ -118,8 +118,8 @@ importers:
         specifier: ^18.0.14
         version: 18.0.14
       marko:
-        specifier: ^6.3.53
-        version: 6.3.53
+        specifier: ^6.3.55
+        version: 6.3.55
       path:
         specifier: ./shim/path
         version: link:shim/path
@@ -139,8 +139,8 @@ importers:
         specifier: ^3.9.8
         version: 3.9.8
       prettier-plugin-marko:
-        specifier: ^4.1.1
-        version: 4.1.1
+        specifier: ^4.1.3
+        version: 4.1.3
       prettier-plugin-packagejson:
         specifier: ^3.0.2
         version: 3.0.2(prettier@3.9.8)
@@ -769,8 +769,8 @@ packages:
   '@marijn/find-cluster-break@1.0.4':
     resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
 
-  '@marko/compiler@5.42.6':
-    resolution: {integrity: sha512-I5OlCAO40fiKiRYgK18U+rDg91X7AVTFgY4lwy29BShhxZyw5NRvKJ7RzAut+gC8WBrr5R7fn9aRZvxkd6MEHg==}
+  '@marko/compiler@5.42.8':
+    resolution: {integrity: sha512-82hl2ujlU4hth5hl0QITftDUQK/dPa83dcImRl3+e1FGywDjMQuq64SzEx7LmKy+j/A8R1YlTQftJleVh0a/aw==}
     engines: {node: '>=22'}
 
   '@marko/language-tools@2.7.0':
@@ -1816,8 +1816,8 @@ packages:
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
 
-  htmljs-parser@5.15.1:
-    resolution: {integrity: sha512-xGLrimEFW0xQabwGz0AfAB9AEC9I7iU+3SLF8aLr004UDhWt/LDAL7NhbbcvABxXCZdqS7cnfDJmDfd7DP/Mfg==}
+  htmljs-parser@5.17.1:
+    resolution: {integrity: sha512-ww3wkVhxedYGoqZIFbA5tQfgyDvdqv2rIOkMsdu4fez2XOAcOgR+3ZLKbpFwhfaOWYAmSpj8JFrjOqRcjAg+Sg==}
 
   htmlparser2@10.1.0:
     resolution: {integrity: sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ==}
@@ -2048,8 +2048,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marko@6.3.53:
-    resolution: {integrity: sha512-JujS65aOd7BG18WL/Qkad7qQaLuJ1zCguHdXiAaKLcuVdAY+zeoHswBw09CqvGUiPmTpVlSEWS07eP30ANc5KQ==}
+  marko@6.3.55:
+    resolution: {integrity: sha512-cnl1AOzbV450og62QpcYTTBT687GCp8e1OGKxnuxCU+3TVY0iitbR9VNjf5ShxRlRfrzm3dVFrxQhLkQdndAcQ==}
     engines: {node: '>=22'}
 
   mdast-util-to-hast@13.2.1:
@@ -2446,8 +2446,8 @@ packages:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prettier-plugin-marko@4.1.1:
-    resolution: {integrity: sha512-TM2GLrxqXMZE8saHbGfcDlusWngd9AsByj55TjQxcPd3OFQwTU3AMh868YvfTCgSuAdN/Ch/Gc9mAGnLOJRhow==}
+  prettier-plugin-marko@4.1.3:
+    resolution: {integrity: sha512-FK8mXraA6c9SUuaUZjp2hEwjGMdU6KTlwSNmWTgVzSxnab2TzbnNPIjRkl5x8otM1KKmmSiGy/VRP4QaRJ+adQ==}
 
   prettier-plugin-packagejson@3.0.2:
     resolution: {integrity: sha512-kmoj3hEynXwoHDo8ZhmWAIjRBoQWCDUVackiWfSDWdgD0rS3LGB61T9zoVbume/cotYdCoadUh4sqViAmXvpBQ==}
@@ -3565,11 +3565,11 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.4': {}
 
-  '@marko/compiler@5.42.6':
+  '@marko/compiler@5.42.8':
     dependencies:
       '@luxass/strip-json-comments': 2.0.2
       complain: 1.6.1
-      htmljs-parser: 5.15.1
+      htmljs-parser: 5.17.1
       jsesc: 3.1.0
       kleur: 4.1.5
       lasso-package-root: 1.0.1
@@ -3584,13 +3584,13 @@ snapshots:
   '@marko/language-tools@2.7.0':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.42.6
-      htmljs-parser: 5.15.1
+      '@marko/compiler': 5.42.8
+      htmljs-parser: 5.17.1
       relative-import-path: 1.0.1
 
-  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)':
+  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)':
     dependencies:
-      '@marko/run': 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
+      '@marko/run': 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
       compression: 1.8.2(supports-color@10.2.2)
       htmlparser2: 10.1.0
       kleur: 4.1.5
@@ -3599,15 +3599,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@marko/run-explorer@2.0.5(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))':
+  '@marko/run-explorer@2.0.5(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
-      '@marko/run': 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
+      '@marko/run': 0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)
 
-  '@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)':
+  '@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0)':
     dependencies:
-      '@marko/compiler': 5.42.6
-      '@marko/run-explorer': 2.0.5(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.53)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))
-      '@marko/vite': 6.1.12(@marko/compiler@5.42.6)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))
+      '@marko/compiler': 5.42.8
+      '@marko/run-explorer': 2.0.5(@marko/run@0.11.12(@types/node@26.6.2)(esbuild@0.27.7)(marko@6.3.55)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))
+      '@marko/vite': 6.1.12(@marko/compiler@5.42.8)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))
       '@oxc-project/types': 0.136.0
       '@remix-run/form-data-parser': 0.17.6
       '@standard-schema/spec': 1.1.0
@@ -3621,7 +3621,7 @@ snapshots:
       glob: 13.0.6
       human-format: 1.2.1
       kleur: 4.1.5
-      marko: 6.3.53
+      marko: 6.3.55
       parse-node-args: 1.1.3
       rolldown: 1.2.9
       sade: 1.8.1
@@ -3646,21 +3646,21 @@ snapshots:
   '@marko/type-check@3.2.1':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.42.6
+      '@marko/compiler': 5.42.8
       '@marko/language-tools': 2.7.0
       arg: 5.0.2
       kleur: 4.1.5
       typescript: 6.0.3
 
-  '@marko/vite@6.1.12(@marko/compiler@5.42.6)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))':
+  '@marko/vite@6.1.12(@marko/compiler@5.42.8)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(sass-embedded@1.105.0)(sass@1.105.0)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
       '@chialab/estransform': 0.19.1
-      '@marko/compiler': 5.42.6
+      '@marko/compiler': 5.42.8
       anymatch: 3.1.3
       domelementtype: 2.3.0
       domhandler: 5.0.3
       fast-glob: 3.3.3
-      htmljs-parser: 5.15.1
+      htmljs-parser: 5.17.1
       htmlparser2: 10.1.0
       relative-import-path: 1.0.1
       resolve-sync: 1.2.2
@@ -4492,7 +4492,7 @@ snapshots:
 
   html-void-elements@3.0.0: {}
 
-  htmljs-parser@5.15.1: {}
+  htmljs-parser@5.17.1: {}
 
   htmlparser2@10.1.0:
     dependencies:
@@ -4702,9 +4702,9 @@ snapshots:
 
   marked@18.0.14: {}
 
-  marko@6.3.53:
+  marko@6.3.55:
     dependencies:
-      '@marko/compiler': 5.42.6
+      '@marko/compiler': 5.42.8
       csstype: 3.2.3
       fastest-levenshtein: 1.0.16
       magic-string: 0.30.21
@@ -5264,9 +5264,9 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prettier-plugin-marko@4.1.1:
+  prettier-plugin-marko@4.1.3:
     dependencies:
-      htmljs-parser: 5.15.1
+      htmljs-parser: 5.17.1
 
   prettier-plugin-packagejson@3.0.2(prettier@3.9.8):
     dependencies:
