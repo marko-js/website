@@ -1,8 +1,8 @@
 import path from "node:path";
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
-import markodown from "./src/util/markodown";
-import markoRuntimeFiles from "./src/util/marko-runtime-files";
+import markodown from "./src/util/markodown.ts";
+import markoRuntimeFiles from "./src/util/marko-runtime-files.ts";
 
 export default defineConfig({
   // BASE_URL is set to "/previews/pr-N/" by the PR Preview workflow so the site can be
