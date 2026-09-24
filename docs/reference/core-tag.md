@@ -774,4 +774,6 @@ Though not typically needed, vanilla versions of these tags may be written via t
 ```
 
 > [!CAUTION]
+> The contents of these tags are executed as code, and interpolations are escaped only enough to keep them from closing the element, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never interpolate user-provided content into them.
+>
 > Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.
