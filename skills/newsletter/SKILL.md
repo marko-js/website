@@ -45,6 +45,8 @@ The newsletter is for Marko developers, so drop anything internal or inconsequen
 - Test-runner / snapshot / CI chores, dead-code cleanup, internal refactors with no behavior change, release dist-tag plumbing, logo updates.
 - Micro-optimizations with no user-visible effect, unless they roll up into a notable number.
 
+Class API interop changes stay brief and apart from the main themes.
+
 Keep features, user-facing bug fixes, performance wins, editor/tooling improvements, and playground changes. Group the survivors into themes (assets, await, editor support, performance, and so on) rather than listing PRs one by one.
 
 ## Step 3 — Understand each change
@@ -62,6 +64,7 @@ From the body and that context, determine:
 - **What kind of change it is.** Features read as features, fixes read as fixes. The `Task` field and the commit prefix (`feat`/`fix`/`perf`/`refactor`) are hints, but confirm against the body. When a section is all fixes, say so plainly, so improvements to existing behavior are not mistaken for new capabilities.
 - **A fix for this month's own feature.** When a PR corrects a regression or edge case in a feature that also shipped this month, describe the net behavior that actually shipped and fold the fix in as a correctness follow-up. Do not list the feature and its fix as two separate headline items, and do not drop the fix.
 - **Real magnitudes.** Pull performance numbers from the PR, never invent them. State them with their scope rather than vaguely, qualifying a percentage with what it was measured against or a benchmark multiple as measured in isolation, and keep any caveat the PR itself makes. When a PR gives no figure, describe the mechanism and the direction of the effect (smaller output, fewer allocations, less work to resume) rather than reaching for a vague percentage.
+- **The outcome for real apps.** Say what changes for an app, never which test or how many fixtures showed it. Drop a change whose real-world effect is unclear rather than describing its mechanism.
 - **The user-facing shape.** Skip implementation detail in prose. Prefer "in debug mode" over an env var name; show an illustrative compiled-output fragment, not a dump of internal helper names.
 
 ## Step 4 — Gather community content
