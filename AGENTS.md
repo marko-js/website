@@ -8,11 +8,13 @@
 - Never document a known bug as intended behavior. Grep `agent-feedback/` in the `marko` repo first; a hit means file the defect and leave the docs alone.
 - Drop a topic that loses its main claim to the rule above. What remains is the least verified part of it.
 - Prefer filing a defect to writing a caveat that teaches readers to live with one.
+- Describe Marko 6. Marko 5 (Class API) details belong only in the migration and interop guides.
 
 ## Verifying Claims
 
 - Verify behavior against runtime source, a fixture snapshot, or a compiled probe. An audit, an issue, or an existing docs sentence is not evidence.
 - Verify examples render, not only that they compile.
+- For compiler and bundler APIs, check how `@marko/vite` and the `marko` fixture harness (`packages/runtime-tags/src/__tests__/utils/bundle.ts`) call them.
 - Grep `docs/` for the scenario and the variable names to check example uniqueness. Reading the edited page is not enough.
 
 ## Voice and Tone
