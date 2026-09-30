@@ -203,6 +203,10 @@ Compiles for production: templates import the production runtime instead of its 
 
 A list of template paths that receive short, sequential ids when [`optimize`](#optimize) is on. Server and browser compiles must use the same list.
 
+### `patches`
+
+Compiles templates to also render a page as a patch that updates the live page, used by [Persisted Pages](../marko-run/persisted-pages.md). Server and browser compiles must use the same value. Experimental: the output may change in any release.
+
 ### `runtimeId`
 
 Distinguishes the Marko runtimes on a page that loads more than one of them. It must start with a letter or underscore and contain only letters, numbers and underscores.
