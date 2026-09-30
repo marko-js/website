@@ -45,6 +45,13 @@ How the router treats trailing slashes in request paths. Marko Run routes are ca
 > [!TIP]
 > The redirect options are recommended for public sites since they ensure each page is served from a single canonical URL, which search engines treat as one page.
 
+### `patches`
+
+Answers navigations between the application's routes by updating the live page instead of loading a new document. See [Persisted Pages](./persisted-pages.md). Defaults to `false`.
+
+> [!CAUTION]
+> This option is experimental and may change in any release.
+
 ## Next Steps
 
 - [Adapters](./adapters.md)
