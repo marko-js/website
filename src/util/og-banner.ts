@@ -24,11 +24,12 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 const STRIPE = 14;
 // Compact link previews (Slack, iMessage, WhatsApp) crop the banner to its
-// centered square. Everything that has to survive the crop sits in a column of
-// that width, and only decoration goes beside it.
+// centered square. The widget, section and title sit in a column of that width
+// and survive the crop. The logo and domain sit in the margins beside it.
 const COLUMN_PADDING = 44;
 const COLUMN_WIDTH = HEIGHT - COLUMN_PADDING * 2;
 const MARGIN = (WIDTH - HEIGHT) / 2;
+const FOOTER = 48;
 
 // The outer colors end where the crop begins, so it never shows a sliver.
 const chevronStripe = `linear-gradient(90deg, #00CFFB ${MARGIN}px, #7CED64 ${MARGIN}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - MARGIN}px, #FF5467 ${WIDTH - MARGIN}px)`;
@@ -56,7 +57,7 @@ const assetPath = (...segments: string[]) =>
 const widgetPath = (section: string) =>
   assetPath(
     "widget",
-    `${(sections[section] ?? fallbackSection).widget}-legs-dark.svg`,
+    `${(sections[section] ?? fallbackSection).widget}-dark.svg`,
   );
 
 export function docsBannerSources(section: string) {
@@ -128,7 +129,11 @@ function loadWidget(section: string) {
   return widget;
 }
 
-function frame(accent: string, content: Element[], aside?: Element): Element {
+function frame(
+  accent: string,
+  content: Element[],
+  asides: Element[] = [],
+): Element {
   return {
     type: "div",
     props: {
@@ -156,7 +161,7 @@ function frame(accent: string, content: Element[], aside?: Element): Element {
               alignItems: "center",
               textAlign: "center",
               width: HEIGHT,
-              padding: `56px ${COLUMN_PADDING}px 48px`,
+              padding: `24px ${COLUMN_PADDING}px ${FOOTER}px`,
             },
             children: content,
           },
@@ -172,27 +177,39 @@ function frame(accent: string, content: Element[], aside?: Element): Element {
             },
           },
         },
-        ...(aside ? [aside] : []),
+        ...asides,
       ],
     },
   };
 }
 
 // The largest size that keeps the longest word on one line and the title to
-// two lines, or three at the smaller sizes. Ubuntu Bold averages a little
-// under 0.6em per character.
+// two lines, or three below 64px. Ubuntu Bold averages about 0.56em per
+// character.
 function titleSize(title: string) {
   const longestWord = Math.max(
     ...title.split(/\s+/).map((word) => word.length),
   );
   return (
-    [84, 72, 64, 56].find((size) => {
-      const perLine = Math.floor(COLUMN_WIDTH / (size * 0.6));
+    [64, 56].find((size) => {
+      const perLine = Math.floor(COLUMN_WIDTH / (size * 0.56));
       return (
-        longestWord <= perLine && title.length <= perLine * (size > 64 ? 2 : 3)
+        longestWord <= perLine && title.length <= perLine * (size > 56 ? 2 : 3)
       );
     }) ?? 48
   );
+}
+
+// Widgets drawn without legs sit at a slight tilt across the site, 3 to 6
+// degrees either way. Hashing the title keeps a page's tilt stable.
+function widgetTilt(title: string) {
+  // FNV-1a, read from the top bits since the low ones barely mix.
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < title.length; i++) {
+    hash = Math.imul(hash ^ title.charCodeAt(i), 0x01000193);
+  }
+  const step = hash >>> 29;
+  return ((step % 4) + 3) * (step < 4 ? 1 : -1);
 }
 
 function docsBanner(
@@ -211,18 +228,25 @@ function docsBanner(
     accent,
     [
       {
-        type: "img",
-        props: { src: logomark, width: 145, height: 80 },
-      },
-      {
         type: "div",
         props: {
           style: {
             display: "flex",
             flexDirection: "column",
+            flexGrow: 1,
+            justifyContent: "center",
             alignItems: "center",
           },
           children: [
+            {
+              type: "img",
+              props: {
+                src: widget,
+                width: 280,
+                height: 280,
+                style: { transform: `rotate(${widgetTilt(title)}deg)` },
+              },
+            },
             {
               type: "div",
               props: {
@@ -232,6 +256,7 @@ function docsBanner(
                   letterSpacing: 6,
                   textTransform: "uppercase",
                   color: accent,
+                  marginTop: 4,
                   marginBottom: 18,
                 },
                 children: label,
@@ -256,29 +281,32 @@ function docsBanner(
           ],
         },
       },
+    ],
+    [
+      {
+        type: "img",
+        props: {
+          src: logomark,
+          width: 200,
+          height: 110,
+          style: { position: "absolute", left: 56, top: 56 },
+        },
+      },
       {
         type: "div",
         props: {
-          style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
+          style: {
+            position: "absolute",
+            right: 72,
+            bottom: STRIPE + FOOTER,
+            fontSize: 28,
+            color: "#cccccc",
+            fontFamily: "Ubuntu Mono",
+          },
           children: "markojs.com",
         },
       },
     ],
-    // Stands on the stripe, centered in the margin right of the column. The
-    // artwork leaves 12px under its feet.
-    {
-      type: "img",
-      props: {
-        src: widget,
-        width: 150,
-        height: 225,
-        style: {
-          position: "absolute",
-          right: (MARGIN - 150) / 2,
-          bottom: STRIPE - 12,
-        },
-      },
-    },
   );
 }
 
@@ -305,7 +333,7 @@ function defaultBanner(logo: string, suffix?: string): Element {
                   type: "div",
                   props: {
                     style: {
-                      fontSize: titleSize(suffix),
+                      fontSize: 84,
                       fontWeight: 700,
                       lineHeight: 1,
                     },
