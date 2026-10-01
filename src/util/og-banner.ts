@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import satori from "satori";
@@ -23,15 +24,14 @@ const fallbackSection: Section = { widget: "crash", accent: "#cccccc" };
 const WIDTH = 1200;
 const HEIGHT = 630;
 const STRIPE = 14;
-// Compact link previews (Slack, iMessage, WhatsApp) crop the banner to its
-// centered square. The widget, section and title sit in a column of that width
-// and survive the crop. The logo and domain sit in the margins beside it.
+// Compact link previews (Slack, iMessage) crop to the centered square.
+const CROP_SIZE = HEIGHT;
+const CROP_INSET = (WIDTH - CROP_SIZE) / 2;
 const COLUMN_PADDING = 44;
-const COLUMN_WIDTH = HEIGHT - COLUMN_PADDING * 2;
-const MARGIN = (WIDTH - HEIGHT) / 2;
+const COLUMN_WIDTH = CROP_SIZE - COLUMN_PADDING * 2;
 
-// The outer colors end where the crop begins, so it never shows a sliver.
-const chevronStripe = `linear-gradient(90deg, #00CFFB ${MARGIN}px, #7CED64 ${MARGIN}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - MARGIN}px, #FF5467 ${WIDTH - MARGIN}px)`;
+// The outer colors stop at the crop's edges, or it would show slivers of them.
+const chevronStripe = `linear-gradient(90deg, #00CFFB ${CROP_INSET}px, #7CED64 ${CROP_INSET}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - CROP_INSET}px, #FF5467 ${WIDTH - CROP_INSET}px)`;
 
 interface Element {
   type: string;
@@ -44,7 +44,7 @@ interface Element {
 
 let assets:
   | Promise<{
-      fonts: { name: string; data: Buffer; weight: 400 | 700 }[];
+      fonts: { name: string; data: Buffer; weight: 700 }[];
       logomark: string;
       logo: string;
     }>
@@ -76,8 +76,7 @@ function loadAssets() {
       "ubuntu",
       "files",
     );
-    const [regular, bold, mono, logomark, logo] = await Promise.all([
-      fs.readFile(path.join(fontDir, "ubuntu-latin-400-normal.woff")),
+    const [bold, mono, logomark, logo] = await Promise.all([
       fs.readFile(path.join(fontDir, "ubuntu-latin-700-normal.woff")),
       fs.readFile(
         path.join(
@@ -98,7 +97,6 @@ function loadAssets() {
 
     return {
       fonts: [
-        { name: "Ubuntu", data: regular, weight: 400 as const },
         { name: "Ubuntu", data: bold, weight: 700 as const },
         { name: "Ubuntu Mono", data: mono, weight: 700 as const },
       ],
@@ -128,10 +126,18 @@ function loadWidget(section: string) {
   return widget;
 }
 
+const domain: Element = {
+  type: "div",
+  props: {
+    style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
+    children: "markojs.com",
+  },
+};
+
 function frame(
   accent: string,
   content: Element[],
-  asides: Element[] = [],
+  overlays: Element[] = [],
 ): Element {
   return {
     type: "div",
@@ -156,10 +162,10 @@ function frame(
               display: "flex",
               flexDirection: "column",
               flexGrow: 1,
-              justifyContent: "space-between",
+              justifyContent: "center",
               alignItems: "center",
               textAlign: "center",
-              width: HEIGHT,
+              width: CROP_SIZE,
               padding: `24px ${COLUMN_PADDING}px 48px`,
             },
             children: content,
@@ -176,39 +182,32 @@ function frame(
             },
           },
         },
-        ...asides,
+        ...overlays,
       ],
     },
   };
 }
 
-// The largest size that keeps the longest word on one line and the title to
-// two lines, or three below 64px. Ubuntu Bold averages about 0.56em per
-// character.
+const titleSizes = [
+  { size: 64, lines: 2 },
+  { size: 56, lines: 3 },
+];
+
 function titleSize(title: string) {
-  const longestWord = Math.max(
-    ...title.split(/\s+/).map((word) => word.length),
-  );
+  const longestWord = Math.max(...title.split(" ").map((word) => word.length));
   return (
-    [64, 56].find((size) => {
+    titleSizes.find(({ size, lines }) => {
+      // Ubuntu Bold averages about 0.56em per character.
       const perLine = Math.floor(COLUMN_WIDTH / (size * 0.56));
-      return (
-        longestWord <= perLine && title.length <= perLine * (size > 56 ? 2 : 3)
-      );
-    }) ?? 48
+      return longestWord <= perLine && title.length <= perLine * lines;
+    })?.size ?? 48
   );
 }
 
-// Widgets drawn without legs sit at a slight tilt across the site, 3 to 6
-// degrees either way. Hashing the title keeps a page's tilt stable.
+// 3 to 6 degrees either way, like the legless widgets elsewhere on the site.
 function widgetTilt(title: string) {
-  // FNV-1a, read from the top bits since the low ones barely mix.
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < title.length; i++) {
-    hash = Math.imul(hash ^ title.charCodeAt(i), 0x01000193);
-  }
-  const step = hash >>> 29;
-  return ((step % 4) + 3) * (step < 4 ? 1 : -1);
+  const [magnitude, direction] = createHash("sha1").update(title).digest();
+  return (3 + (magnitude % 4)) * (direction % 2 ? 1 : -1);
 }
 
 function docsBanner(
@@ -227,86 +226,59 @@ function docsBanner(
     accent,
     [
       {
+        type: "img",
+        props: {
+          src: widget,
+          width: 280,
+          height: 280,
+          style: { transform: `rotate(${widgetTilt(title)}deg)` },
+        },
+      },
+      {
         type: "div",
         props: {
           style: {
-            display: "flex",
-            flexDirection: "column",
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            fontSize: 30,
+            fontWeight: 700,
+            letterSpacing: 6,
+            textTransform: "uppercase",
+            color: accent,
+            marginTop: 4,
+            marginBottom: 18,
           },
-          children: [
-            {
-              type: "img",
-              props: {
-                src: widget,
-                width: 280,
-                height: 280,
-                style: { transform: `rotate(${widgetTilt(title)}deg)` },
-              },
-            },
-            {
-              type: "div",
-              props: {
-                style: {
-                  fontSize: 30,
-                  fontWeight: 700,
-                  letterSpacing: 6,
-                  textTransform: "uppercase",
-                  color: accent,
-                  marginTop: 4,
-                  marginBottom: 18,
-                },
-                children: label,
-              },
-            },
-            {
-              type: "div",
-              props: {
-                style: {
-                  fontSize: titleSize(title),
-                  fontWeight: 700,
-                  lineHeight: 1.12,
-                  letterSpacing: -1,
-                  maxWidth: COLUMN_WIDTH,
-                  // satori balances a lone word into a box narrower than the
-                  // word, which pushes it off center.
-                  textWrap: title.includes(" ") ? "balance" : "wrap",
-                },
-                children: title,
-              },
-            },
-          ],
+          children: label,
+        },
+      },
+      {
+        type: "div",
+        props: {
+          style: {
+            fontSize: titleSize(title),
+            fontWeight: 700,
+            lineHeight: 1.12,
+            letterSpacing: -1,
+            // satori's balance shrinks a lone word's box, pushing it off center.
+            textWrap: title.includes(" ") ? "balance" : "wrap",
+          },
+          children: title,
         },
       },
     ],
     [
-      // A header line across both margins: the domain left, the logo right.
       {
         type: "div",
         props: {
           style: {
             position: "absolute",
             top: 48,
-            left: 64,
+            left: 56,
             right: 56,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           },
           children: [
-            {
-              type: "div",
-              props: {
-                style: {
-                  fontSize: 28,
-                  color: "#cccccc",
-                  fontFamily: "Ubuntu Mono",
-                },
-                children: "markojs.com",
-              },
-            },
+            domain,
             {
               type: "img",
               props: { src: logomark, width: 200, height: 110 },
@@ -319,48 +291,47 @@ function docsBanner(
 }
 
 function defaultBanner(logo: string, suffix?: string): Element {
-  return frame("#00CFFB", [
-    { type: "div", props: { style: { display: "flex" } } },
-    {
-      type: "div",
-      props: {
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 72,
-        },
-        children: [
-          {
-            type: "img",
-            props: { src: logo, width: 500, height: 103 },
-          },
-          ...(suffix
-            ? [
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      fontSize: 84,
-                      fontWeight: 700,
-                      lineHeight: 1,
-                    },
-                    children: suffix,
-                  },
+  return frame(
+    "#00CFFB",
+    [
+      {
+        type: "img",
+        props: { src: logo, width: 500, height: 103 },
+      },
+      ...(suffix
+        ? [
+            {
+              type: "div",
+              props: {
+                style: {
+                  fontSize: 84,
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginTop: 72,
                 },
-              ]
-            : []),
-        ],
+                children: suffix,
+              },
+            },
+          ]
+        : []),
+    ],
+    [
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute",
+            bottom: STRIPE + 48,
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+          },
+          children: domain,
+        },
       },
-    },
-    {
-      type: "div",
-      props: {
-        style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
-        children: "markojs.com",
-      },
-    },
-  ]);
+    ],
+  );
 }
 
 async function render(element: Element): Promise<Buffer> {
