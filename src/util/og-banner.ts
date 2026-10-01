@@ -20,8 +20,18 @@ const sections: Record<string, Section> = {
 
 const fallbackSection: Section = { widget: "crash", accent: "#cccccc" };
 
-const chevronStripe =
-  "linear-gradient(90deg, #00CFFB 0%, #00CFFB 25%, #7CED64 25%, #7CED64 50%, #FFD100 50%, #FFD100 75%, #FF5467 75%, #FF5467 100%)";
+const WIDTH = 1200;
+const HEIGHT = 630;
+const STRIPE = 14;
+// Compact link previews (Slack, iMessage, WhatsApp) crop the banner to its
+// centered square. Everything that has to survive the crop sits in a column of
+// that width, and only decoration goes beside it.
+const COLUMN_PADDING = 44;
+const COLUMN_WIDTH = HEIGHT - COLUMN_PADDING * 2;
+const MARGIN = (WIDTH - HEIGHT) / 2;
+
+// The outer colors end where the crop begins, so it never shows a sliver.
+const chevronStripe = `linear-gradient(90deg, #00CFFB ${MARGIN}px, #7CED64 ${MARGIN}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - MARGIN}px, #FF5467 ${WIDTH - MARGIN}px)`;
 
 interface Element {
   type: string;
@@ -118,15 +128,17 @@ function loadWidget(section: string) {
   return widget;
 }
 
-function frame(accent: string, content: Element[]): Element {
+function frame(accent: string, content: Element[], aside?: Element): Element {
   return {
     type: "div",
     props: {
       style: {
+        position: "relative",
         width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
         backgroundColor: "#202124",
         backgroundImage: `radial-gradient(circle at 85% -20%, ${accent}33 0%, #20212400 60%)`,
         fontFamily: "Ubuntu",
@@ -141,7 +153,10 @@ function frame(accent: string, content: Element[]): Element {
               flexDirection: "column",
               flexGrow: 1,
               justifyContent: "space-between",
-              padding: "72px 80px 64px",
+              alignItems: "center",
+              textAlign: "center",
+              width: HEIGHT,
+              padding: `56px ${COLUMN_PADDING}px 48px`,
             },
             children: content,
           },
@@ -150,16 +165,34 @@ function frame(accent: string, content: Element[]): Element {
           type: "div",
           props: {
             style: {
-              height: 14,
+              height: STRIPE,
               width: "100%",
               flexShrink: 0,
               backgroundImage: chevronStripe,
             },
           },
         },
+        ...(aside ? [aside] : []),
       ],
     },
   };
+}
+
+// The largest size that keeps the longest word on one line and the title to
+// two lines, or three at the smaller sizes. Ubuntu Bold averages a little
+// under 0.6em per character.
+function titleSize(title: string) {
+  const longestWord = Math.max(
+    ...title.split(/\s+/).map((word) => word.length),
+  );
+  return (
+    [84, 72, 64, 56].find((size) => {
+      const perLine = Math.floor(COLUMN_WIDTH / (size * 0.6));
+      return (
+        longestWord <= perLine && title.length <= perLine * (size > 64 ? 2 : 3)
+      );
+    }) ?? 48
+  );
 }
 
 function docsBanner(
@@ -174,85 +207,79 @@ function docsBanner(
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(" ");
 
-  return frame(accent, [
-    {
-      type: "div",
-      props: {
-        style: {
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        },
-        children: [
-          {
-            type: "img",
-            props: { src: logomark, width: 145, height: 80 },
-          },
-          {
-            type: "img",
-            props: { src: widget, width: 150, height: 225 },
-          },
-        ],
+  return frame(
+    accent,
+    [
+      {
+        type: "img",
+        props: { src: logomark, width: 145, height: 80 },
       },
-    },
-    {
-      type: "div",
-      props: {
-        style: { display: "flex", flexDirection: "column" },
-        children: [
-          {
-            type: "div",
-            props: {
-              style: {
-                fontSize: 30,
-                fontWeight: 700,
-                letterSpacing: 6,
-                textTransform: "uppercase",
-                color: accent,
-                marginBottom: 18,
+      {
+        type: "div",
+        props: {
+          style: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          },
+          children: [
+            {
+              type: "div",
+              props: {
+                style: {
+                  fontSize: 30,
+                  fontWeight: 700,
+                  letterSpacing: 6,
+                  textTransform: "uppercase",
+                  color: accent,
+                  marginBottom: 18,
+                },
+                children: label,
               },
-              children: label,
             },
-          },
-          {
-            type: "div",
-            props: {
-              style: {
-                fontSize: title.length > 60 ? 52 : title.length > 22 ? 64 : 84,
-                fontWeight: 700,
-                lineHeight: 1.12,
-                letterSpacing: -1,
-                maxWidth: 1000,
+            {
+              type: "div",
+              props: {
+                style: {
+                  fontSize: titleSize(title),
+                  fontWeight: 700,
+                  lineHeight: 1.12,
+                  letterSpacing: -1,
+                  maxWidth: COLUMN_WIDTH,
+                  // satori balances a lone word into a box narrower than the
+                  // word, which pushes it off center.
+                  textWrap: title.includes(" ") ? "balance" : "wrap",
+                },
+                children: title,
               },
-              children: title,
             },
-          },
-        ],
-      },
-    },
-    {
-      type: "div",
-      props: {
-        style: {
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: 28,
-          color: "#cccccc",
+          ],
         },
-        children: [
-          { type: "div", props: { children: "Marko Documentation" } },
-          {
-            type: "div",
-            props: {
-              style: { fontFamily: "Ubuntu Mono" },
-              children: "markojs.com",
-            },
-          },
-        ],
+      },
+      {
+        type: "div",
+        props: {
+          style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
+          children: "markojs.com",
+        },
+      },
+    ],
+    // Stands on the stripe, centered in the margin right of the column. The
+    // artwork leaves 12px under its feet.
+    {
+      type: "img",
+      props: {
+        src: widget,
+        width: 150,
+        height: 225,
+        style: {
+          position: "absolute",
+          right: (MARGIN - 150) / 2,
+          bottom: STRIPE - 12,
+        },
       },
     },
-  ]);
+  );
 }
 
 function defaultBanner(logo: string, suffix?: string): Element {
@@ -261,18 +288,27 @@ function defaultBanner(logo: string, suffix?: string): Element {
     {
       type: "div",
       props: {
-        style: { display: "flex", flexDirection: "column", gap: 96 },
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 72,
+        },
         children: [
           {
             type: "img",
-            props: { src: logo, width: 560, height: 115 },
+            props: { src: logo, width: 500, height: 103 },
           },
           ...(suffix
             ? [
                 {
                   type: "div",
                   props: {
-                    style: { fontSize: 96, fontWeight: 700, lineHeight: 1 },
+                    style: {
+                      fontSize: titleSize(suffix),
+                      fontWeight: 700,
+                      lineHeight: 1,
+                    },
                     children: suffix,
                   },
                 },
@@ -284,13 +320,7 @@ function defaultBanner(logo: string, suffix?: string): Element {
     {
       type: "div",
       props: {
-        style: {
-          display: "flex",
-          justifyContent: "flex-end",
-          fontSize: 28,
-          color: "#cccccc",
-          fontFamily: "Ubuntu Mono",
-        },
+        style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
         children: "markojs.com",
       },
     },
@@ -300,11 +330,11 @@ function defaultBanner(logo: string, suffix?: string): Element {
 async function render(element: Element): Promise<Buffer> {
   const { fonts } = await loadAssets();
   const svg = await satori(element as never, {
-    width: 1200,
-    height: 630,
+    width: WIDTH,
+    height: HEIGHT,
     fonts: fonts.map((font) => ({ ...font, style: "normal" as const })),
   });
-  return new Resvg(svg, { fitTo: { mode: "width", value: 1200 } })
+  return new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } })
     .render()
     .asPng();
 }
