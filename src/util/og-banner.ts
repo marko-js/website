@@ -29,7 +29,6 @@ const STRIPE = 14;
 const COLUMN_PADDING = 44;
 const COLUMN_WIDTH = HEIGHT - COLUMN_PADDING * 2;
 const MARGIN = (WIDTH - HEIGHT) / 2;
-const FOOTER = 48;
 
 // The outer colors end where the crop begins, so it never shows a sliver.
 const chevronStripe = `linear-gradient(90deg, #00CFFB ${MARGIN}px, #7CED64 ${MARGIN}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - MARGIN}px, #FF5467 ${WIDTH - MARGIN}px)`;
@@ -161,7 +160,7 @@ function frame(
               alignItems: "center",
               textAlign: "center",
               width: HEIGHT,
-              padding: `24px ${COLUMN_PADDING}px ${FOOTER}px`,
+              padding: `24px ${COLUMN_PADDING}px 48px`,
             },
             children: content,
           },
@@ -283,27 +282,36 @@ function docsBanner(
       },
     ],
     [
-      {
-        type: "img",
-        props: {
-          src: logomark,
-          width: 200,
-          height: 110,
-          style: { position: "absolute", left: 56, top: 56 },
-        },
-      },
+      // A header line across both margins: the domain left, the logo right.
       {
         type: "div",
         props: {
           style: {
             position: "absolute",
-            right: 72,
-            bottom: STRIPE + FOOTER,
-            fontSize: 28,
-            color: "#cccccc",
-            fontFamily: "Ubuntu Mono",
+            top: 48,
+            left: 64,
+            right: 56,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           },
-          children: "markojs.com",
+          children: [
+            {
+              type: "div",
+              props: {
+                style: {
+                  fontSize: 28,
+                  color: "#cccccc",
+                  fontFamily: "Ubuntu Mono",
+                },
+                children: "markojs.com",
+              },
+            },
+            {
+              type: "img",
+              props: { src: logomark, width: 200, height: 110 },
+            },
+          ],
         },
       },
     ],
