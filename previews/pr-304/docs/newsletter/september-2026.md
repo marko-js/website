@@ -62,12 +62,12 @@ The rest of the month's feature work went into error messages and documentation.
 More TypeScript works directly in templates. A trailing non-null assertion ends an attribute value instead of swallowing the next attribute or the end of the tag, `void` ends a type annotation, and `delete` and `...new` read as the JavaScript they are ([htmljs-parser#253](https://github.com/marko-js/htmljs-parser/pull/253), [htmljs-parser#254](https://github.com/marko-js/htmljs-parser/pull/254), [htmljs-parser#255](https://github.com/marko-js/htmljs-parser/pull/255)).
 
 ```marko
-export interface Input {
-  user?: { name: string };
-}
+static const flags = new Map([
+  ["en", "/flags/gb.svg"],
+  ["fr", "/flags/fr.svg"],
+]);
 
-<const/user=input.user!/>
-<h1>Welcome back, ${user.name}</h1>
+<img alt="" src=flags.get(input.locale)!/>
 ```
 
 Highlighting in VS Code, tree-sitter editors, and TextMate follows the same rules ([language-server#608](https://github.com/marko-js/language-server/pull/608), [tree-sitter#15](https://github.com/marko-js/tree-sitter/pull/15), [marko-tmbundle#21](https://github.com/marko-js/marko-tmbundle/pull/21)).
