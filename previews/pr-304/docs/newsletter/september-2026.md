@@ -8,7 +8,7 @@
 > - Clearer compile errors and a new Compiler API reference
 > - Persisted pages are close, built on a more rigorous compiler analysis that already benefits every app
 
-September shipped 25 releases across the compiler, runtime, editor tooling, and integrations. `<try>` boundaries got more efficient, pages got smaller, the formatter stopped losing code, and compile errors got clearer. Persisted pages did not ship, but they are close, and the analysis work behind them has already landed for everyone.
+September shipped 25 releases across the compiler, runtime, editor tooling, and integrations. `<try>` boundaries got more efficient, pages got smaller, the formatter stopped losing code, and compile errors got clearer. Persisted pages are nearly here, and the compiler analysis behind them has already landed for every app.
 
 ## Try Boundaries
 
