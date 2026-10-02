@@ -79,34 +79,32 @@ main {
   h4,
   h5,
   h6 {
-    color: var(--section-color);
-    background: linear-gradient(
+    --heading-gradient: linear-gradient(
       to bottom,
       var(--section-color),
       color-mix(in srgb, var(--section-color-alt), var(--section-color))
     );
+
+    color: var(--section-color);
+    background: var(--heading-gradient);
     background-clip: text;
     -webkit-text-fill-color: transparent;
 
     code {
-      background: inherit;
-      background-clip: text;
+      // The pill background is a second background layer rather than a
+      // `position: relative` pseudo-element: a positioned descendant of a
+      // `background-clip: text` ancestor renders invisible in Safari.
+      background-image:
+        var(--heading-gradient),
+        linear-gradient(
+          var(--section-color-alt-dim),
+          var(--section-color-alt-dim)
+        );
+      background-clip: text, padding-box;
       -webkit-text-fill-color: transparent;
-      position: relative;
       padding-left: 0.75ch;
       padding-right: 0.75ch;
-
-      &::before {
-        content: "";
-        position: absolute;
-        background-color: var(--section-color-alt-dim);
-        inset: 0;
-        border-radius: 1em;
-        z-index: -1;
-      }
-      &::after {
-        content: "";
-      }
+      border-radius: 1em;
     }
 
     > a {
