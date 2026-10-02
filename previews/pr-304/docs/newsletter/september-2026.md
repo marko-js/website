@@ -2,36 +2,13 @@
 
 > [!TLDR]
 >
-> - `<try>` boundaries are more efficient, with `<@catch>` and `<@placeholder>` written directly inside them
 > - Unkeyed loops, dynamic tags, and lazily loaded pages ship less JavaScript
 > - The Prettier plugin no longer deletes code after a syntax error or drops comments
+> - More TypeScript syntax works directly in templates
 > - Clearer compile errors and a new Compiler API reference
 > - Persisted pages are close, built on a more rigorous compiler analysis that already benefits every app
 
-September shipped 25 releases across the compiler, runtime, editor tooling, and integrations. `<try>` boundaries got more efficient, pages got smaller, the formatter stopped losing code, and compile errors got clearer. Persisted pages are nearly here, and the compiler analysis behind them has already landed for every app.
-
-## Try Boundaries
-
-`<@catch>` and `<@placeholder>` are now written directly inside their [`<try>`](../reference/core-tag.md#try), once each, so the browser sets the boundary up once instead of on every update ([marko#4343](https://github.com/marko-js/marko/pull/4343), [marko#4344](https://github.com/marko-js/marko/pull/4344)). A catch or placeholder chosen with `<if>` or `<for>` moves the condition inside it.
-
-```marko
-<try>
-  <order-history customer=input.customer/>
-  <@catch|err|>
-    <if=input.customer.isStaff>
-      <pre>${err.stack}</pre>
-    </if>
-    <else>
-      Order history is unavailable right now.
-    </else>
-  </@catch>
-</try>
-```
-
-Other changes that can surface when upgrading:
-
-- Extra `<for>` parameters, a `load` import used before its `import` statement, and a string `content` on native tags are now errors ([marko#4179](https://github.com/marko-js/marko/pull/4179), [marko#4279](https://github.com/marko-js/marko/pull/4279), [marko#4304](https://github.com/marko-js/marko/pull/4304)).
-- Errors thrown from `onDestroy` propagate like those from `onMount` ([marko#4350](https://github.com/marko-js/marko/pull/4350)).
+September shipped 25 releases across the compiler, runtime, editor tooling, and integrations. Pages got smaller, the formatter stopped losing code, more TypeScript works in templates, and compile errors got clearer. Persisted pages are nearly here, and the compiler analysis behind them has already landed for every app.
 
 ## Smaller Bundles
 
@@ -55,7 +32,7 @@ The rest of the month's feature work went into error messages and documentation.
 
 ### Error Messages
 
-`<DIV>` reports that tag names are case-sensitive ([marko#4178](https://github.com/marko-js/marko/pull/4178)), spreading arguments into a custom tag is caught at compile time ([marko#4092](https://github.com/marko-js/marko/pull/4092)), a root `interface` or `enum` gets the hint to use [`static`](../reference/language.md#static) ([marko#4265](https://github.com/marko-js/marko/pull/4265)), and `<effect>` with a body points at `<script>` ([marko#4266](https://github.com/marko-js/marko/pull/4266)). `@marko/vite` prints compile errors with their `file:line:column` and one code frame, naming the child template when the error is in one ([vite#318](https://github.com/marko-js/vite/pull/318), [marko#4223](https://github.com/marko-js/marko/pull/4223)). Long lines are trimmed in code frames, and parsing is linear in sibling count, so a template with 16,000 siblings parses in 0.35 seconds rather than 2.9 ([marko#4300](https://github.com/marko-js/marko/pull/4300)).
+Extra `<for>` parameters and a `load` import used before its `import` statement are now compile errors, and a string `content` on a native tag is a type error ([marko#4179](https://github.com/marko-js/marko/pull/4179), [marko#4279](https://github.com/marko-js/marko/pull/4279), [marko#4304](https://github.com/marko-js/marko/pull/4304)). `<DIV>` reports that tag names are case-sensitive ([marko#4178](https://github.com/marko-js/marko/pull/4178)), spreading arguments into a custom tag is caught at compile time ([marko#4092](https://github.com/marko-js/marko/pull/4092)), a root `interface` or `enum` gets the hint to use [`static`](../reference/language.md#static) ([marko#4265](https://github.com/marko-js/marko/pull/4265)), and `<effect>` with a body points at `<script>` ([marko#4266](https://github.com/marko-js/marko/pull/4266)). `@marko/vite` prints compile errors with their `file:line:column` and one code frame, naming the child template when the error is in one ([vite#318](https://github.com/marko-js/vite/pull/318), [marko#4223](https://github.com/marko-js/marko/pull/4223)). Long lines are trimmed in code frames, and parsing is linear in sibling count, so a template with 16,000 siblings parses in 0.35 seconds rather than 2.9 ([marko#4300](https://github.com/marko-js/marko/pull/4300)).
 
 ### TypeScript Syntax
 

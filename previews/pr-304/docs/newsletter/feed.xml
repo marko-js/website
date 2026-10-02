@@ -12,7 +12,7 @@
 <link>https://markojs.com/docs/newsletter/september-2026</link>
 <guid>https://markojs.com/docs/newsletter/september-2026</guid>
 <pubDate>Tue, 01 Sep 2026 00:00:00 GMT</pubDate>
-<description>&lt;try&gt; boundaries are more efficient, with &lt;@catch&gt; and &lt;@placeholder&gt; written directly inside them Unkeyed loops, dynamic tags, and lazily loaded pages ship less JavaScript The Prettier plugin no longer deletes code after a syntax error or drops comments Clearer compile errors and a new Compiler API reference Persisted pages are close, built on a more rigorous compiler analysis that already benefits every app</description>
+<description>Unkeyed loops, dynamic tags, and lazily loaded pages ship less JavaScript The Prettier plugin no longer deletes code after a syntax error or drops comments More TypeScript syntax works directly in templates Clearer compile errors and a new Compiler API reference Persisted pages are close, built on a more rigorous compiler analysis that already benefits every app</description>
 </item>
 <item>
 <title>Marko in August 2026</title>
