@@ -59,7 +59,22 @@ The rest of the month's feature work went into error messages and documentation.
 
 ### TypeScript Syntax
 
-More TypeScript works directly in templates. A trailing non-null assertion ends an attribute value, so `<img src=input.avatar! alt=input.name>` is two attributes, and `void` ends a type annotation instead of running into the next attribute. `$ type` scriptlets can use generics and function types, and `delete` and `...new` read as the JavaScript they are ([htmljs-parser#253](https://github.com/marko-js/htmljs-parser/pull/253), [htmljs-parser#254](https://github.com/marko-js/htmljs-parser/pull/254), [htmljs-parser#255](https://github.com/marko-js/htmljs-parser/pull/255)). Highlighting in VS Code, tree-sitter editors, and TextMate follows the same rules ([language-server#608](https://github.com/marko-js/language-server/pull/608), [tree-sitter#15](https://github.com/marko-js/tree-sitter/pull/15), [marko-tmbundle#21](https://github.com/marko-js/marko-tmbundle/pull/21)).
+More TypeScript works directly in templates. A trailing non-null assertion ends an attribute value instead of swallowing the next attribute or the end of the tag, `void` ends a type annotation, and `delete` and `...new` read as the JavaScript they are ([htmljs-parser#253](https://github.com/marko-js/htmljs-parser/pull/253), [htmljs-parser#254](https://github.com/marko-js/htmljs-parser/pull/254), [htmljs-parser#255](https://github.com/marko-js/htmljs-parser/pull/255)).
+
+```marko
+export interface Input {
+  product?: { name: string; image?: string };
+}
+
+static function track(name: string): void {
+  console.log(`viewed ${name}`);
+}
+
+<const/product=input.product!/>
+<img alt=product.name onLoad() { track(product.name) } src=product.image!/>
+```
+
+Highlighting in VS Code, tree-sitter editors, and TextMate follows the same rules ([language-server#608](https://github.com/marko-js/language-server/pull/608), [tree-sitter#15](https://github.com/marko-js/tree-sitter/pull/15), [marko-tmbundle#21](https://github.com/marko-js/marko-tmbundle/pull/21)).
 
 ### Documentation
 
@@ -67,7 +82,7 @@ A new [Compiler API](../reference/compiler.md) reference covers compiling templa
 
 ### Docs Site
 
-Docs search finds the section for a bare symbol such as `@` or `${` ([website#295](https://github.com/marko-js/website/pull/295)), the mobile docs menu fits a whole section on one screen ([website#239](https://github.com/marko-js/website/pull/239)), and the [playground](/playground) can install component libraries through `package.json` ([website#292](https://github.com/marko-js/website/pull/292)).
+The [playground](/playground) can install component libraries through `package.json` ([website#292](https://github.com/marko-js/website/pull/292)), docs search finds the section for a bare symbol such as `@` or `${` ([website#295](https://github.com/marko-js/website/pull/295)), and the mobile docs menu fits a whole section on one screen ([website#239](https://github.com/marko-js/website/pull/239)).
 
 ### Native Tags
 
