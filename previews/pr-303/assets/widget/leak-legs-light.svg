@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
+  <g fill="#1a444f" stroke="#1a444f" stroke-width="5" stroke-linecap="round">
+    <path d="M-60 130q20 150 -10 300" fill="none"></path>
+    <path d="M-70 430q3-15 26-12t23 13q0 7-36 6-13-1-13-7"></path>
+    <path d="M60 130q-20 150 10 300" fill="none"></path>
+    <path d="M70 430q-3-15-26-12t-23 13q0 7 36 6 13-1 13-7"></path>
+  </g>
+
+  <path fill="url(#a)" d="M-130-140h260a10 10 0 0 1 10 10v86c0 7 9 10 13 8s12-10 28-10c22 0 46 19 46 46s-24 46-46 46c-16 0-24-8-28-10-4-2-13 1-13 8v86a10 10 0 0 1-10 10H46c-3 0-5-3-3-6s9-10 9-30c0-21-16-51-52-51s-52 30-52 51c0 20 7 27 9 30s0 6-3 6h-84a10 10 0 0 1-10-10V46c0-3 3-5 6-3s10 9 30 9c21 0 51-16 51-52s-30-52-51-52c-20 0-27 7-30 9s-6 0-6-3v-84a10 10 0 0 1 10-10"/>
+  <defs>
+    <linearGradient id="a" gradientTransform="rotate(70)">
+      <stop offset="5%" stop-color="#00cffb"/>
+      <stop offset="95%" stop-color="#00b8f2"/>
+    </linearGradient>
+    <clipPath id="c">
+      <circle cx="-24" cy="-75" r="30"/>
+      <circle cx="76" cy="-75" r="30"/>
+    </clipPath>
+  </defs>
+  <circle cx="-24" cy="-75" r="43" fill="#fff"/>
+  <circle cx="76" cy="-75" r="43" fill="#fff"/>
+  <circle cx="-24" cy="-75" r="30"/>
+  <circle cx="76" cy="-75" r="30"/>
+  <g clip-path="url(#c)">
+    <path fill="#ccf5fe" d="M-94-63q10-8 19 0t19 0 19 0 19 0 19 0 19 0 19 0 19 0 19 0 19 0 19 0v30h-220z">
+      <animateTransform attributeName="transform" dur="8s" repeatCount="indefinite" type="translate" values="0,0; 38,0"/>
+    </path>
+  </g>
+  <path fill="#fff" d="M-40-78q-11-2-4-11t20-10 7 11-23 10M60-78q-11-2-4-11t20-10 7 11-23 10"/>
+  <path fill="none" stroke="#000" stroke-linecap="round" stroke-width="6" d="M11-21a15 15 0 0 1 30 0"/>
+  <path fill="#ccf5fe" d="m105-22 8 15q4 8 4 12a1 1 0 0 1-24 0q0-4 4-12z"/>
+</svg>
