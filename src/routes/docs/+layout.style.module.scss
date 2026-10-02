@@ -91,9 +91,6 @@ main {
     -webkit-text-fill-color: transparent;
 
     code {
-      // The pill background is a second background layer rather than a
-      // `position: relative` pseudo-element: a positioned descendant of a
-      // `background-clip: text` ancestor renders invisible in Safari.
       background-image:
         var(--heading-gradient),
         linear-gradient(
@@ -105,6 +102,11 @@ main {
       padding-left: 0.75ch;
       padding-right: 0.75ch;
       border-radius: 1em;
+
+      &::before,
+      &::after {
+        content: "";
+      }
     }
 
     > a {
