@@ -48,6 +48,7 @@ const EPIC_BY_REPO = {
   eslint: "Language Tools",
   "tree-sitter": "Language Tools",
   zed: "Language Tools",
+  "marko-tmbundle": "Language Tools",
   vite: "Integrations",
   "resolve-sync": "Integrations",
   "relative-import-path": "Integrations",
@@ -248,6 +249,8 @@ const TASK_BY_TITLE = [
     "Docs",
   ],
   [/\b(sizes\.json|snapshots?|devDependency|fixtures?|ci)\b/i, "Chore"],
+  // Renames and restructuring with no behavior change.
+  [/^(rename|factor|iterate)\b|\bnaming\b|\bcleanup\b/i, "Rework"],
   [
     /^(fix|error|report|guard|escape|decode|keep|stop|forward|resolve|diagnose|disambiguate|bound|match|only|await|detect|correct|handle|prevent|avoid|preserve|restore|reject|mint|emit|hoist|name|drop|mark|decide)\b|\bfix(es)?\b/i,
     "Fix",
