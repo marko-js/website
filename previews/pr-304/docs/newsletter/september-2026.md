@@ -63,15 +63,11 @@ More TypeScript works directly in templates. A trailing non-null assertion ends 
 
 ```marko
 export interface Input {
-  product?: { name: string; image?: string };
+  user?: { name: string };
 }
 
-static function track(name: string): void {
-  console.log(`viewed ${name}`);
-}
-
-<const/product=input.product!/>
-<img alt=product.name onLoad() { track(product.name) } src=product.image!/>
+<const/user=input.user!/>
+<h1>Welcome back, ${user.name}</h1>
 ```
 
 Highlighting in VS Code, tree-sitter editors, and TextMate follows the same rules ([language-server#608](https://github.com/marko-js/language-server/pull/608), [tree-sitter#15](https://github.com/marko-js/tree-sitter/pull/15), [marko-tmbundle#21](https://github.com/marko-js/marko-tmbundle/pull/21)).
