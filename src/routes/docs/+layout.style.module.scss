@@ -79,31 +79,31 @@ main {
   h4,
   h5,
   h6 {
-    color: var(--section-color);
-    background: linear-gradient(
+    --heading-gradient: linear-gradient(
       to bottom,
       var(--section-color),
       color-mix(in srgb, var(--section-color-alt), var(--section-color))
     );
+
+    color: var(--section-color);
+    background: var(--heading-gradient);
     background-clip: text;
     -webkit-text-fill-color: transparent;
 
     code {
-      background: inherit;
-      background-clip: text;
+      background-image:
+        var(--heading-gradient),
+        linear-gradient(
+          var(--section-color-alt-dim),
+          var(--section-color-alt-dim)
+        );
+      background-clip: text, padding-box;
       -webkit-text-fill-color: transparent;
-      position: relative;
       padding-left: 0.75ch;
       padding-right: 0.75ch;
+      border-radius: 1em;
 
-      &::before {
-        content: "";
-        position: absolute;
-        background-color: var(--section-color-alt-dim);
-        inset: 0;
-        border-radius: 1em;
-        z-index: -1;
-      }
+      &::before,
       &::after {
         content: "";
       }
