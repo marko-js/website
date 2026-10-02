@@ -206,3 +206,4 @@ The second is agent feedback. Every marko-js repository carries an `agent-feedba
 ## Further Reading
 
 - [July 2026](july-2026.md)
+- [September 2026](september-2026.md)
