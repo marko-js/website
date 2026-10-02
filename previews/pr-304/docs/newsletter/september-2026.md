@@ -109,7 +109,7 @@ Marko has also joined the Opus 5.5 video generation bandwagon with a persisted p
 
 ## Community
 
-loman wrote [Apparently the Frontend Framework I Wanted Already Existed](https://daily.dev/posts/a1R5v80Fk) on daily.dev, about discovering that Marko already was the framework they had wanted to build: HTML first, with reactive dependencies worked out at compile time and static content left static.
+[loman](https://github.com/its-loman) wrote [Apparently the Frontend Framework I Wanted Already Existed](https://daily.dev/posts/a1R5v80Fk) on daily.dev, about discovering that Marko already was the framework they had wanted to build: HTML first, with reactive dependencies worked out at compile time and static content left static.
 
 ## Further Reading
 
