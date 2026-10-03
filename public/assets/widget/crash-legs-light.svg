@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-240 -240 480 720">
-  <g fill="#3c3c3f" stroke="#3c3c3f" stroke-width="5" stroke-linecap="round">
+  <style>@media(prefers-reduced-motion:no-preference){.wobble{animation:wobble 6s ease-in-out infinite}.ox,.oy,.os{animation:ox 4.0s cubic-bezier(.37,0,.63,1) infinite alternate}.oy{animation-name:oy}.os{animation-name:os}.s0.ox{animation-delay:0.00s}.s0.oy,.s0.os{animation-delay:-2.00s}.s1.ox{animation-delay:-2.67s}.s1.oy,.s1.os{animation-delay:-4.67s}.s2.ox{animation-delay:-5.33s}.s2.oy,.s2.os{animation-delay:-7.33s}.spin{animation:spin 3s linear infinite}.x{animation:x 9s infinite}.awake{animation:awake 9s infinite}}@keyframes wobble{0%,to{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}@keyframes ox{from{transform:translateX(170px)}to{transform:translateX(-170px)}}@keyframes oy{from{transform:translateY(-36px)}to{transform:translateY(36px)}}@keyframes os{from{transform:scale(.6)}to{transform:scale(1.3)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes x{0%,80%,95%,to{transform:none;opacity:1}83%,92%{transform:scale(.2);opacity:0}}@keyframes awake{0%,82%,93%,to{opacity:0;transform:scale(.3)}85%{opacity:1;transform:scale(1.1)}87%{opacity:1;transform:translateX(-9px)}89.5%{opacity:1;transform:translateX(9px)}91%{opacity:1;transform:none}}</style>
+    <g fill="#3c3c3f" stroke="#3c3c3f" stroke-width="5" stroke-linecap="round">
     <path d="M-40 130q0 150 -70 300" fill="none"></path>
     <path d="M-110 430q-3-15-26-12t-23 13q0 7 36 6 13-1 13-7"></path>
     <path d="M40 130q0 150 70 300" fill="none"></path>
@@ -18,27 +19,22 @@
     </mask>
   </defs>
   <circle cx="10" cy="50" r="44" fill="#fff"/>
-  <path stroke="#000" stroke-linecap="round" stroke-width="10" d="m-5 35 30 30m-30 0 30-30"/>
+  <g transform="translate(10 50)">
+    <path class="x" stroke="#000" stroke-linecap="round" stroke-width="10" d="m-15-15 30 30m-30 0 30-30"/>
+    <g class="awake" opacity="0"><circle r="24"/><circle cx="-8" cy="-9" r="7" fill="#fff"/></g>
+  </g>
   <circle cx="110" cy="50" r="44" fill="#fff"/>
-  <path stroke="#000" stroke-linecap="round" stroke-width="10" d="m95 35 30 30m-30 0 30-30"/>
+  <g transform="translate(110 50)">
+    <path class="x" stroke="#000" stroke-linecap="round" stroke-width="10" d="m-15-15 30 30m-30 0 30-30"/>
+    <g class="awake" opacity="0"><circle r="24"/><circle cx="-8" cy="-9" r="7" fill="#fff"/></g>
+  </g>
   <path stroke="#000" stroke-linecap="round" stroke-width="4" d="M20 105h80"/>
   <g mask="url(#b)" transform="translate(0 -181)">
-    <animateTransform additive="sum" attributeName="transform" calcMode="spline" dur="40s" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" repeatCount="indefinite" type="rotate" values="-4;4;-4"/>
-    <ellipse fill="none" stroke="#3c3c3f" stroke-width="6" rx="140" ry="20"/>
-    <path d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f">
-      <animateMotion begin="-0s" dur="124s" path="M 170 0 a 85 20 0 0 1 -340 0 a 85 16 0 0 1 340 0" repeatCount="indefinite"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-0s" dur="124s" repeatCount="indefinite" type="scale" values="1;1.3;1;0.6;1"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-0s" dur="64s" from="0 8 8" repeatCount="indefinite" to="360 8 8" type="rotate"/>
-    </path>
-    <path d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f">
-      <animateMotion begin="-40s" dur="124s" path="M 170 0 a 85 20 0 0 1 -340 0 a 85 16 0 0 1 340 0" repeatCount="indefinite"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-40s" dur="124s" repeatCount="indefinite" type="scale" values="1;1.3;1;0.6;1"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-40s" dur="64s" from="0 8 8" repeatCount="indefinite" to="360 8 8" type="rotate"/>
-    </path>
-    <path d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f">
-      <animateMotion begin="-84s" dur="124s" path="M 170 0 a 85 20 0 0 1 -340 0 a 85 16 0 0 1 340 0" repeatCount="indefinite"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-84s" dur="124s" repeatCount="indefinite" type="scale" values="1;1.3;1;0.6;1"/>
-      <animateTransform additive="sum" attributeName="transform" begin="-84s" dur="64s" from="0 8 8" repeatCount="indefinite" to="360 8 8" type="rotate"/>
-    </path>
+    <g class="wobble">
+      <ellipse fill="none" stroke="#3c3c3f" stroke-width="6" rx="140" ry="20"/>
+      <g class="ox s0" transform="translate(170)"><g class="oy s0" transform="translate(0 0)"><g class="os s0" transform="scale(0.95)"><path class="spin" d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f"/></g></g></g>
+      <g class="ox s1" transform="translate(-85)"><g class="oy s1" transform="translate(0 31)"><g class="os s1" transform="scale(1.25)"><path class="spin" d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f"/></g></g></g>
+      <g class="ox s2" transform="translate(-85)"><g class="oy s2" transform="translate(0 -31)"><g class="os s2" transform="scale(0.65)"><path class="spin" d="m-20-6 14-1 6-13L6-7l14 1L9 4l3 14-12-7-12 7 3-14z" fill="#3c3c3f"/></g></g></g>
+    </g>
   </g>
 </svg>
