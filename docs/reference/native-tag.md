@@ -42,7 +42,7 @@ All three render the same HTML:
 
 Each key of an object is a class name, included when its value is truthy. Every falsy value drops the class. Objects are read one level deep: a value is only tested for truthiness, never traversed.
 
-Arrays may be nested to any depth and spread, and their falsy entries are skipped. Class names are not deduplicated, and when nothing remains the attribute is omitted entirely.
+Arrays may be nested to any depth and spread, and their falsy entries are skipped. A toggled class may not repeat a name the rest of the value writes: Marko updates it on its own, so `class=["a", { a: on }]` is an error. When nothing remains the attribute is omitted entirely.
 
 ```marko
 <let/query="">
