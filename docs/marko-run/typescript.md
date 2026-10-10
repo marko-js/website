@@ -52,6 +52,10 @@ Validation options and handler return types are fully inferred, so `ctx.params`,
 
 The path and its params are typed against every route the application serves.
 
+**`Input`**
+
+Layouts and pages have the [partials](./file-based-routing.md#partials) that apply to their routes on `input`, keyed by name. A partial that applies to only some of a file's routes is optional. An overriding partial has the one it replaced on `input` under its own name.
+
 ## Next Steps
 
 - [Validation](./validation.md)
