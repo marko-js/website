@@ -42,6 +42,46 @@ A handled navigation requests the route with the same URL, method and body the b
 
 Whenever a response cannot apply as a patch (a response that is not a patch, a network failure, or a build the page does not match), the router loads the URL as a document instead, so a navigation always ends on the page the server rendered. Routes such as [`+404` and `+500`](../marko-run/file-based-routing.md#special-files) render as patches like any other page.
 
+## Shared Layouts
+
+The clearest win is a [layout](../marko-run/file-based-routing.md#layoutmarko) that owns state while the page inside it changes. Consider a shop with a cart drawer in the layout:
+
+```marko
+/* src/routes/+layout.marko */
+export interface Input {
+  content: Marko.Body;
+}
+
+<let/cartOpen=false>
+
+<header>
+  <a href="/">Shop</a>
+  <button onClick() { cartOpen = !cartOpen }>
+    Cart (${$global.cart.count})
+  </button>
+</header>
+
+<if=cartOpen>
+  <aside class="cart-drawer">
+    <for|item| of=$global.cart.items by=(item) => item.id>
+      <p>${item.name}</p>
+    </for>
+  </aside>
+</if>
+
+<main><${input.content}/></main>
+```
+
+```marko
+/* src/routes/products/+page.marko */
+<let/liked=false>
+
+<h1>Products</h1>
+<button onClick() { liked = !liked }>${liked ? "Liked" : "Like"}</button>
+```
+
+With the drawer open, following a link to another product page replaces the page inside `<main>` and updates the cart count from the server's response. The drawer is still open, because `cartOpen` belongs to the layout and the layout was never re-rendered from scratch. Without persisted pages, every link starts the page over and the drawer closes.
+
 ## Client State
 
 State belongs to the page, as it does in client rendering. A component rendered in the same place before and after a navigation keeps its [`<let>`](../reference/core-tag.md#let) values, the text typed into its fields and the elements a script attached to it. Consider a search page:
