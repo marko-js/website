@@ -60,14 +60,6 @@ State belongs to the page, as it does in client rendering. A component rendered 
 
 Submitting the form patches the results in, while the open filter panel stays open and the search field keeps its text. The field's `value=` is the value it renders with. Without a [`valueChange=`](./controllable-components.md) handler, what the user typed stays, exactly as when the value changes in the browser.
 
-To start a component over when the route changes, render it under a key derived from the route. A new key creates the component again:
-
-```marko
-<for|id| of=[$global.params.id] by=(id) => id>
-  <product-gallery product=id/>
-</for>
-```
-
 ## Scripts and Effects
 
 Effects follow the same rules as in client rendering. A [`<script>`](../reference/core-tag.md#script) runs when the content that contains it is created, runs again when a value it reads changes, and its [`$signal`](../reference/language.md#signal) aborts before each rerun and when its content is removed. Content a navigation creates runs its effects once the patch applies.
