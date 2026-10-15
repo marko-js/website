@@ -34,47 +34,48 @@ declare module "@marko/run" {
 		"/docs/explanation/let-vs-const": [M1, L1, L2, P17, D17];
 		"/docs/explanation/nested-reactivity": [M1, L1, L2, P18, D18];
 		"/docs/explanation/optimizing-performance": [M1, L1, L2, P19, D19];
-		"/docs/explanation/separation-of-concerns": [M1, L1, L2, P20, D20];
-		"/docs/explanation/serializable-state": [M1, L1, L2, P21, D21];
-		"/docs/explanation/streaming": [M1, L1, L2, P22, D22];
-		"/docs/explanation/targeted-compilation": [M1, L1, L2, P23, D23];
-		"/docs/explanation/why-is-marko-fast": [M1, L1, L2, P24, D24];
-		"/docs/guide/duplicate-form-submissions": [M1, L1, L2, P25, D25];
-		"/docs/guide/library-integration": [M1, L1, L2, P26, D26];
-		"/docs/guide/low-level-apis": [M1, L1, L2, P27, D27];
-		"/docs/guide/marko-5-interop": [M1, L1, L2, P28, D28];
-		"/docs/guide/publishing-components": [M1, L1, L2, P29, D29];
-		"/docs/guide/styling": [M1, L1, L2, P30, D30];
-		"/docs/introduction/getting-started": [M1, L1, L2, P31, D31];
-		"/docs/introduction/installation": [M1, L1, L2, P32, D32];
-		"/docs/introduction/integrations": [M1, L1, L2, P33, D33];
-		"/docs/introduction/welcome-to-marko": [M1, L1, L2, P34, D34];
-		"/docs/introduction/why-marko": [M1, L1, L2, P35, D35];
-		"/docs/marko-run/adapters": [M1, L1, L2, P36, D36];
-		"/docs/marko-run/cli": [M1, L1, L2, P37, D37];
-		"/docs/marko-run/data-loading": [M1, L1, L2, P38, D38];
-		"/docs/marko-run/file-based-routing": [M1, L1, L2, P39, D39];
-		"/docs/marko-run/getting-started": [M1, L1, L2, P40, D40];
-		"/docs/marko-run/runtime": [M1, L1, L2, P41, D41];
-		"/docs/marko-run/typescript": [M1, L1, L2, P42, D42];
-		"/docs/marko-run/validation": [M1, L1, L2, P43, D43];
-		"/docs/marko-run/vite-plugin": [M1, L1, L2, P44, D44];
-		"/docs/reference/compiler": [M1, L1, L2, P45, D45];
-		"/docs/reference/concise-syntax": [M1, L1, L2, P46, D46];
-		"/docs/reference/core-tag": [M1, L1, L2, P47, D47];
-		"/docs/reference/custom-tag": [M1, L1, L2, P48, D48];
-		"/docs/reference/language": [M1, L1, L2, P49, D49];
-		"/docs/reference/lazy-loading": [M1, L1, L2, P50, D50];
-		"/docs/reference/native-tag": [M1, L1, L2, P51, D51];
-		"/docs/reference/reactivity": [M1, L1, L2, P52, D52];
-		"/docs/reference/supported-environments": [M1, L1, L2, P53, D53];
-		"/docs/reference/template": [M1, L1, L2, P54, D54];
-		"/docs/reference/typescript": [M1, L1, L2, P55, D55];
-		"/docs/tutorial/components-and-reactivity": [M1, L1, L2, P56, D56];
-		"/docs/tutorial/fundamentals": [M1, L1, L2, P57, D57];
+		"/docs/explanation/patch-protocol": [M1, L1, L2, P20, D20];
+		"/docs/explanation/separation-of-concerns": [M1, L1, L2, P21, D21];
+		"/docs/explanation/serializable-state": [M1, L1, L2, P22, D22];
+		"/docs/explanation/streaming": [M1, L1, L2, P23, D23];
+		"/docs/explanation/targeted-compilation": [M1, L1, L2, P24, D24];
+		"/docs/explanation/why-is-marko-fast": [M1, L1, L2, P25, D25];
+		"/docs/guide/duplicate-form-submissions": [M1, L1, L2, P26, D26];
+		"/docs/guide/library-integration": [M1, L1, L2, P27, D27];
+		"/docs/guide/low-level-apis": [M1, L1, L2, P28, D28];
+		"/docs/guide/marko-5-interop": [M1, L1, L2, P29, D29];
+		"/docs/guide/publishing-components": [M1, L1, L2, P30, D30];
+		"/docs/guide/styling": [M1, L1, L2, P31, D31];
+		"/docs/introduction/getting-started": [M1, L1, L2, P32, D32];
+		"/docs/introduction/installation": [M1, L1, L2, P33, D33];
+		"/docs/introduction/integrations": [M1, L1, L2, P34, D34];
+		"/docs/introduction/welcome-to-marko": [M1, L1, L2, P35, D35];
+		"/docs/introduction/why-marko": [M1, L1, L2, P36, D36];
+		"/docs/marko-run/adapters": [M1, L1, L2, P37, D37];
+		"/docs/marko-run/cli": [M1, L1, L2, P38, D38];
+		"/docs/marko-run/data-loading": [M1, L1, L2, P39, D39];
+		"/docs/marko-run/file-based-routing": [M1, L1, L2, P40, D40];
+		"/docs/marko-run/getting-started": [M1, L1, L2, P41, D41];
+		"/docs/marko-run/runtime": [M1, L1, L2, P42, D42];
+		"/docs/marko-run/typescript": [M1, L1, L2, P43, D43];
+		"/docs/marko-run/validation": [M1, L1, L2, P44, D44];
+		"/docs/marko-run/vite-plugin": [M1, L1, L2, P45, D45];
+		"/docs/reference/compiler": [M1, L1, L2, P46, D46];
+		"/docs/reference/concise-syntax": [M1, L1, L2, P47, D47];
+		"/docs/reference/core-tag": [M1, L1, L2, P48, D48];
+		"/docs/reference/custom-tag": [M1, L1, L2, P49, D49];
+		"/docs/reference/language": [M1, L1, L2, P50, D50];
+		"/docs/reference/lazy-loading": [M1, L1, L2, P51, D51];
+		"/docs/reference/native-tag": [M1, L1, L2, P52, D52];
+		"/docs/reference/reactivity": [M1, L1, L2, P53, D53];
+		"/docs/reference/supported-environments": [M1, L1, L2, P54, D54];
+		"/docs/reference/template": [M1, L1, L2, P55, D55];
+		"/docs/reference/typescript": [M1, L1, L2, P56, D56];
+		"/docs/tutorial/components-and-reactivity": [M1, L1, L2, P57, D57];
+		"/docs/tutorial/fundamentals": [M1, L1, L2, P58, D58];
 		"/docs/reference-full.md": [M1, H3];
 		"/docs/newsletter/feed.xml": [M1, H4];
-		"/playground": [L1, P58, D58];
+		"/playground": [L1, P59, D59];
 	}> {}
 }
 
@@ -89,7 +90,7 @@ declare module "../src/routes/docs/+middleware" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     /** @deprecated use the `Run` namespace instead */
-    export type Route = $.Routes["/docs" | "/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/docs/reference-full.md" | "/docs/newsletter/feed.xml"];
+    export type Route = $.Routes["/docs" | "/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/patch-protocol" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/docs/reference-full.md" | "/docs/newsletter/feed.xml"];
     /** @deprecated use `Run.Context` instead */
     export type Context = $.MultiRouteContext<Route>;
     /** @deprecated define handlers with `Run.GET(...)`, `Run.POST(...)`, etc. instead */
@@ -265,7 +266,7 @@ declare module "../src/routes/+layout.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     /** @deprecated use the `Run` namespace instead */
-    export type Route = $.Routes["/" | "/brand" | "/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/playground"];
+    export type Route = $.Routes["/" | "/brand" | "/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/patch-protocol" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals" | "/playground"];
     /** @deprecated use `Run.Context` instead */
     export type Context = Run.Context;
     /** @deprecated define handlers with `Run.GET(...)`, `Run.POST(...)`, etc. instead */
@@ -301,7 +302,7 @@ declare module "../src/routes/docs/+layout.marko" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     /** @deprecated use the `Run` namespace instead */
-    export type Route = $.Routes["/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals"];
+    export type Route = $.Routes["/docs/newsletter" | "/docs/newsletter/april-2026" | "/docs/newsletter/august-2026" | "/docs/newsletter/february-2026" | "/docs/newsletter/january-2026" | "/docs/newsletter/july-2026" | "/docs/newsletter/june-2026" | "/docs/newsletter/march-2026" | "/docs/newsletter/may-2026" | "/docs/newsletter/september-2026" | "/docs/explanation/class-vs-tags-api" | "/docs/explanation/controllable-components" | "/docs/explanation/fine-grained-bundling" | "/docs/explanation/immutable-state" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/patch-protocol" | "/docs/explanation/separation-of-concerns" | "/docs/explanation/serializable-state" | "/docs/explanation/streaming" | "/docs/explanation/targeted-compilation" | "/docs/explanation/why-is-marko-fast" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/introduction/getting-started" | "/docs/introduction/installation" | "/docs/introduction/integrations" | "/docs/introduction/welcome-to-marko" | "/docs/introduction/why-marko" | "/docs/marko-run/adapters" | "/docs/marko-run/cli" | "/docs/marko-run/data-loading" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/runtime" | "/docs/marko-run/typescript" | "/docs/marko-run/validation" | "/docs/marko-run/vite-plugin" | "/docs/reference/compiler" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/lazy-loading" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/supported-environments" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/fundamentals"];
     /** @deprecated use `Run.Context` instead */
     export type Context = Run.Context;
     /** @deprecated define handlers with `Run.GET(...)`, `Run.POST(...)`, etc. instead */
@@ -990,11 +991,46 @@ declare module "../src/routes/docs/_compiled-docs/explanation/optimizing-perform
   }
 }
 
-type P20 = $.Template<"P20", typeof import("../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+page.marko")>;
-declare module "../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+page.marko" {
+type P20 = $.Template<"P20", typeof import("../src/routes/docs/_compiled-docs/explanation/patch-protocol+page.marko")>;
+declare module "../src/routes/docs/_compiled-docs/explanation/patch-protocol+page.marko" {
   const Run: $.Namespace<P20>;
   namespace Run {
     type Context = $.ContextForFile<P20> & Marko.Global;
+  }
+
+  /** @deprecated use `Run` namespace instead */
+  namespace MarkoRun {
+    export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
+    /** @deprecated use the `Run` namespace instead */
+    export type Route = $.Routes["/docs/explanation/patch-protocol"];
+    /** @deprecated use `Run.Context` instead */
+    export type Context = Run.Context;
+    /** @deprecated define handlers with `Run.GET(...)`, `Run.POST(...)`, etc. instead */
+    export type Handler = $.HandlerLike<Route>;
+    /** @deprecated define handlers with `Run.GET(...)` instead */
+    export type GET = $.HandlerLike<Route, "GET">;
+    /** @deprecated define handlers with `Run.HEAD(...)` instead */
+    export type HEAD = $.HandlerLike<Route, "HEAD">;
+    /** @deprecated define handlers with `Run.POST(...)` instead */
+    export type POST = $.HandlerLike<Route, "POST">;
+    /** @deprecated define handlers with `Run.PUT(...)` instead */
+    export type PUT = $.HandlerLike<Route, "PUT">;
+    /** @deprecated define handlers with `Run.DELETE(...)` instead */
+    export type DELETE = $.HandlerLike<Route, "DELETE">;
+    /** @deprecated define handlers with `Run.PATCH(...)` instead */
+    export type PATCH = $.HandlerLike<Route, "PATCH">;
+    /** @deprecated define handlers with `Run.OPTIONS(...)` instead */
+    export type OPTIONS = $.HandlerLike<Route, "OPTIONS">;
+    /** @deprecated define handlers with `Run.QUERY(...)` instead */
+    export type QUERY = $.HandlerLike<Route, "QUERY">;
+  }
+}
+
+type P21 = $.Template<"P21", typeof import("../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+page.marko")>;
+declare module "../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+page.marko" {
+  const Run: $.Namespace<P21>;
+  namespace Run {
+    type Context = $.ContextForFile<P21> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1025,11 +1061,11 @@ declare module "../src/routes/docs/_compiled-docs/explanation/separation-of-conc
   }
 }
 
-type P21 = $.Template<"P21", typeof import("../src/routes/docs/_compiled-docs/explanation/serializable-state+page.marko")>;
+type P22 = $.Template<"P22", typeof import("../src/routes/docs/_compiled-docs/explanation/serializable-state+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/explanation/serializable-state+page.marko" {
-  const Run: $.Namespace<P21>;
+  const Run: $.Namespace<P22>;
   namespace Run {
-    type Context = $.ContextForFile<P21> & Marko.Global;
+    type Context = $.ContextForFile<P22> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1060,11 +1096,11 @@ declare module "../src/routes/docs/_compiled-docs/explanation/serializable-state
   }
 }
 
-type P22 = $.Template<"P22", typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+page.marko")>;
+type P23 = $.Template<"P23", typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/explanation/streaming+page.marko" {
-  const Run: $.Namespace<P22>;
+  const Run: $.Namespace<P23>;
   namespace Run {
-    type Context = $.ContextForFile<P22> & Marko.Global;
+    type Context = $.ContextForFile<P23> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1095,11 +1131,11 @@ declare module "../src/routes/docs/_compiled-docs/explanation/streaming+page.mar
   }
 }
 
-type P23 = $.Template<"P23", typeof import("../src/routes/docs/_compiled-docs/explanation/targeted-compilation+page.marko")>;
+type P24 = $.Template<"P24", typeof import("../src/routes/docs/_compiled-docs/explanation/targeted-compilation+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/explanation/targeted-compilation+page.marko" {
-  const Run: $.Namespace<P23>;
+  const Run: $.Namespace<P24>;
   namespace Run {
-    type Context = $.ContextForFile<P23> & Marko.Global;
+    type Context = $.ContextForFile<P24> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1130,11 +1166,11 @@ declare module "../src/routes/docs/_compiled-docs/explanation/targeted-compilati
   }
 }
 
-type P24 = $.Template<"P24", typeof import("../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+page.marko")>;
+type P25 = $.Template<"P25", typeof import("../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+page.marko" {
-  const Run: $.Namespace<P24>;
+  const Run: $.Namespace<P25>;
   namespace Run {
-    type Context = $.ContextForFile<P24> & Marko.Global;
+    type Context = $.ContextForFile<P25> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1165,11 +1201,11 @@ declare module "../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+
   }
 }
 
-type P25 = $.Template<"P25", typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+page.marko")>;
+type P26 = $.Template<"P26", typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+page.marko" {
-  const Run: $.Namespace<P25>;
+  const Run: $.Namespace<P26>;
   namespace Run {
-    type Context = $.ContextForFile<P25> & Marko.Global;
+    type Context = $.ContextForFile<P26> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1200,11 +1236,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/duplicate-form-submissio
   }
 }
 
-type P26 = $.Template<"P26", typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+page.marko")>;
+type P27 = $.Template<"P27", typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/library-integration+page.marko" {
-  const Run: $.Namespace<P26>;
+  const Run: $.Namespace<P27>;
   namespace Run {
-    type Context = $.ContextForFile<P26> & Marko.Global;
+    type Context = $.ContextForFile<P27> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1235,11 +1271,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/library-integration+page
   }
 }
 
-type P27 = $.Template<"P27", typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+page.marko")>;
+type P28 = $.Template<"P28", typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/low-level-apis+page.marko" {
-  const Run: $.Namespace<P27>;
+  const Run: $.Namespace<P28>;
   namespace Run {
-    type Context = $.ContextForFile<P27> & Marko.Global;
+    type Context = $.ContextForFile<P28> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1270,11 +1306,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/low-level-apis+page.mark
   }
 }
 
-type P28 = $.Template<"P28", typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+page.marko")>;
+type P29 = $.Template<"P29", typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/marko-5-interop+page.marko" {
-  const Run: $.Namespace<P28>;
+  const Run: $.Namespace<P29>;
   namespace Run {
-    type Context = $.ContextForFile<P28> & Marko.Global;
+    type Context = $.ContextForFile<P29> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1305,11 +1341,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/marko-5-interop+page.mar
   }
 }
 
-type P29 = $.Template<"P29", typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+page.marko")>;
+type P30 = $.Template<"P30", typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/publishing-components+page.marko" {
-  const Run: $.Namespace<P29>;
+  const Run: $.Namespace<P30>;
   namespace Run {
-    type Context = $.ContextForFile<P29> & Marko.Global;
+    type Context = $.ContextForFile<P30> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1340,11 +1376,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/publishing-components+pa
   }
 }
 
-type P30 = $.Template<"P30", typeof import("../src/routes/docs/_compiled-docs/guide/styling+page.marko")>;
+type P31 = $.Template<"P31", typeof import("../src/routes/docs/_compiled-docs/guide/styling+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/guide/styling+page.marko" {
-  const Run: $.Namespace<P30>;
+  const Run: $.Namespace<P31>;
   namespace Run {
-    type Context = $.ContextForFile<P30> & Marko.Global;
+    type Context = $.ContextForFile<P31> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1375,11 +1411,11 @@ declare module "../src/routes/docs/_compiled-docs/guide/styling+page.marko" {
   }
 }
 
-type P31 = $.Template<"P31", typeof import("../src/routes/docs/_compiled-docs/introduction/getting-started+page.marko")>;
+type P32 = $.Template<"P32", typeof import("../src/routes/docs/_compiled-docs/introduction/getting-started+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/introduction/getting-started+page.marko" {
-  const Run: $.Namespace<P31>;
+  const Run: $.Namespace<P32>;
   namespace Run {
-    type Context = $.ContextForFile<P31> & Marko.Global;
+    type Context = $.ContextForFile<P32> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1410,11 +1446,11 @@ declare module "../src/routes/docs/_compiled-docs/introduction/getting-started+p
   }
 }
 
-type P32 = $.Template<"P32", typeof import("../src/routes/docs/_compiled-docs/introduction/installation+page.marko")>;
+type P33 = $.Template<"P33", typeof import("../src/routes/docs/_compiled-docs/introduction/installation+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/introduction/installation+page.marko" {
-  const Run: $.Namespace<P32>;
+  const Run: $.Namespace<P33>;
   namespace Run {
-    type Context = $.ContextForFile<P32> & Marko.Global;
+    type Context = $.ContextForFile<P33> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1445,11 +1481,11 @@ declare module "../src/routes/docs/_compiled-docs/introduction/installation+page
   }
 }
 
-type P33 = $.Template<"P33", typeof import("../src/routes/docs/_compiled-docs/introduction/integrations+page.marko")>;
+type P34 = $.Template<"P34", typeof import("../src/routes/docs/_compiled-docs/introduction/integrations+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/introduction/integrations+page.marko" {
-  const Run: $.Namespace<P33>;
+  const Run: $.Namespace<P34>;
   namespace Run {
-    type Context = $.ContextForFile<P33> & Marko.Global;
+    type Context = $.ContextForFile<P34> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1480,11 +1516,11 @@ declare module "../src/routes/docs/_compiled-docs/introduction/integrations+page
   }
 }
 
-type P34 = $.Template<"P34", typeof import("../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+page.marko")>;
+type P35 = $.Template<"P35", typeof import("../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+page.marko" {
-  const Run: $.Namespace<P34>;
+  const Run: $.Namespace<P35>;
   namespace Run {
-    type Context = $.ContextForFile<P34> & Marko.Global;
+    type Context = $.ContextForFile<P35> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1515,11 +1551,11 @@ declare module "../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+
   }
 }
 
-type P35 = $.Template<"P35", typeof import("../src/routes/docs/_compiled-docs/introduction/why-marko+page.marko")>;
+type P36 = $.Template<"P36", typeof import("../src/routes/docs/_compiled-docs/introduction/why-marko+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/introduction/why-marko+page.marko" {
-  const Run: $.Namespace<P35>;
+  const Run: $.Namespace<P36>;
   namespace Run {
-    type Context = $.ContextForFile<P35> & Marko.Global;
+    type Context = $.ContextForFile<P36> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1550,11 +1586,11 @@ declare module "../src/routes/docs/_compiled-docs/introduction/why-marko+page.ma
   }
 }
 
-type P36 = $.Template<"P36", typeof import("../src/routes/docs/_compiled-docs/marko-run/adapters+page.marko")>;
+type P37 = $.Template<"P37", typeof import("../src/routes/docs/_compiled-docs/marko-run/adapters+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/adapters+page.marko" {
-  const Run: $.Namespace<P36>;
+  const Run: $.Namespace<P37>;
   namespace Run {
-    type Context = $.ContextForFile<P36> & Marko.Global;
+    type Context = $.ContextForFile<P37> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1585,11 +1621,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/adapters+page.marko"
   }
 }
 
-type P37 = $.Template<"P37", typeof import("../src/routes/docs/_compiled-docs/marko-run/cli+page.marko")>;
+type P38 = $.Template<"P38", typeof import("../src/routes/docs/_compiled-docs/marko-run/cli+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/cli+page.marko" {
-  const Run: $.Namespace<P37>;
+  const Run: $.Namespace<P38>;
   namespace Run {
-    type Context = $.ContextForFile<P37> & Marko.Global;
+    type Context = $.ContextForFile<P38> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1620,11 +1656,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/cli+page.marko" {
   }
 }
 
-type P38 = $.Template<"P38", typeof import("../src/routes/docs/_compiled-docs/marko-run/data-loading+page.marko")>;
+type P39 = $.Template<"P39", typeof import("../src/routes/docs/_compiled-docs/marko-run/data-loading+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/data-loading+page.marko" {
-  const Run: $.Namespace<P38>;
+  const Run: $.Namespace<P39>;
   namespace Run {
-    type Context = $.ContextForFile<P38> & Marko.Global;
+    type Context = $.ContextForFile<P39> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1655,11 +1691,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/data-loading+page.ma
   }
 }
 
-type P39 = $.Template<"P39", typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+page.marko")>;
+type P40 = $.Template<"P40", typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/file-based-routing+page.marko" {
-  const Run: $.Namespace<P39>;
+  const Run: $.Namespace<P40>;
   namespace Run {
-    type Context = $.ContextForFile<P39> & Marko.Global;
+    type Context = $.ContextForFile<P40> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1690,11 +1726,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/file-based-routing+p
   }
 }
 
-type P40 = $.Template<"P40", typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+page.marko")>;
+type P41 = $.Template<"P41", typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/getting-started+page.marko" {
-  const Run: $.Namespace<P40>;
+  const Run: $.Namespace<P41>;
   namespace Run {
-    type Context = $.ContextForFile<P40> & Marko.Global;
+    type Context = $.ContextForFile<P41> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1725,11 +1761,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/getting-started+page
   }
 }
 
-type P41 = $.Template<"P41", typeof import("../src/routes/docs/_compiled-docs/marko-run/runtime+page.marko")>;
+type P42 = $.Template<"P42", typeof import("../src/routes/docs/_compiled-docs/marko-run/runtime+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/runtime+page.marko" {
-  const Run: $.Namespace<P41>;
+  const Run: $.Namespace<P42>;
   namespace Run {
-    type Context = $.ContextForFile<P41> & Marko.Global;
+    type Context = $.ContextForFile<P42> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1760,11 +1796,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/runtime+page.marko" 
   }
 }
 
-type P42 = $.Template<"P42", typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+page.marko")>;
+type P43 = $.Template<"P43", typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/typescript+page.marko" {
-  const Run: $.Namespace<P42>;
+  const Run: $.Namespace<P43>;
   namespace Run {
-    type Context = $.ContextForFile<P42> & Marko.Global;
+    type Context = $.ContextForFile<P43> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1795,11 +1831,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/typescript+page.mark
   }
 }
 
-type P43 = $.Template<"P43", typeof import("../src/routes/docs/_compiled-docs/marko-run/validation+page.marko")>;
+type P44 = $.Template<"P44", typeof import("../src/routes/docs/_compiled-docs/marko-run/validation+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/validation+page.marko" {
-  const Run: $.Namespace<P43>;
+  const Run: $.Namespace<P44>;
   namespace Run {
-    type Context = $.ContextForFile<P43> & Marko.Global;
+    type Context = $.ContextForFile<P44> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1830,11 +1866,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/validation+page.mark
   }
 }
 
-type P44 = $.Template<"P44", typeof import("../src/routes/docs/_compiled-docs/marko-run/vite-plugin+page.marko")>;
+type P45 = $.Template<"P45", typeof import("../src/routes/docs/_compiled-docs/marko-run/vite-plugin+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/marko-run/vite-plugin+page.marko" {
-  const Run: $.Namespace<P44>;
+  const Run: $.Namespace<P45>;
   namespace Run {
-    type Context = $.ContextForFile<P44> & Marko.Global;
+    type Context = $.ContextForFile<P45> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1865,11 +1901,11 @@ declare module "../src/routes/docs/_compiled-docs/marko-run/vite-plugin+page.mar
   }
 }
 
-type P45 = $.Template<"P45", typeof import("../src/routes/docs/_compiled-docs/reference/compiler+page.marko")>;
+type P46 = $.Template<"P46", typeof import("../src/routes/docs/_compiled-docs/reference/compiler+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/compiler+page.marko" {
-  const Run: $.Namespace<P45>;
+  const Run: $.Namespace<P46>;
   namespace Run {
-    type Context = $.ContextForFile<P45> & Marko.Global;
+    type Context = $.ContextForFile<P46> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1900,11 +1936,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/compiler+page.marko"
   }
 }
 
-type P46 = $.Template<"P46", typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+page.marko")>;
+type P47 = $.Template<"P47", typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/concise-syntax+page.marko" {
-  const Run: $.Namespace<P46>;
+  const Run: $.Namespace<P47>;
   namespace Run {
-    type Context = $.ContextForFile<P46> & Marko.Global;
+    type Context = $.ContextForFile<P47> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1935,11 +1971,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/concise-syntax+page.
   }
 }
 
-type P47 = $.Template<"P47", typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+page.marko")>;
+type P48 = $.Template<"P48", typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/core-tag+page.marko" {
-  const Run: $.Namespace<P47>;
+  const Run: $.Namespace<P48>;
   namespace Run {
-    type Context = $.ContextForFile<P47> & Marko.Global;
+    type Context = $.ContextForFile<P48> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -1970,11 +2006,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/core-tag+page.marko"
   }
 }
 
-type P48 = $.Template<"P48", typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+page.marko")>;
+type P49 = $.Template<"P49", typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/custom-tag+page.marko" {
-  const Run: $.Namespace<P48>;
+  const Run: $.Namespace<P49>;
   namespace Run {
-    type Context = $.ContextForFile<P48> & Marko.Global;
+    type Context = $.ContextForFile<P49> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2005,11 +2041,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/custom-tag+page.mark
   }
 }
 
-type P49 = $.Template<"P49", typeof import("../src/routes/docs/_compiled-docs/reference/language+page.marko")>;
+type P50 = $.Template<"P50", typeof import("../src/routes/docs/_compiled-docs/reference/language+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/language+page.marko" {
-  const Run: $.Namespace<P49>;
+  const Run: $.Namespace<P50>;
   namespace Run {
-    type Context = $.ContextForFile<P49> & Marko.Global;
+    type Context = $.ContextForFile<P50> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2040,11 +2076,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/language+page.marko"
   }
 }
 
-type P50 = $.Template<"P50", typeof import("../src/routes/docs/_compiled-docs/reference/lazy-loading+page.marko")>;
+type P51 = $.Template<"P51", typeof import("../src/routes/docs/_compiled-docs/reference/lazy-loading+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/lazy-loading+page.marko" {
-  const Run: $.Namespace<P50>;
+  const Run: $.Namespace<P51>;
   namespace Run {
-    type Context = $.ContextForFile<P50> & Marko.Global;
+    type Context = $.ContextForFile<P51> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2075,11 +2111,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/lazy-loading+page.ma
   }
 }
 
-type P51 = $.Template<"P51", typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+page.marko")>;
+type P52 = $.Template<"P52", typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/native-tag+page.marko" {
-  const Run: $.Namespace<P51>;
+  const Run: $.Namespace<P52>;
   namespace Run {
-    type Context = $.ContextForFile<P51> & Marko.Global;
+    type Context = $.ContextForFile<P52> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2110,11 +2146,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/native-tag+page.mark
   }
 }
 
-type P52 = $.Template<"P52", typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+page.marko")>;
+type P53 = $.Template<"P53", typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/reactivity+page.marko" {
-  const Run: $.Namespace<P52>;
+  const Run: $.Namespace<P53>;
   namespace Run {
-    type Context = $.ContextForFile<P52> & Marko.Global;
+    type Context = $.ContextForFile<P53> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2145,11 +2181,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/reactivity+page.mark
   }
 }
 
-type P53 = $.Template<"P53", typeof import("../src/routes/docs/_compiled-docs/reference/supported-environments+page.marko")>;
+type P54 = $.Template<"P54", typeof import("../src/routes/docs/_compiled-docs/reference/supported-environments+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/supported-environments+page.marko" {
-  const Run: $.Namespace<P53>;
+  const Run: $.Namespace<P54>;
   namespace Run {
-    type Context = $.ContextForFile<P53> & Marko.Global;
+    type Context = $.ContextForFile<P54> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2180,11 +2216,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/supported-environmen
   }
 }
 
-type P54 = $.Template<"P54", typeof import("../src/routes/docs/_compiled-docs/reference/template+page.marko")>;
+type P55 = $.Template<"P55", typeof import("../src/routes/docs/_compiled-docs/reference/template+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/template+page.marko" {
-  const Run: $.Namespace<P54>;
+  const Run: $.Namespace<P55>;
   namespace Run {
-    type Context = $.ContextForFile<P54> & Marko.Global;
+    type Context = $.ContextForFile<P55> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2215,11 +2251,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/template+page.marko"
   }
 }
 
-type P55 = $.Template<"P55", typeof import("../src/routes/docs/_compiled-docs/reference/typescript+page.marko")>;
+type P56 = $.Template<"P56", typeof import("../src/routes/docs/_compiled-docs/reference/typescript+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/reference/typescript+page.marko" {
-  const Run: $.Namespace<P55>;
+  const Run: $.Namespace<P56>;
   namespace Run {
-    type Context = $.ContextForFile<P55> & Marko.Global;
+    type Context = $.ContextForFile<P56> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2250,11 +2286,11 @@ declare module "../src/routes/docs/_compiled-docs/reference/typescript+page.mark
   }
 }
 
-type P56 = $.Template<"P56", typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+page.marko")>;
+type P57 = $.Template<"P57", typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+page.marko" {
-  const Run: $.Namespace<P56>;
+  const Run: $.Namespace<P57>;
   namespace Run {
-    type Context = $.ContextForFile<P56> & Marko.Global;
+    type Context = $.ContextForFile<P57> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2285,11 +2321,11 @@ declare module "../src/routes/docs/_compiled-docs/tutorial/components-and-reacti
   }
 }
 
-type P57 = $.Template<"P57", typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+page.marko")>;
+type P58 = $.Template<"P58", typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+page.marko")>;
 declare module "../src/routes/docs/_compiled-docs/tutorial/fundamentals+page.marko" {
-  const Run: $.Namespace<P57>;
+  const Run: $.Namespace<P58>;
   namespace Run {
-    type Context = $.ContextForFile<P57> & Marko.Global;
+    type Context = $.ContextForFile<P58> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2320,11 +2356,11 @@ declare module "../src/routes/docs/_compiled-docs/tutorial/fundamentals+page.mar
   }
 }
 
-type P58 = $.Template<"P58", typeof import("../src/routes/playground/+page.marko")>;
+type P59 = $.Template<"P59", typeof import("../src/routes/playground/+page.marko")>;
 declare module "../src/routes/playground/+page.marko" {
-  const Run: $.Namespace<P58>;
+  const Run: $.Namespace<P59>;
   namespace Run {
-    type Context = $.ContextForFile<P58> & Marko.Global;
+    type Context = $.ContextForFile<P59> & Marko.Global;
   }
 
   /** @deprecated use `Run` namespace instead */
@@ -2408,42 +2444,43 @@ type D16 = $.Meta<"D16", typeof import("../src/routes/docs/_compiled-docs/explan
 type D17 = $.Meta<"D17", typeof import("../src/routes/docs/_compiled-docs/explanation/let-vs-const+meta.json")>;
 type D18 = $.Meta<"D18", typeof import("../src/routes/docs/_compiled-docs/explanation/nested-reactivity+meta.json")>;
 type D19 = $.Meta<"D19", typeof import("../src/routes/docs/_compiled-docs/explanation/optimizing-performance+meta.json")>;
-type D20 = $.Meta<"D20", typeof import("../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+meta.json")>;
-type D21 = $.Meta<"D21", typeof import("../src/routes/docs/_compiled-docs/explanation/serializable-state+meta.json")>;
-type D22 = $.Meta<"D22", typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+meta.json")>;
-type D23 = $.Meta<"D23", typeof import("../src/routes/docs/_compiled-docs/explanation/targeted-compilation+meta.json")>;
-type D24 = $.Meta<"D24", typeof import("../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+meta.json")>;
-type D25 = $.Meta<"D25", typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+meta.json")>;
-type D26 = $.Meta<"D26", typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+meta.json")>;
-type D27 = $.Meta<"D27", typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+meta.json")>;
-type D28 = $.Meta<"D28", typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+meta.json")>;
-type D29 = $.Meta<"D29", typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+meta.json")>;
-type D30 = $.Meta<"D30", typeof import("../src/routes/docs/_compiled-docs/guide/styling+meta.json")>;
-type D31 = $.Meta<"D31", typeof import("../src/routes/docs/_compiled-docs/introduction/getting-started+meta.json")>;
-type D32 = $.Meta<"D32", typeof import("../src/routes/docs/_compiled-docs/introduction/installation+meta.json")>;
-type D33 = $.Meta<"D33", typeof import("../src/routes/docs/_compiled-docs/introduction/integrations+meta.json")>;
-type D34 = $.Meta<"D34", typeof import("../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+meta.json")>;
-type D35 = $.Meta<"D35", typeof import("../src/routes/docs/_compiled-docs/introduction/why-marko+meta.json")>;
-type D36 = $.Meta<"D36", typeof import("../src/routes/docs/_compiled-docs/marko-run/adapters+meta.json")>;
-type D37 = $.Meta<"D37", typeof import("../src/routes/docs/_compiled-docs/marko-run/cli+meta.json")>;
-type D38 = $.Meta<"D38", typeof import("../src/routes/docs/_compiled-docs/marko-run/data-loading+meta.json")>;
-type D39 = $.Meta<"D39", typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+meta.json")>;
-type D40 = $.Meta<"D40", typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+meta.json")>;
-type D41 = $.Meta<"D41", typeof import("../src/routes/docs/_compiled-docs/marko-run/runtime+meta.json")>;
-type D42 = $.Meta<"D42", typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+meta.json")>;
-type D43 = $.Meta<"D43", typeof import("../src/routes/docs/_compiled-docs/marko-run/validation+meta.json")>;
-type D44 = $.Meta<"D44", typeof import("../src/routes/docs/_compiled-docs/marko-run/vite-plugin+meta.json")>;
-type D45 = $.Meta<"D45", typeof import("../src/routes/docs/_compiled-docs/reference/compiler+meta.json")>;
-type D46 = $.Meta<"D46", typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+meta.json")>;
-type D47 = $.Meta<"D47", typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+meta.json")>;
-type D48 = $.Meta<"D48", typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+meta.json")>;
-type D49 = $.Meta<"D49", typeof import("../src/routes/docs/_compiled-docs/reference/language+meta.json")>;
-type D50 = $.Meta<"D50", typeof import("../src/routes/docs/_compiled-docs/reference/lazy-loading+meta.json")>;
-type D51 = $.Meta<"D51", typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+meta.json")>;
-type D52 = $.Meta<"D52", typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+meta.json")>;
-type D53 = $.Meta<"D53", typeof import("../src/routes/docs/_compiled-docs/reference/supported-environments+meta.json")>;
-type D54 = $.Meta<"D54", typeof import("../src/routes/docs/_compiled-docs/reference/template+meta.json")>;
-type D55 = $.Meta<"D55", typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json")>;
-type D56 = $.Meta<"D56", typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+meta.json")>;
-type D57 = $.Meta<"D57", typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+meta.json")>;
-type D58 = $.Meta<"D58", typeof import("../src/routes/playground/+meta.json")>;
+type D20 = $.Meta<"D20", typeof import("../src/routes/docs/_compiled-docs/explanation/patch-protocol+meta.json")>;
+type D21 = $.Meta<"D21", typeof import("../src/routes/docs/_compiled-docs/explanation/separation-of-concerns+meta.json")>;
+type D22 = $.Meta<"D22", typeof import("../src/routes/docs/_compiled-docs/explanation/serializable-state+meta.json")>;
+type D23 = $.Meta<"D23", typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+meta.json")>;
+type D24 = $.Meta<"D24", typeof import("../src/routes/docs/_compiled-docs/explanation/targeted-compilation+meta.json")>;
+type D25 = $.Meta<"D25", typeof import("../src/routes/docs/_compiled-docs/explanation/why-is-marko-fast+meta.json")>;
+type D26 = $.Meta<"D26", typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+meta.json")>;
+type D27 = $.Meta<"D27", typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+meta.json")>;
+type D28 = $.Meta<"D28", typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+meta.json")>;
+type D29 = $.Meta<"D29", typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+meta.json")>;
+type D30 = $.Meta<"D30", typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+meta.json")>;
+type D31 = $.Meta<"D31", typeof import("../src/routes/docs/_compiled-docs/guide/styling+meta.json")>;
+type D32 = $.Meta<"D32", typeof import("../src/routes/docs/_compiled-docs/introduction/getting-started+meta.json")>;
+type D33 = $.Meta<"D33", typeof import("../src/routes/docs/_compiled-docs/introduction/installation+meta.json")>;
+type D34 = $.Meta<"D34", typeof import("../src/routes/docs/_compiled-docs/introduction/integrations+meta.json")>;
+type D35 = $.Meta<"D35", typeof import("../src/routes/docs/_compiled-docs/introduction/welcome-to-marko+meta.json")>;
+type D36 = $.Meta<"D36", typeof import("../src/routes/docs/_compiled-docs/introduction/why-marko+meta.json")>;
+type D37 = $.Meta<"D37", typeof import("../src/routes/docs/_compiled-docs/marko-run/adapters+meta.json")>;
+type D38 = $.Meta<"D38", typeof import("../src/routes/docs/_compiled-docs/marko-run/cli+meta.json")>;
+type D39 = $.Meta<"D39", typeof import("../src/routes/docs/_compiled-docs/marko-run/data-loading+meta.json")>;
+type D40 = $.Meta<"D40", typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+meta.json")>;
+type D41 = $.Meta<"D41", typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+meta.json")>;
+type D42 = $.Meta<"D42", typeof import("../src/routes/docs/_compiled-docs/marko-run/runtime+meta.json")>;
+type D43 = $.Meta<"D43", typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+meta.json")>;
+type D44 = $.Meta<"D44", typeof import("../src/routes/docs/_compiled-docs/marko-run/validation+meta.json")>;
+type D45 = $.Meta<"D45", typeof import("../src/routes/docs/_compiled-docs/marko-run/vite-plugin+meta.json")>;
+type D46 = $.Meta<"D46", typeof import("../src/routes/docs/_compiled-docs/reference/compiler+meta.json")>;
+type D47 = $.Meta<"D47", typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+meta.json")>;
+type D48 = $.Meta<"D48", typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+meta.json")>;
+type D49 = $.Meta<"D49", typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+meta.json")>;
+type D50 = $.Meta<"D50", typeof import("../src/routes/docs/_compiled-docs/reference/language+meta.json")>;
+type D51 = $.Meta<"D51", typeof import("../src/routes/docs/_compiled-docs/reference/lazy-loading+meta.json")>;
+type D52 = $.Meta<"D52", typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+meta.json")>;
+type D53 = $.Meta<"D53", typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+meta.json")>;
+type D54 = $.Meta<"D54", typeof import("../src/routes/docs/_compiled-docs/reference/supported-environments+meta.json")>;
+type D55 = $.Meta<"D55", typeof import("../src/routes/docs/_compiled-docs/reference/template+meta.json")>;
+type D56 = $.Meta<"D56", typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json")>;
+type D57 = $.Meta<"D57", typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+meta.json")>;
+type D58 = $.Meta<"D58", typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+meta.json")>;
+type D59 = $.Meta<"D59", typeof import("../src/routes/playground/+meta.json")>;

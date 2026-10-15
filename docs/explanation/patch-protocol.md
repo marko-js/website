@@ -17,8 +17,10 @@ A template compiled with the `patches` option answers a navigation with a patch 
 
 `<await>` and `<try>` behave as they do in a document render, so loading and error states work unchanged.
 
-## Shells
+## Fine-Grained Updates
 
-When a patch creates a body the page has never rendered, it ships a shell containing that body's markup and setup, so the client can build it without bundling the template ahead of time. Each response ends with a token naming the shells the page now holds, and the next navigation sends it back so the server skips them.
+The patch protocol does not send HTML and diff it against the DOM. The compiler already knows which parts of a template can change, the same holes it uses to resume a page, so a patch addresses each one directly by scope and accessor and writes the new value in place. Text, attributes and control values that depend on server data are updated individually, and nodes that do not depend on it are never visited.
+
+Because nothing is reconciled, existing elements are never rebuilt. They keep their identity, so focus, selection and scroll position are preserved, and client-owned state is never compared against server output.
 
 When a patch cannot be applied, the page falls back to a full navigation.
