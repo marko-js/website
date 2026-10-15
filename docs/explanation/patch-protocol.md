@@ -23,4 +23,28 @@ The patch protocol does not send HTML and diff it against the DOM. The compiler 
 
 Because nothing is reconciled, existing elements are never rebuilt. They keep their identity, so focus, selection and scroll position are preserved, and client-owned state is never compared against server output.
 
+## Marko Run
+
+[Marko Run](../marko-run/getting-started.md) enables the patch protocol with its `patches` option. It requires an [adapter](../marko-run/adapters.md) that runs a server, since every navigation is answered by one.
+
+```js
+import { defineConfig } from "vite";
+import marko from "@marko/run/vite";
+
+export default defineConfig({
+  plugins: [marko({ patches: true })],
+});
+```
+
+With `patches` enabled, the app installs a small client router. Clicks on links and submissions of forms that target the app's routes become patch requests: the router fetches the URL, and the server renders the matching page as a patch instead of a document. Handlers and middleware run exactly as they do for a document request.
+
+The router aims to behave like a browser navigation:
+
+- History is updated right before the page changes, and back and forward restore each entry's scroll position.
+- A later navigation cancels one still in progress.
+- Fragment links, `[autofocus]` controls and form resets work as they do on a full page load.
+- Recently visited pages are replayed from memory on back and forward, similar to the browser's back/forward cache.
+
+A route whose handler responds with something other than a page, such as a file download or JSON, can opt out with `rel="external"` on the link or form, which leaves the navigation to the browser. Any response the router cannot apply as a patch, including one from a different build after a deploy, is loaded as a regular document.
+
 When a patch cannot be applied, the page falls back to a full navigation.
