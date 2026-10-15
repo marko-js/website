@@ -1,33 +1,83 @@
 # Patch Protocol
 
 > [!TLDR]
->
-> - Navigations update the live page instead of replacing it
-> - The server sends targeted patches, not HTML to diff
-> - Client state and event handlers survive navigation
-> - Coming soon as an experimental feature
+> - Navigations update the live page instead of loading a new document
+> - Client state, focus and handlers survive, and the server sends only what changed
+> - Enabled per application with the `patches` option
+> - Experimental, coming soon
 
-Normally, going to a new page replaces the document, and anything held in the browser starts over. With the patch protocol, the server sends only the values that changed, and the browser puts them into the page that is already there.
+> [!CAUTION]
+> The patch protocol is experimental and not available to try yet. The option, the response format and the client runtime may change in any release, including patch releases. See [Coming Soon](../newsletter/august-2026.md#coming-soon) in the August newsletter and the [September update](../newsletter/september-2026.md) for progress so far.
 
-> [!NOTE]
-> The patch protocol is not available to try yet. See [Coming Soon](../newsletter/august-2026.md#coming-soon) in the August newsletter and the [September update](../newsletter/september-2026.md) for progress so far.
+A server-rendered page usually starts over on every navigation: the browser discards the document, and with it every `<let>`, focused field and scroll position, then parses and resumes a new one. Persisted pages, built on the patch protocol, keep the document. When a link or form targets another route of the same application, the server renders that route as a **patch**, a stream of updates the live page applies to what it already shows. Structure that is new to the page is created from shells the response carries, values that changed are written in place, and everything else keeps the state it had.
 
-## Persisted Pages
+No HTML is compared on either side. The compiler knows every spot where a server value can end up, so a patch writes values straight to those spots, and elements unrelated to server data are never touched.
 
-Persisted pages are the first feature built on the protocol. When a template is compiled with the `patches` option, navigation responses are patch renders instead of full HTML documents. The server streams updates that change the existing DOM, creating new structure where needed and leaving client-owned state alone.
+## Enabling
 
-A [`<let>`](../reference/core-tag.md#let) in a shared layout keeps its value, an open menu stays open, and a focused input keeps its text, while the content the server controls updates around them. [`<await>`](../reference/core-tag.md#await) and [`<try>`](../reference/core-tag.md#try) work as they do in a document, so loading and error states are unchanged.
+Pass `patches` to the [Vite plugin](../marko-run/vite-plugin.md):
 
-## Fine-Grained Updates
+```ts
+import { defineConfig } from "vite";
+import marko from "@marko/run/vite";
 
-The compiler knows every spot on a page where a server value can end up, such as a text node, an attribute, or an `<if>` branch. A patch addresses those spots directly through scopes and accessors, so no HTML is compared.
+export default defineConfig({
+  plugins: [marko({ patches: true })],
+});
+```
 
-Elements unrelated to server data are never touched. They keep their identity, and client-owned state is never checked against server output. When a branch shows up that the browser has not built yet, the patch includes its markup once, along with its values.
+The option compiles every template to answer navigations with patches and installs the client router on each page. Each build answers only its own pages, so a page loaded from an earlier deploy navigates with full document loads until it reloads.
 
-## Marko Run
+## Navigations
 
-[Marko Run](../marko-run/getting-started.md) turns the protocol on with its `patches` option, which needs an adapter that provides a server.
+The router handles a click on a link to another route of the application, and the submission of a `GET` or `POST` form to one. It leaves a navigation to the browser when the link or form targets another origin or window, when a modifier key is held, for a `download` link, and for a link to a fragment of the current page.
 
-With the option on, a small client router intercepts link clicks and form submissions that target app routes. Each one becomes a patch request, and the server renders the matching page as patches rather than a full document. The router handles history, scroll restoration, back/forward cache, fragment links, and autofocus the way the browser would.
+A handled navigation requests the route with the same URL, method and body the browser would send, then applies the response as it streams:
 
-Links and forms for routes that return something other than a page can opt out with `rel="external"`, which leaves navigation to the browser. If a patch cannot be applied correctly, the page falls back to a normal document load, so it is never left half updated.
+- The document title and the route's [`+meta`](../marko-run/file-based-routing.md#meta) update with the page.
+- A `POST` that redirects applies the page it redirects to, and the history entry follows the final URL.
+- Back and forward restore the scroll position of the entry being visited. A new entry starts at the top, or at the element its fragment names.
+- A repeated submission of the same form while the first is in flight is not sent again.
+
+Whenever a response cannot apply as a patch (a response that is not a patch, a network failure, or a build the page does not match), the router loads the URL as a document instead, so a navigation always ends on the page the server rendered. Routes such as [`+404` and `+500`](../marko-run/file-based-routing.md#special-files) render as patches like any other page.
+
+## Client State
+
+State belongs to the page, as it does in client rendering. A component rendered in the same place before and after a navigation keeps its [`<let>`](../reference/core-tag.md#let) values, the text typed into its fields and the elements a script attached to it. Consider a search page:
+
+```marko
+<form method="get">
+  <input name="q" value=$global.search.q>
+  <button>Search</button>
+</form>
+
+<let/expanded=false>
+<button onClick() { expanded = !expanded }>Filters</button>
+<if=expanded>
+  <filter-panel/>
+</if>
+```
+
+Submitting the form patches the results in, while the open filter panel stays open and the search field keeps its text. The field's `value=` is the value it renders with. Without a [`valueChange=`](./controllable-components.md) handler, what the user typed stays, exactly as when the value changes in the browser.
+
+## Scripts and Effects
+
+Effects follow the same rules as in client rendering. A [`<script>`](../reference/core-tag.md#script) runs when the content that contains it is created, runs again when a value it reads changes, and its [`$signal`](../reference/language.md#signal) aborts before each rerun and when its content is removed. Content a navigation creates runs its effects once the patch applies.
+
+Markup inserted by a navigation is created by the client, so an inline `<html-script>` in it is added to the page without running.
+
+## Content Security Policy
+
+The client evaluates each part of a patch as JavaScript. A page served with a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP) needs `'unsafe-eval'` in its `script-src` for its navigations to patch. Without it, each navigation loads the document.
+
+## Supported Pages
+
+Patches apply to the pages Marko Run renders from [route files](../marko-run/file-based-routing.md). Templates rendered some other way, such as a template embedded inside another document, answer every navigation with a document.
+
+Templates must use the [Tags API](./class-vs-tags-api.md).
+
+## Page Size
+
+Every page includes the client router and the part of the patch runtime its templates use, including pages that otherwise ship no JavaScript. Its HTML also carries the markers and values a later patch updates, so a document is larger than the same page built without `patches`.
+
+A patch is always smaller than the document it replaces: values the page already renders from its own state are left out, and shells the page has already received are not sent again.
