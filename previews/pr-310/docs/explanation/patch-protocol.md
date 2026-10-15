@@ -9,7 +9,7 @@
 
 A server-rendered page usually starts over on every navigation: the browser discards the document, and with it every `<let>`, focused field and scroll position, then parses and resumes a new one. Persisted pages, built on the patch protocol, keep the document. When a link or form targets another route of the same application, the server renders that route as a **patch**, a stream of updates the live page applies to what it already shows. Structure that is new to the page is created from shells the response carries, values that changed are written in place, and everything else keeps the state it had.
 
-No HTML is compared on either side. The compiler knows every spot where a server value can end up, so a patch writes values straight to those spots, and elements unrelated to server data are never touched.
+No HTML is compared on either side. The compiler knows every spot where a server value can end up, so a patch writes values straight to those spots, and elements unrelated to server data are left alone.
 
 > [!CAUTION]
 > The patch protocol is experimental and not available to try yet. The option, the response format and the client runtime may change in any release, including patch releases. See [Coming Soon](../newsletter/august-2026.md#coming-soon) in the August newsletter and the [September update](../newsletter/september-2026.md) for progress so far.
@@ -44,7 +44,7 @@ Whenever a response cannot apply as a patch (a response that is not a patch, a n
 
 ## Shared Layouts
 
-The clearest win is a [layout](../marko-run/file-based-routing.md#layoutmarko) that owns state while the page inside it changes. Consider a shop with a cart drawer in the layout:
+A [layout](../marko-run/file-based-routing.md#layoutmarko) can own state while the page inside it changes. Consider a shop with a cart drawer in the layout:
 
 ```marko
 /* src/routes/+layout.marko */
