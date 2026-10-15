@@ -44,7 +44,7 @@ Whenever a response cannot apply as a patch (a response that is not a patch, a n
 
 ## Shared Layouts
 
-The clearest win is a [layout](../marko-run/file-based-routing.md#pluslayoutmarko) that owns state while the page inside it changes. Consider a shop with a cart drawer in the layout:
+The clearest win is a [layout](../marko-run/file-based-routing.md#layoutmarko) that owns state while the page inside it changes. Consider a shop with a cart drawer in the layout:
 
 ```marko
 /* src/routes/+layout.marko */
