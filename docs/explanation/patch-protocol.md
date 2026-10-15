@@ -31,7 +31,7 @@ The option compiles every template to answer navigations with patches and instal
 
 ## Navigations
 
-The router handles a click on a link to another route of the application, and the submission of a `GET` or `POST` form to one. It leaves a navigation to the browser when the link or form targets another origin or window, when a modifier key is held, for a `download` link, and for a link to a fragment of the current page.
+The router handles a click on a link to another route of the application, and the submission of a `GET` or `POST` form to one. It leaves a navigation to the browser when the link or form targets another origin or window, when a modifier key is held, for a `download` link, for a link to a fragment of the current page, and for a link or form with `rel="external"`.
 
 A handled navigation requests the route with the same URL, method and body the browser would send, then applies the response as it streams:
 
@@ -74,13 +74,11 @@ export interface Input {
 
 ```marko
 /* src/routes/products/+page.marko */
-<let/liked=false>
-
 <h1>Products</h1>
-<button onClick() { liked = !liked }>${liked ? "Liked" : "Like"}</button>
+<a href="/about">About us</a>
 ```
 
-With the drawer open, following a link to another product page replaces the page inside `<main>` and updates the cart count from the server's response. The drawer is still open, because `cartOpen` belongs to the layout and the layout was never re-rendered from scratch. Without persisted pages, every link starts the page over and the drawer closes.
+With the drawer open, following the link to `/about` replaces the page inside `<main>` and updates the cart count from the server's response. The drawer stays open, because `cartOpen` belongs to the layout, which is patched in place rather than rendered again. Without persisted pages, the link loads a new document and the drawer closes.
 
 ## Client State
 
