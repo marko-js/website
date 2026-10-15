@@ -60,6 +60,7 @@ Marko's key features include:
 - [Nested Reactivity](/docs/explanation/nested-reactivity.md): Nested reactive data
 - [Immutable State](/docs/explanation/immutable-state.md): Immutability in reactivity
 - [Serializable State](/docs/explanation/serializable-state.md): State serialization
+- [Patch Protocol](/docs/explanation/patch-protocol.md): Server-driven patches for persisted pages (coming soon)
 - [Let vs Const](/docs/explanation/let-vs-const.md): Reactive declarations
 - [Optimizing Performance](/docs/explanation/optimizing-performance.md): Performance optimization
 
