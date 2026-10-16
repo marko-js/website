@@ -1,0 +1,20 @@
+import { attach } from "../../core/attach.ts";
+import type { File } from "../../core/build.ts";
+
+export interface Input {
+  files: File[];
+  build?: boolean;
+  csr?: boolean;
+}
+
+// Renders nothing. Its client code is the lazy part of <live-preview>: this tag
+// is imported with `load: "visible"`, so everything it pulls in (CodeMirror,
+// the highlighter) is fetched when the example scrolls into view.
+<span/marker hidden/>
+<script>
+  attach(marker().closest(".live-preview")!, input.files, {
+    build: input.build,
+    csr: input.csr,
+    signal: $signal,
+  });
+</script>

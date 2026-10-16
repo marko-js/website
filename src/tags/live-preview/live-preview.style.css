@@ -60,14 +60,22 @@
 
 .sources {
   min-width: 0;
-  max-height: var(--lp-height);
-  overflow: auto;
-  font: 1rem/1.5 var(--lp-font);
+  /* Shared by the static markup and CodeMirror so swapping them is invisible. */
+  --lp-line: 1.5rem;
+  --lp-gutter-left: 1rem;
+  --lp-gutter-right: 0.75rem;
+  --lp-gutter-color: color-mix(in srgb, currentColor 45%, transparent);
+  font: 1rem/var(--lp-line) var(--lp-font);
   tab-size: 2;
 }
 
 .source {
   display: none;
+  box-sizing: border-box;
+  max-height: var(--lp-height);
+  padding: 0.75rem 0;
+  overflow: auto;
+  counter-reset: line;
 }
 
 .live-preview:not(:has(.tab-input)) .source,
@@ -86,27 +94,131 @@
   display: block;
 }
 
+.source:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
 .source pre {
   margin: 0;
-  padding: 0.75rem 1rem;
+  padding: 0;
   background: none;
   font: inherit;
   white-space: pre;
 }
 
+.source .line {
+  display: inline;
+}
+
+.source .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: calc(
+    var(--lp-digits, 2) * 1ch + var(--lp-gutter-left) + var(--lp-gutter-right)
+  );
+  padding: 0 var(--lp-gutter-right) 0 var(--lp-gutter-left);
+  text-align: right;
+  color: var(--lp-gutter-color);
+  user-select: none;
+}
+
 .source .shiki,
-.source .shiki span {
+.source .shiki span,
+.source .cm-content span {
   color: var(--shiki-light);
 }
 
 @media (prefers-color-scheme: dark) {
   .source .shiki,
-  .source .shiki span {
+  .source .shiki span,
+  .source .cm-content span {
     color: var(--shiki-dark);
   }
 }
 
+/* CodeMirror, tuned to the metrics above. */
+.live-preview .source .cm-editor {
+  font: inherit;
+  background: none;
+  color: inherit;
+}
+
+.live-preview .source .cm-editor.cm-focused {
+  outline: none;
+}
+
+.live-preview .source .cm-editor .cm-scroller {
+  font: inherit;
+  line-height: var(--lp-line);
+  overflow: visible;
+}
+
+.live-preview .source .cm-editor .cm-content {
+  padding: 0;
+  caret-color: currentColor;
+}
+
+.live-preview .source .cm-editor .cm-line {
+  padding: 0;
+  line-height: var(--lp-line);
+}
+
+.live-preview .source .cm-editor .cm-gutters {
+  background: none;
+  border: 0;
+  color: var(--lp-gutter-color);
+}
+
+.live-preview .source .cm-editor .cm-gutterElement {
+  box-sizing: border-box;
+  min-width: calc(
+    var(--lp-digits, 2) * 1ch + var(--lp-gutter-left) + var(--lp-gutter-right)
+  );
+  padding: 0 var(--lp-gutter-right) 0 var(--lp-gutter-left);
+  line-height: var(--lp-line);
+}
+
+.live-preview .source .cm-editor .cm-cursor {
+  border-left-color: currentColor;
+}
+
+.live-preview .source .cm-editor .cm-selectionBackground,
+.live-preview
+  .source
+  .cm-editor.cm-focused
+  > .cm-scroller
+  > .cm-selectionLayer
+  .cm-selectionBackground {
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.output {
+  position: relative;
+  display: flex;
+}
+
+.errors {
+  position: absolute;
+  inset: auto 0 0 0;
+  max-height: 60%;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  font: 0.85rem/1.4 var(--lp-font);
+  color: #fff;
+  background: #b3261e;
+}
+
+.errors[hidden] {
+  display: none;
+}
+
 .preview {
+  flex: 1;
   width: 100%;
   height: var(--lp-height);
   border: 0;

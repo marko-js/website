@@ -62,6 +62,25 @@ const baseLanguageData = [
   },
 ];
 
+/**
+ * The extensions for an embedded editor: no gutter folding, autocomplete or
+ * Tab capture, so a page can still be tabbed through. Line numbers and the
+ * highlighter match the static markup that renders before this loads.
+ */
+export function compactExtensions(lang?: string) {
+  return [
+    history(),
+    drawSelection(),
+    highlightSelectionMatches(),
+    EditorState.allowMultipleSelections.of(true),
+    EditorState.languageData.of(() => baseLanguageData),
+    langConfig.of(shiki(lang)),
+    closeBrackets(),
+    lineNumbers(),
+    keymap.of([...defaultKeymap, ...historyKeymap]),
+  ];
+}
+
 export default [
   history(),
   drawSelection(),

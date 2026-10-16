@@ -1,4 +1,7 @@
 import type { File } from "./core/build.ts";
+import Editor from "<live-preview-editor>" with {
+  load: "visible.live-preview?rootMargin=200px",
+};
 
 export interface Precompiled {
   files: File[];
@@ -14,6 +17,8 @@ export interface Input {
   dir?: string;
   /** Example files, as in the playground. Static values are pre-compiled at build time. */
   files?: File[];
+  /** Allow editing, which loads the editor and compiler on demand. Defaults to true. */
+  editable?: boolean;
   /** Mount the example on the client instead of rendering it on the server. */
   csr?: boolean;
   /** Height of the preview, as any CSS length. */
@@ -35,8 +40,29 @@ static function toSrcdoc({ html, css, js }: Precompiled) {
   );
 }
 
+static function escapeHTML(text: string) {
+  return text.replace(/[&<>]/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+// Examples whose input is not known at build time have nothing to render
+// until the editor loads and compiles them, so they start as plain text.
+static function fromFiles(files: File[]): Precompiled {
+  return {
+    files,
+    html: "",
+    css: "",
+    js: "",
+    sourceCSS: "",
+    sources: files.map(({ path, content }) => ({
+      path,
+      html: `<pre><code>${escapeHTML(content)}</code></pre>`,
+    })),
+  };
+}
+
 <id/id>
-<const/pre=input.precompiled>
+<const/pre=input.precompiled || (input.files && fromFiles(input.files))>
+<const/editable=input.editable !== false>
 <if=pre>
   <const/srcdoc=toSrcdoc(pre)>
   <div.live-preview style=input.height && `--lp-height:${input.height}`>
@@ -58,10 +84,26 @@ static function toSrcdoc({ html, css, js }: Precompiled) {
     </if>
     <div.sources>
       <for|source, i| of=pre.sources>
-        <div.source data-path=source.path>$!{source.html}</div>
+        <div.source
+          data-path=source.path
+          style=`--lp-digits:${Math.max(2, String(pre.files[i].content.split("\n").length).length)}`
+          contenteditable=editable && "plaintext-only"
+          role=editable && "textbox"
+          aria-multiline=editable && "true"
+          aria-label=editable && source.path
+          spellcheck=editable && "false"
+        >
+          $!{source.html}
+        </div>
       </for>
     </div>
-    <iframe.preview title="Preview" srcdoc=srcdoc loading="lazy"/>
+    <div.output>
+      <iframe.preview title="Preview" srcdoc=srcdoc loading="lazy"/>
+      <div.errors role="alert" hidden/>
+    </div>
+    <if=editable>
+      <Editor files=pre.files build=!input.precompiled csr=input.csr/>
+    </if>
   </div>
   <html-style>${pre.sourceCSS}</html-style>
 </if>
