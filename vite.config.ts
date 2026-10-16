@@ -2,7 +2,6 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
 import markodown from "./src/util/markodown.ts";
-import markoRuntimeFiles from "./src/util/marko-runtime-files.ts";
 
 export default defineConfig({
   // BASE_URL is set to "/previews/pr-N/" by the PR Preview workflow so the site can be
@@ -48,7 +47,7 @@ export default defineConfig({
     include: ["flexsearch"],
     exclude: ["@rollup/browser", "lightningcss-wasm"],
   },
-  plugins: [markoRuntimeFiles(), markodown(), marko()],
+  plugins: [markodown(), marko()],
   css: {
     modules: {
       generateScopedName:

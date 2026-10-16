@@ -3,7 +3,7 @@ import prettierCSS from "prettier/plugins/postcss";
 import prettierBabel from "prettier/plugins/babel";
 import prettierEstree from "prettier/plugins/estree";
 import type { OutputChunk } from "@rollup/browser";
-import runtimeFiles from "virtual:marko-runtime-files";
+import runtimeFiles from "./runtime-files.ts";
 import WritableDOMStream from "writable-dom";
 
 import {
