@@ -29,3 +29,12 @@ test("collects component styles", async () => {
   ]);
   expect(css).toContain("red");
 });
+
+test("highlights the source with classes instead of inline styles", async () => {
+  const { sources, sourceCSS } = await buildStatic([
+    { path: "index.marko", content: "<h1>hi</h1>" },
+  ]);
+  expect(sources[0].html).toMatch(/class="[^"]*lp-/);
+  expect(sources[0].html).not.toContain("style=");
+  expect(sourceCSS).toMatch(/\.lp-\w+\{/);
+});

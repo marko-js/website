@@ -9,12 +9,17 @@ import {
   installPackages,
   type File,
 } from "./build.ts";
+import { highlight } from "./highlight.ts";
 import { rootDir } from "./workspace/fs.ts";
 
 export interface StaticBuild {
   html: string;
   css: string;
   js: string;
+  /** Highlighted source for each file, in the order given. */
+  sources: { path: string; html: string }[];
+  /** The rules for every class used by `sources`. */
+  sourceCSS: string;
 }
 
 // `@rollup/browser` loads its wasm with `fetch(new URL(..., import.meta.url))`,
@@ -84,5 +89,18 @@ export async function buildStatic(
 
   const { generate } = await bundleClient(ctx, csr, options);
   const client = await generate();
-  return { html, css: client.css ?? "", js: client.code ?? "" };
+  const sources = [];
+  let sourceCSS = "";
+  for (const { path, content } of files) {
+    const highlighted = highlight(path, content);
+    sources.push({ path, html: highlighted.html });
+    sourceCSS += highlighted.css;
+  }
+  return {
+    html,
+    css: client.css ?? "",
+    js: client.code ?? "",
+    sources,
+    sourceCSS,
+  };
 }

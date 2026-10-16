@@ -1,0 +1,67 @@
+import type { File } from "./core/build.ts";
+
+export interface Precompiled {
+  files: File[];
+  html: string;
+  css: string;
+  js: string;
+  sources: { path: string; html: string }[];
+  sourceCSS: string;
+}
+
+export interface Input {
+  /** A directory of example files, relative to the template using this tag. Read at build time. */
+  dir?: string;
+  /** Example files, as in the playground. Static values are pre-compiled at build time. */
+  files?: File[];
+  /** Mount the example on the client instead of rendering it on the server. */
+  csr?: boolean;
+  /** Height of the preview, as any CSS length. */
+  height?: string;
+  /** Set by the compile-time transformer from `dir` or `files`. */
+  precompiled?: Precompiled;
+}
+
+// The frame is a document of its own, so the example's styles can neither leak
+// out nor be affected by the page. `</script` would end the inline module early.
+static function toSrcdoc({ html, css, js }: Precompiled) {
+  return (
+    (css ? `<style>${css}</style>` : "") +
+    html +
+    (js
+      ? `<script type="module">${js.replace(/<\/(script)/gi, "<\\/$1")}</scr` +
+        `ipt>`
+      : "")
+  );
+}
+
+<id/id>
+<const/pre=input.precompiled>
+<if=pre>
+  <const/srcdoc=toSrcdoc(pre)>
+  <div.live-preview style=input.height && `--lp-height:${input.height}`>
+    <if=(pre.files.length > 1)>
+      <for|file, i| of=pre.files>
+        <input.tab-input
+          type="radio"
+          name=`${id}-tab`
+          id=`${id}-${i}`
+          checked=i === 0
+          aria-label=file.path
+        >
+      </for>
+      <div.tabs>
+        <for|file, i| of=pre.files>
+          <label.tab for=`${id}-${i}`>${file.path}</label>
+        </for>
+      </div>
+    </if>
+    <div.sources>
+      <for|source, i| of=pre.sources>
+        <div.source data-path=source.path>$!{source.html}</div>
+      </for>
+    </div>
+    <iframe.preview title="Preview" srcdoc=srcdoc loading="lazy"/>
+  </div>
+  <html-style>${pre.sourceCSS}</html-style>
+</if>
