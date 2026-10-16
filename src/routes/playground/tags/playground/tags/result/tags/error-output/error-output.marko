@@ -1,12 +1,12 @@
-client import highlighter from "app/util/shiki";
-import { styleToClass } from "app/util/style-to-class";
+client import highlighter from "app/tags/live-preview/core/shiki";
+import { styleToClass } from "app/tags/live-preview/core/style-to-class";
 import {
   langForFile,
   normalizeErrors,
   parseInline,
   type CodeFrame,
   type Inline,
-} from "app/util/compile-error";
+} from "app/tags/live-preview/core/compile-error";
 import styles from "./error-output.style.module.scss";
 export interface Input {
   errors: readonly unknown[];

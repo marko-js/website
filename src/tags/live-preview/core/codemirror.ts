@@ -30,7 +30,7 @@ import {
   completionKeymap,
 } from "@codemirror/autocomplete";
 import { foldGutter, foldService } from "@codemirror/language";
-import highlighter from "app/util/shiki";
+import highlighter from "./shiki";
 import { styleToClass } from "./style-to-class";
 
 const langConfig = new Compartment();
