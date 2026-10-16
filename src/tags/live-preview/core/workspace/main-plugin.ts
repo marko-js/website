@@ -1,10 +1,10 @@
 import type { Plugin, RollupFsModule } from "@rollup/browser";
 
 import { resolveSync, type ResolveOptions } from "resolve-sync";
-import type { Workspace } from "../workspace";
+import type { BuildContext } from "../build.ts";
 
 export interface MainPluginOptions {
-  ws: Workspace;
+  ws: BuildContext;
   code: string;
   browser: boolean;
 }

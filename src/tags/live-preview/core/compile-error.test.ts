@@ -1,7 +1,11 @@
 import { expect, test } from "vitest";
 
-import { attachErrorFile, normalizeErrors, parseError } from "./compile-error";
-import { rootDir } from "./workspace/fs";
+import {
+  attachErrorFile,
+  normalizeErrors,
+  parseError,
+} from "./compile-error.ts";
+import { rootDir } from "./workspace/fs.ts";
 
 /** Shaped like the `CompileError` the Marko compiler raises. */
 function compileError(

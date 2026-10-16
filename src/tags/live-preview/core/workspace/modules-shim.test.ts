@@ -3,8 +3,8 @@ import * as compiler from "@marko/compiler";
 import * as translator from "marko/translator";
 import markoModules from "@marko/compiler/modules";
 
-import { FileSystem, rootDir } from "./fs";
-import { setResolveFileSystem } from "./modules-shim";
+import { FileSystem, rootDir } from "./fs.ts";
+import { setResolveFileSystem } from "./modules-shim.ts";
 
 function libraryWorkspace() {
   return new FileSystem({

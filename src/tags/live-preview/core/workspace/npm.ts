@@ -1,5 +1,5 @@
-import maxSatisfying from "semver/ranges/max-satisfying";
-import validRange from "semver/ranges/valid";
+import maxSatisfying from "semver/ranges/max-satisfying.js";
+import validRange from "semver/ranges/valid.js";
 
 const MAX_PACKAGES = 32;
 const MAX_FILE_SIZE = 1024 * 1024;

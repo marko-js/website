@@ -1,6 +1,6 @@
 import init, { transform } from "lightningcss-wasm";
 import type { Plugin } from "@rollup/browser";
-import { ConcatSourceMap } from "./concat-sourcemaps";
+import { ConcatSourceMap } from "./concat-sourcemaps.ts";
 export interface CSSPluginOptions {
   browser: boolean;
 }

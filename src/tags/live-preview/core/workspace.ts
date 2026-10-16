@@ -2,32 +2,38 @@ import { format } from "prettier/standalone";
 import prettierCSS from "prettier/plugins/postcss";
 import prettierBabel from "prettier/plugins/babel";
 import prettierEstree from "prettier/plugins/estree";
-import { rollup, type OutputAsset, type OutputChunk } from "@rollup/browser";
+import type { OutputChunk } from "@rollup/browser";
+import runtimeFiles from "virtual:marko-runtime-files";
 import WritableDOMStream from "writable-dom";
 
-import { cdnPlugin } from "./workspace/cdn-plugin";
-import { fetchNodeModules } from "./workspace/npm";
-import { cssPlugin } from "./workspace/css-plugin";
-import { mainPlugin } from "./workspace/main-plugin";
-import { markoPlugin } from "./workspace/marko-plugin";
-import { minifyScriptPlugin } from "./workspace/minify-script-plugin";
+import {
+  bundleClient,
+  bundleServer,
+  cssFile,
+  clientFile,
+  createBuildContext,
+  installPackages,
+  serverFile,
+  type BuildContext,
+  type File,
+} from "./build.ts";
+import type { MarkoCompiled } from "./workspace/marko-plugin.ts";
 
-import { toByteSizes, type Sizes } from "./sizes";
-import { FileSystem, rootDir } from "./workspace/fs";
-import { prettyPrintHTML } from "./pretty-print-html";
+import { toByteSizes, type Sizes } from "./sizes.ts";
+import { rootDir } from "./workspace/fs.ts";
+import type { FileSystem } from "./workspace/fs.ts";
+import { prettyPrintHTML } from "./pretty-print-html.ts";
 
-export interface File {
-  path: string;
-  content: string;
-}
+export type { File };
 export interface LogEntry {
   ns: "client" | "server";
   method: string;
   text: string;
 }
-export interface Workspace {
+export interface Workspace extends BuildContext {
   fs: FileSystem;
   optimize: boolean;
+  markoCompiled?: MarkoCompiled;
   previewReady: boolean;
   previewJS: string;
   previewCSS: string;
@@ -48,13 +54,6 @@ export interface Workspace {
 
 let workspace: Workspace | undefined;
 const encoder = new TextEncoder();
-// Files sit directly in the workspace directory, so a playground file is at
-// the path the author typed rather than under scaffolding they never asked
-// for. `marko.json` is what buys that: without it the compiler only discovers
-// custom tags inside a directory literally named `tags` or `components`.
-const packageJsonPath = `${rootDir}package.json`;
-const markoJsonPath = `${rootDir}marko.json`;
-const markoJson = JSON.stringify({ "tags-dir": "." });
 const subs = new Set<(workspace: Workspace) => void>();
 function formatLogArgs(args: unknown[]): string {
   return args
@@ -166,7 +165,8 @@ export async function update(
   optimize: boolean,
   csr: boolean,
 ) {
-  const fs = new FileSystem({});
+  const ctx = createBuildContext(files, optimize);
+  const { fs } = ctx;
   // Read before `workspace` is reassigned below: this holds the only reference
   // to the running preview server, which stays up until this build replaces it.
   const previous = workspace;
@@ -185,60 +185,29 @@ export async function update(
     server: undefined,
     logs: [],
   });
-  // Written first so an author who adds their own `marko.json` tab still wins.
-  fs.files[markoJsonPath] = markoJson;
-  for (const file of files) {
-    fs.files[
-      file.path === "package.json" ? packageJsonPath : rootDir + file.path
-    ] = file.content;
-  }
-
   let versions: Record<string, string> = {};
   try {
-    const packageJson = fs.files[packageJsonPath];
-    if (packageJson) {
-      const nodeModules = await fetchNodeModules(packageJson);
-      if (signal.aborted) return;
-      versions = nodeModules.versions;
-      for (const path in nodeModules.files) {
-        fs.files[rootDir.slice(0, -1) + path] = nodeModules.files[path];
-      }
-    }
+    versions = await installPackages(ctx);
+    if (signal.aborted) return;
+    const bundleOptions = { runtimeFiles, versions };
 
     const serverBuild = csr
       ? undefined
       : (async function buildServer() {
-          const file = "server.js";
-          const build = await rollup({
-            plugins: [
-              mainPlugin({
-                ws,
-                browser: false,
-                code: `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n${consoleInjectionScript("server", "#00FFFF", "postMessage")}`,
-              }),
-              markoPlugin({
-                ws,
-                browser: false,
-              }),
-              cssPlugin({ browser: false }),
-              cdnPlugin({ versions }),
-              minifyScriptPlugin(),
-            ],
-          });
+          const file = serverFile;
+          const { generate } = await bundleServer(
+            ws,
+            `import t from "${rootDir}index.marko";let m;onmessage=async e=>{m=e;for await(const c of t.render())if(m==e)postMessage(c);else return;m==e&&postMessage(0)}\n${consoleInjectionScript("server", "#00FFFF", "postMessage")}`,
+            bundleOptions,
+          );
 
           if (signal.aborted) return;
 
-          const { output } = await build.generate({
-            file,
-            format: "es",
-            compact: optimize,
-            sourcemap: "hidden",
-            inlineDynamicImports: true,
-          });
+          const bundle = await generate();
 
           if (signal.aborted) return;
 
-          const code = getAssetCode(output, file);
+          const code = bundle.code;
           previous?.server?.terminate();
 
           if (!code) {
@@ -251,7 +220,7 @@ export async function update(
               "application/javascript",
               code +
                 "onunhandledrejection=e=>{e.preventDefault();throw e.reason}" +
-                getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+                getSourceMapComment(file, bundle.map),
             ),
             {
               name: file,
@@ -271,41 +240,20 @@ export async function update(
           server.addEventListener("error", onRuntimeError, { signal });
         })();
     const browserBuild = (async function buildClient() {
-      const file = "client.js";
-      const cssFile = "client.css";
-      const build = await rollup({
-        plugins: [
-          mainPlugin({
-            ws,
-            browser: true,
-            code: csr
-              ? `import t from "${rootDir}index.marko";t.mount({}, document.body)`
-              : `import "${rootDir}index.marko?hydrate"`,
-          }),
-          markoPlugin({ ws, browser: true }),
-          cssPlugin({ browser: true }),
-          cdnPlugin({ versions }),
-          minifyScriptPlugin(),
-        ],
-      });
+      const file = clientFile;
+      const { generate } = await bundleClient(ws, csr, bundleOptions);
 
       if (signal.aborted) return;
 
-      const { output } = await build.generate({
-        file,
-        format: "es",
-        compact: optimize,
-        sourcemap: "hidden",
-        inlineDynamicImports: true,
-      });
+      const bundle = await generate();
 
       if (signal.aborted) return;
 
-      ws.previewModules = output[0]?.modules;
+      ws.previewModules = bundle.modules;
       emit();
 
-      const code = getAssetCode(output, file);
-      const cssCode = getAssetCode(output, cssFile);
+      const code = bundle.code;
+      const cssCode = bundle.css;
 
       if (code) {
         void toByteSizes(code).then((size) => {
@@ -400,19 +348,14 @@ export async function update(
           ? `<link rel=stylesheet href="${toAssetURL(
               cssFile,
               "text/css",
-              cssCode +
-                getSourceMapComment(
-                  cssFile,
-                  getAssetCode(output, `${cssFile}.map`),
-                ),
+              cssCode + getSourceMapComment(cssFile, bundle.cssMap),
             )}">`
           : "") +
         (code
           ? `<script type=module async src="${toAssetURL(
               file,
               "application/javascript",
-              code +
-                getSourceMapComment(file, getAssetCode(output, `${file}.map`)),
+              code + getSourceMapComment(file, bundle.map),
             )}"></script>`
           : "");
       ws.previewReady = false;
@@ -483,18 +426,6 @@ function isErrorEvent(
   ev: ErrorEvent | PromiseRejectionEvent,
 ): ev is ErrorEvent {
   return ev.type === "error" && !!(ev as ErrorEvent).message;
-}
-
-function getAssetCode(chunks: (OutputChunk | OutputAsset)[], name: string) {
-  for (const chunk of chunks) {
-    if (chunk.fileName === name) {
-      if (chunk.type === "asset") {
-        return chunk.source as string;
-      } else {
-        return chunk.code;
-      }
-    }
-  }
 }
 
 export function getSourceMapComment(filename: string, map: any) {

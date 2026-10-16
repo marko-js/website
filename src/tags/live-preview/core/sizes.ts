@@ -1,4 +1,4 @@
-import { streamToIterable } from "./stream-to-iterable";
+import { streamToIterable } from "./stream-to-iterable.ts";
 
 export interface Sizes {
   size: number;
