@@ -27,21 +27,21 @@ const defaultSection = sections.introduction;
 const WIDGET_SVG = { width: 480, height: 720 };
 
 // Measured from each rendered SVG, so a widget's feet land on the rule and its
-// body keeps clear of the crop's edge. `faces` is a reading of the artwork.
+// body keeps clear of the crop's edge. `facesRight` is a reading of the artwork.
 interface Stance {
   feet: number; // where the feet meet the ground, in SVG units
   body: [number, number]; // horizontal extent, in SVG units
-  faces: "left" | "right" | "front";
+  facesRight?: true;
 }
 
 const stances: Record<string, Stance> = {
-  button: { feet: 679, body: [66, 403], faces: "right" },
-  doc: { feet: 681, body: [89, 466], faces: "left" }, // right foot is raised
-  link: { feet: 679, body: [31, 466], faces: "right" },
-  fetch: { feet: 679, body: [13, 390], faces: "left" },
-  cookie: { feet: 710, body: [87, 436], faces: "left" },
-  pixel: { feet: 679, body: [100, 379], faces: "front" },
-  crash: { feet: 679, body: [78, 401], faces: "front" },
+  button: { feet: 679, body: [66, 403], facesRight: true },
+  doc: { feet: 681, body: [89, 466] }, // right foot is raised
+  link: { feet: 679, body: [31, 466], facesRight: true },
+  fetch: { feet: 679, body: [13, 390] },
+  cookie: { feet: 710, body: [87, 436] },
+  pixel: { feet: 679, body: [100, 379] },
+  crash: { feet: 679, body: [78, 401] },
 };
 
 const WIDTH = 1200;
@@ -245,10 +245,10 @@ function standingBanner({
   title,
   label,
 }: Standing): Element {
-  const { feet, body, faces } = stances[widget];
+  const { feet, body, facesRight } = stances[widget];
 
   // A widget facing right stands on the left, so it looks toward the title.
-  const onRight = faces !== "right";
+  const onRight = !facesRight;
   const unit = WIDGET_WIDTH / WIDGET_SVG.width;
   const widgetHeight = WIDGET_SVG.height * unit;
   const widgetLeft = onRight
