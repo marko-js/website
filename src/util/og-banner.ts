@@ -213,10 +213,11 @@ export function fitTitle(title: string, section: string) {
   const max = maxTitleSize[section] ?? Infinity;
   for (const { size, lines } of titleTiers) {
     if (size > max) continue;
-    const wrapped = wrapTitle(title, charsPerLine(size));
+    const perLine = charsPerLine(size);
+    const wrapped = wrapTitle(title, perLine);
     if (
       wrapped.length <= lines &&
-      wrapped.every((line) => line.length <= charsPerLine(size))
+      wrapped.every((line) => line.length <= perLine)
     ) {
       return { size, lines: wrapped };
     }
