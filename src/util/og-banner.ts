@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import satori from "satori";
@@ -20,23 +19,57 @@ const sections: Record<string, Section> = {
 };
 
 const fallbackSection: Section = { widget: "crash", accent: "#cccccc" };
+const sectionOf = (section: string) => sections[section] ?? fallbackSection;
+// The default and playground banners greet visitors like the introduction does.
+const defaultSection = sections.introduction;
+
+// The standing ("legs") widget SVGs all share one viewBox.
+const WIDGET_SVG = { width: 480, height: 720 };
+
+// Measured from each rendered SVG, so a widget's feet land on the rule and its
+// body keeps clear of the crop's edge. `facesRight` is a reading of the artwork.
+interface Stance {
+  feet: number; // where the feet meet the ground, in SVG units
+  body: [number, number]; // horizontal extent, in SVG units
+  facesRight?: true;
+}
+
+const stances: Record<string, Stance> = {
+  button: { feet: 679, body: [66, 403], facesRight: true },
+  doc: { feet: 681, body: [89, 466] }, // right foot is raised
+  link: { feet: 679, body: [31, 466], facesRight: true },
+  fetch: { feet: 679, body: [13, 390] },
+  cookie: { feet: 710, body: [87, 436] },
+  pixel: { feet: 679, body: [100, 379] },
+  crash: { feet: 679, body: [78, 401] },
+};
 
 const WIDTH = 1200;
 const HEIGHT = 630;
-const STRIPE = 14;
 // Compact link previews (Slack, iMessage) crop to the centered square.
 const CROP_SIZE = HEIGHT;
 const CROP_INSET = (WIDTH - CROP_SIZE) / 2;
-const COLUMN_PADDING = 44;
-const COLUMN_WIDTH = CROP_SIZE - COLUMN_PADDING * 2;
 
-// The outer colors stop at the crop's edges, or it would show slivers of them.
-const chevronStripe = `linear-gradient(90deg, #00CFFB ${CROP_INSET}px, #7CED64 ${CROP_INSET}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - CROP_INSET}px, #FF5467 ${WIDTH - CROP_INSET}px)`;
+// Every banner keeps what matters in the square, with the widget standing on a
+// rule along the bottom edge. A faint logo behind it all is all the margins hold.
+const RULE = 14;
+const FLOOR = HEIGHT - RULE;
+const WIDGET_WIDTH = 250;
+const WIDGET_INSET = 28;
+const TITLE_INSET = 34;
+const TITLE_WIDTH = CROP_SIZE - TITLE_INSET * 2;
+const WORDMARK_WIDTH = 540;
+const TAB_HEIGHT = 58;
+const WATERMARK_WIDTH = 1000;
+const WATERMARK_HEIGHT = (WATERMARK_WIDTH * 191) / 347; // logomark.svg's viewBox
+const WATERMARK_OPACITY = 0.06;
+
+type Style = Record<string, string | number>;
 
 interface Element {
   type: string;
   props: {
-    style?: Record<string, string | number>;
+    style?: Style;
     children?: Element | Element[] | string;
     [attr: string]: unknown;
   };
@@ -44,62 +77,52 @@ interface Element {
 
 let assets:
   | Promise<{
-      fonts: { name: string; data: Buffer; weight: 700 }[];
+      font: Buffer;
       logomark: string;
       logo: string;
     }>
   | undefined;
 
+const toDataURI = (svg: Buffer) =>
+  `data:image/svg+xml;base64,${svg.toString("base64")}`;
+
 const assetPath = (...segments: string[]) =>
   path.join(process.cwd(), "public", "assets", ...segments);
 
-const widgetPath = (section: string) =>
-  assetPath(
-    "widget",
-    `${(sections[section] ?? fallbackSection).widget}-dark.svg`,
-  );
+const widgetPath = (widget: string) =>
+  assetPath("widget", `${widget}-legs-dark.svg`);
 
 export function docsBannerSources(section: string) {
-  return [assetPath("logomark.svg"), widgetPath(section)];
+  return [assetPath("logomark.svg"), widgetPath(sectionOf(section).widget)];
 }
 
 export function defaultBannerSources() {
-  return [assetPath("logo-dark.svg")];
+  return [
+    assetPath("logomark.svg"),
+    assetPath("logo-dark.svg"),
+    widgetPath(defaultSection.widget),
+  ];
 }
 
 function loadAssets() {
   return (assets ??= (async () => {
-    const fontDir = path.join(
-      process.cwd(),
-      "node_modules",
-      "@fontsource",
-      "ubuntu",
-      "files",
-    );
-    const [bold, mono, logomark, logo] = await Promise.all([
-      fs.readFile(path.join(fontDir, "ubuntu-latin-700-normal.woff")),
+    const [font, logomark, logo] = await Promise.all([
       fs.readFile(
         path.join(
-          fontDir,
-          "..",
-          "..",
-          "ubuntu-mono",
+          process.cwd(),
+          "node_modules",
+          "@fontsource",
+          "ubuntu",
           "files",
-          "ubuntu-mono-latin-700-normal.woff",
+          "ubuntu-latin-700-normal.woff",
         ),
       ),
       fs.readFile(assetPath("logomark.svg")),
       fs.readFile(assetPath("logo-dark.svg")),
     ]);
 
-    const toDataURI = (svg: Buffer) =>
-      `data:image/svg+xml;base64,${svg.toString("base64")}`;
-
     return {
-      fonts: [
-        { name: "Ubuntu", data: bold, weight: 700 as const },
-        { name: "Ubuntu Mono", data: mono, weight: 700 as const },
-      ],
+      font,
       logomark: toDataURI(logomark),
       logo: toDataURI(logo),
     };
@@ -111,250 +134,253 @@ function loadAssets() {
 
 const widgetCache = new Map<string, Promise<string>>();
 
-function loadWidget(section: string) {
-  let widget = widgetCache.get(section);
+function loadWidget(name: string) {
+  let widget = widgetCache.get(name);
   if (!widget) {
     widget = fs
-      .readFile(widgetPath(section))
-      .then((svg) => `data:image/svg+xml;base64,${svg.toString("base64")}`)
+      .readFile(widgetPath(name))
+      .then(toDataURI)
       .catch((err) => {
-        widgetCache.delete(section);
+        widgetCache.delete(name);
         throw err;
       });
-    widgetCache.set(section, widget);
+    widgetCache.set(name, widget);
   }
   return widget;
 }
 
-const domain: Element = {
-  type: "div",
-  props: {
-    style: { fontSize: 28, color: "#cccccc", fontFamily: "Ubuntu Mono" },
-    children: "markojs.com",
-  },
-};
-
-function frame(
-  accent: string,
-  content: Element[],
-  overlays: Element[] = [],
-): Element {
-  return {
-    type: "div",
-    props: {
-      style: {
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        backgroundColor: "#202124",
-        backgroundImage: `radial-gradient(circle at 85% -20%, ${accent}33 0%, #20212400 60%)`,
-        fontFamily: "Ubuntu",
-        color: "#ffffff",
-      },
-      children: [
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              flexDirection: "column",
-              flexGrow: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              width: CROP_SIZE,
-              padding: `24px ${COLUMN_PADDING}px 48px`,
-            },
-            children: content,
-          },
-        },
-        {
-          type: "div",
-          props: {
-            style: {
-              height: STRIPE,
-              width: "100%",
-              flexShrink: 0,
-              backgroundImage: chevronStripe,
-            },
-          },
-        },
-        ...overlays,
-      ],
-    },
-  };
-}
-
-const titleSizes = [
-  { size: 64, lines: 2 },
-  { size: 56, lines: 3 },
+// Largest first: the first tier whose wrap fits its line budget wins, so titles
+// land on a handful of sizes instead of drifting with their length.
+const titleTiers = [
+  { size: 108, lines: 2 },
+  { size: 92, lines: 2 },
+  { size: 80, lines: 2 },
+  { size: 70, lines: 2 },
+  { size: 60, lines: 3 },
+  { size: 52, lines: 3 },
+  { size: 44, lines: 4 },
+  { size: 36, lines: 5 },
 ];
+const TITLE_TOP = 38;
+const TITLE_LINE_HEIGHT = 1.04;
+const TITLE_TRACKING = -0.037; // em
+// A series reads as one design, so month names must not pick different sizes.
+const maxTitleSize: Record<string, number> = { newsletter: 70 };
 
-function titleSize(title: string) {
-  const longestWord = Math.max(...title.split(" ").map((word) => word.length));
-  return (
-    titleSizes.find(({ size, lines }) => {
-      // Ubuntu Bold averages about 0.56em per character.
-      const perLine = Math.floor(COLUMN_WIDTH / (size * 0.56));
-      return longestWord <= perLine && title.length <= perLine * lines;
-    })?.size ?? 48
-  );
+// Ubuntu Bold averages about 0.56em per character.
+const charWidth = 0.56;
+const charsPerLine = (size: number) =>
+  Math.floor(TITLE_WIDTH / (size * charWidth));
+
+// The fewest lines that fit, narrowed until another line would be needed so
+// they come out even. A word longer than `perLine` gets a line to itself.
+function wrapTitle(title: string, perLine: number) {
+  const words = title.split(" ");
+  const wrap = (max: number) => {
+    const lines: string[] = [];
+    for (const word of words) {
+      const last = lines.length - 1;
+      if (last >= 0 && lines[last].length + 1 + word.length <= max) {
+        lines[last] += ` ${word}`;
+      } else {
+        lines.push(word);
+      }
+    }
+    return lines;
+  };
+
+  const count = wrap(perLine).length;
+  let width = perLine;
+  while (width > 1 && wrap(width - 1).length === count) width--;
+  return wrap(width);
 }
 
-// 3 to 6 degrees either way, like the legless widgets elsewhere on the site.
-function widgetTilt(title: string) {
-  const [magnitude, direction] = createHash("sha1").update(title).digest();
-  return (3 + (magnitude % 4)) * (direction % 2 ? 1 : -1);
+function fitTitle(title: string, section: string) {
+  const max = maxTitleSize[section] ?? Infinity;
+  for (const { size, lines } of titleTiers) {
+    if (size > max) continue;
+    const perLine = charsPerLine(size);
+    const wrapped = wrapTitle(title, perLine);
+    if (
+      wrapped.length <= lines &&
+      wrapped.every((line) => line.length <= perLine)
+    ) {
+      return { size, lines: wrapped };
+    }
+  }
+  // Best effort: a word too long for any tier is left to overflow.
+  const { size } = titleTiers[titleTiers.length - 1];
+  return { size, lines: wrapTitle(title, charsPerLine(size)) };
 }
 
-function docsBanner(
-  title: string,
-  section: string,
-  logomark: string,
-  widget: string,
-): Element {
-  const { accent } = sections[section] ?? fallbackSection;
-  const label = section
-    .split("-")
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
+const box = (
+  style: Style,
+  children?: Element | Element[] | string,
+): Element => ({
+  type: "div",
+  props: { style: { display: "flex", ...style }, children },
+});
 
-  return frame(
-    accent,
-    [
-      {
-        type: "img",
-        props: {
-          src: widget,
-          width: 280,
-          height: 280,
-          style: { transform: `rotate(${widgetTilt(title)}deg)` },
-        },
-      },
-      {
-        type: "div",
-        props: {
-          style: {
-            fontSize: 30,
-            fontWeight: 700,
-            letterSpacing: 6,
-            textTransform: "uppercase",
-            color: accent,
-            marginTop: 4,
-            marginBottom: 18,
-          },
-          children: label,
-        },
-      },
-      {
-        type: "div",
-        props: {
-          style: {
-            fontSize: titleSize(title),
-            fontWeight: 700,
-            lineHeight: 1.12,
-            letterSpacing: -1,
-            // satori's balance shrinks a lone word's box, pushing it off center.
-            textWrap: title.includes(" ") ? "balance" : "wrap",
-          },
-          children: title,
-        },
-      },
-    ],
-    [
-      {
-        type: "div",
-        props: {
-          style: {
-            position: "absolute",
-            top: 48,
-            left: 56,
-            right: 56,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          },
-          children: [
-            domain,
-            {
-              type: "img",
-              props: { src: logomark, width: 200, height: 110 },
-            },
-          ],
-        },
-      },
-    ],
-  );
+const image = (
+  src: string,
+  width: number,
+  height: number,
+  style?: Style,
+): Element => ({ type: "img", props: { src, width, height, style } });
+
+interface Standing {
+  accent: string;
+  widget: string; // the widget's name, for its stance
+  widgetSrc: string;
+  logomark: string;
+  title: Element[];
+  label?: string;
 }
 
-function defaultBanner(logo: string, suffix?: string): Element {
-  return frame(
-    "#00CFFB",
+function standingBanner({
+  accent,
+  widget,
+  widgetSrc,
+  logomark,
+  title,
+  label,
+}: Standing): Element {
+  const { feet, body, facesRight } = stances[widget];
+
+  // A widget facing right stands on the left, so it looks toward the title.
+  const onRight = !facesRight;
+  const unit = WIDGET_WIDTH / WIDGET_SVG.width;
+  const widgetHeight = WIDGET_SVG.height * unit;
+  const widgetLeft = onRight
+    ? CROP_INSET + CROP_SIZE - WIDGET_INSET - body[1] * unit
+    : CROP_INSET + WIDGET_INSET - body[0] * unit;
+  // One pixel into the rule, so the feet look planted.
+  const widgetTop = FLOOR + 1 - feet * unit;
+
+  // The title and tab sit on the side opposite the widget.
+  const side = onRight ? "left" : "right";
+
+  return box(
+    {
+      position: "relative",
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      backgroundColor: "#202124",
+      fontFamily: "Ubuntu",
+      color: "#ffffff",
+    },
     [
-      {
-        type: "img",
-        props: { src: logo, width: 500, height: 103 },
-      },
-      ...(suffix
+      box(
+        {
+          position: "absolute",
+          left: (WIDTH - WATERMARK_WIDTH) / 2,
+          top: (HEIGHT - WATERMARK_HEIGHT) / 2,
+        },
+        image(logomark, WATERMARK_WIDTH, WATERMARK_HEIGHT, {
+          opacity: WATERMARK_OPACITY,
+        }),
+      ),
+      box({
+        position: "absolute",
+        left: 0,
+        top: FLOOR,
+        width: WIDTH,
+        height: RULE,
+        backgroundColor: accent,
+      }),
+      box(
+        {
+          position: "absolute",
+          top: TITLE_TOP,
+          left: CROP_INSET + TITLE_INSET,
+          width: TITLE_WIDTH,
+          flexDirection: "column",
+          alignItems: onRight ? "flex-start" : "flex-end",
+          textAlign: side,
+        },
+        title,
+      ),
+      ...(label
         ? [
-            {
-              type: "div",
-              props: {
-                style: {
-                  fontSize: 84,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  marginTop: 72,
-                },
-                children: suffix,
+            box(
+              {
+                position: "absolute",
+                top: FLOOR - TAB_HEIGHT,
+                height: TAB_HEIGHT,
+                padding: "0 30px",
+                alignItems: "center",
+                borderRadius: "14px 14px 0 0",
+                backgroundColor: accent,
+                color: "#16171a",
+                fontSize: 32,
+                fontWeight: 700,
+                lineHeight: 1.1,
+                letterSpacing: 7,
+                textTransform: "uppercase",
+                [side]: CROP_INSET + TITLE_INSET,
               },
-            },
+              label,
+            ),
           ]
         : []),
-    ],
-    [
-      {
-        type: "div",
-        props: {
-          style: {
-            position: "absolute",
-            bottom: STRIPE + 48,
-            left: 0,
-            right: 0,
-            display: "flex",
-            justifyContent: "center",
-          },
-          children: domain,
-        },
-      },
+      box(
+        { position: "absolute", left: widgetLeft, top: widgetTop },
+        image(widgetSrc, WIDGET_WIDTH, widgetHeight),
+      ),
     ],
   );
 }
 
-async function render(element: Element): Promise<Buffer> {
-  const { fonts } = await loadAssets();
-  const svg = await satori(element as never, {
-    width: WIDTH,
-    height: HEIGHT,
-    fonts: fonts.map((font) => ({ ...font, style: "normal" as const })),
-  });
+async function renderStanding(
+  banner: Omit<Standing, "logomark" | "widgetSrc">,
+) {
+  const [{ font, logomark }, widgetSrc] = await Promise.all([
+    loadAssets(),
+    loadWidget(banner.widget),
+  ]);
+  const svg = await satori(
+    standingBanner({ ...banner, logomark, widgetSrc }) as never,
+    {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [{ name: "Ubuntu", data: font, weight: 700, style: "normal" }],
+    },
+  );
   return new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } })
     .render()
     .asPng();
 }
 
-export async function renderDocsBanner(title: string, section: string) {
-  const [{ logomark }, widget] = await Promise.all([
-    loadAssets(),
-    loadWidget(section),
-  ]);
-  return render(docsBanner(title, section, logomark, widget));
+export function renderDocsBanner(title: string, section: string) {
+  const { size, lines } = fitTitle(title, section);
+  return renderStanding({
+    ...sectionOf(section),
+    label: section
+      .split("-")
+      .map((word) => word[0].toUpperCase() + word.slice(1))
+      .join(" "),
+    title: lines.map((line) =>
+      box(
+        {
+          fontSize: size,
+          fontWeight: 700,
+          lineHeight: TITLE_LINE_HEIGHT,
+          letterSpacing: size * TITLE_TRACKING,
+        },
+        line,
+      ),
+    ),
+  });
 }
 
+// The wordmark takes the title's place; `suffix` names the page, like a section.
 export async function renderDefaultBanner(suffix?: string) {
   const { logo } = await loadAssets();
-  return render(defaultBanner(logo, suffix));
+  return renderStanding({
+    ...defaultSection,
+    label: suffix,
+    // logo-dark.svg's ratio is 500 by 103
+    title: [image(logo, WORDMARK_WIDTH, (WORDMARK_WIDTH * 103) / 500)],
+  });
 }
