@@ -209,7 +209,7 @@ function wrapTitle(title: string, perLine: number) {
   return best;
 }
 
-export function fitTitle(title: string, section: string) {
+function fitTitle(title: string, section: string) {
   const max = maxTitleSize[section] ?? Infinity;
   for (const { size, lines } of titleTiers) {
     if (size > max) continue;
