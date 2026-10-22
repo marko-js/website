@@ -29,15 +29,14 @@ const WIDGET_SVG = { width: 480, height: 720 };
 // Measured from each rendered SVG, so a widget's feet land on the rule and its
 // body keeps clear of the crop's edge. `faces` is a reading of the artwork.
 interface Stance {
-  feet: number; // lowest opaque pixel, in SVG units
+  feet: number; // where the feet meet the ground, in SVG units
   body: [number, number]; // horizontal extent, in SVG units
   faces: "left" | "right" | "front";
-  drop?: number; // extra drop, as a fraction of the width, when one foot is raised
 }
 
 const stances: Record<string, Stance> = {
   button: { feet: 679, body: [66, 403], faces: "right" },
-  doc: { feet: 692, body: [89, 466], faces: "left", drop: 0.022 },
+  doc: { feet: 681, body: [89, 466], faces: "left" }, // right foot is raised
   link: { feet: 679, body: [31, 466], faces: "right" },
   fetch: { feet: 679, body: [13, 390], faces: "left" },
   cookie: { feet: 710, body: [87, 436], faces: "left" },
@@ -171,42 +170,27 @@ const charWidth = 0.56;
 const charsPerLine = (size: number) =>
   Math.floor(TITLE_WIDTH / (size * charWidth));
 
-// The fewest lines that fit, split so the longest line is as short as possible.
-// A word longer than `perLine` gets a line to itself.
+// The fewest lines that fit, narrowed until another line would be needed so
+// they come out even. A word longer than `perLine` gets a line to itself.
 function wrapTitle(title: string, perLine: number) {
   const words = title.split(" ");
-
-  const greedy: string[] = [];
-  let line = "";
-  for (const word of words) {
-    if (line && line.length + 1 + word.length > perLine) {
-      greedy.push(line);
-      line = word;
-    } else {
-      line = line ? `${line} ${word}` : word;
-    }
-  }
-  greedy.push(line);
-
-  let best = greedy;
-  let bestLength = Math.max(...greedy.map((line) => line.length));
-  const split = (start: number, lines: string[]) => {
-    if (lines.length === greedy.length) {
-      const length = Math.max(...lines.map((line) => line.length));
-      if (start === words.length && length < bestLength) {
-        best = lines;
-        bestLength = length;
+  const wrap = (max: number) => {
+    const lines: string[] = [];
+    for (const word of words) {
+      const last = lines.length - 1;
+      if (last >= 0 && lines[last].length + 1 + word.length <= max) {
+        lines[last] += ` ${word}`;
+      } else {
+        lines.push(word);
       }
-      return;
     }
-    for (let end = start + 1; end <= words.length; end++) {
-      const next = words.slice(start, end).join(" ");
-      if (next.length > perLine) break;
-      split(end, [...lines, next]);
-    }
+    return lines;
   };
-  split(0, []);
-  return best;
+
+  const count = wrap(perLine).length;
+  let width = perLine;
+  while (width > 1 && wrap(width - 1).length === count) width--;
+  return wrap(width);
 }
 
 function fitTitle(title: string, section: string) {
@@ -252,7 +236,7 @@ function standingBanner({
   title,
   label,
 }: Standing): Element {
-  const { feet, body, faces, drop = 0 } = stances[widget];
+  const { feet, body, faces } = stances[widget];
 
   // A widget facing right stands on the left, so it looks toward the title.
   const onRight = faces !== "right";
@@ -262,19 +246,10 @@ function standingBanner({
     ? CROP_INSET + CROP_SIZE - WIDGET_INSET - body[1] * unit
     : CROP_INSET + WIDGET_INSET - body[0] * unit;
   // One pixel into the rule, so the feet look planted.
-  const widgetTop = FLOOR + 1 - feet * unit + drop * WIDGET_WIDTH;
+  const widgetTop = FLOOR + 1 - feet * unit;
 
-  const titleSide = onRight
-    ? { left: CROP_INSET + TITLE_INSET }
-    : {
-        left: CROP_INSET + TITLE_INSET,
-        width: TITLE_WIDTH,
-        alignItems: "flex-end",
-        textAlign: "right",
-      };
-  const tabSide = onRight
-    ? { left: CROP_INSET + TITLE_INSET }
-    : { right: CROP_INSET + TITLE_INSET };
+  // The title and tab sit on the side opposite the widget.
+  const side = onRight ? "left" : "right";
 
   return box(
     {
@@ -315,8 +290,11 @@ function standingBanner({
         {
           position: "absolute",
           top: TITLE_TOP,
+          left: CROP_INSET + TITLE_INSET,
+          width: TITLE_WIDTH,
           flexDirection: "column",
-          ...titleSide,
+          alignItems: onRight ? "flex-start" : "flex-end",
+          textAlign: side,
         },
         title,
       ),
@@ -337,7 +315,7 @@ function standingBanner({
                 lineHeight: 1.1,
                 letterSpacing: 7,
                 textTransform: "uppercase",
-                ...tabSide,
+                [side]: CROP_INSET + TITLE_INSET,
               },
               label,
             ),
