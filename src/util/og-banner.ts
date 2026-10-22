@@ -75,11 +75,14 @@ interface Element {
 
 let assets:
   | Promise<{
-      fonts: { name: string; data: Buffer; weight: 700 }[];
+      font: Buffer;
       logomark: string;
       logo: string;
     }>
   | undefined;
+
+const toDataURI = (svg: Buffer) =>
+  `data:image/svg+xml;base64,${svg.toString("base64")}`;
 
 const assetPath = (...segments: string[]) =>
   path.join(process.cwd(), "public", "assets", ...segments);
@@ -101,7 +104,7 @@ export function defaultBannerSources() {
 
 function loadAssets() {
   return (assets ??= (async () => {
-    const [bold, logomark, logo] = await Promise.all([
+    const [font, logomark, logo] = await Promise.all([
       fs.readFile(
         path.join(
           process.cwd(),
@@ -116,11 +119,8 @@ function loadAssets() {
       fs.readFile(assetPath("logo-dark.svg")),
     ]);
 
-    const toDataURI = (svg: Buffer) =>
-      `data:image/svg+xml;base64,${svg.toString("base64")}`;
-
     return {
-      fonts: [{ name: "Ubuntu", data: bold, weight: 700 as const }],
+      font,
       logomark: toDataURI(logomark),
       logo: toDataURI(logo),
     };
@@ -137,7 +137,7 @@ function loadWidget(name: string) {
   if (!widget) {
     widget = fs
       .readFile(widgetPath(name))
-      .then((svg) => `data:image/svg+xml;base64,${svg.toString("base64")}`)
+      .then(toDataURI)
       .catch((err) => {
         widgetCache.delete(name);
         throw err;
@@ -219,6 +219,13 @@ const box = (
   props: { style: { display: "flex", ...style }, children },
 });
 
+const image = (
+  src: string,
+  width: number,
+  height: number,
+  style?: Record<string, string | number>,
+): Element => ({ type: "img", props: { src, width, height, style } });
+
 interface Standing {
   accent: string;
   widget: string; // the widget's name, for its stance
@@ -268,15 +275,9 @@ function standingBanner({
           left: (WIDTH - WATERMARK_WIDTH) / 2,
           top: (HEIGHT - WATERMARK_HEIGHT) / 2,
         },
-        {
-          type: "img",
-          props: {
-            src: logomark,
-            width: WATERMARK_WIDTH,
-            height: WATERMARK_HEIGHT,
-            style: { opacity: WATERMARK_OPACITY },
-          },
-        },
+        image(logomark, WATERMARK_WIDTH, WATERMARK_HEIGHT, {
+          opacity: WATERMARK_OPACITY,
+        }),
       ),
       box({
         position: "absolute",
@@ -323,10 +324,7 @@ function standingBanner({
         : []),
       box(
         { position: "absolute", left: widgetLeft, top: widgetTop },
-        {
-          type: "img",
-          props: { src: widgetSrc, width: WIDGET_WIDTH, height: widgetHeight },
-        },
+        image(widgetSrc, WIDGET_WIDTH, widgetHeight),
       ),
     ],
   );
@@ -379,25 +377,17 @@ function defaultBanner(
     widgetSrc,
     logomark,
     label: suffix,
-    title: [
-      {
-        type: "img",
-        props: {
-          src: logo,
-          width: WORDMARK_WIDTH,
-          height: (WORDMARK_WIDTH * 103) / 500, // logo-dark.svg's ratio
-        },
-      },
-    ],
+    // logo-dark.svg's ratio is 500 by 103
+    title: [image(logo, WORDMARK_WIDTH, (WORDMARK_WIDTH * 103) / 500)],
   });
 }
 
 async function render(element: Element): Promise<Buffer> {
-  const { fonts } = await loadAssets();
+  const { font } = await loadAssets();
   const svg = await satori(element as never, {
     width: WIDTH,
     height: HEIGHT,
-    fonts: fonts.map((font) => ({ ...font, style: "normal" as const })),
+    fonts: [{ name: "Ubuntu", data: font, weight: 700, style: "normal" }],
   });
   return new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } })
     .render()
