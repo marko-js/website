@@ -1,7 +1,4 @@
 import type { File } from "./core/build.ts";
-import Editor from "<live-preview-editor>" with {
-  load: "visible.live-preview?rootMargin=200px",
-};
 
 export interface Precompiled {
   files: File[];
@@ -65,7 +62,7 @@ static function fromFiles(files: File[]): Precompiled {
 <const/editable=input.editable !== false>
 <if=pre>
   <const/srcdoc=toSrcdoc(pre)>
-  <div.live-preview style=input.height && `--lp-height:${input.height}`>
+  <div.live-preview/root style=input.height && `--lp-height:${input.height}`>
     <if=(pre.files.length > 1)>
       <for|file, i| of=pre.files>
         <input.tab-input
@@ -102,7 +99,24 @@ static function fromFiles(files: File[]): Precompiled {
       <div.errors role="alert" hidden/>
     </div>
     <if=editable>
-      <Editor files=pre.files build=!input.precompiled csr=input.csr/>
+      <const/files=pre.files>
+      <const/needsBuild=!input.precompiled>
+      <const/csr=input.csr>
+      <script>
+        // The editor and its highlighter load when an editor is first focused
+        // (or at once when there is nothing pre-compiled to show).
+        const el = root();
+        const load = () =>
+          import("./core/attach.ts").then(({ attach }) =>
+            attach(el, files, { build: needsBuild, csr, signal: $signal }),
+          );
+        if (needsBuild) {
+          load();
+        } else {
+          el.addEventListener("focusin", load, { once: true, signal: $signal });
+        }
+      </script>
+      ${" "}
     </if>
   </div>
   <html-style>${pre.sourceCSS}</html-style>

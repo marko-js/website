@@ -33,24 +33,23 @@ Any other `files` value is compiled in the browser once the editor loads.
 2. **Page load.** The output is CSS-only tabs, highlighted source and an
    iframe whose `srcdoc` holds the rendered HTML. Client JS is included in the
    iframe only when the example itself is interactive.
-3. **Scrolled into view.** `tags/live-preview-editor` is imported with
-   `load: "visible"`, which fetches CodeMirror and the highlighter. Until then
-   each source is a `contenteditable` element that matches CodeMirror's metrics
-   (font, line height, line numbers), so edits made early are kept and the swap
-   keeps text, caret, scroll position and focus.
-4. **Focus.** Focusing an editor loads `core/workspace.ts` (compiler, bundler,
-   formatter). The first edit then rebuilds the preview, debounced.
+3. **Focus.** Focusing a source pane dynamically imports `core/attach.ts`,
+   which pulls in CodeMirror and the highlighter. Until then each source is a
+   `contenteditable` element that matches CodeMirror's metrics (font, line
+   height, line numbers), so edits made early are kept and the swap keeps
+   text, caret, scroll position and focus. The compiler, bundler and formatter
+   (`core/workspace.ts`) load at the same time, and the first edit rebuilds
+   the preview, debounced.
 
-Marko's `visible` trigger is one selector shared by every instance, so the
-first `<live-preview>` in the document decides when the editor bundle loads
-for all of them.
+An example whose input is not static has nothing pre-compiled to show, so it
+loads and builds as soon as the page does.
 
 ## Layout
 
 - `core/` has no DOM or app dependencies: `build.ts` bundles an example,
   `node.ts` and `cli.ts` run it without a browser, `workspace.ts` runs it in a
   page (iframe, worker, logs, errors), `attach.ts` upgrades the markup.
-- `live-preview.marko`, `live-preview.style.css` and `tags/` are the tag.
+- `live-preview.marko` and `live-preview.style.css` are the tag.
 
 ## Using it elsewhere
 
