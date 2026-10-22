@@ -64,10 +64,12 @@ const WATERMARK_WIDTH = 1000;
 const WATERMARK_HEIGHT = (WATERMARK_WIDTH * 191) / 347; // logomark.svg's viewBox
 const WATERMARK_OPACITY = 0.06;
 
+type Style = Record<string, string | number>;
+
 interface Element {
   type: string;
   props: {
-    style?: Record<string, string | number>;
+    style?: Style;
     children?: Element | Element[] | string;
     [attr: string]: unknown;
   };
@@ -212,7 +214,7 @@ function fitTitle(title: string, section: string) {
 }
 
 const box = (
-  style: Record<string, string | number>,
+  style: Style,
   children?: Element | Element[] | string,
 ): Element => ({
   type: "div",
@@ -223,7 +225,7 @@ const image = (
   src: string,
   width: number,
   height: number,
-  style?: Record<string, string | number>,
+  style?: Style,
 ): Element => ({ type: "img", props: { src, width, height, style } });
 
 interface Standing {
@@ -330,25 +332,34 @@ function standingBanner({
   );
 }
 
-function docsBanner(
-  title: string,
-  section: string,
-  logomark: string,
-  widgetSrc: string,
-): Element {
-  const { widget, accent } = sectionOf(section);
-  const label = section
-    .split("-")
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
-  const { size, lines } = fitTitle(title, section);
+async function renderStanding(
+  banner: Omit<Standing, "logomark" | "widgetSrc">,
+) {
+  const [{ font, logomark }, widgetSrc] = await Promise.all([
+    loadAssets(),
+    loadWidget(banner.widget),
+  ]);
+  const svg = await satori(
+    standingBanner({ ...banner, logomark, widgetSrc }) as never,
+    {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [{ name: "Ubuntu", data: font, weight: 700, style: "normal" }],
+    },
+  );
+  return new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } })
+    .render()
+    .asPng();
+}
 
-  return standingBanner({
-    accent,
-    widget,
-    widgetSrc,
-    logomark,
-    label,
+export function renderDocsBanner(title: string, section: string) {
+  const { size, lines } = fitTitle(title, section);
+  return renderStanding({
+    ...sectionOf(section),
+    label: section
+      .split("-")
+      .map((word) => word[0].toUpperCase() + word.slice(1))
+      .join(" "),
     title: lines.map((line) =>
       box(
         {
@@ -364,48 +375,12 @@ function docsBanner(
 }
 
 // The wordmark takes the title's place; `suffix` names the page, like a section.
-function defaultBanner(
-  logo: string,
-  logomark: string,
-  widgetSrc: string,
-  suffix?: string,
-): Element {
-  const { widget, accent } = defaultSection;
-  return standingBanner({
-    accent,
-    widget,
-    widgetSrc,
-    logomark,
+export async function renderDefaultBanner(suffix?: string) {
+  const { logo } = await loadAssets();
+  return renderStanding({
+    ...defaultSection,
     label: suffix,
     // logo-dark.svg's ratio is 500 by 103
     title: [image(logo, WORDMARK_WIDTH, (WORDMARK_WIDTH * 103) / 500)],
   });
-}
-
-async function render(element: Element): Promise<Buffer> {
-  const { font } = await loadAssets();
-  const svg = await satori(element as never, {
-    width: WIDTH,
-    height: HEIGHT,
-    fonts: [{ name: "Ubuntu", data: font, weight: 700, style: "normal" }],
-  });
-  return new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } })
-    .render()
-    .asPng();
-}
-
-export async function renderDocsBanner(title: string, section: string) {
-  const [{ logomark }, widgetSrc] = await Promise.all([
-    loadAssets(),
-    loadWidget(sectionOf(section).widget),
-  ]);
-  return render(docsBanner(title, section, logomark, widgetSrc));
-}
-
-export async function renderDefaultBanner(suffix?: string) {
-  const [{ logo, logomark }, widgetSrc] = await Promise.all([
-    loadAssets(),
-    loadWidget(defaultSection.widget),
-  ]);
-  return render(defaultBanner(logo, logomark, widgetSrc, suffix));
 }
