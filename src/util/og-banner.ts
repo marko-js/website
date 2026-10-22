@@ -20,13 +20,16 @@ const sections: Record<string, Section> = {
 
 const fallbackSection: Section = { widget: "crash", accent: "#cccccc" };
 
-// Where a standing widget's body and feet sit inside its 480x720 SVG, so its
-// feet land on the rule and it can face the title.
+// The standing ("legs") widget SVGs all share one viewBox.
+const WIDGET_SVG = { width: 480, height: 720 };
+
+// Measured from each rendered SVG, so a widget's feet land on the rule and its
+// body keeps clear of the crop's edge. `faces` is a reading of the artwork.
 interface Stance {
-  feet: number; // lowest pixel, of 720
-  body: [number, number]; // horizontal extent, of 480
+  feet: number; // lowest opaque pixel, in SVG units
+  body: [number, number]; // horizontal extent, in SVG units
   faces: "left" | "right" | "front";
-  drop?: number; // extra drop, as a fraction of the width, for uneven feet
+  drop?: number; // extra drop, as a fraction of the width, when one foot is raised
 }
 
 const stances: Record<string, Stance> = {
@@ -48,17 +51,17 @@ const CROP_INSET = (WIDTH - CROP_SIZE) / 2;
 const COLUMN_PADDING = 44;
 
 // Docs banners: everything that matters sits in the square, standing on a rule
-// along the bottom edge, and the margins only hold the logo.
-const RULE = STRIPE;
+// along the bottom edge. A faint logo behind it all is all the margins hold.
+const RULE = 14;
 const FLOOR = HEIGHT - RULE;
 const WIDGET_WIDTH = 250;
 const WIDGET_INSET = 28;
 const TITLE_INSET = 34;
 const TITLE_WIDTH = CROP_SIZE - TITLE_INSET * 2;
 const TAB_HEIGHT = 58;
-const LOGO_WIDTH = 140;
-const LOGO_HEIGHT = (LOGO_WIDTH * 110) / 200;
-const LOGO_GAP = 18;
+const WATERMARK_WIDTH = 1000;
+const WATERMARK_HEIGHT = (WATERMARK_WIDTH * 191) / 347; // logomark.svg's viewBox
+const WATERMARK_OPACITY = 0.06;
 
 // The outer colors stop at the crop's edges, or it would show slivers of them.
 const chevronStripe = `linear-gradient(90deg, #00CFFB ${CROP_INSET}px, #7CED64 ${CROP_INSET}px, #7CED64 50%, #FFD100 50%, #FFD100 ${WIDTH - CROP_INSET}px, #FF5467 ${WIDTH - CROP_INSET}px)`;
@@ -227,20 +230,24 @@ const titleTiers = [
   { size: 70, lines: 2 },
   { size: 60, lines: 3 },
   { size: 52, lines: 3 },
+  { size: 44, lines: 4 },
+  { size: 36, lines: 5 },
 ];
-const fallbackTitleSize = 44;
 const TITLE_TOP = 38;
 const TITLE_LINE_HEIGHT = 1.04;
+const TITLE_TRACKING = -0.037; // em
 // A series reads as one design, so month names must not pick different sizes.
 const maxTitleSize: Record<string, number> = { newsletter: 70 };
 
 // Ubuntu Bold averages about 0.56em per character.
 const charWidth = 0.56;
+const charsPerLine = (size: number) =>
+  Math.floor(TITLE_WIDTH / (size * charWidth));
 
 // The fewest lines that fit, split so the longest line is as short as possible.
+// A word longer than `perLine` gets a line to itself.
 function wrapTitle(title: string, perLine: number) {
   const words = title.split(" ");
-  if (words.some((word) => word.length > perLine)) return null;
 
   const greedy: string[] = [];
   let line = "";
@@ -275,21 +282,21 @@ function wrapTitle(title: string, perLine: number) {
   return best;
 }
 
-function fitTitle(title: string, section: string) {
+export function fitTitle(title: string, section: string) {
   const max = maxTitleSize[section] ?? Infinity;
   for (const { size, lines } of titleTiers) {
     if (size > max) continue;
-    const wrapped = wrapTitle(
-      title,
-      Math.floor(TITLE_WIDTH / (size * charWidth)),
-    );
-    if (wrapped && wrapped.length <= lines) return { size, lines: wrapped };
+    const wrapped = wrapTitle(title, charsPerLine(size));
+    if (
+      wrapped.length <= lines &&
+      wrapped.every((line) => line.length <= charsPerLine(size))
+    ) {
+      return { size, lines: wrapped };
+    }
   }
-  const perLine = Math.floor(TITLE_WIDTH / (fallbackTitleSize * charWidth));
-  return {
-    size: fallbackTitleSize,
-    lines: wrapTitle(title, perLine) ?? title.split(" "),
-  };
+  // Best effort: a word too long for any tier is left to overflow.
+  const { size } = titleTiers[titleTiers.length - 1];
+  return { size, lines: wrapTitle(title, charsPerLine(size)) };
 }
 
 const box = (
@@ -316,16 +323,13 @@ function docsBanner(
 
   // A widget facing right stands on the left, so it looks toward the title.
   const onRight = faces !== "right";
-  const widgetHeight = WIDGET_WIDTH * 1.5;
+  const unit = WIDGET_WIDTH / WIDGET_SVG.width;
+  const widgetHeight = WIDGET_SVG.height * unit;
   const widgetLeft = onRight
-    ? CROP_INSET + CROP_SIZE - WIDGET_INSET - (body[1] / 480) * WIDGET_WIDTH
-    : CROP_INSET + WIDGET_INSET - (body[0] / 480) * WIDGET_WIDTH;
+    ? CROP_INSET + CROP_SIZE - WIDGET_INSET - body[1] * unit
+    : CROP_INSET + WIDGET_INSET - body[0] * unit;
   // One pixel into the rule, so the feet look planted.
-  const widgetTop =
-    FLOOR + 1 - (feet / 720) * widgetHeight + drop * WIDGET_WIDTH;
-  // The logo takes the margin opposite the widget.
-  const logoLeft =
-    (onRight ? CROP_INSET / 2 : WIDTH - CROP_INSET / 2) - LOGO_WIDTH / 2;
+  const widgetTop = FLOOR + 1 - feet * unit + drop * WIDGET_WIDTH;
 
   const titleSide = onRight
     ? { left: CROP_INSET + TITLE_INSET }
@@ -350,6 +354,22 @@ function docsBanner(
       color: "#ffffff",
     },
     [
+      box(
+        {
+          position: "absolute",
+          left: (WIDTH - WATERMARK_WIDTH) / 2,
+          top: (HEIGHT - WATERMARK_HEIGHT) / 2,
+        },
+        {
+          type: "img",
+          props: {
+            src: logomark,
+            width: WATERMARK_WIDTH,
+            height: WATERMARK_HEIGHT,
+            style: { opacity: WATERMARK_OPACITY },
+          },
+        },
+      ),
       box({
         position: "absolute",
         left: 0,
@@ -358,17 +378,6 @@ function docsBanner(
         height: RULE,
         backgroundColor: accent,
       }),
-      box(
-        {
-          position: "absolute",
-          left: logoLeft,
-          top: FLOOR - LOGO_HEIGHT - LOGO_GAP,
-        },
-        {
-          type: "img",
-          props: { src: logomark, width: LOGO_WIDTH, height: LOGO_HEIGHT },
-        },
-      ),
       box(
         {
           position: "absolute",
@@ -382,7 +391,7 @@ function docsBanner(
               fontSize: size,
               fontWeight: 700,
               lineHeight: TITLE_LINE_HEIGHT,
-              letterSpacing: -size * 0.037,
+              letterSpacing: size * TITLE_TRACKING,
             },
             line,
           ),
