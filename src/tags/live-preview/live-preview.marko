@@ -1,4 +1,4 @@
-import type { File } from "./core/build.ts";
+import type { File, Variants } from "./core/build.ts";
 
 export interface Precompiled {
   files: File[];
@@ -6,12 +6,17 @@ export interface Precompiled {
   css: string;
   js: string;
   sources: { path: string; html: string }[];
+  /** Per file, the html/concise and TS/JS forms of its source, if it has them. */
+  variants?: (Variants | null)[];
+  variantSources?: (Record<string, string> | null)[];
   sourceCSS: string;
 }
 
 export interface Input {
   /** A directory of example files, relative to the template using this tag. Read at build time. */
   dir?: string;
+  /** Per file, the html/concise and TS/JS forms of a Marko file, for hosts that toggle them. */
+  variants?: (Variants | null)[];
   /** Example files, as in the playground. Static values are pre-compiled at build time. */
   files?: File[];
   /** Allow editing, which loads the editor and compiler on demand. Defaults to true. */
@@ -57,6 +62,33 @@ static function fromFiles(files: File[]): Precompiled {
   };
 }
 
+static function digits(text: string) {
+  return Math.max(2, String(text.split("\n").length).length);
+}
+
+// The forms a Marko file can be shown in, in the order a host without its own
+// styles falls back to. Other files have the one form.
+static const formNames = [
+  ["htmlTS", "html-ts"],
+  ["html", "html"],
+  ["conciseTS", "concise-ts"],
+  ["concise", "concise"],
+] as const;
+static function panes(
+  forms: Record<string, string> | null | undefined,
+  texts: Variants | null | undefined,
+  html: string,
+  content: string,
+) {
+  return forms && texts
+    ? formNames.map(([key, name]) => ({
+        name,
+        html: forms[key],
+        text: texts[key],
+      }))
+    : [{ name: "", html, text: content }];
+}
+
 <id/id>
 <const/pre=input.precompiled || (input.files && fromFiles(input.files))>
 <const/editable=input.editable !== false>
@@ -81,16 +113,28 @@ static function fromFiles(files: File[]): Precompiled {
     </if>
     <div.sources>
       <for|source, i| of=pre.sources>
-        <div.source
-          data-path=source.path
-          style=`--lp-digits:${Math.max(2, String(pre.files[i].content.split("\n").length).length)}`
-          contenteditable=editable && "plaintext-only"
-          role=editable && "textbox"
-          aria-multiline=editable && "true"
-          aria-label=editable && source.path
-          spellcheck=editable && "false"
-        >
-          $!{source.html}
+        <const/forms=pre.variantSources?.[i]>
+        <div.source data-path=source.path class=forms && "has-variants">
+          <for|pane|
+            of=panes(
+              forms,
+              pre.variants?.[i],
+              source.html,
+              pre.files[i].content,
+            )
+          >
+            <div.variant
+              class=pane.name
+              style=`--lp-digits:${digits(pane.text)}`
+              contenteditable=editable && "plaintext-only"
+              role=editable && "textbox"
+              aria-multiline=editable && "true"
+              aria-label=editable && source.path
+              spellcheck=editable && "false"
+            >
+              $!{pane.html}
+            </div>
+          </for>
         </div>
       </for>
     </div>
@@ -100,6 +144,7 @@ static function fromFiles(files: File[]): Precompiled {
     </div>
     <if=editable>
       <const/files=pre.files>
+      <const/variants=pre.variants>
       <const/needsBuild=!input.precompiled>
       <const/csr=input.csr>
       <script>
@@ -108,7 +153,12 @@ static function fromFiles(files: File[]): Precompiled {
         const el = root();
         const load = () =>
           import("./core/attach.ts").then(({ attach }) =>
-            attach(el, files, { build: needsBuild, csr, signal: $signal }),
+            attach(el, files, {
+              variants,
+              build: needsBuild,
+              csr,
+              signal: $signal,
+            }),
           );
         if (needsBuild) {
           load();
@@ -116,7 +166,6 @@ static function fromFiles(files: File[]): Precompiled {
           el.addEventListener("focusin", load, { once: true, signal: $signal });
         }
       </script>
-      ${" "}
     </if>
   </div>
   <html-style>${pre.sourceCSS}</html-style>

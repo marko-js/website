@@ -8,6 +8,7 @@ import {
   createBuildContext,
   installPackages,
   type File,
+  type Variants,
 } from "./build.ts";
 import { highlight } from "./highlight.ts";
 import { rootDir } from "./workspace/fs.ts";
@@ -18,7 +19,9 @@ export interface StaticBuild {
   js: string;
   /** Highlighted source for each file, in the order given. */
   sources: { path: string; html: string }[];
-  /** The rules for every class used by `sources`. */
+  /** Highlighted forms of each file's `variants`, `null` for files without. */
+  variantSources: (Record<keyof Variants, string> | null)[];
+  /** The rules for every class used by `sources` and `variantSources`. */
   sourceCSS: string;
 }
 
@@ -67,7 +70,11 @@ export function readRuntimeFiles() {
  */
 export async function buildStatic(
   files: File[],
-  { csr = false, optimize = true } = {},
+  {
+    csr = false,
+    optimize = true,
+    variants = [],
+  }: { csr?: boolean; optimize?: boolean; variants?: (Variants | null)[] } = {},
 ): Promise<StaticBuild> {
   const ctx = createBuildContext(files, optimize);
   const versions = await installPackages(ctx);
@@ -96,11 +103,27 @@ export async function buildStatic(
     sources.push({ path, html: highlighted.html });
     sourceCSS += highlighted.css;
   }
+  const variantSources: StaticBuild["variantSources"] = [];
+  for (let i = 0; i < files.length; i++) {
+    const forms = variants[i];
+    if (!forms) {
+      variantSources.push(null);
+      continue;
+    }
+    const out = {} as Record<keyof Variants, string>;
+    for (const key of ["html", "concise", "htmlTS", "conciseTS"] as const) {
+      const highlighted = highlight(files[i].path, forms[key]);
+      out[key] = highlighted.html;
+      sourceCSS += highlighted.css;
+    }
+    variantSources.push(out);
+  }
   return {
     html,
     css: client.css ?? "",
     js: client.code ?? "",
     sources,
+    variantSources,
     sourceCSS,
   };
 }

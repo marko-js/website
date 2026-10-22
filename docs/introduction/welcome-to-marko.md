@@ -39,12 +39,14 @@ export interface Input {
 
 The Marko language allows developers to declare state within markup, which automatically propagates updates, while imperative blocks and statements allow for control over side effects.
 
-```marko
-<let/count=0>
-<button onClick() { count++ }>
-  ${count}
-</button>
-```
+> [!LIVE height=8rem]
+>
+> ```marko
+> <let/count=0>
+> <button onClick() { count++ }>
+>   ${count}
+> </button>
+> ```
 
 ## Performance-first Architecture
 

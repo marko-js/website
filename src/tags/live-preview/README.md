@@ -12,13 +12,14 @@ compiled, so a page that uses one ships no compiler, editor or highlighter.
 
 ## Input
 
-| Attribute  | Description                                                                                                       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| `dir`      | Directory of example files, relative to the template using the tag. `index.marko` is the entry and the first tab. |
-| `files`    | `{ path, content }[]`, the same shape the playground uses.                                                        |
-| `editable` | Defaults to `true`. `false` renders a read-only example and never loads the editor or compiler.                   |
-| `csr`      | Mount the example in the browser instead of rendering it on the server first.                                     |
-| `height`   | CSS length for the preview and the editor, `20rem` by default.                                                    |
+| Attribute  | Description                                                                                                                               |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `dir`      | Directory of example files, relative to the template using the tag. `index.marko` is the entry and the first tab.                         |
+| `files`    | `{ path, content }[]`, the same shape the playground uses.                                                                                |
+| `editable` | Defaults to `true`. `false` renders a read-only example and never loads the editor or compiler.                                           |
+| `csr`      | Mount the example in the browser instead of rendering it on the server first.                                                             |
+| `variants` | Per file (`null` for files without), the `html`, `concise`, `htmlTS` and `conciseTS` forms of a Marko file, for hosts that toggle syntax. |
+| `height`   | CSS length for the preview and the editor, `20rem` by default.                                                                            |
 
 `dir` and a literal `files` are static: they are pre-compiled at build time.
 Any other `files` value is compiled in the browser once the editor loads.
@@ -43,6 +44,21 @@ Any other `files` value is compiled in the browser once the editor loads.
 
 An example whose input is not static has nothing pre-compiled to show, so it
 loads and builds as soon as the page does.
+
+## Hosts that toggle syntax
+
+A file given `variants` renders every form as a `.variant` pane inside
+`.source.has-variants`; the first (`html-ts`) shows unless the host styles
+`.has-variants > .variant` to pick one, as `src/routes/+layout.style.scss` does
+from the `concise-mode` and `ts-mode` classes. After the editor loads, the host
+dispatches `live-preview:syntax` on `document` with `{ concise, ts }` when the
+reader changes a toggle (`src/tags/app-menu`). An unedited file switches to the
+matching form it was rendered with. An edited file is converted in the browser
+(`core/convert.ts`: Prettier with the Marko plugin, and the compiler to strip
+types), and stays as it is if it does not parse.
+
+In the docs, `> [!LIVE]` wraps one fenced block per file (`> [!LIVE readonly height=8rem]`
+for options), and `src/util/markodown.ts` turns it into this tag.
 
 ## Layout
 

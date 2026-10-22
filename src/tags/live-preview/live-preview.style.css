@@ -71,11 +71,6 @@
 
 .source {
   display: none;
-  box-sizing: border-box;
-  max-height: var(--lp-height);
-  padding: 0.75rem 0;
-  overflow: auto;
-  counter-reset: line;
 }
 
 .live-preview:not(:has(.tab-input)) .source,
@@ -94,12 +89,26 @@
   display: block;
 }
 
-.source:focus-visible {
+/* One pane per form of a file. A host styles `.has-variants > .variant` to pick
+   the form to show; with no host styles the first is shown. */
+.variant {
+  box-sizing: border-box;
+  max-height: var(--lp-height);
+  padding: 0.75rem 0;
+  overflow: auto;
+  counter-reset: line;
+}
+
+.variant:not(:first-child) {
+  display: none;
+}
+
+.variant:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: -2px;
 }
 
-.source pre {
+.variant pre {
   margin: 0;
   padding: 0;
   background: none;
@@ -107,11 +116,11 @@
   white-space: pre;
 }
 
-.source .line {
+.variant .line {
   display: inline;
 }
 
-.source .line::before {
+.variant .line::before {
   counter-increment: line;
   content: counter(line);
   display: inline-block;
@@ -125,54 +134,54 @@
   user-select: none;
 }
 
-.source .shiki,
-.source .shiki span,
-.source .cm-content span {
+.variant .shiki,
+.variant .shiki span,
+.variant .cm-content span {
   color: var(--shiki-light);
 }
 
 @media (prefers-color-scheme: dark) {
-  .source .shiki,
-  .source .shiki span,
-  .source .cm-content span {
+  .variant .shiki,
+  .variant .shiki span,
+  .variant .cm-content span {
     color: var(--shiki-dark);
   }
 }
 
 /* CodeMirror, tuned to the metrics above. */
-.live-preview .source .cm-editor {
+.live-preview .variant .cm-editor {
   font: inherit;
   background: none;
   color: inherit;
 }
 
-.live-preview .source .cm-editor.cm-focused {
+.live-preview .variant .cm-editor.cm-focused {
   outline: none;
 }
 
-.live-preview .source .cm-editor .cm-scroller {
+.live-preview .variant .cm-editor .cm-scroller {
   font: inherit;
   line-height: var(--lp-line);
   overflow: visible;
 }
 
-.live-preview .source .cm-editor .cm-content {
+.live-preview .variant .cm-editor .cm-content {
   padding: 0;
   caret-color: currentColor;
 }
 
-.live-preview .source .cm-editor .cm-line {
+.live-preview .variant .cm-editor .cm-line {
   padding: 0;
   line-height: var(--lp-line);
 }
 
-.live-preview .source .cm-editor .cm-gutters {
+.live-preview .variant .cm-editor .cm-gutters {
   background: none;
   border: 0;
   color: var(--lp-gutter-color);
 }
 
-.live-preview .source .cm-editor .cm-gutterElement {
+.live-preview .variant .cm-editor .cm-gutterElement {
   box-sizing: border-box;
   min-width: calc(
     var(--lp-digits, 2) * 1ch + var(--lp-gutter-left) + var(--lp-gutter-right)
@@ -181,13 +190,13 @@
   line-height: var(--lp-line);
 }
 
-.live-preview .source .cm-editor .cm-cursor {
+.live-preview .variant .cm-editor .cm-cursor {
   border-left-color: currentColor;
 }
 
-.live-preview .source .cm-editor .cm-selectionBackground,
+.live-preview .variant .cm-editor .cm-selectionBackground,
 .live-preview
-  .source
+  .variant
   .cm-editor.cm-focused
   > .cm-scroller
   > .cm-selectionLayer

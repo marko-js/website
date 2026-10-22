@@ -66,9 +66,17 @@ module.exports = function transform(tag, t) {
     }
   }
 
+  const variantsAttr = find("variants");
+  let variants;
+  if (variantsAttr) {
+    const value = variantsAttr.get("value").evaluate();
+    if (!value.confident) return;
+    variants = value.value;
+  }
+
   let precompiled;
   try {
-    precompiled = build({ files, ...options });
+    precompiled = build({ files, variants, ...options });
   } catch (err) {
     throw source.buildCodeFrameError(
       `Could not pre-compile example: ${err.message}`,
@@ -76,9 +84,15 @@ module.exports = function transform(tag, t) {
   }
 
   tag.node.attributes = tag.node.attributes
-    .filter((attr) => attr !== source.node)
+    .filter(
+      (attr) =>
+        attr !== source.node && !(variantsAttr && attr === variantsAttr.node),
+    )
     .concat(
-      t.markoAttribute("precompiled", t.valueToNode({ files, ...precompiled })),
+      t.markoAttribute(
+        "precompiled",
+        t.valueToNode({ files, variants, ...precompiled }),
+      ),
     );
 };
 

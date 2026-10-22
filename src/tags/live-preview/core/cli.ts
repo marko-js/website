@@ -4,7 +4,7 @@ import { buildStatic } from "./node.ts";
 
 let input = "";
 for await (const chunk of process.stdin) input += chunk;
-const { files, csr, optimize } = JSON.parse(input);
+const { files, csr, optimize, variants } = JSON.parse(input);
 process.stdout.write(
-  JSON.stringify(await buildStatic(files, { csr, optimize })),
+  JSON.stringify(await buildStatic(files, { csr, optimize, variants })),
 );

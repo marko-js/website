@@ -77,6 +77,7 @@
 - Examples must be minimal and strictly relevant
 - Add filenames to code examples with `/* filename.extension */` on the first line ONLY when two or more code blocks appear together and need disambiguating (e.g., parent.marko / child.marko). A single standalone code block must NEVER have a filename comment. Do not append metadata to filename comments (use `/* counter.marko */`, not `/* counter.marko - Class API */`).
 - Examples must be unique across all documentation - avoid reusing common tropes
+- To make an example runnable and editable, wrap its fences in a `> [!LIVE]` callout, one fence per file named with `/* file.marko */` (a single unnamed fence is `index.marko`). Options go on the marker: `> [!LIVE readonly height=8rem]`. Only fences may appear inside it.
 - In Marko files, use JS-style comments (`// comment` or `/* comment */`) instead of HTML comments (`<!-- comment -->`)
 - Avoid the `**Bold Title**: description` list pattern which sounds LLM-generated
 - In surrounding prose, avoid calling examples "minimal" or "simple". Prefer neutral lead-ins such as "Consider this Marko template" or "Example".

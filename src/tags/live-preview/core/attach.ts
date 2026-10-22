@@ -1,16 +1,28 @@
-import { EditorState } from "@codemirror/state";
+import { Annotation, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 
-import type { File } from "./build.ts";
+import type { File, Variants } from "./build.ts";
 import { compactExtensions } from "./codemirror.ts";
 import { languageFor } from "./highlight.ts";
 import type { Workspace } from "./workspace.ts";
 
 export interface AttachOptions {
+  /** Per file, the forms its source can be shown in, for files that have them. */
+  variants?: (Variants | null)[];
   /** Compile as soon as this loads rather than on the first edit. */
   build?: boolean;
   csr?: boolean;
   signal: AbortSignal;
+}
+
+/**
+ * Dispatched on `document` by a host page when the reader changes how code is
+ * shown. Examples that have several forms of a file switch to the matching one.
+ */
+export const syntaxEvent = "live-preview:syntax";
+export interface SyntaxDetail {
+  concise: boolean;
+  ts: boolean;
 }
 
 // The compiler, bundler and formatter are by far the heaviest part of a
@@ -19,6 +31,18 @@ export interface AttachOptions {
 type Workspaces = typeof import("./workspace.ts");
 let workspaces: Promise<Workspaces> | undefined;
 const loadWorkspace = () => (workspaces ??= import("./workspace.ts"));
+
+// Marks edits made by this module so they do not trigger a rebuild.
+const programmatic = Annotation.define<boolean>();
+
+const formKey = ({ concise, ts }: SyntaxDetail): keyof Variants =>
+  concise ? (ts ? "conciseTS" : "concise") : ts ? "htmlTS" : "html";
+const formClass: Record<keyof Variants, string> = {
+  html: "html",
+  concise: "concise",
+  htmlTS: "html-ts",
+  conciseTS: "concise-ts",
+};
 
 /**
  * Upgrades server-rendered `<live-preview>` markup in place: each source pane
@@ -29,31 +53,56 @@ const loadWorkspace = () => (workspaces ??= import("./workspace.ts"));
 export function attach(
   root: HTMLElement,
   files: File[],
-  { build = false, csr = false, signal }: AttachOptions,
+  { variants = [], build = false, csr = false, signal }: AttachOptions,
 ) {
   const frame = root.querySelector<HTMLIFrameElement>("iframe")!;
   const errors = root.querySelector<HTMLElement>(".errors");
   const current = files.map((file) => ({ ...file }));
   const views: EditorView[] = [];
+  // The form each file is showing, and the first-render text of every form.
+  const shown: (keyof Variants | undefined)[] = [];
   let timer: ReturnType<typeof setTimeout> | undefined;
   let run: AbortController | undefined;
   let workspace: ReturnType<Workspaces["createWorkspace"]> | undefined;
 
-  const panes = root.querySelectorAll<HTMLElement>(".source");
-  panes.forEach((pane, i) => {
+  root.querySelectorAll<HTMLElement>(".source").forEach((source, i) => {
+    const forms = variants[i];
+    const panes = [...source.querySelectorAll<HTMLElement>(".variant")];
+    // The pane a reader sees is the one that gets the editor; the rest go.
+    const pane =
+      panes.find((p) => getComputedStyle(p).display !== "none") ?? panes[0];
+    const key = forms
+      ? (Object.keys(formClass) as (keyof Variants)[]).find((k) =>
+          pane.classList.contains(formClass[k]),
+        )
+      : undefined;
+    shown[i] = key;
+    for (const other of panes) if (other !== pane) other.remove();
+    // One editor now holds whichever form is shown, so the host's rules for
+    // picking a pane no longer apply.
+    source.classList.remove("has-variants");
+    pane.className = "variant";
+
     const typed = pane.textContent ?? "";
+    const original = (key && forms?.[key]) ?? files[i].content;
     views.push(
-      swap(pane, current[i], (content) => {
+      swap(pane, current[i], (content, user) => {
         current[i].content = content;
-        schedule();
+        if (user) schedule();
       }),
     );
     // Typed in before this loaded.
-    if (typed !== files[i].content) {
+    if (typed !== original) {
       current[i].content = typed;
       schedule();
     }
   });
+
+  document.addEventListener(
+    syntaxEvent,
+    (event) => void showSyntax((event as CustomEvent<SyntaxDetail>).detail),
+    { signal },
+  );
 
   root.addEventListener("focusin", () => void loadWorkspace(), { signal });
   if (root.contains(document.activeElement)) void loadWorkspace();
@@ -64,6 +113,38 @@ export function attach(
     run?.abort();
     for (const view of views) view.destroy();
   });
+
+  // An unedited file takes the matching form it was rendered with. An edited
+  // one is converted, which can fail while the code is mid-edit; it then stays
+  // as it is.
+  async function showSyntax(syntax: SyntaxDetail) {
+    const key = formKey(syntax);
+    await Promise.all(
+      views.map(async (view, i) => {
+        const forms = variants[i];
+        if (!forms || shown[i] === key) return;
+        const text = view.state.doc.toString();
+        let next: string;
+        if (text === forms[shown[i]!]) {
+          next = forms[key];
+        } else {
+          try {
+            const { convertMarko } = await import("./convert.ts");
+            next = await convertMarko(text, files[i].path, syntax);
+          } catch {
+            return;
+          }
+          // Edited again while converting.
+          if (view.state.doc.toString() !== text) return;
+        }
+        shown[i] = key;
+        view.dispatch({
+          changes: { from: 0, to: text.length, insert: next },
+          annotations: programmatic.of(true),
+        });
+      }),
+    );
+  }
 
   function schedule(delay = 300) {
     clearTimeout(timer);
@@ -97,7 +178,7 @@ export function attach(
 function swap(
   pane: HTMLElement,
   file: File,
-  onChange: (content: string) => void,
+  onChange: (content: string, user: boolean) => void,
 ) {
   const text = pane.textContent ?? "";
   const { scrollTop, scrollLeft } = pane;
@@ -130,7 +211,12 @@ function swap(
       extensions: [
         ...compactExtensions(languageFor(file.path)),
         EditorView.updateListener.of((update) => {
-          if (update.docChanged) onChange(update.state.doc.toString());
+          if (update.docChanged) {
+            const own = update.transactions.some((tr) =>
+              tr.annotation(programmatic),
+            );
+            onChange(update.state.doc.toString(), !own);
+          }
         }),
       ],
     }),

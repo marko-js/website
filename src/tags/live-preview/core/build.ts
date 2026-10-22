@@ -13,6 +13,14 @@ export interface File {
   content: string;
 }
 
+/** The forms of a Marko file the docs can toggle between. */
+export interface Variants {
+  html: string;
+  concise: string;
+  htmlTS: string;
+  conciseTS: string;
+}
+
 /** The part of a workspace the bundler plugins need. No DOM, no workers. */
 export interface BuildContext {
   fs: FileSystem;
