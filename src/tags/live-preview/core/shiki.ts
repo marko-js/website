@@ -10,7 +10,7 @@ import marko from "@shikijs/langs/marko";
 import sh from "@shikijs/langs/shellscript";
 import toml from "@shikijs/langs/toml";
 import ts from "@shikijs/langs/typescript";
-import { dark, light } from "./shiki-theme";
+import { dark, light } from "./shiki-theme.ts";
 
 export default await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/wasm")),

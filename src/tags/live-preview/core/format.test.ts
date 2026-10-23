@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCode } from "./format";
+import { formatCode } from "./format.ts";
 
 describe("formatCode", () => {
   it("has nothing to do for an unknown extension", () => {

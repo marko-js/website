@@ -184,6 +184,19 @@ main {
   }
 }
 
+// A live preview renders every form of a Marko file; the syntax toggles pick
+// the one that shows, the same way they do for other code blocks.
+.live-preview .has-variants > .variant {
+  display: none;
+}
+
+html:not(.concise-mode):not(.ts-mode) .live-preview .has-variants > .html,
+html.concise-mode:not(.ts-mode) .live-preview .has-variants > .concise,
+html:not(.concise-mode).ts-mode .live-preview .has-variants > .html-ts,
+html.concise-mode.ts-mode .live-preview .has-variants > .concise-ts {
+  display: block;
+}
+
 // Off-screen until focused, so keyboard users can jump the docs sidebar
 // without the link taking up room for everyone else.
 .skip-link {

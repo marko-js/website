@@ -12,7 +12,7 @@
  * carets on a real grid, and turn the links into links.
  */
 
-import { rootDir } from "./workspace/fs";
+import { rootDir } from "./workspace/fs.ts";
 
 /** `at <file>:<line>:<col>` */
 const LOCATION_ROW = /^\s*at (.+?):(\d+):(\d+)\s*$/;

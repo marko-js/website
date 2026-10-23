@@ -2,7 +2,7 @@ import markoModules from "@marko/compiler/modules";
 import lassoPackageRoot from "lasso-package-root";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 
-import { rootDir, type FileSystem } from "./fs";
+import { rootDir, type FileSystem } from "./fs.ts";
 
 let currentFS: FileSystem | undefined;
 

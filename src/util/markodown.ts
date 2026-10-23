@@ -147,7 +147,7 @@ async function pruneDocsBanners(mdFiles: string[]) {
   );
 }
 
-async function mdToMarko(source: string) {
+export async function mdToMarko(source: string) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
     .use(semanticAdmonitions(), headingSections(headings), markoDocs())
@@ -300,6 +300,13 @@ function semanticAdmonitions(): MarkedExtension {
   return {
     renderer: {
       blockquote(token) {
+        const live = /^\[!LIVE((?:[ \t]+[\w-]+(?:=[\w.%]+)?)*)]/i.exec(
+          token.text ?? "",
+        );
+        if (live) {
+          return renderLivePreview(token, live[1].trim().split(/\s+/));
+        }
+
         const word = /^\[!(\w*)]/.exec(token.text ?? "");
         const variant = word?.[1]?.toLowerCase();
         if (variant && variant in typeMap) {
@@ -334,6 +341,58 @@ function semanticAdmonitions(): MarkedExtension {
       },
     },
   };
+}
+
+/**
+ * A `> [!LIVE]` callout holds the files of a live example, one fence each.
+ * Marko files keep their html/concise and TS/JS forms so the docs toggles can
+ * pick one; the plain `html` (JavaScript) form is what the example compiles.
+ */
+function renderLivePreview(token: Tokens.Blockquote, options: string[]) {
+  const [marker, ...rest] = token.tokens;
+  const fences = rest.filter((t): t is Tokens.Code => t.type === "code");
+  const stray = rest.find((t) => t.type !== "code" && t.type !== "space");
+  if (marker.type !== "paragraph" || stray || !fences.length) {
+    throw new Error(
+      "A `> [!LIVE]` callout must hold only code fences, one per file.",
+    );
+  }
+
+  const files: { path: string; content: string }[] = [];
+  const variants: (Record<string, string> | null)[] = [];
+  for (const fence of fences) {
+    const path =
+      fence.filename ?? (fences.length === 1 ? "index.marko" : undefined);
+    if (!path) {
+      throw new Error(
+        "Every code fence in a multi-file `> [!LIVE]` callout needs a `/* file.ext */` name.",
+      );
+    }
+    files.push({ path, content: fence.html ?? fence.text });
+    variants.push(
+      fence.html === undefined
+        ? null
+        : {
+            html: fence.html,
+            concise: fence.concise!,
+            htmlTS: fence.htmlTS!,
+            conciseTS: fence.conciseTS!,
+          },
+    );
+  }
+
+  let attrs = "";
+  for (const option of options.filter(Boolean)) {
+    const [name, value] = option.split("=");
+    if (name === "readonly" && value === undefined) {
+      attrs += " editable=false";
+    } else if (name === "height" && /^\d*\.?\d+(rem|em|px|vh|%)$/.test(value)) {
+      attrs += ` height=${JSON.stringify(value)}`;
+    } else {
+      throw new Error(`Unknown \`> [!LIVE]\` option \`${option}\`.`);
+    }
+  }
+  return `<live-preview files=${JSON.stringify(files)} variants=${JSON.stringify(variants)}${attrs}/>`;
 }
 
 declare module "marked" {

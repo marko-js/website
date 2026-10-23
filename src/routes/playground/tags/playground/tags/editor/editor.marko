@@ -1,9 +1,11 @@
 client import { EditorView, keymap } from "@codemirror/view";
 client import { EditorState } from "@codemirror/state";
-client import extensions, { update } from "app/util/codemirror";
-client import { formatCode } from "app/util/format";
+client import extensions, {
+  update,
+} from "app/tags/live-preview/core/codemirror";
+client import { formatCode } from "app/tags/live-preview/core/format";
 import { faPaintbrush } from "@fortawesome/free-solid-svg-icons";
-import type { File } from "app/util/workspace";
+import type { File } from "app/tags/live-preview/core/workspace";
 import styles from "./editor.styles.module.scss";
 export interface Input {
   files: File[];

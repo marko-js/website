@@ -1,6 +1,6 @@
 import lzString from "lz-string";
-import { streamToIterable } from "./stream-to-iterable";
-import type { File } from "./workspace";
+import { streamToIterable } from "app/tags/live-preview/core/stream-to-iterable";
+import type { File } from "app/tags/live-preview/core/workspace";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 

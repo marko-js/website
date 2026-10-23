@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import path from "path";
-import runtimeFiles from "virtual:marko-runtime-files";
+import { readRuntimeFiles } from "../node.ts";
+
+const runtimeFiles = readRuntimeFiles();
 
 // Mirrors resolveRuntimeModule in marko-plugin.ts (not exported to keep the
 // plugin surface minimal); asserts the captured dist can satisfy every import
