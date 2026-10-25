@@ -369,6 +369,7 @@ The `<script>` tag has special behavior in Marko.
 
 The content of a `<script>` tag is executed first when the template has finished rendering and is mounted in the browser.
 It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters) it references has changed.
+It always runs after the DOM has updated, including the DOM of child tags. The order between scripts (and [`<lifecycle>`](#lifecycle) handlers) is not guaranteed.
 
 ```marko
 <let/count=1>
@@ -417,7 +418,7 @@ A function declared elsewhere, such as a [`<const>`](#const), may be referenced 
 
 ### Await
 
-An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so later effects run without waiting for it.
+An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so other effects run without waiting for it.
 
 ```marko
 <img/photo>
