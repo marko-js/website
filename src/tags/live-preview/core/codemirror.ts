@@ -30,8 +30,8 @@ import {
   completionKeymap,
 } from "@codemirror/autocomplete";
 import { foldGutter, foldService } from "@codemirror/language";
-import highlighter from "app/util/shiki";
-import { styleToClass } from "./style-to-class";
+import highlighter from "./shiki.ts";
+import { styleToClass } from "./style-to-class.ts";
 
 const langConfig = new Compartment();
 export function update(view: EditorView, content: string, lang: string) {
@@ -61,6 +61,25 @@ const baseLanguageData = [
     closeBrackets: { brackets: ["(", "[", "{", '"', "'", "`"] },
   },
 ];
+
+/**
+ * The extensions for an embedded editor: no gutter folding, autocomplete or
+ * Tab capture, so a page can still be tabbed through. Line numbers and the
+ * highlighter match the static markup that renders before this loads.
+ */
+export function compactExtensions(lang?: string) {
+  return [
+    history(),
+    drawSelection(),
+    highlightSelectionMatches(),
+    EditorState.allowMultipleSelections.of(true),
+    EditorState.languageData.of(() => baseLanguageData),
+    langConfig.of(shiki(lang)),
+    closeBrackets(),
+    lineNumbers(),
+    keymap.of([...defaultKeymap, ...historyKeymap]),
+  ];
+}
 
 export default [
   history(),

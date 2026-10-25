@@ -2,7 +2,10 @@
 export const rootDir = "/app/";
 
 export class FileSystem {
-  constructor(public files: Record<string, string>) {}
+  files: Record<string, string>;
+  constructor(files: Record<string, string>) {
+    this.files = files;
+  }
   statSync(entry: string) {
     if (!(entry in this.files)) {
       const dir = toDirname(entry);

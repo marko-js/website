@@ -1,14 +1,30 @@
 import styles from "./app-menu.style.module.scss";
+client function announceSyntax() {
+  // Live previews on the page follow the toggles (see tags/live-preview).
+  const { classList } = document.documentElement;
+  document.dispatchEvent(
+    new CustomEvent("live-preview:syntax", {
+      detail: {
+        concise: classList.contains("concise-mode"),
+        ts: classList.contains("ts-mode"),
+      },
+    }),
+  );
+}
+
 let-local-storage/conciseMode=false key="concise-mode"
 script --
   document.documentElement.classList.toggle("concise-mode", conciseMode);
+  announceSyntax();
 html-script --
   ${
     `document.documentElement.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');`
   };
 
 let-local-storage/tsMode=true key="ts-mode"
-script -- document.documentElement.classList.toggle("ts-mode", tsMode);
+script --
+  document.documentElement.classList.toggle("ts-mode", tsMode);
+  announceSyntax();
 html-script --
   ${
     `document.documentElement.classList.toggle("ts-mode",localStorage.getItem("ts-mode")==='true');`
