@@ -2,17 +2,17 @@
 
 > [!TLDR]
 >
-> - Marko Run deploys to Cloudflare Workers, and a security fix keeps its redirects on the app's origin
+> - Marko Run gets an official Cloudflare adapter, and a security fix keeps its redirects on the app's origin
 > - A `<try>` streams its `@catch` in place, so error fallbacks show without JavaScript
 > - Classes from CSS modules get the same compile-time optimizations as literal classes
 > - Smaller pages, leaner server renders, and more mistakes caught at compile time
 > - A first look at persisted pages from ViteConf, and at preval, template code that runs at build time
 
-Marko Run can now deploy to Cloudflare Workers, and most of the rest of October went into making streaming, resuming, and the compiler's analysis more exact. Error fallbacks work before any script loads, class toggles from CSS modules update a single class, and a long run of fixes landed for tag variables, `<define>`, and lazily loaded tags. Looking ahead, persisted pages got a ViteConf talk, and preval offers a first look at template code that runs at build time.
+Marko Run gained an official Cloudflare adapter, and most of the rest of October went into making streaming, resuming, and the compiler's analysis more exact. Error fallbacks work before any script loads, class toggles from CSS modules update a single class, and a long run of fixes landed for tag variables, `<define>`, and lazily loaded tags. Looking ahead, persisted pages got a ViteConf talk, and preval offers a first look at template code that runs at build time.
 
-## Cloudflare Workers
+## Cloudflare Adapter
 
-Marko Run apps can now develop, preview, and deploy on [Cloudflare Workers](https://developers.cloudflare.com/workers/) with the new [`@marko/run-adapter-cloudflare`](https://github.com/marko-js/run/tree/main/packages/adapters/cloudflare) ([run#307](https://github.com/marko-js/run/pull/307)). Like the other [adapters](../marko-run/adapters.md#choosing-an-adapter), it is used as soon as it is installed. `marko-run dev` runs the app inside workerd, the Workers runtime, with local versions of the bindings the Wrangler config declares, so development behaves like production. `marko-run build` produces a Worker that `wrangler deploy` ships as is.
+Marko Run now has an official [Cloudflare Workers](https://developers.cloudflare.com/workers/) adapter, [`@marko/run-adapter-cloudflare`](https://github.com/marko-js/run/tree/main/packages/adapters/cloudflare) ([run#307](https://github.com/marko-js/run/pull/307)). As with the other [adapters](../marko-run/adapters.md#choosing-an-adapter), installing it is the whole setup. `marko-run dev` runs the app inside workerd, the Workers runtime, with local versions of the bindings the Wrangler config declares, `marko-run preview` serves the build with `wrangler dev` against that same local state ([run#310](https://github.com/marko-js/run/pull/310)), and `marko-run build` produces a Worker that `wrangler deploy` ships as is.
 
 Route handlers read the Worker's bindings, execution context, and request properties from `ctx.platform`, typed from the bindings the app declares on `CloudflareEnv`:
 
@@ -26,28 +26,24 @@ export const GET = Run.GET((ctx, next) => {
 });
 ```
 
-Given an entry of its own (`marko-run build src/index.ts`), that file becomes the Worker, so an app can export Durable Objects or handle other events beside its routes. `marko-run preview` serves the build with `wrangler dev` against the same local KV, D1, and Durable Object state as development ([run#310](https://github.com/marko-js/run/pull/310)).
+Given an entry of its own (`marko-run build src/index.ts`), that file becomes the Worker, so an app can export Durable Objects or handle other events beside its routes.
 
 ## Error Boundaries
 
 A [`<try>`](../reference/core-tag.md#try)'s `@catch` now streams in its body's place, so the fallback is part of the server-rendered HTML and shows without JavaScript ([marko#4391](https://github.com/marko-js/marko/pull/4391)). It used to always stream out of order for the client to swap in, so it never showed until scripts ran. When nothing of the body has streamed by the time it throws, the `@catch` takes its place outright; once part of it has, the `@catch` streams after that part, which the client then removes.
 
 ```marko
-<try>
-  <await|rates|=input.shippingRates>
-    <ul>
-      <for|rate| of=rates>
-        <li>${rate.carrier}: ${rate.price}</li>
-      </for>
-    </ul>
-  </await>
-  <@catch>
-    <p>Shipping is calculated at checkout.</p>
-  </@catch>
-</try>
+<ul>
+  <try>
+    <await|rates|=input.shippingRates>
+      <for|rate| of=rates><li>${rate.carrier}: ${rate.price}</li></for>
+    </await>
+    <@catch><li>Shipping is calculated at checkout.</li></@catch>
+  </try>
+</ul>
 ```
 
-If the rates fail to load, the server writes the `@catch` content where the list would have been, and the rest of the page streams after it.
+When `input.shippingRates` rejects, the server writes the `@catch` item into the list where the shipping options would have gone, so the fallback is in the page before any script runs.
 
 Streaming pages with many `<try>` tags also got faster. Each boundary used to add a listener to the one around it, so streaming cost grew quadratically with the number of `<try>` tags; boundaries now abort the ones nested in them directly ([marko#4388](https://github.com/marko-js/marko/pull/4388)).
 
@@ -158,32 +154,30 @@ Persisted pages are still in progress. The new [Patch Protocol](../explanation/p
 
 ### Preval
 
-Preval is template code that runs in the compiler while a template builds. A `preval import` reads a file at build time, and compile-time `<-for>` and `<-if>` tags shape the template from what it holds:
+Preval brings build-time code to Marko templates. Code marked `preval` runs in the compiler, and the template compiles from its results: a JSON file or a CMS can feed a template, build flags can drop whole sections, and none of it is left for the server or the browser to run. Consider a site's navigation, read from a config file, with a beta link behind a build flag:
 
 ```marko no-format
-preval import releases from "./releases.json";
+preval import links from "./nav.json";
 
-<ul.releases>
-  <-for|release| of=releases.slice(0, 3)>
-    <li>
-      <a href=`/releases/${release.version}`>${release.version}</a>
-      <-if=release.breaking><strong>Breaking</strong></>
-    </li>
+<nav>
+  <-for|link| of=links>
+    <-if=!link.beta || flags.beta>
+      <a href=link.href>${link.label}</a>
+    </>
   </>
-</ul>
+</nav>
 ```
 
-When the newest releases in `releases.json` are 6.4.8, 6.4.7, and a breaking 6.4.2, that compiles as if the template had been written by hand:
+`flags` is build data, passed in through the `preval: { data: { flags } }` compiler option and read by templates as a global. With the beta flag off, the template compiles as if it had been written by hand:
 
 ```marko
-<ul.releases>
-  <li><a href="/releases/6.4.8">6.4.8</a></li>
-  <li><a href="/releases/6.4.7">6.4.7</a></li>
-  <li><a href="/releases/6.4.2">6.4.2</a><strong>Breaking</strong></li>
-</ul>
+<nav>
+  <a href="/">Home</a>
+  <a href="/docs">Docs</a>
+</nav>
 ```
 
-The loop and the condition run once in the build, so neither the server nor the browser repeats them, and the whole list is static HTML. A build can also pass in data, such as pages fetched from a CMS, which templates read as globals while they compile. Runtime code that reads a preval value gets the value written into the compiled template, and `-` named tags such as `<-data-table>` expand in place at each call.
+Runtime code that reads a preval value gets the value written into the compiled template, and `-` named tags such as `<-data-table>` expand inline at each call, so content that changes only when the site rebuilds costs nothing per request.
 
 ## Further Reading
 
