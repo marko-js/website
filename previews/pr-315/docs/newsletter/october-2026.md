@@ -8,7 +8,7 @@
 > - A first look at persisted pages from ViteConf, and at preval, template code that runs at build time
 > - Smaller pages, leaner server renders, and more mistakes caught at compile time
 
-Marko Run gained an official Cloudflare adapter, and most of the rest of October went into making streaming, resuming, and the compiler's analysis more exact. Class toggles from CSS modules update a single class, error fallbacks work before any script loads, and a long run of fixes landed for tag variables, `<define>`, and lazily loaded tags. Looking ahead, persisted pages got a ViteConf talk, and preval offers a first look at template code that runs at build time.
+October brought an official Cloudflare adapter for Marko Run and a broad push to make streaming, resuming, and the compiler's analysis more exact. Class toggles from CSS modules update a single class, error fallbacks work before any script loads, and a long run of fixes landed for tag variables, `<define>`, and lazily loaded tags. Looking ahead, persisted pages got a ViteConf talk, and preval offers a first look at template code that runs at build time.
 
 ## Cloudflare Adapter
 
