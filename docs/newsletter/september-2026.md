@@ -91,3 +91,4 @@ Marko has also joined the Opus 5.5 video generation bandwagon with a persisted p
 ## Further Reading
 
 - [August 2026](august-2026.md)
+- [October 2026](october-2026.md)
