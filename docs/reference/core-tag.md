@@ -567,10 +567,35 @@ The `<lifecycle>` tag is used to synchronize side-effects from imperative client
     // Called once this tag is attached to the dom, and never again.
   }
   onUpdate() {
-    // Called every time the dependencies of the `onUpdate` function are invalidated.
+    // Called every time a value read by any of this tag's attributes changes.
   }
   onDestroy() {
     // Called once this tag is removed from the dom.
+  }
+/>
+```
+
+A change to any value the tag's attributes read calls `onUpdate`, including values read inside `onMount`, `onDestroy`, and the functions they create. Attributes are reassigned onto `this` before each `onUpdate`, so a value passed as an attribute stays current for the callbacks `onMount` registers, while `onUpdate` applies it to the instance.
+
+```marko
+client import { createEditor } from "code-editor";
+
+<let/readOnly=false>
+<div/host/>
+<lifecycle
+  readOnly=readOnly
+  onMount() {
+    const editor = createEditor(host());
+    editor.on("beforeinput", (event) => {
+      if (this.readOnly) event.preventDefault();
+    });
+    return { editor };
+  }
+  onUpdate() {
+    this.editor.setReadOnly(this.readOnly);
+  }
+  onDestroy() {
+    this.editor.destroy();
   }
 />
 ```
