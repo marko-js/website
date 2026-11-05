@@ -13,6 +13,7 @@
   margin: 0 calc(-1 * var(--root-gap));
   padding: 0 var(--root-gap);
   --section-color: var(--color-foreground);
+
   &::before {
     content: "";
     pointer-events: none;
@@ -48,6 +49,7 @@
     transform: translateY(0);
     will-change: transform;
     @include sticky.animate(hide);
+
     @keyframes hide {
       to {
         transform: translateY(-100%);
@@ -81,11 +83,9 @@
     align-items: center;
     font-size: 1.3rem;
     font-weight: 500;
-    background-image: linear-gradient(
-      to bottom,
-      var(--color-red-dark),
-      var(--color-red-light)
-    );
+    background-image: linear-gradient(to bottom,
+        var(--color-red-dark),
+        var(--color-red-light));
 
     a {
       color: var(--color-white);
@@ -105,6 +105,7 @@
   a {
     padding: 1rem;
     text-decoration: none;
+
     &:hover {
       @media (pointer: fine) {
         text-decoration-line: underline;
@@ -148,7 +149,7 @@
   overflow: hidden;
   visibility: hidden;
 
-  & > body {
+  &>body {
     overflow: hidden;
   }
 }
@@ -157,11 +158,22 @@
   margin-right: auto;
 }
 
+.searchLabel {
+  display: none;
+  @media (min-width: 64rem) and (min-height: 38rem) {
+    display: inline;
+    margin-left: 0.5rem;
+    margin-right: auto;
+    opacity: 0.6;
+  }
+}
+
 #search {
   display: flex;
   place-items: center;
   place-content: center;
   flex-shrink: 1;
+
   @media (min-width: 64rem) and (min-height: 38rem) {
     width: 12.75rem;
   }
@@ -186,18 +198,21 @@
     border: none;
     color: var(--color-foreground);
     -webkit-tap-highlight-color: transparent;
+
     @media (pointer: fine) {
       &:not(:disabled):is(:hover, :active, :focus) {
         color: var(--color-blue);
         border-color: transparent;
       }
     }
-    & > kbd {
+
+    &>kbd {
       font-family: inherit;
       font-size: 0.7rem;
 
       display: none;
     }
+
     &::before {
       content: "";
       display: block;
@@ -208,17 +223,16 @@
       mask-image: url(./search.svg?no-inline);
       background-color: var(--color-foreground);
     }
+
     @media (min-width: 64rem) and (min-height: 38rem) {
-      & > kbd {
+      &>kbd {
         display: inline-block;
       }
+
       border: 2px solid var(--color-foreground);
       height: 2.5rem;
-      background:
-        linear-gradient(var(--color-background), var(--color-background))
-          padding-box,
-        linear-gradient(120deg, var(--color-blue-alt), var(--color-blue))
-          border-box !important;
+      background: linear-gradient(var(--color-background), var(--color-background)) padding-box,
+      linear-gradient(120deg, var(--color-blue-alt), var(--color-blue)) border-box !important;
     }
   }
 }
