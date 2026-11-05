@@ -1,5 +1,4 @@
 import markoModules from "@marko/compiler/modules";
-import lassoPackageRoot from "lasso-package-root";
 import { resolveSync, type ResolveOptions } from "resolve-sync";
 
 import { rootDir, type FileSystem } from "./fs";
@@ -55,7 +54,7 @@ markoModules.require = (id) => {
   );
 };
 
-lassoPackageRoot.getRootPackage = (dirname) => {
+markoModules.getRootPackage = (dirname) => {
   if (!currentFS) return undefined;
   let dir = dirname;
   while (true) {
