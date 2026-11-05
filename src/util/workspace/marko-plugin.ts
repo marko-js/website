@@ -37,7 +37,8 @@ function resolveRuntimeModule(id: string, importer?: string) {
   if (withExtension in runtimeFiles) return withExtension;
 }
 
-// Shim currently needed because @marko/compiler uses `lasso-package-root`.
+// The compiler reads `process.env`, and the `path` shim's `resolve` calls
+// `process.cwd()`.
 (globalThis as any).process = {
   browser: true,
   env: {

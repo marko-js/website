@@ -49,14 +49,14 @@ importers:
         specifier: ^0.3.11
         version: 0.3.11
       '@marko/compiler':
-        specifier: ^5.42.10
-        version: 5.42.10
+        specifier: ^5.42.16
+        version: 5.42.16
       '@marko/run':
         specifier: ^0.11.13
-        version: 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
+        version: 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
       '@marko/run-adapter-static':
         specifier: ^2.0.10
-        version: 2.0.10(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)
+        version: 2.0.10(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)
       '@marko/type-check':
         specifier: ^3.2.1
         version: 3.2.1
@@ -102,9 +102,6 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
-      lasso-package-root:
-        specifier: ^1.0.1
-        version: 1.0.1
       lightningcss-wasm:
         specifier: ^1.33.0
         version: 1.33.0
@@ -118,8 +115,8 @@ importers:
         specifier: ^18.0.14
         version: 18.0.14
       marko:
-        specifier: ^6.4.0
-        version: 6.4.0
+        specifier: ^6.4.10
+        version: 6.4.10
       path:
         specifier: ./shim/path
         version: link:shim/path
@@ -788,9 +785,9 @@ packages:
   '@marijn/find-cluster-break@1.0.4':
     resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
 
-  '@marko/compiler@5.42.10':
-    resolution: {integrity: sha512-E/TWzirWpTNKdYurzsTsE0GFnyOBW7TRshiv1XhZ4vWAyYvp4/ZhjuJO8kJ6itfgUNs/woCCEOhmgG/cejTqIw==}
-    engines: {node: '>=22'}
+  '@marko/compiler@5.42.16':
+    resolution: {integrity: sha512-M7AJ6UHkv9Zaj0W8zHmZO0XsxbRU49M8umP/nuUTSPmsM7IPIcBfiaw7WhYaq7c/SYM8c7d+mnFeEcDfUduSfg==}
+    engines: {node: '>=22.12.0'}
 
   '@marko/language-tools@2.7.0':
     resolution: {integrity: sha512-1W/9yu3lmm1Fo/67huE89h6LX6QjLkUTFxluK4AackuWU21PgiY0RpLZ9QmhrYjXqiSprlyRofKmwRtXfXfpMg==}
@@ -1489,9 +1486,6 @@ packages:
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
-  complain@1.6.1:
-    resolution: {integrity: sha512-WsiVAbAPcPSwyC5k8g/PLceaW0MXJUw61KqBd9uiyDOSuDIC6Ho/EbyhdFjeV6wq44R2g/b8IFpvV/1ZyXiqUQ==}
-
   compressible@2.0.18:
     resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
     engines: {node: '>= 0.6'}
@@ -1656,9 +1650,6 @@ packages:
   entities@7.0.1:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
-
-  error-stack-parser@2.1.4:
-    resolution: {integrity: sha512-Sk5V6wVazPhq5MhpO+AUxJn5x7XSXGl1R93Vn7i+zS15KDVxQijejNCrz8340/2bgLBjR9GtEG8ZVKONDjcqGQ==}
 
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
@@ -1835,6 +1826,9 @@ packages:
   htmljs-parser@5.18.0:
     resolution: {integrity: sha512-ANKBAi2UyiQ7K/In2a3jZLt/WLAIKl8GFE3k5KIYEaroUdOBtt/gnclkJcSMI+kPChWdGOw3YHnbequVNy39Tg==}
 
+  htmljs-parser@5.20.0:
+    resolution: {integrity: sha512-hgqpYBbHzoNE0CYVhy1kWj9oPT98v+2VlKLHuap5Baqq2daGSELcKBQg4oLdGo1XjPBm+snPj86mdcZu+dhWJg==}
+
   htmlparser2@10.1.0:
     resolution: {integrity: sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ==}
 
@@ -1931,12 +1925,6 @@ packages:
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
-
-  lasso-caching-fs@1.0.2:
-    resolution: {integrity: sha512-mudop0s8U3tLm3Fn9lhiZsiELpLeJToEo6RlDLdph7vWRxL9Sz0o+9WUw1IwlpCYXv/P0CLsMYWFgPwIKWEYvg==}
-
-  lasso-package-root@1.0.1:
-    resolution: {integrity: sha512-j6LnauNCldqSDvOxoKpD6sTzudPGMiwcZQbySoF9KvJ0lD9Dp2t6QZF8kC0jbUDHuQPiAo5RuQ/mC3AGXscUYA==}
 
   lightningcss-android-arm64@1.33.0:
     resolution: {integrity: sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==}
@@ -2036,11 +2024,11 @@ packages:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
 
-  magic-string@0.30.21:
-    resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
-
   magic-string@1.4.2:
     resolution: {integrity: sha512-vG+rjFRj1PqdIBozIxAGMjPlOhaVe+GXpbttY/iSK7rGcJRMlwNJO7dcUwmUqkymsFLJiNGI06t4D7Fr7yRC9g==}
+
+  magic-string@1.4.5:
+    resolution: {integrity: sha512-oLLC2+YvQUfAa+vxoufE/yc1icb87M9iXIRqAoR/2EhE/8cb3SF/+Gi0c2By1B+5Vz2e2vQtUvHiu1+63Znh+w==}
 
   make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -2064,9 +2052,9 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marko@6.4.0:
-    resolution: {integrity: sha512-9k8xzDWM0Oo898JY/c/Galu/Jqq9MRWmCUBYuB3GCvxfRTjlnj/1CR14HAYppLEcJjl2fHDi0uEp5j8rN4EKDA==}
-    engines: {node: '>=22'}
+  marko@6.4.10:
+    resolution: {integrity: sha512-T24ydyO/hm7qm0vnXpMGJS/yfySyo+RG/HKe5zAVLy2wIuxNvoeIO7zJt6GerWr+sqxpkOCIjxojsJK3Z4CvXQ==}
+    engines: {node: '>=22.12.0'}
 
   mdast-util-to-hast@13.2.1:
     resolution: {integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==}
@@ -2499,12 +2487,6 @@ packages:
     resolution: {integrity: sha512-hek2mFQpPuI4E1BBKrSto+BU3e3x4xuarsbiwr3+lf7p44juvFMV0XFWQAP3xUyqXA4RrXLIoaSUGbSt056ZMw==}
     engines: {node: '>= 0.6'}
 
-  raptor-async@1.1.3:
-    resolution: {integrity: sha512-VZCxygWMjW9lKqnApK9D2QbfyzRn7ehiTqnXWwMCLBXANSy+xbnYfbX/5f8YX3bZXu+g+JESmqWPchIQrZj2ig==}
-
-  raptor-regexp@1.0.1:
-    resolution: {integrity: sha512-DqC7ViHJUs3jLIxJI1/HVvCu3yPJaP8CM7PGsHvjimg7yJ3lLOdCBxlPE0G2Q8OJgUA8Pe7nvhm6lcQ3hZepow==}
-
   raptor-util@3.2.0:
     resolution: {integrity: sha512-uEDMMkBCJvjTqYMBnJNxn+neiS6a0rhybQNA9RaexGor1uvKjwyHA5VcbZMZEuqXhKUWbL+WNS7PhuZVZNB7pw==}
 
@@ -2532,10 +2514,6 @@ packages:
 
   relative-import-path@1.0.1:
     resolution: {integrity: sha512-mLABwLdOB694B3BW3bNlLOJsWCDhFRBn4BW+gkhILZXJFaymkQWDZom+3qOGYFpbN9K8eeQx8lsy2N+SX/qncQ==}
-
-  resolve-from@5.0.0:
-    resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
-    engines: {node: '>=8'}
 
   resolve-sync@1.2.2:
     resolution: {integrity: sha512-qq4M0+Gxgiohxw0MUYprQiNWzYKMqCvVgpZO0Imwd1TttPIWT9NxUco8UUtIiRpiJpHPWRhhYIaiuo7EYBcv5Q==}
@@ -2701,10 +2679,6 @@ packages:
     resolution: {integrity: sha512-YyoP7axF2T93XOWXQXLH4t+cvLgZ+MeYV/xruXJfPa/czpcRqaG41/8Bz3mzgYj/7NxdrqJOx3YtzWy1MLtG5g==}
     engines: {node: '>=16'}
 
-  self-closing-tags@1.0.1:
-    resolution: {integrity: sha512-7t6hNbYMxM+VHXTgJmxwgZgLGktuXtVVD5AivWzNTdJBM4DBjnDKDzkf2SrNjihaArpeJYNjxkELBu1evI4lQA==}
-    engines: {node: '>=0.12.0'}
-
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
@@ -2762,9 +2736,6 @@ packages:
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
-
-  stackframe@1.3.4:
-    resolution: {integrity: sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==}
 
   statuses@2.0.2:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
@@ -3595,32 +3566,26 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.4': {}
 
-  '@marko/compiler@5.42.10':
+  '@marko/compiler@5.42.16':
     dependencies:
       '@luxass/strip-json-comments': 2.0.2
-      complain: 1.6.1
-      htmljs-parser: 5.18.0
+      htmljs-parser: 5.20.0
       jsesc: 3.1.0
       kleur: 4.1.5
-      lasso-package-root: 1.0.1
-      magic-string: 0.30.21
-      raptor-regexp: 1.0.1
+      magic-string: 1.4.5
       raptor-util: 3.2.0
       relative-import-path: 1.0.1
-      resolve-from: 5.0.0
-      self-closing-tags: 1.0.1
-      source-map-support: 0.5.21
 
   '@marko/language-tools@2.7.0':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.42.10
+      '@marko/compiler': 5.42.16
       htmljs-parser: 5.18.0
       relative-import-path: 1.0.1
 
-  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)':
+  '@marko/run-adapter-static@2.0.10(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))(supports-color@10.2.2)':
     dependencies:
-      '@marko/run': 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
+      '@marko/run': 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
       compression: 1.8.2(supports-color@10.2.2)
       htmlparser2: 10.1.0
       kleur: 4.1.5
@@ -3629,15 +3594,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@marko/run-explorer@2.0.5(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))':
+  '@marko/run-explorer@2.0.5(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
-      '@marko/run': 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
+      '@marko/run': 0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)
 
-  '@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)':
+  '@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0)':
     dependencies:
-      '@marko/compiler': 5.42.10
-      '@marko/run-explorer': 2.0.5(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.0)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))
-      '@marko/vite': 6.1.13(@marko/compiler@5.42.10)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))
+      '@marko/compiler': 5.42.16
+      '@marko/run-explorer': 2.0.5(@marko/run@0.11.13(@types/node@26.6.4)(esbuild@0.28.2)(marko@6.4.10)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))
+      '@marko/vite': 6.1.13(@marko/compiler@5.42.16)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))
       '@remix-run/form-data-parser': 0.17.7
       '@standard-schema/spec': 1.1.0
       browserslist: 4.29.3
@@ -3650,7 +3615,7 @@ snapshots:
       glob: 13.0.6
       human-format: 1.2.1
       kleur: 4.1.5
-      marko: 6.4.0
+      marko: 6.4.10
       parse-node-args: 1.1.3
       rolldown: 1.2.12
       sade: 1.8.1
@@ -3674,16 +3639,16 @@ snapshots:
   '@marko/type-check@3.2.1':
     dependencies:
       '@luxass/strip-json-comments': 1.4.0
-      '@marko/compiler': 5.42.10
+      '@marko/compiler': 5.42.16
       '@marko/language-tools': 2.7.0
       arg: 5.0.2
       kleur: 4.1.5
       typescript: 6.0.3
 
-  '@marko/vite@6.1.13(@marko/compiler@5.42.10)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))':
+  '@marko/vite@6.1.13(@marko/compiler@5.42.16)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(sass-embedded@1.105.1)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
       '@chialab/estransform': 0.19.1
-      '@marko/compiler': 5.42.10
+      '@marko/compiler': 5.42.16
       anymatch: 3.1.3
       domelementtype: 2.3.0
       domhandler: 5.0.3
@@ -4178,10 +4143,6 @@ snapshots:
 
   commondir@1.0.1: {}
 
-  complain@1.6.1:
-    dependencies:
-      error-stack-parser: 2.1.4
-
   compressible@2.0.18:
     dependencies:
       mime-db: 1.54.0
@@ -4314,10 +4275,6 @@ snapshots:
   entities@4.5.0: {}
 
   entities@7.0.1: {}
-
-  error-stack-parser@2.1.4:
-    dependencies:
-      stackframe: 1.3.4
 
   es-errors@1.3.0: {}
 
@@ -4520,6 +4477,8 @@ snapshots:
 
   htmljs-parser@5.18.0: {}
 
+  htmljs-parser@5.20.0: {}
+
   htmlparser2@10.1.0:
     dependencies:
       domelementtype: 2.3.0
@@ -4598,14 +4557,6 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  lasso-caching-fs@1.0.2:
-    dependencies:
-      raptor-async: 1.1.3
-
-  lasso-package-root@1.0.1:
-    dependencies:
-      lasso-caching-fs: 1.0.2
-
   lightningcss-android-arm64@1.33.0:
     optional: true
 
@@ -4674,11 +4625,11 @@ snapshots:
 
   lz-string@1.5.0: {}
 
-  magic-string@0.30.21:
+  magic-string@1.4.2:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  magic-string@1.4.2:
+  magic-string@1.4.5:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
@@ -4728,12 +4679,12 @@ snapshots:
 
   marked@18.0.14: {}
 
-  marko@6.4.0:
+  marko@6.4.10:
     dependencies:
-      '@marko/compiler': 5.42.10
+      '@marko/compiler': 5.42.16
       csstype: 3.2.3
       fastest-levenshtein: 1.0.16
-      magic-string: 0.30.21
+      magic-string: 1.4.5
 
   mdast-util-to-hast@13.2.1:
     dependencies:
@@ -5320,10 +5271,6 @@ snapshots:
 
   range-parser@1.3.0: {}
 
-  raptor-async@1.1.3: {}
-
-  raptor-regexp@1.0.1: {}
-
   raptor-util@3.2.0: {}
 
   react-is@18.3.1: {}
@@ -5346,8 +5293,6 @@ snapshots:
       regex-utilities: 2.3.0
 
   relative-import-path@1.0.1: {}
-
-  resolve-from@5.0.0: {}
 
   resolve-sync@1.2.2:
     dependencies:
@@ -5518,8 +5463,6 @@ snapshots:
       postcss-value-parser: 4.2.0
       yoga-layout: 3.2.1
 
-  self-closing-tags@1.0.1: {}
-
   semver@6.3.1: {}
 
   semver@7.8.5: {}
@@ -5594,8 +5537,6 @@ snapshots:
   source-map@0.6.1: {}
 
   space-separated-tokens@2.0.2: {}
-
-  stackframe@1.3.4: {}
 
   statuses@2.0.2: {}
 

@@ -15,15 +15,11 @@ declare module "@marko/compiler/modules" {
     require: null | ((id: string) => unknown);
     resolve: null | ((id: string, from?: string) => string);
     tryResolve: null | ((id: string, from?: string) => string | undefined);
+    getRootPackage:
+      | null
+      | ((
+          dirname: string,
+        ) => { __dirname: string; [key: string]: unknown } | undefined);
   };
   export default modules;
-}
-
-declare module "lasso-package-root" {
-  const lassoPackageRoot: {
-    getRootPackage(
-      dirname: string,
-    ): { __dirname: string; [key: string]: unknown } | undefined;
-  };
-  export default lassoPackageRoot;
 }
