@@ -135,17 +135,16 @@ This example file tells Marko to expose all Custom Tags directly under the `dist
 
 ## Supporting Files
 
-Marko discovers [`style`](../guide/styling.md) and `marko-tag.json` files adjacent to the `.marko` file.
+Marko discovers [`style`](../guide/styling.md) files adjacent to the `.marko` file.
 
 ```text
 foo.marko
 foo.style.css
-foo.marko-tag.json
 ```
 
-Here, the `<foo>` tag has associated styles and metadata.
+Here, the `<foo>` tag has associated styles.
 
-When the file is named `index.marko` the prefix is optional.
+When the file is named `index.marko` the prefix is optional. A tag in its own folder may also have a `marko-tag.json` beside it.
 
 ```text
 tags/
