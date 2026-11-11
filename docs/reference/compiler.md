@@ -234,7 +234,7 @@ The translator that turns templates into JavaScript, as a module id or a transla
 
 ### `fileSystem`
 
-An `fs`-compatible object the compiler reads through, providing `readFileSync`, `statSync` and `readdirSync` (and `readFile` for `compileFile`). Defaults to Node's `fs`, and lets a bundler share its own cached file system.
+An `fs`-compatible object the compiler reads through, providing `readFileSync`, `statSync` and `readdirSync` (and `readFile` for `compileFile`). It may also provide `realpathSync`, which resolves links in installed packages' paths, as in a pnpm store; without it, paths are kept as found. Defaults to Node's `fs`, and lets a bundler share its own cached file system.
 
 ### `cache`
 
@@ -260,13 +260,13 @@ Selects which migration fixes run. When set, only diagnostics whose index is a k
 
 The `taglib` namespace controls how the compiler discovers tags.
 
-| Function               | Details                                                                                      |
-| :--------------------- | :------------------------------------------------------------------------------------------- |
-| `register(id, props)`  | Registers a tag library. Without `props`, loads the `marko.json` at the path or package `id` |
-| `excludeDir(dirname)`  | Stops tag discovery from searching `dirname`                                                 |
-| `excludePackage(name)` | Stops tag discovery from loading tags from the package `name`                                |
-| `buildLookup(dirname)` | Returns the tags available to templates in `dirname`                                         |
-| `clearCaches()`        | Clears cached tag libraries, so changed `marko.json` files are read again                    |
+| Function                                                   | Details                                                                                                                                                                                                                                                                                |
+| :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register(id, props)`                                      | Registers a tag library. Without `props`, loads the `marko.json` at the path or package `id`                                                                                                                                                                                           |
+| `excludeDir(dirname)`                                      | Stops tag discovery from searching `dirname`                                                                                                                                                                                                                                           |
+| `excludePackage(name)`                                     | Stops tag discovery from loading tags from the package `name`                                                                                                                                                                                                                          |
+| `buildLookup(dirname, translator?, onError?, fileSystem?)` | Returns the tags available to templates in `dirname`, read through `fileSystem` (by default the configured [`fileSystem`](#filesystem)) for `translator` (by default the configured one). `onError` receives the error of a tag library that fails to load, instead of it being thrown |
+| `clearCaches()`                                            | Clears cached tag libraries, so lookups built afterward see added or removed tags and edited `marko.json`, `marko-tag.json` and `package.json` files. Clearing the [`cache`](#cache) too recompiles the templates that use them                                                        |
 
 ## Runtime Information
 
