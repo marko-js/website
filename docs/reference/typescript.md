@@ -84,6 +84,27 @@ static function staticFn() {
 </select>
 ```
 
+### Tag Documentation
+
+A doc comment above the exported `Input` documents the template itself. Editors show it when hovering the tag's name wherever the template is used, along with JSDoc tags such as `@deprecated` and `@see`.
+
+```marko
+/**
+ * Shows a rating out of five as filled stars.
+ * @see https://example.com/design/rating
+ */
+export interface Input {
+  /** The rating, from 0 to 5. */
+  value: number;
+}
+
+<span role="img" aria-label=`${input.value} out of 5`>
+  ${"★".repeat(input.value)}${"☆".repeat(5 - input.value)}
+</span>
+```
+
+In a JavaScript template, the comment holding the `Input` [`@typedef`](#jsdoc-support) documents the template the same way.
+
 ## Built-in Marko Types
 
 Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):

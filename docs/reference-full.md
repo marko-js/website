@@ -2946,6 +2946,27 @@ static function staticFn() {
 </select>
 ```
 
+### Tag Documentation
+
+A doc comment above the exported `Input` documents the template itself. Editors show it when hovering the tag's name wherever the template is used, along with JSDoc tags such as `@deprecated` and `@see`.
+
+```marko
+/**
+ * Shows a rating out of five as filled stars.
+ * @see https://example.com/design/rating
+ */
+export interface Input {
+  /** The rating, from 0 to 5. */
+  value: number;
+}
+
+<span role="img" aria-label=`${input.value} out of 5`>
+  ${"★".repeat(input.value)}${"☆".repeat(5 - input.value)}
+</span>
+```
+
+In a JavaScript template, the comment holding the `Input` [`@typedef`](#jsdoc-support) documents the template the same way.
+
 ## Built-in Marko Types
 
 Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
@@ -3951,7 +3972,7 @@ The translator that turns templates into JavaScript, as a module id or a transla
 
 ### `fileSystem`
 
-An `fs`-compatible object the compiler reads through, providing `readFileSync`, `statSync` and `readdirSync` (and `readFile` for `compileFile`). Defaults to Node's `fs`, and lets a bundler share its own cached file system.
+An `fs`-compatible object the compiler reads through, providing `readFileSync`, `statSync` and `readdirSync` (and `readFile` for `compileFile`). It may also provide `realpathSync`, which resolves links in installed packages' paths, as in a pnpm store; without it, paths are kept as found. Defaults to Node's `fs`, and lets a bundler share its own cached file system.
 
 ### `cache`
 
@@ -3977,13 +3998,13 @@ Selects which migration fixes run. When set, only diagnostics whose index is a k
 
 The `taglib` namespace controls how the compiler discovers tags.
 
-| Function               | Details                                                                                      |
-| :--------------------- | :------------------------------------------------------------------------------------------- |
-| `register(id, props)`  | Registers a tag library. Without `props`, loads the `marko.json` at the path or package `id` |
-| `excludeDir(dirname)`  | Stops tag discovery from searching `dirname`                                                 |
-| `excludePackage(name)` | Stops tag discovery from loading tags from the package `name`                                |
-| `buildLookup(dirname)` | Returns the tags available to templates in `dirname`                                         |
-| `clearCaches()`        | Clears cached tag libraries, so changed `marko.json` files are read again                    |
+| Function                                                   | Details                                                                                                                                                                                                                                                                                |
+| :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register(id, props)`                                      | Registers a tag library. Without `props`, loads the `marko.json` at the path or package `id`                                                                                                                                                                                           |
+| `excludeDir(dirname)`                                      | Stops tag discovery from searching `dirname`                                                                                                                                                                                                                                           |
+| `excludePackage(name)`                                     | Stops tag discovery from loading tags from the package `name`                                                                                                                                                                                                                          |
+| `buildLookup(dirname, translator?, onError?, fileSystem?)` | Returns the tags available to templates in `dirname`, read through `fileSystem` (by default the configured [`fileSystem`](#filesystem)) for `translator` (by default the configured one). `onError` receives the error of a tag library that fails to load, instead of it being thrown |
+| `clearCaches()`                                            | Clears cached tag libraries, so lookups built afterward see added or removed tags and edited `marko.json`, `marko-tag.json` and `package.json` files. Clearing the [`cache`](#cache) too recompiles the templates that use them                                                        |
 
 ## Runtime Information
 
