@@ -118,8 +118,6 @@ const consoleInjection = (
 const consoleInjectionScript = (ns: string, color: string, post: string) =>
   `(${consoleInjection.toString()})(console,${JSON.stringify(ns)},${JSON.stringify(color)},(method,args)=>${post}({__mlog:{method,text:(${formatLogArgs.toString()})(args)}}))`;
 
-// A srcdoc frame resolves URLs against the parent page; the base keeps
-// `#hash` links in the preview instead of loading the playground in it.
 const frameBootstrap =
   `<base href="about:srcdoc"><script>{
     const post = (data) => parent.postMessage(data, "*");
