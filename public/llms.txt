@@ -27,6 +27,25 @@ Marko's key features include:
 ## Full Documentation
 - [Reference Documentation](/docs/reference-full.md): Complete reference documentation
 
+## Playground Links
+
+The playground at https://markojs.com/playground runs Marko in the browser and reads its files from the URL hash, so a link is a runnable example.
+
+Write each file as `path=content`, with both parts percent-encoded (`encodeURIComponent`), and join files with `&`. The entry file is `index.marko`, and custom tags go in `tags/` (for example `tags/star-rating.marko`), as in a project:
+
+```
+https://markojs.com/playground#index.marko=%3Clet%2Fcount%3D0%3E%0A%3Cbutton%20onClick()%20%7B%20count%2B%2B%20%7D%3E%24%7Bcount%7D%3C%2Fbutton%3E%0A
+```
+
+Opening the link switches the hash to a shorter compressed form. Share links in the form above, including when editing a compressed link: one mistyped character breaks a compressed link entirely, but changes only one character of code in this form.
+
+To read the files out of a compressed link (everything after `#`), use Node.js:
+
+```js
+const zlib = require("node:zlib");
+const files = JSON.parse(zlib.gunzipSync(Buffer.from(hash, "base64url").subarray(2)).toString());
+```
+
 ## Introduction
 
 - [Getting Started](/docs/introduction/getting-started.md): Quick start guide for new projects
