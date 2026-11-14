@@ -1,0 +1,1 @@
+{"version":3,"file":"404-B1WW-Tnf.js","names":["init"],"sources":["../../.marko-run/404.client-entry.marko"],"sourcesContent":["<!-- use tags -->\n\nimport Layout1 from \"../../src/routes/+layout.marko\";\nimport Page from \"../../src/routes/+404.marko\";\n\n<Layout1>\n\t<Page/>\n</>\n"],"mappings":"A,mCAOAA,EAAK"}
