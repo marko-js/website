@@ -32,6 +32,37 @@ export async function compress(value: string) {
  * the default files rather than leaving the playground blank and silent.
  */
 export async function decodeFiles(hash: string): Promise<File[] | undefined> {
+  // A compressed hash never holds `=` (base64 padding is stripped), so one
+  // that does is the plain form.
+  const files = hash.includes("=")
+    ? readPlainHash(hash)
+    : await readCompressedHash(hash);
+  return files && moveTagsToRoot(files);
+}
+
+/**
+ * Reads `path=content&path=content`, each part percent-encoded, which can be
+ * written without tooling. Unlike a query string, `+` stays a plus.
+ */
+function readPlainHash(hash: string): File[] | undefined {
+  const files: File[] = [];
+  for (const pair of hash.split("&")) {
+    const eq = pair.indexOf("=");
+    if (eq < 1) return undefined;
+    try {
+      files.push({
+        path: decodeURIComponent(pair.slice(0, eq)),
+        content: decodeURIComponent(pair.slice(eq + 1)),
+      });
+    } catch {
+      // A malformed escape such as a lone `%`.
+      return undefined;
+    }
+  }
+  return files;
+}
+
+async function readCompressedHash(hash: string): Promise<File[] | undefined> {
   let json: string | null;
   try {
     json = await decompress(hash);
@@ -47,6 +78,19 @@ export async function decodeFiles(hash: string): Promise<File[] | undefined> {
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Projects keep custom tags in `tags/`, but the playground discovers them at
+ * its root. A file whose root path is taken stays where it is.
+ */
+function moveTagsToRoot(files: File[]): File[] {
+  const paths = new Set(files.map((file) => file.path));
+  return files.map((file) => {
+    if (!file.path.startsWith("tags/")) return file;
+    const path = file.path.slice("tags/".length);
+    return paths.has(path) ? file : { ...file, path };
+  });
 }
 
 function isFileList(value: unknown): value is File[] {
