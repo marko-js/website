@@ -102,14 +102,14 @@ export default defineConfig({
 > [!NOTE]
 > The `urls` option can also be an async function that receives the discovered routes and returns URL strings.
 
-Each crawled page is written to an HTML file named after its path. The [`trailingSlashes`](./vite-plugin.md#trailingslashes) option decides which file answers a request with and without a trailing slash:
+Each crawled page is written to an HTML file named after its path. The [`trailingSlashes`](./vite-plugin.md#trailingslashes) option, `RedirectWithout` by default, decides which file answers a request for a page such as `/about` with and without a trailing slash:
 
-| `trailingSlashes`           | `/about`                                     | `/about/`                                                                         |
-| --------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------- |
-| `RedirectWithout` (default) | `about.html`                                 | A redirect page to `/about` at `about/index.html`, when a page links to `/about/` |
-| `RedirectWith`              | A redirect page to `/about/` at `about.html` | `about/index.html`                                                                |
-| `RewriteWithout`            | `about.html`                                 | Left to the host                                                                  |
-| `RewriteWith`               | Left to the host                             | `about/index.html`                                                                |
+| Value             | Request without a slash         | Request with a slash                                                          |
+| ----------------- | ------------------------------- | ----------------------------------------------------------------------------- |
+| `RedirectWithout` | `about.html`                    | A redirect page at `about/index.html`, written when a page links to `/about/` |
+| `RedirectWith`    | A redirect page at `about.html` | `about/index.html`                                                            |
+| `RewriteWithout`  | `about.html`                    | Left to the host                                                              |
+| `RewriteWith`     | Left to the host                | `about/index.html`                                                            |
 
 The rewrite modes write a page once, under the form they prefer, and the host decides how to answer the other form. File servers resolve `/about/` to `about/index.html`, but not every host resolves `/about` to `about.html`, so `RedirectWith` or `RewriteWith` suits hosts that do not.
 
