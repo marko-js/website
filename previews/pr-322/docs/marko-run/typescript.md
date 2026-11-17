@@ -39,6 +39,7 @@ TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so th
 {
   "include": ["src/**/*", ".marko-run/*"],
   "compilerOptions": {
+    "module": "ESNext",
     "moduleResolution": "bundler"
   }
 }
