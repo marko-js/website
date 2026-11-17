@@ -33,8 +33,19 @@ declare module "@marko/run" {
 
 If a [TSConfig](https://www.typescriptlang.org/tsconfig) file is discovered in the project root, Marko Run will automatically generate a `.d.ts` file which provides more specific types for each middleware, handler, layout, and page. This file is generated at `.marko-run/routes.d.ts` whenever the project is built, including during dev.
 
-> [!NOTE]
-> TypeScript will not include this file by default. Use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) and [add the file in the tsconfig `include`](https://www.typescriptlang.org/tsconfig#include).
+TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so the tsconfig [`include`](https://www.typescriptlang.org/tsconfig#include) lists `.marko-run/*` on its own:
+
+```json
+{
+  "include": ["src/**/*", ".marko-run/*"],
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  }
+}
+```
+
+`"moduleResolution": "bundler"` reads the package `exports` that `@marko/run` publishes its types through. The [starter `tsconfig.json`](../introduction/installation.md#set-up-typescript) already uses `bundler` resolution; add `.marko-run/*` to its `include`. Use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) to check `.marko` files in the editor.
 
 With the generated types, the `Run` namespace is narrowed per routable file:
 
