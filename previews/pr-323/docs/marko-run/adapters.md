@@ -104,7 +104,7 @@ export default defineConfig({
 
 Each crawled page is written to an HTML file named after its path. The [`trailingSlashes`](./vite-plugin.md#trailingslashes) option, `RedirectWithout` by default, decides which file answers a request for a page such as `/about` with and without a trailing slash:
 
-| Value             | Request without a slash         | Request with a slash                                                          |
+| Value             | Without slash                   | With slash                                                                    |
 | ----------------- | ------------------------------- | ----------------------------------------------------------------------------- |
 | `RedirectWithout` | `about.html`                    | A redirect page at `about/index.html`, written when a page links to `/about/` |
 | `RedirectWith`    | A redirect page at `about.html` | `about/index.html`                                                            |
