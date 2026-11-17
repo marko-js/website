@@ -142,7 +142,7 @@ To add TypeScript support to your Marko application, add a `tsconfig.json` file 
 
 ```json
 {
-  "include": ["src/**/*", ".marko-run/*"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "lib": ["dom", "ESNext"],
@@ -160,8 +160,6 @@ To add TypeScript support to your Marko application, add a `tsconfig.json` file 
   }
 }
 ```
-
-The `.marko-run/*` entry loads the [route types Marko Run generates](../marko-run/typescript.md#generated-types). TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so the folder has to be listed on its own.
 
 For type checking Marko files in the CLI, you can install `@marko/type-check` in your project with the following command:
 

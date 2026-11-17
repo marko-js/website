@@ -45,7 +45,7 @@ TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so th
 }
 ```
 
-`"moduleResolution": "bundler"` reads the package `exports` that `@marko/run` publishes its types through. The [starter `tsconfig.json`](../introduction/installation.md#set-up-typescript) already has this `include` entry and resolution. Use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) to check `.marko` files in the editor.
+`"moduleResolution": "bundler"` reads the package `exports` that `@marko/run` publishes its types through. The [starter `tsconfig.json`](../introduction/installation.md#set-up-typescript) already uses `bundler` resolution; add `.marko-run/*` to its `include`. Use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) to check `.marko` files in the editor.
 
 With the generated types, the `Run` namespace is narrowed per routable file:
 
