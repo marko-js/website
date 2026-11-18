@@ -102,6 +102,17 @@ export default defineConfig({
 > [!NOTE]
 > The `urls` option can also be an async function that receives the discovered routes and returns URL strings.
 
+Each crawled page is written to an HTML file named after its path. The [`trailingSlashes`](./vite-plugin.md#trailingslashes) option, `RedirectWithout` by default, decides which file answers each form of a path. For a page at `/about`:
+
+| Value             | Path without trailing slash                              | Path with trailing slash                                                    |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `RedirectWithout` | `about.html`                                             | `about/index.html`, redirecting to `/about`, when a page links to `/about/` |
+| `RedirectWith`    | `about.html`, redirecting to `/about/`                   | `about/index.html`                                                          |
+| `RewriteWithout`  | `about.html`                                             | `about.html`, when the host serves it for `/about/`                         |
+| `RewriteWith`     | `about/index.html`, when the host serves it for `/about` | `about/index.html`                                                          |
+
+File servers resolve `/about/` to `about/index.html`, but not every host resolves `/about` to `about.html`, so `RedirectWith` or `RewriteWith` suits hosts that do not.
+
 ## Netlify
 
 [`@marko/run-adapter-netlify`](https://github.com/marko-js/run/tree/main/packages/adapters/netlify) deploys apps to Netlify Functions or Edge Functions.
