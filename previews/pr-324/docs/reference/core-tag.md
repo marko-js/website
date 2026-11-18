@@ -205,8 +205,6 @@ In this example:
 2. `controlled_value` reflects the value of `value`, but its `valueChange` handler ensures all updates are uppercase
 3. Any changes to `controlled_value` are intercepted, transformed to uppercase, and stored in `value`
 
-Because `valueChange` replaces the assignment, the tag variable only changes when the handler stores the new value.
-
 A more common use case is creating state that can be optionally controlled by a parent component:
 
 ```marko
