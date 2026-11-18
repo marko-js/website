@@ -35,54 +35,79 @@ div
   ,id="hello"
   ,class=["class1", "class2", "class3"]
   ,style={ border: "1px solid red" }
-  -- hello
+  `hello
 ```
 
 ## Text
 
-Two or more hyphens (`--`) followed by whitespace may be used to begin [content](./language.md#tag-content).
+A run of backticks begins [content](./language.md#tag-content). The text is exactly what follows the opening backticks, so any whitespace there is part of it.
 
-If text immediately follows the hyphens, the content is terminated at the end of the line.
+If text immediately follows the backticks, the content is terminated at the end of the line.
 
 ```marko no-format
--- Hello world
-div -- Hello world
+`Hello world
+div `Hello world
 ```
 
-If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedent.
+Closing backticks are optional on a single line. They are recognized at the end of the line, optionally followed by a comment, and they keep trailing whitespace that the end of the line would otherwise drop.
 
 ```marko no-format
---
+div `Hello world` // greeting
+p `Sold by `
+a href="/shop" `Acme`
+```
+
+HTML tags may be used within the text, which keeps inline markup on one line.
+
+```marko no-format
+p `concise mode is <em>sort of</em> concise
+```
+
+If backticks are alone on a line, the content is terminated by a line holding the same number of backticks, indented like the text, or at the next dedent.
+
+```marko no-format
+`
 This is
 a bunch of
 text at the
 root of
 the tag
---
+`
 details
-  --
+  `
   since this is normal tag content,
   regular <strong>HTML Mode</strong>
   tags may be used freely.
-  --
-  summary --
+  `
+  summary `
     This content is
     implicitly closed
 ```
 
-> [!TIP]
-> There may be _more_ than two hyphens if necessary, but the number hyphens in the open and close must match.
+A longer run of backticks allows the text to contain backticks. A closing run must be the same length as the opening run.
+
+```marko no-format
+p ``Wrap code in `backticks` like this
+```
+
+> [!NOTE]
+> Backticks that follow `=` or an operator remain template literals. Text begins at a backtick that follows whitespace where another attribute could start.
 >
 > ```marko no-format
-> pre
->   ---------------------
->      ---   ---   ---
->    --- -- -- ---  ---
->   ---   ---   ---  ---
->    ---       ---  ---
->     ---     ---  ---
->   ---------------------
+> a href=`/orders/${id}` `View order
 > ```
+
+### Hyphens
+
+Two or more hyphens (`--`) are an older spelling of the same syntax and continue to work. Text may follow on the same line, or the hyphens may be alone on a line and closed by the same number of hyphens, indented like the text, or at the next dedent.
+
+```marko no-format
+div -- Hello world
+details
+  --
+  Some <strong>text</strong>
+  --
+```
 
 ### Root level text
 
@@ -99,19 +124,19 @@ The output is:
 <Hello World></Hello><Welcome to Marko></Welcome>
 ```
 
-The proper way to include root level text is with [code fences](#text).
+The proper way to include root level [text](#text) is with backticks.
 
 ```marko no-format
--- Welcome to Marko
+`Welcome to Marko
 ```
 
 <!--
 
-The proper way to include root level text is with [string literals or code fences](#text).
+The proper way to include root level text is with [string literals or backticks](#text).
 
 ```marko no-format
 "Hello World"
--- Welcome to Marko
+`Welcome to Marko
 ```
 
 ## Line Termination
@@ -145,7 +170,7 @@ div
 >
 > ```
 > div.shell > div.wrapper > p
->   -- This text belongs to the paragraph
+>   `This text belongs to the paragraph
 > ```
 
 -->

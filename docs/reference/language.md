@@ -14,7 +14,7 @@ The language makes HTML more strict while extending it with control flow and rea
 &lt;/&gt;</code></pre>
 <pre class="concise concise-ts"><code><a href="#statements">import "...";</a>
 <a href="#tags">tag</a>|...<a href="#tag-parameters">params</a>|/<a href="#tag-variables">var</a> ...<a href="#attributes">attrs</a>
-  -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
+  `<a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
   <a href="#attribute-tags">@attr-tag</a></code></pre>
 </div>
 
@@ -499,6 +499,14 @@ This example renders:
 
 > [!WARNING]
 > A line break between two tags leaves no space between them. Keep a separating space on the same line as both tags.
+
+In [concise mode](./concise-syntax.md#text), text keeps all of the whitespace between its backticks, so a separating space is written inside them.
+
+```marko no-format
+p
+  `Build finished in `
+  strong `12s`
+```
 
 Whitespace is preserved inside [`<pre>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre) and inside the tags whose body is text rather than markup: [`<textarea>`](./native-tag.md#textarea), [`<script>`](./core-tag.md#script), [`<style>`](./core-tag.md#style), [`<html-script>` and `<html-style>`](./native-tag.md#enhanced-tags).
 
