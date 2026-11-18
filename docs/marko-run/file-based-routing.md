@@ -1,13 +1,13 @@
 # File-based Routing
 
-Marko Run discovers routes from the file system. The directory structure under the **routes directory**, `./src/routes`, determines the paths an application serves. A small set of `+` prefixed file names determines what happens at each path.
+Marko Run discovers routes from the file system. The directory structure under the **routes directory**, `./src/routes`, determines the paths an application serves. A small set of `+` prefixed file names determines what happens at each path, and `@` prefixed partials supply content to the layouts and pages around them.
 
 > [!NOTE]
-> The `+` prefix makes routable files explicit. Anything without the prefix is ignored by the router, so components, tests, stories, and utilities can be colocated alongside the pages that use them without accidentally being served.
+> The `+` and `@` prefixes make routable files explicit. Anything without a prefix is ignored by the router, so components, tests, stories, and utilities can be colocated alongside the pages that use them without accidentally being served.
 
 ## Routable Files
 
-The router only recognizes certain filenames, all prefixed with `+`. The following filenames will be discovered in any directory inside the application's routes directory.
+The router only recognizes certain filenames, prefixed with `+` or `@`. The following filenames will be discovered in any directory inside the application's routes directory.
 
 ### `+page.marko`
 
@@ -17,7 +17,7 @@ These files establish a route at the current directory path, which will be serve
 
 These files provide a **layout component**, which will wrap all nested layouts and pages.
 
-Layouts are like any other Marko component, with no extra constraints. Each layout receives a `content` input which refers to the nested page or layout being rendered. The [request context](./runtime.md#context) is available as [`$global`](../reference/language.md#global).
+Layouts are like any other Marko component, with no extra constraints. Each layout receives a `content` input which refers to the nested page or layout being rendered, along with any [partials](#partials) that apply to the route. The [request context](./runtime.md#context) is available as [`$global`](../reference/language.md#global).
 
 ```marko
 export interface Input {
@@ -153,11 +153,61 @@ and for all other methods, including `PUT`, it will be the base object
 }
 ```
 
+### `@<name>.marko`
+
+These files provide a **partial**, a template that layouts and pages receive on `input` under the partial's name. A partial does not establish a route. See [Partials](#partials).
+
+## Partials
+
+Layouts wrap everything below them, which suits page structure. Content that changes per section, such as a sidebar or a set of tabs, is a different problem: the layout that owns the slot sits above the sections that fill it. A partial solves this by letting a file deeper in the routes directory supply content to a layout above it.
+
+A partial is any template whose name starts with `@`. The name is everything after the `@` up to the first period, so `@sidebar.marko` and `@sidebar.guides.marko` both provide a partial named `sidebar`. When a route renders, every layout and the page of that route receives each partial that applies to it as an attribute tag on `input`, keyed by the partial's name. Rendering one works the same way as rendering `content`.
+
+```text
+routes/
+  +layout.marko
+  +page.marko
+  @sidebar.marko
+  guides/
+    +page.marko
+    @sidebar.marko
+```
+
+```marko
+/* +layout.marko */
+<aside><${input.sidebar.content}/></aside>
+<main><${input.content}/></main>
+```
+
+A partial applies to the routes established in its own directory and in every directory below it. In the example above, the root `@sidebar.marko` applies to `/` and `/guides`, while `guides/@sidebar.marko` applies only to `/guides`. Because partials flow to every layout of the route, the root layout renders the guides sidebar for `/guides` without any change to the layout itself.
+
+Partials render as part of the same request as the page, so the [request context](./runtime.md#context) is available as [`$global`](../reference/language.md#global).
+
+The names `content`, `renderBody`, and `error` are reserved because they already exist on a template's `input`.
+
+### Overrides
+
+When two partials share a name, the one deeper in the routes directory overrides the other for every route below it. The overriding partial receives the partial it replaced as its own `input.<name>`, so it can extend that content or leave it out.
+
+```marko
+/* guides/@sidebar.marko */
+<${input.sidebar.content}/>
+<nav>
+  <a href="/guides/install">Install</a>
+  <a href="/guides/deploy">Deploy</a>
+</nav>
+```
+
+For `/guides`, the layout's `input.sidebar` is now this template, which renders the root sidebar first and adds the guides navigation after it. An override receives only the partial it replaced. The route's other partials are not passed to it.
+
+> [!NOTE]
+> Partial names are used exactly as written and are case-sensitive. Two partials at the same level whose names differ only by case, and an override whose casing differs from the partial it overrides, are rejected at build time because they would collide on a case-insensitive file system.
+
 ## Special Files
 
 In addition to the files above, which can be defined in any directory under the routes directory, some special files can only be defined at its top level.
 
-These special pages are subject to a root layout file (`src/routes/+layout.marko` in the default configuration).
+These special pages are subject to a root layout file (`src/routes/+layout.marko` in the default configuration) and receive any partials defined at the top level of the routes directory.
 
 ### `+404.marko`
 
@@ -200,8 +250,10 @@ When the path `/about` is requested, the routable files execute in the following
 3. Layouts from root-most to leaf-most
 4. Page
 
+Partials do not run on their own. They render when a layout or page renders them.
+
 > [!NOTE]
-> Layouts and the page are combined at build time into a single component, so nested layouts add no runtime overhead.
+> Layouts, partials, and the page are combined at build time into a single component, so nested layouts and partials add no runtime overhead.
 
 ## Path Structure
 
@@ -260,7 +312,7 @@ Examples:
 
 Flat routes define paths without needing additional directories. Instead, the directory structure can be defined either in the file or directory name. This allows routes to be decoupled from the directory structure or co-located as needed. To define a flat route, use periods (`.`) to delineate each path segment. This behaves exactly like creating a new directory, and each segment will be parsed using the rules described above for static, dynamic, and pathless routes.
 
-Flat route syntax can be used for both directories and routable files (e.g. pages, handlers, middleware). For these files, anything preceding the plus (`+`) will be treated as the flat route.
+Flat route syntax can be used for both directories and routable files (e.g. pages, handlers, middleware, partials). For these files, anything preceding the plus (`+`) or at sign (`@`) will be treated as the flat route.
 
 For example, to define a page at `/projects/$projectId/members` with a root layout and a project layout:
 
