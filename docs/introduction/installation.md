@@ -46,10 +46,10 @@ If you prefer to create your own application structure, you can set up your proj
 
    Let's install the dependencies required for Marko.
 
-   First, install `marko` 6 as your dependency.
+   First, install `marko` as your dependency.
 
    ```bash
-   npm install marko@next
+   npm install marko
    ```
 
    Next, install Vite and the Marko plugin as development dependencies using the npm `-D` flag:
