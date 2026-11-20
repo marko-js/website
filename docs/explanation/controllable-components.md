@@ -184,6 +184,12 @@ This component now has two behaviors, depending on the `<let>` tag's `valueChang
 <counter/>
 ```
 
+Since `value=` is an ordinary expression, it can also supply a default for when the parent omits `count`:
+
+```marko
+<let/count=input.count ?? 0 valueChange=input.countChange>
+```
+
 The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) accommodates both sides of this exchange, as it acts differently for identifiers and member expressions.
 
 ```marko
