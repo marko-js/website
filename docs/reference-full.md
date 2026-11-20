@@ -2095,7 +2095,7 @@ All three render the same HTML:
 
 Each key of an object is a class name, included when its value is truthy. Every falsy value drops the class. Objects are read one level deep: a value is only tested for truthiness, never traversed.
 
-Arrays may be nested to any depth and spread, and their falsy entries are skipped. A toggled class may not repeat a name the rest of the value writes: Marko updates it on its own, so `class=["a", { a: on }]` is an error. When nothing remains the attribute is omitted entirely.
+Arrays may be nested to any depth and spread, and their falsy entries are skipped. A toggled class may not repeat a name the rest of the value writes: Marko updates it on its own, so `class=["a", { a: on }]` is an error.
 
 ```marko
 <let/query="">
@@ -2149,7 +2149,7 @@ A declaration is dropped when its value is `false`, `null`, `undefined` or an em
 > <div style=["display:block", isError && { color: "red" }]/>
 > ```
 
-Arrays nest and spread exactly as they do for [`class=`](#class). Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
+Arrays nest and spread exactly as they do for [`class=`](#class). A property may appear only once in a `style` value, since Marko may update each one on its own, so `style=["color:blue", { color: accent }]` is an error. Custom properties are written out like any other key, though the TypeScript types require [registering](./typescript.md#registering-css-properties-eg-for-custom-properties) each one.
 
 ### `content=`
 
