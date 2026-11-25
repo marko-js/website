@@ -10,7 +10,7 @@ Marko's compiler applies streaming, fine-grained bundling, and compile-time reac
 
 ## Production Mode
 
-Ensure production builds compile with `NODE_ENV=production` (or `optimize: true` in [`@marko/compiler`](../reference/compiler.md#optimize)). Production mode switches templates from the debug runtime to the optimized runtime, drops `MARKO_DEBUG` checks, and shortens internal template and scope identifiers.
+Ensure production builds compile with `NODE_ENV=production` (or `optimize: true` in [`@marko/compiler`](../reference/compiler.md#optimize)). Production mode switches templates from the debug runtime to the optimized runtime, strips debug checks, and shortens internal template and scope identifiers.
 
 ## Promise Passing
 

@@ -158,7 +158,12 @@ Reassigning `count` updates every expression that reads it.
 > <p>Input Count: ${input.initialCount}</p>
 > ```
 
-Under TypeScript's `strictNullChecks`, a `<let>` initialized to `null` keeps the type `null` without widening; supply a [type argument or assertion](./typescript.md#tag-type-arguments) such as `<let<string | null>/selected=null>` or `<let/selected=null as string | null>`.
+Under TypeScript's `strictNullChecks`, a `<let>` initialized to `null` keeps the type `null` without widening. Supply a [type argument or assertion](./typescript.md#tag-type-arguments):
+
+```marko
+<let<string | null>/selected=null>
+<let/selected=null as string | null>
+```
 
 ### Controllable Let
 

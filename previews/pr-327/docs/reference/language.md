@@ -376,7 +376,11 @@ export interface Input {
 <card>Content</card>
 ```
 
-[Native tags](./native-tag.md#content) also accept `content=` as an attribute, so the wrapper above can be written `<div class="card" content=input.content/>`.
+[Native tags](./native-tag.md#content) also accept `content=` as an attribute, so the wrapper above can be written:
+
+```marko
+<div class="card" content=input.content/>
+```
 
 ### Dynamic Text
 
