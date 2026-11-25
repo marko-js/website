@@ -1,22 +1,17 @@
 # Reactivity Reference
 
-Marko's goal is to make it easy to represent performant experiences with rich client interactions. This is enabled through its **reactivity system**. The reactive system is how Marko determines what needs to update and when.
-
-The core of Marko's reactive system is [the `<let>` tag](./core-tag.md#let).
+Marko's reactivity system tracks dependencies between state and DOM output at compile time, updating only the affected nodes when values change. Mutable state starts with [`<let>`](./core-tag.md#let).
 
 ## Reactive Variables
 
-In Marko, [Tag Variables](./language.md#tag-variables), [Tag Parameters](./language.md#tag-parameters), and [`input`](./language.md#input) are all reactive. This means they are tracked by the Marko compiler and when these values are caused to update any dependent [render expressions](#render-expressions) are also updated.
+[Tag variables](./language.md#tag-variables), [tag parameters](./language.md#tag-parameters), and [`input`](./language.md#input) are reactive. Writable state comes from `<let>` and assignable [`<return>`](./core-tag.md#assignable-return-value) tags; other tag variables (`<const>`, `<id>`, `<define>`, element references) are derived or read-only. [`$global`](./language.md#global) is not reactive.
 
 ## Render Expressions
 
-Any expression within a `.marko` template that references a [reactive variable](#reactive-variables) is considered reactive and will be updated alongside that variable.
-
-These reactive expressions may exist throughout the template in [attributes](./language.md#attributes), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), and [script content](./core-tag.md#script).
+Any expression in a template that reads a [reactive variable](#reactive-variables) re-evaluates when that variable changes. Reactive expressions appear in [attributes](./language.md#attributes), [tag arguments](./language.md#tag-arguments), [dynamic text](./language.md#dynamic-text), [dynamic tag names](./language.md#dynamic-tags), [`<style>` dynamic values](./core-tag.md#dynamic-values), [`<html-comment>`](./core-tag.md#html-comment), and [`<script>`](./core-tag.md#script) bodies.
 
 > [!NOTE]
-> All JavaScript expressions within the Marko template may be reactive with the exception of
-> [static statements](./language.md#static) (including [`import`](./language.md#import), [`export`](./language.md#export), [`static`](./language.md#static), [`server` and `client`](./language.md#server-and-client)) which are evaluated _once_ when the template is loaded.
+> Module-level [statements](./language.md#statements) (`import`, `export`, `static`, `server`, and `client`) run once when the template module loads and are outside the reactive graph.
 
 ```marko
 <let/count=0>
@@ -26,31 +21,31 @@ These reactive expressions may exist throughout the template in [attributes](./l
 </button>
 ```
 
-Here, a `count` Tag Variable is mutated by a button click. Because the text content of the button references `count`, it is automatically kept in sync with the new value.
+Clicking the button reassigns `count`, and the button text updates automatically.
 
 > [!CAUTION]
-> In some cases Marko may cause some expressions to evaluate together. This is why [render expressions](#render-expressions) should be pure.
+> The compiler may group or reorder render expressions into shared update functions, so render expressions must be pure.
 
 <!---->
 
 > [!TIP]
-> Marko is a **compiled language**, and its reactive graph is discovered at compile time instead of during runtime. This is in contrast with many of the other leading approaches, such as [Signals in SolidJS](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity) and [Hooks in React](https://react.dev/reference/react/hooks).
+> Marko resolves its reactive dependency graph at compile time rather than tracking subscriptions at runtime, generating direct DOM updates for each state variable.
 
 ## Scheduling Updates
 
-Marko automatically batches work to ensure optimal performance. Any time a [reactive variable](#reactive-variables) is changed, its update is queued to ensure that multiple changes will be applied efficiently together.
+Marko compares updates by reference equality (`===`) and batches changes into an update queue flushed on the next [microtask](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide).
 
-This update queue is typically scheduled after a [microtask](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide).
+Updates scheduled after the microtask flush but before the browser paints are deferred to the next animation frame. This ensures:
 
-If additional updates are scheduled after the queue is consumed but _before the update is painted_, they are deferred until the next frame. This accomplishes a few things:
+- Content ready to paint is not blocked
+- Reactive feedback loops are throttled to at most one cycle per frame
+- Updates in background tabs pause until the document is visible
 
-- Content ready to display to the user is not blocked.
-- It is not possible to lock up the application in an infinite update loop.
-- The update loop can be used to power animations (although CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) & [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)/ JS [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) are preferred in most cases).
+For visual motion, prefer CSS [Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation), CSS [Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition), or the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API).
 
 ### Stale Derived Values
 
-Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immediately, so the tag variable reads back the new value on the next line. Everything derived from it, including [`<const>`](./core-tag.md#const) tag variables and the rendered output, is recomputed only when the queue is flushed, so for the remainder of the handler those values are still the ones computed from the previous state.
+Assigning to an uncontrolled [`<let>`](./core-tag.md#let) writes the new value into scope immediately, so subsequent lines in the same handler read the updated value. (A [controllable `<let>`](./core-tag.md#controllable-let) invokes its `valueChange` handler instead, updating only when the owner updates and flushes.) Derived values such as [`<const>`](./core-tag.md#const) and rendered DOM nodes recompute when the queue flushes, so they still hold the previous state for the rest of the handler:
 
 ```marko
 <let/quantity=1>
@@ -59,8 +54,10 @@ Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immedia
 <button onClick() {
   quantity++;
 
-  // `quantity` is already the new value, so the reported total is
-  // recomputed from it rather than read from `subtotal`.
+  // ❌ `subtotal` still holds the previous value until the update queue flushes
+  console.log(subtotal);
+
+  // ✅ `quantity` holds the new value; compute the total from it directly
   input.onQuantityChange(quantity, quantity * input.unitPrice);
 }>
   Add one
@@ -70,4 +67,4 @@ Assigning a [`<let>`](./core-tag.md#let) writes the new value into scope immedia
 ```
 
 > [!WARNING]
-> Passing `subtotal` here would report the total for the previous `quantity`. Reading the rendered total back out of the DOM has the same problem, since the DOM has not been updated yet.
+> Reading `subtotal` or the DOM inside the handler after `quantity++` returns the value from the previous render because the update queue has not flushed yet.

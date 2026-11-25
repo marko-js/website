@@ -1,52 +1,52 @@
 # CLI
 
-The `marko-run` CLI develops, builds, and previews Marko Run applications. It is installed with `@marko/run` and run with `npm exec marko-run` or from package.json scripts.
+The `marko-run` CLI develops, builds, and previews Marko Run applications. Run it with `npm exec marko-run` or from `package.json` scripts.
 
-The CLI has three commands: `dev`, `build`, and `preview`. All commands accept these options:
+All commands (`dev`, `build`, and `preview`) accept an optional `[entry]` server/runtime entry file and these shared options:
 
-| Option           | Description                                                                                                                      |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `-c`, `--config` | Path to a Vite config file (by default, looks for a `vite.config` file with a `.js`, `.cjs`, `.mjs`, `.ts`, or `.mts` extension) |
-| `-e`, `--env`    | Path to a dotenv file                                                                                                            |
+| Option           | Description                                                                                    |
+| :--------------- | :--------------------------------------------------------------------------------------------- |
+| `-c`, `--config` | Path to a Vite config file (auto-discovers `vite.config.{js,cjs,mjs,ts,mts}` by default)       |
+| `-e`, `--env`    | Path to a dotenv file                                                                          |
 
 ## `dev`
 
-Starts a development server in watch mode. This is the default command, so both of the following are equivalent:
+Starts the development server in watch mode (default command when omitted):
 
 ```sh
 npm exec marko-run
-npm exec marko-run dev
+npm exec marko-run dev [entry]
 ```
 
-| Option         | Description                                                                                                          |
-| -------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `-p`, `--port` | Port to listen on (defaults: `server.port` then `preview.port` in the Vite config, the `PORT` env variable, or 3000) |
+| Option         | Description                                                                   |
+| :------------- | :---------------------------------------------------------------------------- |
+| `-p`, `--port` | Port to listen on (defaults to Vite `server.port`, `PORT` env var, or `3000`) |
 
 ## `build`
 
-Creates a production build.
+Creates a production build:
 
 ```sh
-npm exec marko-run build
+npm exec marko-run build [entry]
 ```
 
-| Option           | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
-| `-o`, `--output` | Directory to write built files (default: `build.outDir` in the Vite config) |
+| Option           | Description                                                           |
+| :--------------- | :-------------------------------------------------------------------- |
+| `-o`, `--output` | Output directory (defaults to Vite `build.outDir`, or `dist`)         |
 
 ## `preview`
 
-Creates a production build and starts a production-like server.
+Builds the production output and starts a local preview server:
 
 ```sh
-npm exec marko-run preview
+npm exec marko-run preview [entry]
 ```
 
-| Option           | Description                                                                                                                         |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `-o`, `--output` | Directory to serve files from, and write built files to (default: `build.outDir` in the Vite config)                                |
-| `-p`, `--port`   | Port the server should listen on (defaults: `preview.port` then `server.port` in the Vite config, the `PORT` env variable, or 3000) |
-| `-f`, `--file`   | Output file to start                                                                                                                |
+| Option           | Description                                                                      |
+| :--------------- | :------------------------------------------------------------------------------- |
+| `-o`, `--output` | Output directory to build and serve (defaults to Vite `build.outDir`, or `dist`) |
+| `-p`, `--port`   | Port to listen on (defaults to Vite `preview.port`, `PORT` env var, or `3000`)   |
+| `-f`, `--file`   | Built entry file to start (defaults to `index.mjs` or `index.js` in output dir)  |
 
 ## Next Steps
 

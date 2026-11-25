@@ -1,12 +1,12 @@
 # Styling
 
-This section explains some different ways to style HTML within Marko. From simple inline styles to powerful techniques like CSS Modules for organized and maintainable stylesheets.
+Marko integrates CSS directly into components through inline `<style>` tags, auto-discovered stylesheets, CSS Modules, and explicit imports.
 
 ## Inline Styles
 
-Marko [enhances the HTML `<style>` tag](../reference/core-tag.md#style) to be processed and optimized by the [bundler used in the project](TODO). A template may specify any number of `<style>` tags.
+Marko [enhances `<style>`](../reference/core-tag.md#style) so styles are extracted, deduplicated, and optimized by the project's [bundler](../introduction/integrations.md#bundlers). A template may include any number of `<style>` tags.
 
-By default, all styles defined in the template are **globally scoped**. As such, many Marko projects use patterns like [BEM](https://getbem.com/introduction/) to avoid name conflicts.
+By default, styles are **globally scoped**. Projects using global styles often follow a naming convention such as [BEM](https://getbem.com/introduction/) to prevent collisions.
 
 ```marko
 <style>
@@ -19,7 +19,7 @@ By default, all styles defined in the template are **globally scoped**. As such,
 <div class="fancy">Hello!</div>
 ```
 
-The `<style>` may include a file extension to enable css preprocessors such as [scss](https://sass-lang.com/documentation/syntax/#scss) and [less](https://lesscss.org/).
+Append a file extension to `<style>` to use CSS preprocessors such as [SCSS](https://sass-lang.com/documentation/syntax/#scss) or [Less](https://lesscss.org/):
 
 ```marko
 <style.scss>
@@ -45,23 +45,21 @@ The `<style>` may include a file extension to enable css preprocessors such as [
 
 ### Inline CSS Modules
 
-If the `<style>` tag has a [Tag Variable](../reference/language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+Adding a [tag variable](../reference/language.md#tag-variables) to `<style>` compiles it as a [CSS Module](https://github.com/css-modules/css-modules), scoping class names automatically and exposing the class map as an object:
 
 ```marko
 <style/styles>
-  .foo { border: 1px solid red }
-  .bar { background: green }
+  .foo { border: 1px solid red; }
+  .bar { background: green; }
 </style>
 
-<div class=styles.foo />
-<div class=[styles.foo, styles.bar] />
-<div class={ [styles.bar]: true } />
-<div.${styles.foo} />
+<div class=styles.foo/>
+<div class=[styles.foo, styles.bar]/>
+<div class={ [styles.bar]: true }/>
+<div.${styles.foo}/>
 ```
 
-This approach allows for scoping of CSS class names without needing to follow naming conventions such as [BEM](https://getbem.com/introduction/).
-
-You may still provide a custom file extension to enable to use of preprocessors.
+File extensions combine with CSS Modules for preprocessor support:
 
 ```marko
 <style.scss/styles>
@@ -77,7 +75,7 @@ You may still provide a custom file extension to enable to use of preprocessors.
 
 ### Dynamic Values
 
-A `<style>` tag may contain dynamic values, written as `${...}` interpolations, keeping state-driven styling next to the rest of the stylesheet.
+A `<style>` tag accepts `${...}` interpolations so reactive values can live alongside static rules:
 
 ```marko
 <let/hue=200>
@@ -94,14 +92,14 @@ A `<style>` tag may contain dynamic values, written as `${...}` interpolations, 
 <div class="swatch"/>
 ```
 
-The stylesheet is still extracted and bundled once. Each interpolation compiles to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) whose value Marko keeps up to date as state changes.
+The stylesheet is still extracted and bundled once. Each interpolation compiles to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) updated by Marko as state changes.
 
 > [!NOTE]
-> Dynamic values are only supported where css expects a declaration value, and apply to elements rendered after the `<style>` tag. See the [`<style>` reference](../reference/core-tag.md#dynamic-values) for details.
+> Dynamic values work only in CSS declaration value positions and apply to subsequent sibling elements and their descendants. See [`<style>` Dynamic Values](../reference/core-tag.md#dynamic-values) for details.
 
 ### Per-Item Values
 
-Because dynamic values apply to the elements after each `<style>` tag, placing one inside a [`<for>`](../reference/core-tag.md#for) gives every iteration its own values. Each pass renders its own `<style>` just before that item's markup, so the interpolations resolve per item.
+Because dynamic values apply to the siblings following each `<style>` tag, placing one inside a [`<for>`](../reference/core-tag.md#for) scopes the interpolated values to each iteration:
 
 ```marko
 <nav class="brands">
@@ -117,11 +115,11 @@ Because dynamic values apply to the elements after each `<style>` tag, placing o
 ```
 
 > [!WARNING]
-> Each iteration renders a real `<style>` element among the items, so positional selectors like `:nth-child` count those elements and miss their targets. Use [`:nth-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type), which counts only elements of the same tag and skips the interleaved `<style>` tags.
+> Each iteration renders a `<style>` element among the items, so `:nth-child` counts those elements and misses its targets. Use [`:nth-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type) instead, which counts only elements of the same tag.
 
 ## Auto-Discovered Styles
 
-Styling files adjacent a [custom tag are automatically discovered](../reference/custom-tag.md#supporting-files). These files are imported and processed the same as [inline styles](#inline-styles).
+A stylesheet adjacent to any `.marko` template is [discovered automatically](../reference/custom-tag.md#supporting-files) and bundled identically to an [inline `<style>`](#inline-styles). Name it `style.<ext>` next to `index.marko`, or `<name>.style.<ext>` next to `<name>.marko`.
 
 ```css
 /* style.css */
@@ -136,11 +134,11 @@ Styling files adjacent a [custom tag are automatically discovered](../reference/
 ```
 
 > [!TIP]
-> When a template is becoming too large it can be helpful to pull its styling into an associated style file such as this.
+> Moving styles into an adjacent file keeps large templates concise without adding explicit imports.
 
 ## Imported Styles
 
-Styles may also be [imported](../reference/language.md#import).
+Stylesheets can also be [imported](../reference/language.md#import) explicitly, which is useful when sharing styles across templates:
 
 ```css
 /* fancy.css */
@@ -156,12 +154,9 @@ import "./fancy.css";
 <div class="fancy">Hello!</div>
 ```
 
-> [!TIP]
-> Although generally [inline](#inline-styles) or [auto-discovered](#auto-discovered-styles) styles are preferred, importing styles can be helpful when sharing across templates.
-
 ### Imported CSS Modules
 
-[CSS Module files](https://github.com/css-modules/css-modules) may also be imported.
+External [CSS Module](https://github.com/css-modules/css-modules) files (`*.module.css`) export their class map as the default export:
 
 ```css
 /* something.module.css */
@@ -172,9 +167,10 @@ import "./fancy.css";
 
 ```marko
 /* index.marko */
-import * as styles from "./something.module.css";
+import styles from "./something.module.css";
+
 <div class=styles.fancy/>
 ```
 
-> [!CAUTION]
-> Since most bundlers are configured by default to support css modules for `*.module.css` files, this should work out of the box. If it is not supported by a bundler there is almost certainly a plugin.
+> [!NOTE]
+> Vite and most modern bundlers support `*.module.css` out of the box.

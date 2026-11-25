@@ -1,15 +1,15 @@
 # Data Loading
 
-Handlers and middleware pass data to everything downstream, including pages and layouts, by calling `next` with an object. This is the primary way a page gets data that requires server-side work: fetching from a database, reading a session, or calling another service.
+Handlers and middleware pass server-side data (database queries, sessions, API calls) downstream to nested handlers, layouts, and pages by passing an object to `next(data)`.
 
 ## Passing Data
 
-Data passed to `next` is shallowly merged into `ctx.data`, which templates access as `$global.data`:
+Values passed to `next` are shallowly merged into `ctx.data`, exposed in templates as `$global.data`:
 
 ```ts
 /* +handler.ts */
 export const GET = Run.GET((ctx, next) => {
-  return next({ user: loadUser(ctx.params.id) }); // pass the promise itself
+  return next({ user: loadUser(ctx.params.id) }); // pass the promise directly
 });
 ```
 
@@ -20,58 +20,51 @@ export const GET = Run.GET((ctx, next) => {
 </await>
 ```
 
-Each middleware and handler in the chain contributes to the same object. A root middleware can load data shared by every page, like the current session. Handlers then add data specific to their route.
-
-Note that `ctx.data` is populated per route and verb. With [generated types](./typescript.md#generated-types), each file sees the routes and verbs it actually participates in, so the type of `$global.data` in a page or layout reflects exactly the middleware and handlers that run before it.
+Root middleware can load shared data (such as the current session) while route handlers add route-specific entries. With [generated types](./typescript.md#generated-types), `$global.data` is typed per route and verb based on the middleware and handlers that actually execute before the template.
 
 > [!WARNING]
-> The merge is shallow. A handler that passes `{ user: ... }` replaces any `user` value provided upstream instead of merging into it.
+> Merging is shallow: passing `{ user: ... }` replaces any upstream `user` entry rather than deep-merging it.
 
 ## Promises over Awaiting
 
-Notice that the handler above does not `await` the data. Passing the promise and unwrapping it in the template with [`<await>`](../reference/core-tag.md#await) lets the response start [streaming](../explanation/streaming.md) immediately. Static markup, the document `<head>`, and anything else that does not depend on the data reach the browser while the data is still loading. Each `<await>` section then flushes as its promise resolves.
-
-Independent data sources are best kept as separate promises. Two `<await>` sections resolve independently, while awaiting both in a handler serializes them behind one another.
+Passing promises through `next` and unwrapping them in templates with [`<await>`](../reference/core-tag.md#await) lets responses [stream](../explanation/streaming.md) immediately. Static markup and `<head>` assets reach the browser while data loads, and independent promises resolve in parallel rather than serially.
 
 > [!WARNING]
-> Avoid awaiting data in a `GET` handler before calling `next`. Every `await` before `next` holds back the entire response until that data resolves. This forfeits streaming and delays even the parts of the page that never needed the data. Pass the promise through `next` and let the template await it instead.
+> Awaiting data in a `GET` handler before calling `next()` blocks the entire response until that promise settles, forfeiting streaming for the whole page.
 
 ## Rendering and Responses
 
-The `next` function renders the page for `GET`, `POST`, and `QUERY` requests where applicable, returns a `200` response for `HEAD` requests, or a `204` response when there is no page. A handler decides what to do with that result:
+`next()` renders the page for `GET`, `POST`, and `QUERY` requests when a `+page.marko` exists, returns `200` (empty body) for `HEAD` when a page exists, and returns `204` when there is no page or for other verbs. Handlers can short-circuit with their own response before calling `next()`:
 
 ```ts
 export const GET = Run.GET((ctx, next) => {
   if (!ctx.url.searchParams.has("beta")) {
-    return ctx.redirect("/request-access"); // never renders the page
+    return ctx.redirect("/request-access");
   }
   return next({ features: loadBetaFeatures() });
 });
 ```
 
 > [!NOTE]
-> A handler that always returns its own `Response` never renders the page, so its verb is excluded from the template's typed context.
+> A handler that always returns its own `Response` never renders the page, so its verb is excluded from the template's generated context union.
 
 ## Forms
 
-When a route has both a page and a `POST` handler, the handler calling `next` renders the page, so form submissions can be answered with HTML directly. A `POST` handler has two ways to respond, and they serve different purposes:
+When a route has both a `+page.marko` and a `POST` handler, respond with one of two patterns depending on the outcome:
 
-- On success, when the user should move to a new screen or experience, respond with a [redirect](./runtime.md#redirect). This is the [Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get) pattern. The browser lands on an ordinary `GET` page, so refreshing does not resubmit the form and the URL can be shared or revisited safely.
-- Return `next()` to render the page from the `POST` itself. This is useful for rendering validation errors while keeping the submitted form intact, or for an ephemeral page that has no meaning outside this submission.
+- On success, call [`ctx.redirect(url, 303)`](./runtime.md#redirect) ([Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get)) so the browser lands on a `GET` page that can be refreshed, bookmarked, or shared safely.
+- For validation errors or ephemeral responses, return `next({ issues })` to re-render the page inline with feedback while preserving form context.
 
 ```ts
 /* +handler.ts */
-export const POST = Run.POST(
-  { form: { validator: parseSignup } },
-  async (ctx, next) => {
-    const [signup, issues] = await ctx.body;
-    if (issues) {
-      return next({ issues }); // re-render the form with errors
-    }
-    await saveSignup(signup);
-    return ctx.redirect("/thanks"); // Post/Redirect/Get on success
-  },
-);
+export const POST = Run.POST({ form: parseSignup }, async (ctx, next) => {
+  const [signup, issues] = await ctx.body;
+  if (issues) {
+    return next({ issues }); // re-render form with errors
+  }
+  await saveSignup(signup);
+  return ctx.redirect("/thanks", 303); // Post/Redirect/Get on success
+});
 ```
 
 ```marko
@@ -86,7 +79,7 @@ export const POST = Run.POST(
 ```
 
 > [!WARNING]
-> A page rendered by returning `next()` from a `POST` is still a `POST` response. Refreshing it prompts the browser to resubmit the request, and the URL cannot be bookmarked or shared. Reserve it for error re-renders and ephemeral pages. Redirect whenever the submission succeeds and the user moves on.
+> Returning `next()` from a `POST` produces a `POST` response, so refreshing the browser prompts to resubmit. Always redirect after a successful state-changing submission.
 
 ## Next Steps
 

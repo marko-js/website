@@ -6,11 +6,11 @@
 > - [`<const>`](../reference/core-tag.md#const): derived value, pure, recomputes with dependencies
 > - [`static const`](../reference/language.md#static): module-level constant, initialized once, not reactive
 
-A `.marko` template has a few ways to introduce a variable, and the choice describes how the value updates: a [`<let>`](../reference/core-tag.md#let) is reassigned and everything reading it [reacts](../reference/reactivity.md), while a [`<const>`](../reference/core-tag.md#const) recomputes when its dependencies change. Sometimes a reactive tag variable is not required at all; a value that never changes belongs in a [`static`](../reference/language.md#static) statement instead, evaluated once when the module loads.
+A `.marko` template has three ways to bind a variable, each signaling how the value updates: [`<let>`](../reference/core-tag.md#let) holds mutable state whose reassignment triggers [reactive updates](../reference/reactivity.md), [`<const>`](../reference/core-tag.md#const) computes a derived value whenever its dependencies change, and [`static const`](../reference/language.md#static) evaluates once at module load for values that never vary across instances.
 
 ## Mutable State
 
-The `<let>` tag declares state written directly, typically from event handlers. Assigning to its [tag variable](../reference/language.md#tag-variables) updates every expression that reads it.
+`<let>` declares state written directly, typically from event handlers. Assigning to its [tag variable](../reference/language.md#tag-variables) updates every expression that reads it:
 
 ```marko
 <let/tipPercent=20>
@@ -21,13 +21,13 @@ The `<let>` tag declares state written directly, typically from event handlers. 
 <output>Tip: ${tipPercent}%</output>
 ```
 
-Clicking a button reassigns `tipPercent`, and the `<output>` text updates to match. Nothing else re-renders.
+Clicking a button reassigns `tipPercent`, updating only the `<output>` text.
 
-The `value=` attribute is only an _initial_ value. Once created, the state changes solely through assignment (or a [`valueChange` handler](../reference/core-tag.md#controllable-let)), even if the initializing expression later changes.
+The `value=` attribute sets only the _initial_ value. Afterward, an uncontrolled `<let>` changes solely through assignment (or a [`valueChange` handler](../reference/core-tag.md#controllable-let)), even if the initializing expression updates.
 
 ## Derived Values
 
-The `<const>` tag declares a value computed from other reactive variables. It cannot be assigned; it recomputes whenever anything it reads changes.
+`<const>` computes a value from other reactive variables. It cannot be reassigned and recomputes automatically whenever its dependencies change:
 
 ```marko
 <let/bill=64>
@@ -39,10 +39,10 @@ The `<const>` tag declares a value computed from other reactive variables. It ca
 <output>Tip: $${tip.toFixed(2)}</output>
 ```
 
-Here `tip` always reflects the current `bill` and `tipPercent`. No handler keeps it in sync; the relationship is declared once.
+`tip` always stays in sync with `bill` and `tipPercent` from a single declaration.
 
 > [!WARNING]
-> Mirroring a derivation into a `<let>` and updating it by hand is an anti-pattern:
+> Mirroring a derivation into a `<let>` and updating it manually is an anti-pattern:
 >
 > ```marko
 > <let/bill=64>
@@ -51,17 +51,17 @@ Here `tip` always reflects the current `bill` and `tipPercent`. No handler keeps
 >
 > <button onClick() {
 >   tipPercent += 1;
->   tip = bill * (tipPercent / 100); // ❌ BAD: repeated in every handler
+>   tip = bill * (tipPercent / 100); // ❌ repeated in every handler
 > }>Round up</button>
 > ```
 >
-> Every code path touching `bill` or `tipPercent` must now also recompute `tip`, and forgetting one shows a stale total. A `<const>` states the formula once.
+> Every handler touching `bill` or `tipPercent` would have to recompute `tip` or leave it stale.
 
-Because updates are batched, a derived value read inside an event handler still holds the result computed from the previous state. See [Stale Derived Values](../reference/reactivity.md#stale-derived-values).
+Because updates are batched, a derived `<const>` read inside an event handler reflects the previous state until the queue flushes. See [Stale Derived Values](../reference/reactivity.md#stale-derived-values).
 
 ## Module Constants
 
-Statements prefixed with [`static`](../reference/language.md#static) run in module scope, once per environment when the template loads. A `static const` is shared by every instance, across every render and request.
+Statements prefixed with [`static`](../reference/language.md#static) execute in module scope once per environment when the template loads, shared across every instance and request:
 
 ```marko
 static const currencyFormat = new Intl.NumberFormat("en-US", {
@@ -76,19 +76,17 @@ static const currencyFormat = new Intl.NumberFormat("en-US", {
 <output>${currencyFormat.format(total)}</output>
 ```
 
-The `Intl.NumberFormat` instance is built a single time, however many components render. That makes `static const` the right home for formatters, configuration, lookup tables, and helper functions.
-
-Static statements are evaluated [only once](../reference/reactivity.md#render-expressions), outside the reactive system. Anything that varies per instance or over time belongs in `<const>` or `<let>`.
+`currencyFormat` is constructed once regardless of how many components render, making `static const` ideal for formatters, lookup tables, configuration, and helper functions. Static statements sit outside the reactive system; anything reading `input` or a tag variable belongs in `<const>` or `<let>`.
 
 > [!NOTE]
-> A value that reads `input` or any tag variable must be a `<const>`, even if it never appears to change; only a `<const>` is initialized per instance and tracked.
+> Even a value that never changes after mount must use `<const>` if it reads `input` or a tag variable, so it initializes per instance.
 
 ## Choosing
 
-Prefer the most fixed declaration that still describes the value:
+Choose the narrowest declaration that fits the value:
 
-- Assigned by handlers or otherwise changes on its own: `<let>`
-- Computed from `input`, tag variables, or other reactive state: `<const>`
-- Identical for every instance and never changes: `static const`
+- Reassigned by handlers or mutable over time: `<let>`
+- Computed from `input` or other reactive values: `<const>`
+- Shared identically across every instance: `static const`
 
-This is not only a style choice: the compiler [generates update code](./targeted-compilation.md) only for what can actually change, so the more fixed forms produce less work in the browser.
+Beyond clarity, [targeted compilation](./targeted-compilation.md) generates browser update code only for values that can change, so narrower declarations produce less client work.

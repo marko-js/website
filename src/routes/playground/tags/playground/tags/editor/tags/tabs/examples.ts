@@ -2,17 +2,16 @@ export default [
   {
     name: "counter",
     content: `/**
- * This component leverages Marko's controllable pattern!
+ * Demonstrates Marko's controllable pattern.
  *
- * To hoist the value out when using it, you can optionally
- * bind a value like this:
+ * Optionally bind the count from a parent:
  * \`\`\`
  * <let/myCount=0>
  * <counter value:=myCount/>
  * \`\`\`
  */
 
-<let/count:=input.value>
+<let/count=(input.value ?? 0) valueChange=input.valueChange>
 <button onClick() { count++ }>
   \${count}
 </button>
@@ -21,11 +20,10 @@ export default [
   {
     name: "let-localstorage",
     content: `/**
- * This can be used just like any other \`<let>\` tag, except
- * the value is synced over \`localStorage\` so it stays
- * constant after a page reload!
- * 
- * Just add a \`key=\` attribute:
+ * Behaves like \`<let>\`, synced through \`localStorage\` so
+ * the value persists across page reloads.
+ *
+ * Pass a \`key=\` attribute:
  * \`\`\`
  * <let-localstorage/count=0 key="my-count"/>
  * \`\`\`
@@ -68,9 +66,9 @@ export default [
   {
     name: "pointer-down",
     content: `/**
- * Uses reactive scripts and $signal to wire up document-wide
- * event listeners with automatic clean-up
- * 
+ * Uses reactive scripts and \`$signal\` to wire up document-wide
+ * event listeners with automatic cleanup.
+ *
  * Example usage:
  * \`\`\`
  * <pointer-down/clicking/>

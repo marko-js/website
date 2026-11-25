@@ -2,34 +2,25 @@
 
 > [!TLDR]
 >
-> - **Controlled** components are driven by `input` props
-> - **Uncontrolled** components are driven by internal state
-> - **Controllable** components can be both controlled _and_ uncontrolled
-> - Marko provides first-class patterns for building controllable components
+> - **Controlled** components take their state from parent `input` props
+> - **Uncontrolled** components manage internal state directly
+> - **Controllable** components default to uncontrolled and become controlled when given a change handler
+> - Native tags and `<let>` implement this pattern via change handlers, with optional `:=` shorthand
 
-In component-based frameworks, developers must know where the _source of truth_ is for state. Typically, a decision is made at the component level about whether it should be [**controlled** or **uncontrolled**](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components).
+Component authors rarely know in advance whether every caller will want to hoist state or leave it internal. Rather than forcing a permanent choice between [**controlled** and **uncontrolled**](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components) APIs, Marko makes controllability a first-class language pattern.
 
 ## Uncontrolled Components
 
-Uncontrolled components manage their own state.
+An uncontrolled component owns its state internally through [`<let>`](../reference/core-tag.md#let):
 
 ```marko
-/* counter.marko */
+/* tags/counter.marko */
 <let/count=0/>
 
 <button onClick() { count++ }>
   Count: ${count}
 </button>
 ```
-
-Because `<counter>` manages its own state (via `<let>`), it can be used anywhere without extra work.
-
-```marko
-/* parent.marko */
-<counter/>
-```
-
-However, since the state is created in `counter.marko`, `count` can _only_ be accessed within the component. This means there's no way for a parent to use the state. For example, how might a parent use this count and display it elsewhere on the page?
 
 ```marko
 /* parent.marko */
@@ -39,161 +30,86 @@ However, since the state is created in `counter.marko`, `count` can _only_ be ac
 <output>${count}</output>
 ```
 
-This isn't possible with only modifications to `parent.marko`! Instead, we need to change `<counter>` to give more **control** to its parent.
+Because `count` lives inside `counter.marko`, callers use `<counter/>` with zero boilerplate, but a parent cannot read or reset `count` externally.
 
-### State synchronization
+### State Synchronization
 
-A naive approach for allowing parents to access state is to trigger events when updates happen.
+A common workaround is keeping internal state in `<counter>` while notifying the parent through an event callback:
 
 > [!WARNING]
-> This is an anti-pattern! It is **almost always better** to use [the controllable pattern](#the-controllable-pattern) for cases like this instead of synchronizing state
+> Mirroring child state into parent state is an anti-pattern. Prefer [the controllable pattern](#the-controllable-pattern) so only one source of truth exists.
 
 ```marko
-/* counter.marko */
+/* tags/counter.marko */
 export interface Input {
   onChange: (count: number) => void;
 }
 
 <let/count=0/>
 
-<button onClick() {
-  input.onChange(++count);
-}>
+<button onClick() { input.onChange(++count) }>
   Count: ${count}
 </button>
 ```
-
-With this event handler, `parent.marko` could keep track of its own copy of `count`.
 
 ```marko
 /* parent.marko */
 <let/count=0/>
 
 <counter onChange(newCount) { count = newCount }/>
-
 <output>${count}</output>
 ```
 
-This approach leaves room for error:
+This creates two `count` variables that must be kept in sync manually and can drift whenever either side changes independently.
 
-- We have _two_ `count` variables that must stay synchronized
-- If these variables get out of sync, our website will be broken
-- We must track _all_ changes in `<counter>` and synchronize them in the parent
+## Controlled Components
 
-As we'll discuss later, most stateful [native HTML elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements) use this "uncontrolled with state synchronization" approach by default. Marko [extends](../reference/native-tag.md#change-handlers) these tags to enable [the controllable pattern](#the-controllable-pattern).
-
-### Controlled Components
-
-Controlled components receive state from their parent and delegate changes back up the component tree.
+A controlled component delegates state ownership entirely to its parent:
 
 ```marko
-/* counter.marko */
+/* tags/counter.marko */
 export interface Input {
   count: number;
-  updateCount: (count: number) => void;
+  countChange: (count: number) => void;
 }
 
-<button onClick() { input.updateCount(input.count + 1) }>
+<button onClick() { input.countChange(input.count + 1) }>
   Count: ${input.count}
 </button>
 ```
-
-If this `<counter>` component is used directly, it won't be interactive! To manage `<counter>` effectively, we need to _create state in the parent_.
 
 ```marko
 /* parent.marko */
 <let/count=0/>
 
-<counter
-  count=count
-  updateCount(newCount) { count = newCount }
-/>
+<counter count=count countChange(newCount) { count = newCount }/>
 ```
 
-This is great because the parent has full control over component state, but it has trade-offs:
-
-- _Every_ parent of `<counter>` needs this boilerplate, even if they don't use `count`
-- This refactor was only possible because _we_ authored `<counter>` and can change its API
+The parent has full control, but every caller must now allocate state and pass a `countChange` callback even when it never reads `count`.
 
 ## The Controllable Pattern
 
-Ultimately, at _component authoring time_ it's impossible to know whether we want state to be controlled or uncontrolled. It may need to be controlled _sometimes_ but otherwise manage its own state. For these cases, Marko introduces the **controllable** pattern.
-
-Controllable components are [uncontrolled](#uncontrolled-components) by default, but with a change handler they become [controlled](#controlled-components).
-
-Before digging into our `<counter>` example and making it controllable, let's explore what this pattern looks like on native elements.
+A **controllable** component behaves as [uncontrolled](#uncontrolled-components) by default and switches to [controlled](#controlled-components) whenever the caller supplies a `<prop>Change` handler.
 
 ### Controllable Native Tags
 
-Most native HTML elements follow the [uncontrolled](#uncontrolled-components) pattern by default, but Marko enhances them with [change handlers](../reference/native-tag.md#change-handlers) to enable the [controlled](#controlled-components) pattern.
-
-To take control of a stateful HTML element, we can add a `Change` handler.
+Stateful HTML elements follow this exact model in Marko via [change handlers](../reference/native-tag.md#change-handlers). Adding `valueChange=` hands ownership of an `<input>` to Marko state, and the [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) `:=` writes both attributes together:
 
 ```marko
 <let/textValue="">
 
 <input value=textValue valueChange(v) { textValue = v }>
-```
 
-Since `valueChange` is present, Marko knows this `<input>` is **controlled** and its value will always derive from `textValue`. This is called **binding**.
-
-Because this is a common pattern, Marko provides a [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) using the `:=` operator.
-
-```marko
-<let/textValue="">
-
+// equivalent with binding shorthand
 <input value:=textValue>
 ```
 
-> [!NOTE]
-> The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) acts differently when used with an _identifier_ versus a _member expression_.
-
 ### Controllable `<let>`
 
-We want our `<counter>` tag to follow the same controllable pattern as native tags like `<input>` in Marko. Let's take advantage of the fact that [`<let>` is _also_ controllable](../reference/core-tag.md#controllable-let).
+[`<let>` is itself controllable](../reference/core-tag.md#controllable-let). Binding it to `input.count` with `:=` (shorthand for `<let/count=input.count valueChange=input.countChange>`) makes `<counter>` work in both modes:
 
 ```marko
-/* counter.marko */
-export interface Input {
-  count: number;
-  countChange?: (count: number) => void;
-}
-
-<let/count=input.count valueChange=input.countChange>
-
-<button onClick() { count++ }>
-  Count: ${count}
-</button>
-```
-
-This component now has two behaviors, depending on the `<let>` tag's `valueChange`:
-
-- When `countChange` is a function
-  - `<let>` forfeits control of its state and acts as a derivation of `input.count`
-- When `countChange` is `undefined`
-  - `<let>` acts just as it did in our first example
-
-```marko
-/* parent.marko */
-<let/parentCount=0>
-
-// `parentCount` is the source of truth
-<counter count=parentCount countChange(count) { parentCount = count }/>
-
-// This one holds its own state
-<counter/>
-```
-
-Since `value=` is an ordinary expression, it can also supply a default for when the parent omits `count`:
-
-```marko
-<let/count=input.count ?? 0 valueChange=input.countChange>
-```
-
-The [binding shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) accommodates both sides of this exchange, as it acts differently for identifiers and member expressions.
-
-```marko
-/* counter.marko */
+/* tags/counter.marko */
 export interface Input {
   count: number;
   countChange?: (count: number) => void;
@@ -210,74 +126,56 @@ export interface Input {
 /* parent.marko */
 <let/parentCount=0>
 
+// Controlled: `parentCount` is the source of truth
 <counter count:=parentCount/>
-
 <output>${parentCount}</output>
+
+// Uncontrolled: counter manages its own state starting at 0
+<counter count=0/>
+```
+
+When `countChange` is a function (passed explicitly or via `:=`), `<let>` delegates updates to `countChange` and reflects `input.count`. When `countChange` is `undefined`, `<let>` manages local state initialized from `input.count`.
+
+To make `count?: number` optional with a default value so callers can write `<counter/>`, pass `value=` and `valueChange=` explicitly since `:=` cannot take a fallback such as `?? 0`:
+
+```marko
+<let/count=(input.count ?? 0) valueChange=input.countChange>
 ```
 
 ### Refining Functions
 
-The shorthand may include a [refining function](../reference/language.md#refining-function) that transforms the value before assignment. This is useful when the child component receives a broad type (e.g. native tag attributes may receive `number | string`) but the parent requires something more narrow.
+Insert a [refining function](../reference/language.md#refining-function) (`:fn:=`) to transform incoming values before assignment, such as parsing strings from native inputs into numbers or normalizing text:
 
 ```marko
 <let/num=0/>
-
 <input type="range" value:parseFloat:=num>
 ```
 
-This example desugars to include `parseFloat` in its setter.
-
-```marko
-<let/num=0/>
-
-<input type="range" value=num valueChange(v) { num = parseFloat(v)}>
-```
-
-This shorthand takes _any_ function, including custom ones.
+Custom functions work identically:
 
 ```marko
 <let/text="HELLO">
-
 <input value:uppercase:=text>
 
 static function uppercase(str: string) {
-  return str.toUpperCase()
+  return str.toUpperCase();
 }
 ```
 
-## More Power
+## Custom Control Logic
 
-The controllable pattern allows the _user_ of a component to decide whether to manage state. Simple cases remain simple, but complex state management is also possible.
-
-We've only scratched the surface! When a parent hoists state up, it takes _full_ control. This means we can add a max value:
+Because a controlled parent intercepts every update through `countChange`, it can clamp values, validate input, or confirm changes without modifying `<counter>`:
 
 ```marko
-/* parent.marko */
 <let/count=0>
 
-<counter count=count countChange(c) {
-  if (c > 5) {
-    count = 5;
-  } else {
-    count = c;
+<counter
+  count=count
+  countChange(next) {
+    count = Math.min(5, next);
   }
-}/>
+/>
 ```
-
-or perform validation:
-
-```marko
-/* parent.marko */
-<let/count=0>
-
-<counter count=count countChange(c) {
-  if (confirm("are you sure?")) {
-    count = c;
-  }
-}/>
-```
-
-The key is that the _parent_ decides what to do with state. If components are designed with the controllable pattern, they can be used in various scenarios without requiring changes to the component itself.
 
 ## Further Reading
 

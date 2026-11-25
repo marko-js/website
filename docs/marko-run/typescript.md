@@ -1,39 +1,53 @@
 # TypeScript
 
-Marko Run is designed to be used with TypeScript. Route files get typed request contexts. Validated params and bodies flow through to pages, and URLs are checked against the routes the application serves.
+Marko Run integrates with TypeScript so route handlers, middleware, layouts, pages, and `Run.href` links receive end-to-end types inferred from the file system and validation schemas.
 
 ## Run Namespace
 
-Marko Run provides a global namespace `Run`, available in route files without any imports. At runtime it exposes the [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, ..., `Run.ALL`) and [`Run.href`](./runtime.md#typed-urls). In TypeScript it also provides:
+Marko Run exposes a global `Run` namespace in route files without imports: the [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, ..., `Run.ALL`), [`Run.href`](./runtime.md#typed-urls), and `Run.Context`.
 
-**`Run.Context`** - Type of the request context object in a handler and `$global` in Marko files. This type can be extended using TypeScript's module and interface merging by declaring a `Context` interface on the `@marko/run` module within the application code:
+### `Run.Context`
+
+Types the request context in handlers and `$global` in Marko templates. Extend it for application-wide properties via module augmentation (include `export {}` if the file has no other imports or exports):
 
 ```ts
+export {};
+
 declare module "@marko/run" {
   interface Context {
-    customProperty: MyCustomThing; // will be globally defined on Run.Context
+    db: Database;
   }
 }
 ```
 
-The platform object provided by the [adapter](./adapters.md) in use can be typed the same way by declaring a `Platform` interface:
+Extend the adapter-provided `ctx.platform` object the same way through `Platform`:
 
 ```ts
 declare module "@marko/run" {
   interface Platform {
-    customProperty: MyCustomThing; // will be available on `ctx.platform`
+    requestId: string;
   }
 }
 ```
 
 > [!NOTE]
-> Reserve the `Context` interface for application-wide properties that every route can rely on, like a database connection or session helper. For route-specific values, prefer [data loading](./data-loading.md) via `next`, which types the data per route automatically.
+> Reserve `Context` augmentation for application-wide properties present on every request (such as a database handle or session helper). For route-specific values, pass data via [`next(data)`](./data-loading.md), which types `$global.data` per route automatically.
+
+### `GetContext`
+
+For shared helper functions defined outside route files, import `GetContext` from `@marko/run` to obtain the context type for a route pattern:
+
+```ts
+import type { GetContext } from "@marko/run";
+
+export function getProjectId(ctx: GetContext<"/projects/$projectId/*">) {
+  return ctx.params.projectId;
+}
+```
 
 ## Generated Types
 
-If a [TSConfig](https://www.typescriptlang.org/tsconfig) file is discovered in the project root, Marko Run will automatically generate a `.d.ts` file which provides more specific types for each middleware, handler, layout, and page. This file is generated at `.marko-run/routes.d.ts` whenever the project is built, including during dev.
-
-TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so the tsconfig [`include`](https://www.typescriptlang.org/tsconfig#include) lists `.marko-run/*` on its own:
+When a `tsconfig.json` exists in the project root, Marko Run generates `.marko-run/routes.d.ts` automatically during dev and build. Because TypeScript skips dot-directories in globs like `src/**/*`, list `.marko-run/*` explicitly in `include`:
 
 ```json
 {
@@ -45,23 +59,23 @@ TypeScript skips dot-directories when expanding a pattern like `src/**/*`, so th
 }
 ```
 
-`"moduleResolution": "bundler"` reads the package `exports` that `@marko/run` publishes its types through. The [starter `tsconfig.json`](../introduction/installation.md#set-up-typescript) already uses `bundler` resolution; add `.marko-run/*` to its `include`. Use the [Marko VSCode plugin](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) to check `.marko` files in the editor.
+`"moduleResolution": "bundler"` resolves `@marko/run`'s package `exports` types (already set in the [starter `tsconfig.json`](../introduction/installation.md#typescript-setup)). Check `.marko` files in the editor with [Marko for VS Code](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) and in CI with `mtc` ([`@marko/type-check`](../reference/typescript.md#ci-type-checking)).
 
-With the generated types, the `Run` namespace is narrowed per routable file:
+Generated types narrow the `Run` namespace per routable file and automatically type `Input` for `+layout.marko` (`{ content: Marko.Body }`) and `+500.marko` (`{ error: unknown }`):
 
-**`Run.Context`**
+### Narrowed `Run.Context`
 
-- Has the exact path params, meta, validated `search` and `body`, and upstream `data` types for the routes the file serves
-- In middleware and layouts which are used in many routes, this type will be a union of all possible routes that the file will see
-- When an adapter is used, it can provide types for the platform
+- Carries exact `params`, `meta`, validated `search` and `body`, and upstream `data` types for the routes the file serves.
+- In shared middleware and layouts, narrows to the union of all matched routes.
+- Includes adapter-provided `platform` types when the active adapter supplies them.
 
-**`Run` verb helpers**
+### Inferred Verb Helpers
 
-Validation options and handler return types are fully inferred, so `ctx.params`, `ctx.search`, `ctx.body`, and the data passed to `next(...)` flow through to downstream handlers, pages, and layouts.
+Validation schemas and `next(data)` return types flow automatically from middleware and handlers to downstream handlers, layouts, and pages.
 
-**`Run.href`**
+### Checked `Run.href`
 
-The path and its params are typed against every route the application serves.
+Route paths, dynamic params, and validated search keys are type-checked against every route in the application.
 
 ## Next Steps
 

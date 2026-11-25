@@ -1,23 +1,19 @@
 # File-based Routing
 
-Marko Run discovers routes from the file system. The directory structure under the **routes directory**, `./src/routes`, determines the paths an application serves. A small set of `+` prefixed file names determines what happens at each path.
+Marko Run maps the directory tree under `./src/routes` to URL paths using a small set of `+`-prefixed filenames.
 
 > [!NOTE]
-> The `+` prefix makes routable files explicit. Anything without the prefix is ignored by the router, so components, tests, stories, and utilities can be colocated alongside the pages that use them without accidentally being served.
+> Only `+`-prefixed files are treated as routes. Components, tests, stories, and utilities without a `+` prefix can live beside the routes that use them without becoming endpoints.
 
 ## Routable Files
 
-The router only recognizes certain filenames, all prefixed with `+`. The following filenames will be discovered in any directory inside the application's routes directory.
-
 ### `+page.marko`
 
-These files establish a route at the current directory path, which will be served for `GET` requests with the HTML content of the page. Only one page may exist for any served path.
+Defines the page rendered at the directory's path for `GET` and `HEAD` requests (and for `POST` or `QUERY` requests when a handler invokes `next()`). At most one page may exist per served path.
 
 ### `+layout.marko`
 
-These files provide a **layout component**, which will wrap all nested layouts and pages.
-
-Layouts are like any other Marko component, with no extra constraints. Each layout receives a `content` input which refers to the nested page or layout being rendered. The [request context](./runtime.md#context) is available as [`$global`](../reference/language.md#global).
+Wraps all nested layouts and pages under its directory. Layouts are standard Marko components receiving `input.content` (the nested layout or page) and the [request context](./runtime.md#context) as [`$global`](../reference/language.md#global):
 
 ```marko
 export interface Input {
@@ -25,24 +21,20 @@ export interface Input {
 }
 
 <main>
-  <h1>My Products</h1>
-
-  // render the nested page or layout here
+  <h1>Products</h1>
   <${input.content}/>
 </main>
 ```
 
 ### `+handler.*`
 
-These files establish a route at the current directory path that can respond to any HTTP method: exported functions named `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` handle requests with the matching method.
+Handles HTTP requests at the directory's path via named exports for any HTTP verb: `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY`. Each export may be a handler function, an array of handler functions, or a promise resolving to either. At most one handler file (`.js` or `.ts`) may exist per served path.
 
-Typically, these will be `.js` or `.ts` files, depending on the project. Like pages, only one handler file may exist for any served path.
-
-Handlers are created with the global [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, etc.), which add request validation, typed bodies, and [data loading](./data-loading.md):
+Create handlers with the global [verb helpers](./validation.md#verb-helpers) (`Run.GET`, `Run.POST`, etc.) for typed validation and [data loading](./data-loading.md):
 
 ```ts
 export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
-  const [reminder, issues] = await ctx.body; // parsed and validated by the `json` option
+  const [reminder, issues] = await ctx.body;
   if (issues) {
     return Response.json({ issues }, { status: 422 });
   }
@@ -51,135 +43,109 @@ export const POST = Run.POST({ json: ReminderSchema }, async (ctx) => {
 });
 ```
 
-Handler functions are synchronous or asynchronous functions that receive two arguments:
+Handlers receive `(ctx, next)`:
 
-- `ctx` contains the WHATWG request object, path parameters, URL, route metadata, and the [validated body](./validation.md#request-bodies) (see [Context](./runtime.md#context))
-- `next` renders the page for `GET`, `POST`, and `QUERY` requests where applicable, a `200` response for `HEAD` requests, or a `204` response for all other verbs. Pass it an object to [make data available](./data-loading.md) to downstream handlers and the page.
+- `ctx`: the request context (WHATWG `Request`, `params`, `search`, `body`, `data`, `meta`, `url`, `signal`; see [Context](./runtime.md#context))
+- `next`: renders the page for `GET`, `POST`, and `QUERY` requests (returning `200` with an empty body for `HEAD` when a page exists, or `204` when there is no page or for other verbs). Pass an object to `next(data)` to [load data](./data-loading.md) for downstream handlers and pages.
 
 > [!TIP]
-> Configure the [`json` or `form` option](./validation.md#request-bodies) to read validated request body content with `await ctx.body`. Calling `ctx.request.json()` or `ctx.request.formData()` in a handler bypasses validation and any configured size limits. Using [`Response.json`](https://developer.mozilla.org/en-US/docs/Web/API/Response/json_static) makes it easy to return JSON encoded data.
+> Configure [`json` or `form` validation](./validation.md#request-bodies) and read `await ctx.body` rather than calling `ctx.request.json()` or `ctx.request.formData()`, which bypasses validation and size limits.
 
-A handler function may return (or throw) a WHATWG response, or return `undefined`. If the function returns `undefined`, `next` will be automatically called and used as the response.
+A handler may return (or throw) a `Response`, return `undefined` (which invokes `next()` automatically), return `null` (falling through to `404`), or `throw null` (exiting the router as unhandled so downstream server middleware can take over):
 
 ```ts
 export const GET = Run.GET(async (ctx, next) => {
-  // do something before rendering the page
   const response = await next();
-  // do something with the response
   return response;
 });
 
-export const PUT = Run.PUT((ctx, next) => {
-  // `next` will be called automatically since nothing is returned
+export const PUT = Run.PUT(() => {
+  // Returning undefined invokes `next()` automatically
 });
 
-export const DELETE = Run.DELETE((ctx, next) => {
-  return new Response("Successfully removed", { status: 204 });
+export const DELETE = Run.DELETE(() => {
+  return new Response(null, { status: 204 });
 });
 ```
 
 > [!NOTE]
-> When a route has no `HEAD` export, `HEAD` requests are served by the `GET` handler (or page) with the response body stripped.
+> When no `HEAD` export exists, `HEAD` requests run the `GET` handler (or page) with the response body stripped.
 
 ### `+middleware.*`
 
-These files are like layouts, but for handlers. Middleware files are called before handlers and allow work to be performed before and after them.
-
-Middleware files expect a `default` export with the same shapes as handler exports: a handler function, an array of handler functions, or a promise resolving to either. Middleware is created with `Run.ALL` or a specific verb helper. It may also be options-only, e.g. `Run.ALL({ search: ... })`, to attach [validation](./validation.md) for every route below it without adding behavior.
+Runs before nested middleware and handlers in its directory subtree. Middleware uses a `default` export accepting the same shapes as handler exports (function, array, or promise) created with `Run.ALL` or a verb helper. An options-only call such as `Run.ALL({ search: ... })` attaches shared [validation](./validation.md) without adding handler logic:
 
 ```ts
 export default Run.ALL(async (ctx, next) => {
-  const requestName = `${ctx.request.method} ${ctx.url.href}`;
-  let success = true;
-  console.log(`${requestName} request started`);
+  const label = `${ctx.request.method} ${ctx.url.href}`;
+  let ok = true;
+  console.log(`${label} started`);
   try {
-    return await next(); // Wait for subsequent middleware, handler, and page
+    return await next();
   } catch (err) {
-    success = false;
+    ok = false;
     throw err;
   } finally {
-    console.log(
-      `${requestName} completed ${success ? "successfully" : "with errors"}`,
-    );
+    console.log(`${label} ${ok ? "succeeded" : "failed"}`);
   }
 });
 ```
 
 > [!NOTE]
-> Unlike handlers, middleware runs for all HTTP methods. Middleware created with `Run.ALL(...)` runs for every method, while middleware created with a specific verb helper (e.g. `Run.POST(...)`) is skipped for other methods.
+> `Run.ALL(...)` middleware runs for every HTTP method; verb-specific middleware runs only for that verb (`Run.GET(...)` middleware also runs for `HEAD`).
 
 ### `+meta.*`
 
-These files represent static metadata to attach to the route. This metadata will be automatically provided as `ctx.meta` when the route is invoked. When the file is a non-JSON file, its default export will be used.
-
-Metadata supports verb-specific overrides when it is an object (e.g. a JSON file or `export default { ... }`). Top-level keys that match one of `GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, or `QUERY` are shallowly merged into the base object for requests of that method, overriding any existing values. These keys are excluded from the base object, and ignored when their value is not an object. For example, given a `+meta.json` file:
+Attaches static metadata to a route, exposed as `ctx.meta` (JSON files or a JS/TS module's `default` export). When the metadata is an object, top-level keys matching an HTTP verb (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, `QUERY`) whose value is an object are shallowly merged into the base object for that method and excluded from all other methods (non-object verb values are ignored):
 
 ```json
 {
   "name": "Default Name",
-  "POST": {
-    "name": "Post Name",
-    "postOnlyData": "foo"
-  },
-  "GET": {
-    "name": "Get Name"
-  },
+  "POST": { "name": "Post Name", "postOnlyData": "foo" },
+  "GET": { "name": "Get Name" },
   "PUT": "Ignored"
 }
 ```
 
-for a `POST` request, the value of `ctx.meta` will be
+With this `+meta.json`, `ctx.meta` resolves as follows:
 
-```js
-{
-  name: "Post Name",
-  postOnlyData: "foo"
-}
-```
+- `POST`:
 
-for a `GET` request, it will be
+  ```js
+  { name: "Post Name", postOnlyData: "foo" }
+  ```
 
-```js
-{
-  name: "Get Name"
-}
-```
+- `GET`:
 
-and for all other methods, including `PUT`, it will be the base object
+  ```js
+  { name: "Get Name" }
+  ```
 
-```js
-{
-  name: "Default Name"
-}
-```
+- `PUT` and all other methods:
+
+  ```js
+  { name: "Default Name" }
+  ```
 
 ## Special Files
 
-In addition to the files above, which can be defined in any directory under the routes directory, some special files can only be defined at its top level.
-
-These special pages are subject to a root layout file (`src/routes/+layout.marko` in the default configuration).
+Defined only at the top level of the routes directory (`src/routes/`). Special pages are wrapped by the root `+layout.marko` (root `+middleware.*` does not run for them).
 
 ### `+404.marko`
 
-This special page responds to any request where:
-
-- The `Accept` request header includes `text/html`
-- _And_ no other handler or page rendered the request
-
-Responses with this page will have a `404` status code.
+Renders with status `404` when the `Accept` header includes `text/html` and no route handled the request.
 
 ### `+500.marko`
 
-This special page responds to any request where:
+Renders with status `500` when the `Accept` header includes `text/html` and an uncaught error occurs. Receives `input.error` (`unknown`).
 
-- The `Accept` request header includes `text/html`
-- _And_ an uncaught error occurs while serving the request
+## Static Assets
 
-Responses with this page will have a `500` status code.
+Files served at fixed URLs (such as `/favicon.png` or `/robots.txt`) belong in the project's `public/` directory (Vite's `publicDir`), not `src/routes/`. Files in `public/` are copied directly into `dist/public/` at build time and served from `/` by the default server.
 
 ## Execution Order
 
-Given the following routes directory structure
+Given:
 
 ```text
 routes/
@@ -193,25 +159,23 @@ routes/
   +page.marko
 ```
 
-When the path `/about` is requested, the routable files execute in the following order:
+A request to `/about` runs in order:
 
-1. Middlewares from root-most to leaf-most
-2. Handler
-3. Layouts from root-most to leaf-most
+1. Middleware from root to leaf
+2. Route handler
+3. Layouts from root to leaf
 4. Page
 
 > [!NOTE]
-> Layouts and the page are combined at build time into a single component, so nested layouts add no runtime overhead.
+> Layouts and pages combine into a single template at build time, adding zero runtime nesting overhead.
 
 ## Path Structure
 
-Within the routes directory, the directory structure determines the path from which the route is served. There are four types of directory names: **static**, **pathless**, **dynamic**, and **catch-all**.
+Directory names under `src/routes/` fall into four kinds:
 
 ### Static Directories
 
-The most common type, and the default behavior. Each static directory contributes its name as a segment in the route's served path, similar to a traditional file server. Unless a directory name matches the requirements for one of the below types, it is seen as a static directory.
-
-Examples:
+Any ordinary directory name contributes that literal segment to the URL:
 
 ```text
 /foo
@@ -221,9 +185,7 @@ Examples:
 
 ### Pathless Directories
 
-These directories do **not** contribute their name to the route's served path. Directory names that start with an underscore (`_`) will be ignored when parsing the route.
-
-Examples:
+Names starting with `_` group routes, layouts, or middleware without adding a URL segment:
 
 ```text
 /_users
@@ -232,9 +194,7 @@ Examples:
 
 ### Dynamic Directories
 
-These directories introduce a dynamic parameter to the route's served path and will match any value at that segment. Any directory name that starts with a single dollar sign (`$`) will be a dynamic directory, and the remaining directory name will be the parameter at runtime. If the directory name is exactly `$`, the parameter will not be captured, but it will be matched.
-
-Examples:
+Names starting with `$` match a single path segment and capture its value in `ctx.params`. A bare `$` matches one segment without capturing it:
 
 ```text
 /$id
@@ -244,11 +204,7 @@ Examples:
 
 ### Catch-all Directories
 
-These directories are similar to dynamic directories and introduce a dynamic parameter, but instead of matching a single path segment, they match to the end of the path. Any directory that starts with two dollar signs (`$$`) will be a catch-all directory, and the remaining directory name will be the parameter at runtime. In the case of a directory named `$$`, the parameter name will not be captured, but it will match. Catch-all directories can be used to make `404` Not Found routes at any level, including the root.
-
-Because catch-all directories match any path segment and consume the rest of the path, route files cannot be nested inside them, and no further directories will be traversed.
-
-Examples:
+Names starting with `$$` match the remainder of the path and capture it in `ctx.params`; bare `$$` matches without capturing. Catch-all directories can also build 404 routes at any level, including the root. Nested routes inside a catch-all directory are not supported:
 
 ```text
 /$$all
@@ -258,13 +214,9 @@ Examples:
 
 ## Flat Routes
 
-Flat routes define paths without needing additional directories. Instead, the directory structure can be defined either in the file or directory name. This allows routes to be decoupled from the directory structure or co-located as needed. To define a flat route, use periods (`.`) to delineate each path segment. This behaves exactly like creating a new directory, and each segment will be parsed using the rules described above for static, dynamic, and pathless routes.
+Flat routes encode path segments in file or directory names using `.` as a separator (anything before `+` in a routable filename is parsed with the same static, pathless, dynamic, and catch-all rules).
 
-Flat route syntax can be used for both directories and routable files (e.g. pages, handlers, middleware). For these files, anything preceding the plus (`+`) will be treated as the flat route.
-
-For example, to define a page at `/projects/$projectId/members` with a root layout and a project layout:
-
-Without flat routes, the file structure would look like:
+Directory-based and flat layouts can be mixed freely and merge into the same route tree. These two structures both define `/projects/$projectId/members` with root and project layouts:
 
 ```text
 routes/
@@ -276,8 +228,6 @@ routes/
   +layout.marko
 ```
 
-With flat routes, move the path defined by the directories into the files and separate with a period
-
 ```text
 routes/
   +layout.marko
@@ -285,7 +235,7 @@ routes/
   projects.$projectId.members+page.marko
 ```
 
-Additionally, files can still be organized under directories to decrease duplication, with flat route syntax in the directory name
+Shared prefixes can also stay in a flat directory:
 
 ```text
 routes/
@@ -295,28 +245,9 @@ routes/
   +layout.marko
 ```
 
-Finally, flat routes and routes defined with directories are all treated equally and merged together. For example, this page will have the layout defined in the nested directories:
-
-```text
-routes/
-  projects/
-    $projectId/
-      +layout.marko
-  projects.$projectId+page.marko
-```
-
 ### Multiple Paths
 
-Along with describing multiple segments, flat route syntax supports defining routes that match more than one path. To describe a route that matches multiple paths, use a comma (`,`) and define each route.
-
-For example the following page matches `/projects/$projectId/members` and `/projects/$projectId/people`
-
-```text
-routes/
-  projects.$projectId.members,projects.$projectId.people+page.marko
-```
-
-This file name is a bit long, so a directory can shoulder the shared prefix
+Separate multiple paths with `,` so one file serves several routes (`/projects/$projectId/members` and `/projects/$projectId/people`):
 
 ```text
 routes/
@@ -326,52 +257,39 @@ routes/
 
 ### Groups
 
-**Grouping** simplifies multiple paths further. Groups define segments within a flat route that match multiple sub-paths by surrounding them with parentheses (`(` and `)`). With a group, the page above collapses back into a single file:
+Parentheses group alternating sub-paths within a single flat filename (and may be nested):
 
 ```text
 routes/
   projects.$projectId.(members,people)+page.marko
 ```
 
-This is a basic use of grouping, but groups can be nested and combined as needed.
-
 ### Optional Segments
 
-Introducing an empty segment or pathless segment along with another value makes that segment optional. For example, a page that matches both `/projects` and `/projects/home` can be created with a flat route that optionally matches `home`
+Pair a segment with an empty or pathless alternative to make it optional (matching both `/projects` and `/projects/home`):
 
 ```text
 routes/
   projects.(home,)+page.marko
 ```
 
-or
-
 ```text
 routes/
   projects.(home,_pathless)+page.marko
 ```
 
-While both of these create a route which matches the paths, they have slightly different semantics. Using a pathless segment is the same as creating a pathless directory, which allows middleware and layouts to be isolated. Using an empty segment is the same as defining a file at the current location.
+An empty alternative behaves like defining the file at the parent directory, while a pathless alternative isolates middleware and layouts like a pathless directory.
 
 ## Escaping Characters
 
-To include a control character (`.`, `,`, `+`, `(`, `)`, `$`, `_`) as a literal in a route path, surround it with backticks (`` ` ``). For example, to create a route served at `/sitemap.xml`:
+Wrap control characters (`.`, `,`, `+`, `(`, `)`, `$`, `_`) in backticks (`` ` ``) to match them literally in a URL, such as `/sitemap.xml`:
 
 ```text
 routes/
-  `sitemap.xml`/
-    +handler.ts
+  `sitemap.xml`+handler.ts
 ```
 
-or
-
-```text
-routes/
-  sitemap`.`xml/
-    +handler.ts
-```
-
-or
+Or escape individual characters:
 
 ```text
 routes/

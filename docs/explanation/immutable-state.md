@@ -2,76 +2,55 @@
 
 > [!TLDR]
 >
-> - Immutable updates prevent hidden side effects
-> - UI as a function of state requires immutability
-> - Server-to-client handoff needs serializable state
+> - Replacing values rather than mutating them triggers reactive updates reliably
+> - Immutable state keeps rendered output a pure function of inputs and state
+> - Plain serializable values enable server-to-client resumability
 
-Marko encourages treating application state as immutable, plain data. This aligns the render model with functional programming: the UI is a deterministic function of inputs and state. It also allows the compiler and runtime to optimize updates and safely hand work between server and client.
+Marko's assignment-based reactivity expects state to be updated immutably with plain, serializable data. Treating rendered output as a deterministic function of inputs and state eliminates hidden side effects and keeps server-to-client handoff straightforward.
 
 ## Immutability
 
-Immutable updates replace data instead of mutating it in place. This avoids hidden coupling, makes changes easier to reason about, and ensures updates are detected.
-
-Consider this Marko template. Reassigning the array triggers an update; mutating in place does not.
+Marko detects changes when a [`<let>`](../reference/core-tag.md#let) tag variable is reassigned and checked by reference equality (`===`). Creating a new array or object makes each state change explicit and triggers dependent DOM updates:
 
 ```marko
-/* list.marko */
 <let/items=["alpha", "beta"]>
 
 <ul>
   <for|item| of=items>
     <li>${item}</li>
   </for>
-  <button onClick() {
-    // ❌ BAD: in-place mutation
-    items.push("gamma")
-
-    // ✅ GOOD: immutable update
-    items = items.concat("gamma");
-  }>Add</button>
 </ul>
-```
+<button onClick() {
+  // ❌ in-place mutation keeps the same reference and does not trigger updates
+  items.push("gamma");
 
-Immutable updates work naturally with Marko's assignment-based reactivity. Replacing a value (object, array, map-like structure) makes change propagation explicit and reliable.
+  // ✅ immutable reassignment triggers a reactive update
+  items = items.concat("gamma");
+}>Add</button>
+```
 
 ## Functional UI
 
-In modern UI frameworks, developers are encouraged to view the **rendered output** as a **function of state**. This works when state changes are visible and do not carry implicit side effects. In-place mutation breaks that mental model and can hide when and where the view should update.
+Because every update replaces the state reference rather than mutating fields behind the scenes, any expression reading that state always reflects a consistent snapshot:
 
 ```marko
-/* profile.marko */
 <let/user={ name: "Ada", clicks: 0 }>
 
 <p>Hello, ${user.name}! (${user.clicks} clicks)</p>
-
 <button onClick() {
-  // ❌ BAD: in-place mutation
+  // ❌ in-place mutation
   user.clicks++;
 
-  // ✅ GOOD: immutable update
+  // ✅ immutable update
   user = { ...user, clicks: user.clicks + 1 };
-}>Visit</button>
+}>
+  Visit
+</button>
 ```
-
-By replacing `user`, the view updates deterministically as a function of the new state.
 
 ## Serialization
 
-To pass work from server to client, state must be serialized. Only serializable data can be reliably embedded into HTML and later hydrated. Class instances, DOM nodes, and some types of closures cannot be serialized and should not be stored in state.
-
-```marko
-/* cart.marko */
-// ✅ GOOD: serializable data
-<let/cart={ items: [{ id: 1, qty: 2 }] }>
-
-// ❌ BAD: unserializable in state (class/function/DOM)
-<let/cart=new Cart([{ id: 1, qty: 2 }])>
-```
-
-Keeping state serializable enables streaming HTML on the server and interactive handoff in the browser without brittle custom hydration logic.
-
-> [!TIP]
-> For details on what data is supported and patterns to avoid, see [serializable state](./serializable-state.md)
+Resuming server-rendered HTML in the browser requires serializing any state that client code reads. Keeping state as plain objects, arrays, and supported built-ins rather than custom class instances or DOM nodes ensures reliable server-to-client transfer. See [Serializable State](./serializable-state.md) for the full list of supported types.
 
 ## Further Reading
 

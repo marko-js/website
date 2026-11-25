@@ -1,31 +1,28 @@
-# Using Multiple Marko Versions
+# Marko 5 Interop
 
 > [!TLDR]
 >
-> - `marko@6` is _not_ backward compatible
-> - `marko@5` is **forward compatible**
-> - In Marko 5, heuristics determine the runtime version per file
+> - `marko@6` is not backward compatible with the Class API
+> - `marko@5` is forward compatible and runs both Class and Tags APIs together
+> - In Marko 5, per-file heuristics select which runtime compiles each template
 
-[Marko 5](https://v5.markojs.com/) uses the [Class API](https://v5.markojs.com/docs/class-components/), and current versions use the [Tags API](../reference/language.md). Marko 6 is _not_ backwards compatible, so if `marko@6` is installed an application cannot use class components out of the box. Instead, Marko 5 is **forward compatible**. To use multiple versions of Marko together, ensure that Marko 5 is installed at the project root.
+[Marko 5](https://v5.markojs.com/) uses the [Class API](https://v5.markojs.com/docs/class-components/), while Marko 6 uses the [Tags API](../reference/language.md). Because Marko 6 has removed the Class API, incremental migrations run on **Marko 5** at the project root, which ships an interoperable layer for both runtimes.
 
-Marko 5 and 6 use runtimes which are **interoperable** but **distinct**. As such, the compiler determines which runtime to use based on a set of heuristics. Switching _between_ the two runtimes should be avoided as often as possible, so it is preferable to ensure that Tags API components mostly reference other Tags API components.
+Because the two runtimes are distinct, minimize crossing between them by grouping Tags API components so they primarily render other Tags API components.
 
-## Tags/Class API Heuristics
+## API Heuristics
 
-The Marko 5 compiler uses a set of heuristics to determine which runtime a template should be compiled to.
-
-> [!NOTE]
-> Each `.marko` file is classified as a whole: the compiler scans the entire template and the first signal found determines the file's API. Signals from _both_ APIs in the same file cause a compile error ("Cannot mix Tags API and Class API features in the same file"), so an explicit opt-in comment cannot override conflicting syntax.
+In Marko 5, the compiler classifies each `.marko` file as a whole using the heuristics below. Every feature in a single file must belong to the same API; mixing Class API and Tags API syntax in one file is not allowed, and an opt-in comment cannot override conflicting syntax.
 
 ### Directory Name
 
-In Marko 5 and below custom tags were [auto-discovered](../reference/custom-tag.md#relative-custom-tags) from `/components` directories, but in Marko 6 they are discovered from `/tags`. Since `/tags` is new to Marko 6, `.marko` files under `/tags` **must** use the Tags API.
+Marko 5 discovers Class API tags in `components/` directories, while Marko 6 discovers Tags API tags in `tags/` directories. Files inside a `tags/` directory compile with the Tags API.
 
-There are two exceptions: files inside a `components/` directory nested within `/tags` are treated as Class API (which allows vendored Class API code to live inside a tags tree), and directories registered through a `marko.json` [`tags-dir`](https://v5.markojs.com/docs/marko-json/) are not affected by this rule.
+Two exceptions apply: files inside a `components/` directory nested under `tags/` do not inherit the `tags/` rule (so they fall through to the remaining heuristics, allowing vendored Class API components inside a `tags/` tree), and directories registered through a `marko.json` [`tags-dir`](https://v5.markojs.com/docs/marko-json/) are unaffected by this rule.
 
 ### Comment Opt-In
 
-Files can be explicitly marked to use a specific API with a `/* use [api] */`comment. Any comment type is acceptable, and the comment can be anywhere in the file.
+A comment matching `use class` or `use tags` in a template, tag, or attribute-tag body explicitly selects the API for that file:
 
 ```marko
 // use class
@@ -33,35 +30,35 @@ Files can be explicitly marked to use a specific API with a `/* use [api] */`com
 ```
 
 ```marko
-<!-- use tags -->
+// use tags
 <h1>Tags API</h1>
 ```
 
+Any Marko comment form (`//`, `/* */`, or `<!-- -->`) works in those body positions; comments inside opening tags or inside `<script>`/`static` blocks are ignored.
+
 > [!TIP]
-> These explicit opt-ins are only necessary if a `.marko` file _isn't_ an [auto-discovered tag](#directory-name) and its contents are ambiguous (i. e. none of the following heuristics apply) so in practice they are rarely needed except for sometimes in [Marko Run](../marko-run/file-based-routing.md)'s `+page.marko` and `+layout.marko`.
+> Explicit opt-ins are only needed when a file sits outside `tags/` and contains no API-specific syntax, such as an ambiguous [Marko Run](../marko-run/file-based-routing.md) `+page.marko` or `+layout.marko`.
 
 ### Class API Syntax
 
-If an otherwise ambiguous file contains any of the following syntax, it is detected as Class API (Marko 5):
+An otherwise ambiguous file compiles as Class API if it contains:
 
 - A [`class {}` block](https://v5.markojs.com/docs/class-components/#single-file-components)
 - A [`style {}` block](https://v5.markojs.com/docs/class-components/#styles)
 - Inline JS in a [`$ scriptlet;`](https://v5.markojs.com/docs/syntax/#inline-javascript)
-- An [Attribute argument](https://v5.markojs.com/docs/syntax/#arguments) (`<button onClick("handleClick")>`)
-- Any of [these tags](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/translator/interop/feature-detection.ts#L180-L188):
-  - `<await-reorderer>` `<class>` `<include-html>` `<include-text>` `<init-components>` `<macro>` `<module-code>` `<while>`
+- An [attribute argument](https://v5.markojs.com/docs/syntax/#arguments) (`<button onClick("handleClick")>`)
+- Any of these Class API tags (see `getFeatureTypeFromCoreTagName` in [`feature-detection.ts`](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/translator/interop/feature-detection.ts)): `<await-reorderer>`, `<class>`, `<include-html>`, `<include-text>`, `<init-components>`, `<macro>`, `<module-code>`, or `<while>`
 
 > [!NOTE]
-> `static`, `server`, and `client` statements are shared by both APIs and are not detection signals.
+> `static`, `server`, and `client` statements work in both APIs and are not detection signals.
 
 ### Tags API Syntax
 
-If an otherwise ambiguous file contains any of the following syntax, it is detected as Tags API (Marko 6):
+An otherwise ambiguous file compiles as Tags API if it contains:
 
 - A [tag variable](../reference/language.md#tag-variables) (`<div/var>`)
 - The [bind shorthand](../reference/language.md#shorthand-change-handlers-two-way-binding) (`:=`)
-- Any of [these tags](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/translator/interop/feature-detection.ts#L189-L198):
-  - `<const>` `<debug>` `<define>` `<id>` `<let>` `<lifecycle>` `<log>` `<return>` `<try>`
+- Any of these Tags API tags (see `getFeatureTypeFromCoreTagName` in [`feature-detection.ts`](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/src/translator/interop/feature-detection.ts)): `<const>`, `<debug>`, `<define>`, `<id>`, `<let>`, `<lifecycle>`, `<log>`, `<return>`, `<show>`, or `<try>`
 
 ```marko
 <let/count=0>
@@ -70,9 +67,7 @@ If an otherwise ambiguous file contains any of the following syntax, it is detec
 
 ### Exclusive Tag Library
 
-If a file is otherwise ambiguous but _all_ tags found by the [tag discovery mechanism](../reference/custom-tag.md#relative-custom-tags) are in a `tags/` directory and no `components/` directories are discovered, the file falls back into Tags API.
-
-All ambiguous files here use the tags API, because there are no `components/`.
+If an ambiguous file discovers tags exclusively in `tags/` directories with no `components/` directories in scope, it defaults to the Tags API:
 
 ```text
 src/
@@ -81,7 +76,7 @@ src/
     some-tag.marko
 ```
 
-Even _one_ `components/` directory will default all ambiguous files to prefer Class API if there are no [`// use tags` comments](#comment-opt-in) or [tag syntax heuristics](#tags-api-syntax).
+If any `components/` directory is in scope, ambiguous files default to the Class API unless marked with a [`// use tags` comment](#comment-opt-in) or [Tags API syntax](#tags-api-syntax):
 
 ```text
 src/
@@ -97,4 +92,4 @@ src/
 
 ## Limitations
 
-Attributes, [content](../reference/language.md#tag-content), [attribute tags](../reference/language.md#attribute-tags), and [tag parameters](../reference/language.md#tag-parameters) all cross between the runtimes. A pending promise does not: when content containing an unsettled [`<await>`](../reference/core-tag.md#await) crosses between the runtimes, rendering fails with `Cannot serialize promise across tags/class compat layer`. Keep each `<await>` and the content it renders within a single API.
+Attributes, [content](../reference/language.md#tag-content), [attribute tags](../reference/language.md#attribute-tags), and [tag parameters](../reference/language.md#tag-parameters) all pass across the Class/Tags boundary. Pending promises do not: keep each [`<await>`](../reference/core-tag.md#await) and the content it renders within a single API rather than passing unsettled `<await>` content across the boundary.

@@ -1,41 +1,35 @@
-# Tags API for Class API Developers
+# Class to Tags API
 
 > [!TLDR]
 >
-> - Component Boundaries are _far_ less meaningful, state lives locally
-> - `class`, `state`, `out`, `component`, and other class component-specific APIs have been removed
-> - `renderBody` → `content`
-> - Event handling is function-based instead of event-based
+> - Component boundaries carry no state or lifecycle overhead; state lives locally
+> - `class`, `state`, `out`, `component`, and instance methods have been removed
+> - `input.renderBody` is replaced by `input.content`
+> - Event handlers are standard function attributes rather than string-named methods
 
-Marko 4 and 5 leveraged a [Class-based API](https://v5.markojs.com/docs/class-components/) for interactivity. Marko 6 is based on a new tags-based syntax, where "everything is a tag". For developers familiar with older versions of Marko this will take some getting used to, but we are confident that the Tags API is cleaner and easier to write & read, and it increases Marko's capabilities and optimization potential.
-
-This page will discuss some of the differences in mental model between the Class API and the Tags API.
+Marko 4 and 5 used a [Class API](https://v5.markojs.com/docs/class-components/) where each component file managed its own class, `state`, and lifecycle methods. Marko 6 replaces this with the Tags API, where state, reactivity, and side effects are declared inline as tags and analyzed at compile time.
 
 ## Components Melt Away
 
-The first idea to get used to when adopting the Tags API is that component boundaries have much less importance than they do in the Class API, and component-level methods no longer exist.
+In the Class API, state and lifecycle attach to component boundaries (`state`, `onInput`, `onMount`, `onDestroy`). In the Tags API, component boundaries serve code organization only: state lives locally in [tag variables](../reference/language.md#tag-variables) anywhere in the template (including inside conditionals and loops), and side effects attach to individual tags.
 
-In the Class API, state and lifecycle are maintained at the _component_ level. Each single-file component has its own `state`, `onInput`, `onDestroy`, and other lifecycle methods. The Tags API abandons this idea in favor of granular, compiled reactivity. State is declared with [tag variables](../reference/language.md#tag-variables) where necessary, including inside conditionals and loops, and lifecycle is attached to individual tags.
-
-Patterns that depend on the component instance like `getComponent` have been removed and are replaced with [local, declarative alternatives](#component-refs).
+Instance-lookup patterns like `getComponent` have been removed in favor of declarative data flow and [exposed return values](#component-refs).
 
 ## Updated APIs
 
-A quick reference for removed features and their modern equivalents:
+Every removed Class API feature maps to a direct Tags API equivalent:
 
-- `out` is no longer accessible, except `out.global` as [`$global`](../reference/language.md#global)
-- [`class`](https://v5.markojs.com/docs/class-components/#single-file-components), [`state`](https://v5.markojs.com/docs/state/#state), and [`component`](https://v5.markojs.com/docs/class-components/#component) are removed in favor of [tag variables](../reference/language.md#tag-variables)
+- `out` is replaced by [`$global`](../reference/language.md#global) for render-scoped globals
+- [`class`](https://v5.markojs.com/docs/class-components/#single-file-components), [`state`](https://v5.markojs.com/docs/state/#state), and [`component`](https://v5.markojs.com/docs/class-components/#component) are replaced by [tag variables](../reference/language.md#tag-variables)
 - [`input.renderBody`](https://v5.markojs.com/docs/body-content/) is renamed to [`input.content`](../reference/language.md#tag-content)
-- All [instance methods](https://v5.markojs.com/docs/class-components/#methods) have been removed
-  - [`getEl`/`getEls`](#element-refs), [`getComponent`](#component-refs), `forceUpdate`, `subscribeTo`, etc.
-- Directives are no longer necessary, as updates are more granular
-  - [`:scoped`](https://v5.markojs.com/docs/class-components/#scoped), [`:no-update`](https://v5.markojs.com/docs/class-components/#no-update_1), [`no-update`](https://v5.markojs.com/docs/class-components/#no-update), [`no-update-if`](https://v5.markojs.com/docs/class-components/#no-update-if), [`no-update-body`](https://v5.markojs.com/docs/class-components/#no-update-body), [`no-update-body-if`](https://v5.markojs.com/docs/class-components/#no-update-body-if)
-- Mutable updates via [`replaceState`](https://v5.markojs.com/docs/class-components/#replacestatenewstate) and [`setStateDirty`](https://v5.markojs.com/docs/class-components/#setstatedirtyname-value) were always anti-patterns and have been removed intentionally with no modern alternative
-- [Split components](https://v5.markojs.com/docs/class-components/#split-components) are no longer necessary, as [targeted compilation](./targeted-compilation.md) happens at the sub-component level
+- [Instance methods](https://v5.markojs.com/docs/class-components/#methods) map to declarative equivalents: [`getEl`/`getEls`](#element-refs) → native tag variables, [`getComponent`](#component-refs) → `<return>`, `forceUpdate` → reassigning [`<let>`](../reference/core-tag.md#let), `subscribeTo` → [`<script>`](../reference/core-tag.md#script) with [`$signal`](../reference/language.md#signal)
+- Update directives ([`:scoped`](https://v5.markojs.com/docs/class-components/#scoped), [`:no-update`](https://v5.markojs.com/docs/class-components/#no-update_1), [`no-update`](https://v5.markojs.com/docs/class-components/#no-update), [`no-update-if`](https://v5.markojs.com/docs/class-components/#no-update-if), [`no-update-body`](https://v5.markojs.com/docs/class-components/#no-update-body), [`no-update-body-if`](https://v5.markojs.com/docs/class-components/#no-update-body-if)) are no longer necessary because compiled updates are expression-level
+- [`replaceState`](https://v5.markojs.com/docs/class-components/#replacestatenewstate) and [`setStateDirty`](https://v5.markojs.com/docs/class-components/#setstatedirtyname-value) are replaced by [immutable `<let>` reassignment](./immutable-state.md)
+- [Split components](https://v5.markojs.com/docs/class-components/#split-components) are no longer necessary because [targeted compilation](./targeted-compilation.md) splits static and interactive code automatically at the sub-template level
 
 ## Event Handling
 
-Attribute arguments like `onClick("handleClick")` have been removed. Event handlers are normal attributes now, and can be used either inline or by referencing a function:
+Attribute arguments such as `onClick("handleClick")` have been removed. Event handlers are standard function attributes written inline or passed by reference:
 
 ```marko
 <let/color="blue">
@@ -47,24 +41,23 @@ Attribute arguments like `onClick("handleClick")` have been removed. Event handl
 <button onClick=yellowOrGreen>Random</button>
 ```
 
-This _drastically_ simplifies custom tag communication, as function-based [event handlers](../reference/native-tag#event-handlers) can be passed and called directly instead of curried as events. This means they're [spreadable](../reference/language.md#spread-attributes), and [`this.emit`](https://v5.markojs.com/docs/events/#emitting-custom-events) is no longer necessary.
+Because [event handlers](../reference/native-tag.md#event-handlers) are plain functions, they can be [spread](../reference/language.md#spread-attributes), wrapped, and called directly, replacing [`this.emit`](https://v5.markojs.com/docs/events/#emitting-custom-events):
 
 ```marko
-/* two-buttons.marko */
 export interface Input extends Marko.HTML.Button {}
 
-// `onClick` and other event handlers are passed through!
 <button ...input/>
 
-<button ...input onClick(e, el) {
-  console.log("clicked the second button");
-
-  // call the parent `onClick` after doing something custom
-  input.onClick && input.onClick(e, el);
-}/>
+<button
+  ...input
+  onClick(e, el) {
+    console.log("clicked the second button");
+    input.onClick?.(e, el);
+  }
+/>
 ```
 
-Information is passed to the parent via standard function parameters.
+Pass values back to a parent through standard function parameters:
 
 ```marko
 export interface Input {
@@ -78,18 +71,20 @@ export interface Input {
 
 ## Element Refs
 
-Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), native tags [expose a tag variable](../reference/native-tag.md#element-references) with a getter to the DOM node. It is in scope throughout the template, and a [`<script>`](../reference/core-tag.md#script) body or [event handler](../reference/native-tag.md#event-handlers) reads the node by calling it.
+Instead of [`getEl`](https://v5.markojs.com/docs/class-components/#getelkey-index), native tags expose a [tag variable getter](../reference/native-tag.md#element-references) for the DOM element, readable from [`<script>`](../reference/core-tag.md#script), [`<lifecycle>`](../reference/core-tag.md#lifecycle), and [event handlers](../reference/native-tag.md#event-handlers):
 
 ```marko
 <input/$el/>
 
-<script>$el().focus()</script>
+<script>
+  $el().focus();
+</script>
 ```
 
 > [!NOTE]
-> We use `$el` by convention. The leading `$` is not necessarily required, but optimizations _may_ be added that only apply if the convention is followed.
+> The leading `$` in `$el` is a naming convention to distinguish element getters from regular state variables.
 
-When references for multiple elements are required (like [`getEls`](https://v5.markojs.com/docs/class-components/#getelskey) in Marko 5), hoisted tag variables can be [iterated](../reference/language.md#repeated-tag-vars).
+For multiple elements (replacing [`getEls`](https://v5.markojs.com/docs/class-components/#getelskey)), hoisted tag variables are [iterable](../reference/language.md#repeated-tag-vars):
 
 ```marko
 <let/focus=0>
@@ -102,12 +97,14 @@ When references for multiple elements are required (like [`getEls`](https://v5.m
   const els = [...$el];
   focus = (focus + 1) % els.length;
   els[focus].focus();
-}>Focus next</button>
+}>
+  Focus next
+</button>
 ```
 
 ## Component Refs
 
-Since component-level operations no longer exist in the Tags API, [`getComponent`](https://v5.markojs.com/docs/class-components/#getcomponentkey-index) has been removed. Information should be passed between parent and child using [event handlers](#event-handling), the [controllable pattern](./controllable-components.md), and methods exposed by [the `<return>` tag](../reference/core-tag.md#return).
+[`getComponent`](https://v5.markojs.com/docs/class-components/#getcomponentkey-index) has been removed. Communicate between parent and child through [function callbacks](#event-handling), the [controllable pattern](./controllable-components.md), or values exposed via [`<return>`](../reference/core-tag.md#return):
 
 ```marko
 /* parent.marko */
@@ -117,49 +114,56 @@ Since component-level operations no longer exist in the Tags API, [`getComponent
 <button onClick() {
   child.changeColor("blue");
   changeColor("green");
-}>Change colors</button>
+}>
+  Change colors
+</button>
 ```
 
 ```marko
-/* child.marko */
+/* tags/child.marko */
 <let/color="red">
 <button style={ "background-color": color }>${color}</button>
 
-<return/{ changeColor(c) { color = c } }>
+<return={
+  changeColor(next: string) {
+    color = next;
+  },
+}/>
 ```
 
-## Lifecycle
+## Lifecycle Hooks
 
-In the Class API, running code when something mounts inside a loop requires a child component.
+In the Class API, running mount logic inside a loop required extracting a child component:
 
 ```marko
-// use class
-<for|i| until=3>
+/* index.marko */
+<for|i| from=0 to=2>
   <log-value value=i/>
 </for>
 ```
 
 ```marko
 /* components/log-value.marko */
-// use class
 class {
-  onMount() { console.log(this.input.value) }
+  onMount() {
+    console.log(this.input.value);
+  }
 }
 ```
 
-In the Tags API, no component boundary is required.
+In the Tags API, [`<script>`](../reference/core-tag.md#script) attaches directly inside the loop with no extra component:
 
 ```marko
 <for|i| until=3>
-  <script>console.log(i)</script>
+  <script>
+    console.log(i);
+  </script>
 </for>
 ```
 
-The Tags API has two built-in tags for lifecycle management, both of which _should be avoided unless absolutely necessary_.
-
 ### `<script>`
 
-The [`<script>` tag](../reference/core-tag.md#script) is used in the Tags API to execute user effects.
+[`<script>`](../reference/core-tag.md#script) runs browser side effects after mount and re-runs whenever referenced reactive values change, cleaning up through [`$signal`](../reference/language.md#signal):
 
 ```marko
 <script>
@@ -170,71 +174,64 @@ The [`<script>` tag](../reference/core-tag.md#script) is used in the Tags API to
 ```
 
 > [!CAUTION]
-> The `<script>` tag is Marko's equivalent to [React's `useEffect`](https://react.dev/reference/react/useEffect), and as such it [should be avoided](https://react.dev/learn/you-might-not-need-an-effect) unless side effects are required.
+> Like [React's `useEffect`](https://react.dev/learn/you-might-not-need-an-effect), reserve `<script>` for synchronizing with external side effects; prefer `<const>` and `<let>` for derived values and state.
 
 ### `<lifecycle>`
 
-The [`<lifecycle>` tag](../reference/core-tag.md#lifecycle) is for escaping the reactive system to work with imperative APIs (maps, charts, etc.). Each `<lifecycle>` tag manages its own `onMount`, `onUpdate`, and `onDestroy`, and `this` is stable across the tag's lifetime.
-
-This tag should be used sparingly, usually `<script>` or regular state via `<let>`/`<const>` is a better option.
+[`<lifecycle>`](../reference/core-tag.md#lifecycle) wraps imperative browser APIs with explicit `onMount`, `onUpdate`, and `onDestroy` hooks sharing a stable `this`:
 
 ```marko
-<let/latitude=0>
-<let/longitude=0>
+client import { AudioPlayer } from "audio-player";
+
+<let/volume=0.8>
+<div/playerEl/>
 
 <lifecycle
+  volume=volume
   onMount() {
-    const map = new WorldMap($el());
-    map.on("move", () => {
-      latitude = map.x;
-      longitude = map.y;
-    });
-    return { map };
+    return { player: new AudioPlayer(playerEl(), { volume: this.volume }) };
   }
   onUpdate() {
-    this.map.setCoords(latitude, longitude);
+    this.player.setVolume(this.volume);
   }
-  onDestroy() { this.map.destroy() }
+  onDestroy() {
+    this.player.dispose();
+  }
 />
-
-<div/$el/>
 ```
 
-## Derived values
+## Derived Values
 
-In the Class API, there are multiple ways to derive values.
-
-1. Inline JS [scriptlets](https://v5.markojs.com/docs/syntax/#inline-javascript) with `const`
-
-    ```marko
-    export interface Input {
-      num: number | string;
-    }
-    $ const num = parseInt(input.num);
-    <div>${num}</div>
-    ```
-
-2. Some Class API applications use [`onInput`](https://v5.markojs.com/docs/class-components/#oninputinput-out) to validate or transform values. This is an anti-pattern and can lead to issues, but is still fairly common.
-
-    ```marko
-    export interface Input {
-      num: number | string;
-    }
-    class {
-      onInput(input) {
-        input.num = parseInt(input.num);
-      }
-    }
-    <div>${input.num}</div>
-    ```
-
-In the Tags API, all derivations should happen through the `<const>` tag.
+In the Class API, derived values relied on inline [scriptlets](https://v5.markojs.com/docs/syntax/#inline-javascript) or mutating `input` in [`onInput`](https://v5.markojs.com/docs/class-components/#oninputinput-out) (an anti-pattern):
 
 ```marko
 export interface Input {
   num: number | string;
 }
-<const/num=parseInt(input.num)>
+$ const num = Number(input.num);
+<div>${num}</div>
+```
+
+```marko
+export interface Input {
+  num: number | string;
+}
+class {
+  onInput(input) {
+    input.num = Number(input.num);
+  }
+}
+<div>${input.num}</div>
+```
+
+In the Tags API, compute derived values with [`<const>`](../reference/core-tag.md#const):
+
+```marko
+export interface Input {
+  num: number | string;
+}
+
+<const/num=Number(input.num)>
 <div>${num}</div>
 ```
 
