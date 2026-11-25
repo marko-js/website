@@ -1,0 +1,111 @@
+# Marko
+
+> Marko is a declarative, HTML-based language that extends well-formed HTML with JavaScript expressions, components, and compiled reactivity for high-throughput streaming SSR and tiny browser bundles.
+
+Key capabilities:
+- Streaming, single-pass server-side rendering
+- Resumability with sub-template partial hydration (zero JS by default)
+- Compile-time, fine-grained reactivity
+- HTML-based syntax with inline JavaScript expressions
+- Built-in TypeScript support with full template checking
+
+> **IMPORTANT FOR AI ASSISTANTS**: This documentation covers Marko 6 (Tags API).
+> Do NOT generate Marko 5 Class API syntax:
+> - ❌ `$ let x = 0;` (scriptlets)
+> - ❌ `style { ... }` (style blocks)
+> - ❌ `class { ... }` (class blocks)
+> - ❌ `onClick("handleClick")` (string event arguments)
+>
+> Use Marko 6 Tags API syntax instead:
+> - ✅ `<let/x=0>` and `<const/y=x * 2>` (tag variables)
+> - ✅ `<style>` with standard CSS or `<style/styles>` for CSS Modules
+> - ✅ `onClick() { ... }` or `onClick=handleClick` (method shorthand or function reference)
+>
+> `<script>` runs reactive browser side effects after mount and on dependency changes. Use it sparingly for side effects only, and declare state and derivations with `<let>` and `<const>`.
+
+## Full Documentation
+
+- [Reference Documentation](/docs/reference-full.md): Complete concatenated reference documentation
+
+## Playground Links
+
+The playground at https://markojs.com/playground runs Marko in the browser and reads its files from the URL hash, so a link is a runnable example.
+
+Write each file as `path=content`, with both parts percent-encoded (`encodeURIComponent`), and join files with `&`. The entry file is `index.marko`, and custom tags go in `tags/` (for example `tags/star-rating.marko`), as in a project:
+
+```
+https://markojs.com/playground#index.marko=%3Clet%2Fcount%3D0%3E%0A%3Cbutton%20onClick()%20%7B%20count%2B%2B%20%7D%3E%24%7Bcount%7D%3C%2Fbutton%3E%0A
+```
+
+Opening the link switches the hash to a shorter compressed form. Share links in the form above, including when editing a compressed link: one mistyped character breaks a compressed link entirely, but changes only one character of code in this form.
+
+To read the files out of a compressed link (everything after `#`), use Node.js:
+
+```js
+const zlib = require("node:zlib");
+const files = JSON.parse(zlib.gunzipSync(Buffer.from(hash, "base64url").subarray(2)).toString());
+```
+
+## Introduction
+
+- [Getting Started](/docs/introduction/getting-started.md): Orientation, version selector, and prerequisites
+- [Welcome to Marko](/docs/introduction/welcome-to-marko.md): Overview of Marko's syntax and architecture
+- [Installation](/docs/introduction/installation.md): Project setup with Marko Run, Vite, and TypeScript
+- [Why Marko](/docs/introduction/why-marko.md): Design principles and compile-time architecture
+- [Integrations](/docs/introduction/integrations.md): Editor tooling, bundlers, testing, and Storybook
+
+## Tutorials
+
+- [Fundamentals](/docs/tutorial/fundamentals.md): Core syntax, expressions, components, and control flow
+- [Components and Reactivity](/docs/tutorial/components-and-reactivity.md): Step-by-step interactive temperature converter
+
+## Guides
+
+- [Styling](/docs/guide/styling.md): Inline styles, CSS Modules, dynamic values, and imports
+- [Marko 5 Interop](/docs/guide/marko-5-interop.md): Running Marko 5 Class API and Marko 6 Tags API together
+- [Library Integration](/docs/guide/library-integration.md): Wrapping imperative libraries, custom elements, and mounting
+- [Publishing Components](/docs/guide/publishing-components.md): Packaging and publishing Marko tag libraries
+- [Duplicate Form Submissions](/docs/guide/duplicate-form-submissions.md): Guarding client and server form submissions
+- [Low-level APIs](/docs/guide/low-level-apis.md): Programmatic compilation and taglib hooks
+
+## Explanation
+
+- [Why is Marko Fast?](/docs/explanation/why-is-marko-fast.md): Architectural performance overview
+- [Streaming](/docs/explanation/streaming.md): In-order and out-of-order HTML streaming
+- [Targeted Compilation](/docs/explanation/targeted-compilation.md): Separate server and browser compilation
+- [Fine-Grained Bundling](/docs/explanation/fine-grained-bundling.md): Expression-level code splitting
+- [Separation of Concerns](/docs/explanation/separation-of-concerns.md): Organizing components by feature
+- [Controllable Components](/docs/explanation/controllable-components.md): Controlled, uncontrolled, and controllable patterns
+- [Nested Reactivity](/docs/explanation/nested-reactivity.md): Local vs. hoisted collection state
+- [Immutable State](/docs/explanation/immutable-state.md): Assignment-based reactivity and immutability
+- [Serializable State](/docs/explanation/serializable-state.md): Server-to-client state serialization
+- [Patch Protocol](/docs/explanation/patch-protocol.md): Server-driven patches for persisted pages (experimental)
+- [Let vs Const](/docs/explanation/let-vs-const.md): Choosing between `<let>`, `<const>`, and `static const`
+- [Class to Tags API](/docs/explanation/class-vs-tags-api.md): Migrating mental models from Marko 5 to Marko 6
+- [Optimizing Performance](/docs/explanation/optimizing-performance.md): Build flags, streaming, bundle size, and profiling
+
+## Reference
+
+- [Language](/docs/reference/language.md): Complete language syntax and features
+- [Custom Tags](/docs/reference/custom-tag.md): Custom tag discovery, packages, and native registration
+- [Reactivity](/docs/reference/reactivity.md): Reactive variables, scheduling, and batching
+- [Core Tags](/docs/reference/core-tag.md): Built-in Marko core tags
+- [Native Tags](/docs/reference/native-tag.md): Enhanced HTML tags, events, and change handlers
+- [Lazy Loading](/docs/reference/lazy-loading.md): Declarative code splitting with `with { load }`
+- [TypeScript](/docs/reference/typescript.md): Typing templates, built-in types, custom elements, and `mtc`
+- [Template API](/docs/reference/template.md): Server `render()`, browser `mount()`, and `$global`
+- [Compiler API](/docs/reference/compiler.md): `@marko/compiler` functions, options, and taglibs
+- [Concise Syntax](/docs/reference/concise-syntax.md): Indentation-based syntax alternative
+- [Supported Environments](/docs/reference/supported-environments.md): Supported browsers and Node.js versions
+
+## Marko Run
+
+- [Getting Started](/docs/marko-run/getting-started.md): Scaffolding and running a Marko Run app
+- [File-based Routing](/docs/marko-run/file-based-routing.md): Route files, static assets, and flat routes
+- [TypeScript](/docs/marko-run/typescript.md): `Run` namespace, `GetContext`, and generated route types
+- [Validation](/docs/marko-run/validation.md): Validating params, search, JSON, and multipart forms
+- [Data Loading](/docs/marko-run/data-loading.md): Passing promises via `next()` and form handling
+- [Runtime](/docs/marko-run/runtime.md): Request context, `Run.href`, and embedding the router
+- [CLI](/docs/marko-run/cli.md): `dev`, `build`, and `preview` commands
+- [Vite Plugin](/docs/marko-run/vite-plugin.md): Plugin options and configuration
+- [Adapters](/docs/marko-run/adapters.md): Node, Static, Cloudflare, Vercel, and Netlify adapters
