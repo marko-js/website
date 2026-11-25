@@ -62,11 +62,11 @@ export interface Input<T> {
 }
 
 static function staticFn() {
-  // `T` is not in scope in module-level statements
+  // ❌ `T` is not in scope in module-level statements
 }
 
 <const/instanceFn(val: T) {
-  // `T` is in scope in the template body
+  // ✅ `T` is in scope in the template body
 }/>
 
 <select onInput(_evt, el) { input.onSelect(input.options[+el.value]) }>

@@ -145,7 +145,7 @@ Pass `content=` explicitly to target an inner wrapper element:
 >
 > ```marko
 > <div content=Summary>
->   // this comment is body content, so `Summary` never renders
+>   // ❌ this comment is body content, so `Summary` never renders
 > </div>
 > ```
 

@@ -54,7 +54,10 @@ Assigning to an uncontrolled [`<let>`](./core-tag.md#let) writes the new value i
 <button onClick() {
   quantity++;
 
-  // `quantity` holds the new value; compute the total from it directly.
+  // ❌ `subtotal` still holds the previous value until the update queue flushes
+  console.log(subtotal);
+
+  // ✅ `quantity` holds the new value; compute the total from it directly
   input.onQuantityChange(quantity, quantity * input.unitPrice);
 }>
   Add one

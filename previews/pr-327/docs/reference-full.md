@@ -46,7 +46,7 @@ It aborts when:
 > `$signal` is browser-only. Reading it during a server render (such as in an attribute, [`<const>`](./core-tag.md#const), or [interpolation](#dynamic-text)) is invalid:
 >
 > ```marko
-> // Invalid during a server render
+> // ❌ Invalid during a server render
 > <const/results=fetch("/api/search", { signal: $signal })>
 > ```
 >
@@ -1051,7 +1051,10 @@ Assigning to an uncontrolled [`<let>`](./core-tag.md#let) writes the new value i
 <button onClick() {
   quantity++;
 
-  // `quantity` holds the new value; compute the total from it directly.
+  // ❌ `subtotal` still holds the previous value until the update queue flushes
+  console.log(subtotal);
+
+  // ✅ `quantity` holds the new value; compute the total from it directly
   input.onQuantityChange(quantity, quantity * input.unitPrice);
 }>
   Add one
@@ -1956,7 +1959,7 @@ Pass `content=` explicitly to target an inner wrapper element:
 >
 > ```marko
 > <div content=Summary>
->   // this comment is body content, so `Summary` never renders
+>   // ❌ this comment is body content, so `Summary` never renders
 > </div>
 > ```
 
@@ -2508,11 +2511,11 @@ export interface Input<T> {
 }
 
 static function staticFn() {
-  // `T` is not in scope in module-level statements
+  // ❌ `T` is not in scope in module-level statements
 }
 
 <const/instanceFn(val: T) {
-  // `T` is in scope in the template body
+  // ✅ `T` is in scope in the template body
 }/>
 
 <select onInput(_evt, el) { input.onSelect(input.options[+el.value]) }>

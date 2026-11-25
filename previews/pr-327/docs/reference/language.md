@@ -40,7 +40,7 @@ It aborts when:
 > `$signal` is browser-only. Reading it during a server render (such as in an attribute, [`<const>`](./core-tag.md#const), or [interpolation](#dynamic-text)) is invalid:
 >
 > ```marko
-> // Invalid during a server render
+> // ❌ Invalid during a server render
 > <const/results=fetch("/api/search", { signal: $signal })>
 > ```
 >

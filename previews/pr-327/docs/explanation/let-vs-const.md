@@ -51,7 +51,7 @@ The `value=` attribute sets only the _initial_ value. Afterward, an uncontrolled
 >
 > <button onClick() {
 >   tipPercent += 1;
->   tip = bill * (tipPercent / 100); // Anti-pattern: repeated in every handler
+>   tip = bill * (tipPercent / 100); // ❌ repeated in every handler
 > }>Round up</button>
 > ```
 >

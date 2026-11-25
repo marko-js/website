@@ -32,7 +32,7 @@ To track the temperature, we declare mutable state with a [tag variable](../refe
 The input starts at `80`, but typing into it does not yet update `degF`. Listening to the native [`input` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) is tempting:
 
 ```marko
-// Warning: prefer change handlers below
+// ⚠️ There's a better way to do this!
 <let/degF=80>
 
 <input
