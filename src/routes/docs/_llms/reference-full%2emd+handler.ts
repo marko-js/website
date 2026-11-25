@@ -15,6 +15,7 @@ const referenceDocs = prepareLlmsTxt(
     "concise-syntax",
     "template",
     "compiler",
+    "supported-environments",
   ].map((file) => path.join(referenceDir, file + ".md")),
 );
 

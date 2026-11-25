@@ -1,118 +1,110 @@
 # Custom Tag Discovery
 
-Custom Tags in Marko allow for reusing markup across the application.
+Custom tags are reusable `.marko` components discovered automatically from the filesystem or installed packages without explicit imports.
 
 ## Priority
 
-When you use a `<Tag>` in Marko it is resolved in the following order:
+Marko resolves a tag name in the following order:
 
-- [Local Variable Custom Tags](#local-variable-custom-tags) <!-- this isn't a table of contents, prettier 😠 -->
-- [Relative Custom Tags](#relative-custom-tags)
-- [Installed Custom Tags](#installed-custom-tags)
-- [Supporting Files](#supporting-files)
+1. [Local variables](#local-variables) (`PascalCase` identifiers in scope)
+2. [Core tags](./core-tag.md) (built-in tags cannot be shadowed by custom tags)
+3. [Relative custom tags](#relative-custom-tags) in `tags/` directories up to the nearest `package.json`
+4. [Installed custom tags](#installed-custom-tags) from dependencies in `package.json`
+5. [Native HTML, SVG, and MathML tags](./native-tag.md)
 
-## Local Variable Custom Tags
+## Local Variables
 
-If a tag name starts with an uppercase letter, Marko first checks for a local variable with the same name.
-
-This is useful for importing custom tags that can't be [discovered automatically](#relative-custom-tags).
+When a tag name starts with an uppercase letter, Marko checks local scope first. This handles explicitly imported templates and [`<define>`](./core-tag.md#define) snippets:
 
 ```marko
-import MyTag from "./my-tag.marko"
+import MyTag from "./my-tag.marko";
 
 <MyTag/>
 ```
 
-or when using the [`<define>` tag](./core-tag.md#define)
-
 ```marko
-<define/MyTag|input: { name: string }| foo=1>
+<define/MyTag|input: { name: string }|>
   <span>Hello ${input.name}</span>
-</>
+</define>
 
 <MyTag name="HTML"/>
 <MyTag name="Marko"/>
 ```
 
 > [!NOTE]
-> If you need to reference a local variable that is _not_ `PascalCase`, you can do so using a [dynamic tag](./language.md#dynamic-tags).
+> Reference a non-`PascalCase` local variable using [dynamic tag syntax](./language.md#dynamic-tags):
 >
 > ```marko
-> import { camelCaseTag } from "somewhere"
+> import { camelCaseTag } from "somewhere";
 >
-> <${camelCaseTag} />
+> <${camelCaseTag}/>
 > ```
 
 ## Relative Custom Tags
 
-If Marko did not resolve a [local variable tag name](#local-variable-custom-tags) it checks the file system. From the current file, it looks recursively upward for:
+For tags not matched in local scope, Marko walks upward from the current template's directory to the package root (`package.json`), checking each `tags/` directory in precedence order:
 
-- `tags/TAG_NAME.marko`
-- `tags/TAG_NAME/index.marko`
-- `tags/TAG_NAME/TAG_NAME.marko`
-
-Any of these may also sit one level deep inside a [grouping folder](#grouping-folders).
-
-Let's take a look at an example directory structure to understand this better:
+1. `tags/TAG_NAME.marko`
+2. `tags/TAG_NAME/index.marko`
+3. `tags/TAG_NAME/TAG_NAME.marko`
+4. One level deep inside a [grouping folder](#grouping-folders)
 
 ```text
 tags/
-    app-header.marko
-    app-footer.marko
+  app-header.marko
+  app-footer.marko
 pages/
-    about/
-        tags/
-            team-members.marko
-        page.marko
-    home/
-        tags/
-            home-banner.marko
-        page.marko
+  about/
+    tags/
+      team-members.marko
+    page.marko
+  home/
+    tags/
+      home-banner.marko
+    page.marko
 ```
 
-The file `pages/home/page.marko` can resolve:
+`pages/home/page.marko` resolves:
 
 - `<app-header>`
 - `<app-footer>`
 - `<home-banner>`
 
-And the file `pages/about/page.marko` can resolve:
+`pages/about/page.marko` resolves:
 
 - `<app-header>`
 - `<app-footer>`
 - `<team-members>`
 
-The `home` page can't resolve `<team-members>` and the `about` page can't resolve `<home-banner>`. By using nested `tags/` directories, we've scoped our page-specific tags to their respective pages.
+The `home` page cannot resolve `<team-members>` and the `about` page cannot resolve `<home-banner>`, scoping page-specific tags to their respective subtrees.
 
 > [!NOTE]
-> In previous versions, relative tags were discovered in `components/` directories instead of `tags/`. These directories are now used as a heuristic for [runtime interoperability](../guide/marko-5-interop.md).
+> Marko 5 discovered relative tags in `components/` directories, which are now used as a heuristic for [Marko 5 interop](../guide/marko-5-interop.md).
 
 ### Grouping Folders
 
-Related tags can be grouped one level deep inside a folder that is not itself a tag. The folder name organizes files on disk but never becomes part of the tag name.
+Related tags can be organized one level deep inside a folder that is not itself a tag. The folder name organizes files on disk without changing tag names:
 
 ```text
 tags/
-    menu-button.marko
-    icons/
-        icon-chevron.marko
-        icon-plus.marko
+  menu-button.marko
+  icons/
+    icon-chevron.marko
+    icon-plus.marko
 ```
 
-This resolves `<menu-button>`, `<icon-chevron>`, and `<icon-plus>`. There is no `<icons>` tag; that folder only groups.
+This discovers `<menu-button>`, `<icon-chevron>`, and `<icon-plus>`.
 
-A few rules keep discovery predictable:
+Grouping rules:
 
-- Grouping is one level deep, so `tags/icons/outline/icon-star.marko` is not found.
-- A folder that is itself a tag (it has `index.marko` or a matching `FOLDER_NAME.marko`) becomes that one tag; its other files are not crawled, so examples or helpers can sit beside it.
-- `tags` and `components` folders are never grouped, preserving the nested [private tags](#installed-custom-tags) pattern.
-- Dot-prefixed folders are skipped. Only a leading dot counts, so `legacy.v1` still groups.
+- Grouping applies one level deep (`tags/icons/outline/icon-star.marko` is not discovered).
+- A folder containing `index.marko`, a matching `FOLDER_NAME.marko`, or `marko-tag.json` is treated as a single tag rather than a grouping folder, so helper files alongside it are not crawled.
+- `tags`, `components`, and `node_modules` folders are never treated as grouping folders.
+- Dot-prefixed folders (such as `.hidden`) are skipped; non-leading dots (such as `legacy.v1`) still group.
 
 ## Installed Custom Tags
 
-If no Local Variable or Relative Custom Tag is found, Marko checks installed tag libraries in your `node_modules`.
-
-Packages that provide Marko Custom Tags must include a `marko.json` at the root which tells Marko where the exported tags are.
+Marko inspects packages listed in `package.json` (`dependencies`, `peerDependencies`, and `devDependencies`) for a root `marko.json` with an `"exports"` directory:
 
 ```json
 /* marko.json */
@@ -121,51 +113,51 @@ Packages that provide Marko Custom Tags must include a `marko.json` at the root 
 }
 ```
 
-This example file tells Marko to expose all Custom Tags directly under the `dist/tags/` directory to the application using your package. Tags written in TypeScript ship their types as `.d.marko` files, as described in [TypeScript](./typescript.md#enabling-typescript-in-your-marko-project).
+If the package defines a `package.json` `"exports"` map, it must also expose the directory named in `marko.json` because compiled consumer templates import discovered tags by their package path (such as `@acme/ui/dist/tags/acme-icon/index.marko`):
+
+```json
+/* package.json */
+{
+  "exports": {
+    "./dist/*": "./dist/*"
+  }
+}
+```
+
+TypeScript tag libraries publish `.d.marko.ts` declarations emitted by `@marko/type-check` alongside their templates (see [TypeScript](./typescript.md#enabling-typescript-in-your-marko-project)).
 
 > [!TIP]
-> Often a tag library will have "private tags" and "exported tags". A common way to achieve this is to have a `tags/` folder _within_ the exported `tags/` folder 🤯.
->
-> For example, when exporting `dist/tags`, `dist/tags/tags/` could contain private components only available _within_ the library.
+> To keep internal helper tags private to a library, place them in a nested `tags/` directory inside the exported directory (for example `dist/tags/tags/`).
 
 <!---->
 
 > [!CAUTION]
-> If two packages export the tag name, Marko will choose the one it finds first. To prevent collisions, tag libraries are encouraged to prefix all exported tag names, e.g. `ebay-`. If you must use tags with conflicting names, you can import by path to disambiguate.
+> When two packages export the same tag name, Marko selects the first one discovered. Prefix library tag names (for example `ebay-`) to avoid collisions, or import by path to disambiguate.
+
+## Native Tag Registration
+
+The compiler recognizes standard HTML, SVG, and MathML tags. To emit non-standard elements or [custom elements](./typescript.md#custom-elements) verbatim as native HTML tags, register them in a `marko.json` beside the template or in an ancestor directory:
+
+```json
+{
+  "<x-datepicker>": { "html": true }
+}
+```
 
 ## Supporting Files
 
-Marko discovers [`style`](../guide/styling.md) files adjacent to the `.marko` file.
-
-```text
-foo.marko
-foo.style.css
-```
-
-Here, the `<foo>` tag has associated styles.
-
-When the file is named `index.marko` the prefix is optional. A tag in its own folder may also have a `marko-tag.json` beside it.
+Marko automatically discovers adjacent [stylesheets](../guide/styling.md#auto-discovered-styles) for any `.marko` template using a single extension (`<name>.style.<ext>`, or `style.<ext>` next to `index.marko`). A tag directory may also include a `marko-tag.json`:
 
 ```text
 tags/
-  bar/
+  card.marko
+  card.style.css
+  modal/
     index.marko
-    style.css
-  baz/
+    style.scss
+  widget/
     index.marko
     marko-tag.json
 ```
 
-Here, the `<bar>` tag has an associated `style.css` and the `<baz>` tag has an associated `marko-tag.json`.
-
-For `style` files any extension may be used allowing for CSS preprocessors.
-
-```text
-tags/
-  less/
-    index.marko
-    style.less
-  scss/
-    index.marko
-    style.scss
-```
+Any single preprocessor extension (`.css`, `.scss`, `.less`, etc.) is supported.

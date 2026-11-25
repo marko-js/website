@@ -1,9 +1,9 @@
 # Newsletter
 
-The Marko newsletter is a monthly summary of shipped work, written for the developers who build with it. Each edition gathers the month's features, fixes, performance gains, and tooling improvements into a short read, with links to the pull requests behind every change.
+The Marko newsletter is a monthly summary of shipped features, fixes, performance gains, and tooling improvements, written for developers building with Marko and linking directly to the pull requests behind every change.
 
 > [!TIP]
-> New editions are published to an [RSS feed](/docs/newsletter/feed.xml). Add the feed URL to any reader to follow along.
+> Subscribe via the [RSS feed](/docs/newsletter/feed.xml) to follow new editions.
 
 ## Archive
 

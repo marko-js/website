@@ -1,36 +1,27 @@
 # TypeScript
 
-Marko’s TypeScript support offers in-editor error checking, makes refactoring less scary, verifies that data matches expectations, and even helps with API design.
+Marko provides built-in TypeScript support for template inputs, reactive variables, native elements, and custom tags, with checking in editors and the CLI.
 
 ## Enabling TypeScript in your Marko project
 
-There are two (non-exclusive) ways to add TypeScript to a Marko project:
+For applications, place a [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root:
 
-- **For sites and web apps**, [a `tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) at the project root is the only requirement:
+```text
+src/
+package.json
+tsconfig.json
+```
 
-  ```text
-  src/
-  package.json
-  tsconfig.json
-  ```
-
-- **For [packages of Marko tags](./custom-tag.md#installed-custom-tags)**, publish the output of [`@marko/type-check`](#ci-type-checking). Next to each `.marko` file it emits a `.d.marko` file holding the tag's types, which exposes type-checking and autocomplete for the published tags.
+For [tag libraries](./custom-tag.md#installed-custom-tags), publish the output of [`@marko/type-check`](#ci-type-checking), which emits type-stripped `.marko` files alongside `.d.marko.ts` declaration files so consumers get full autocomplete and type checking.
 
 > [!TIP]
-> A codebase that mixes JavaScript and TypeScript, such as one migrating incrementally, can override these defaults by setting `"script-lang"` to `"ts"` or `"js"` in a `marko.json`.
->
-> Marko will crawl up the directory looking for a `marko.json` with `script-lang` defined, allowing folders to opt in to or out of TypeScript.
+> Codebases migrating incrementally between JavaScript and TypeScript can set `"script-lang"` to `"ts"` or `"js"` in a `marko.json`. Marko walks upward to the nearest `marko.json` defining `script-lang`, allowing per-directory opt-in or opt-out.
 
 ## Typing `input`
 
-A `.marko` file will use any exported `Input` type for [that file’s `input` object](./language.md#input).
-
-This can be `export type Input` or `export interface Input`.
-
-### Example
+Exporting `Input` (`export interface Input` or `export type Input`) types the template's [`input`](./language.md#input) object:
 
 ```marko
-/* PriceField.marko */
 export interface Input {
   currency: string;
   amount: number;
@@ -42,25 +33,27 @@ export interface Input {
 </label>
 ```
 
-Since it is exported, `Input` may be accessed from other `.marko` and `.ts` files:
+Because `Input` is a standard TypeScript export, other `.marko` and `.ts` files can import and extend it:
 
 ```marko
-import { Input as PriceInput } from "<PriceField>";
-import { ExtraTypes } from "lib/utils.ts";
+import type { Input as PriceInput } from "<price-field>";
+import type { ExtraTypes } from "./utils.ts";
+
 export type Input = PriceInput & ExtraTypes;
 ```
 
 ```marko
-import { Input as PriceInput } from "<PriceField>";
+import type { Input as PriceInput } from "<price-field>";
+
 export interface Input extends PriceInput {
   discounted: boolean;
   expiresAt: Date;
-};
+}
 ```
 
 ### Generic `Input`
 
-[Generic Types and Type Parameters](https://www.typescriptlang.org/docs/handbook/2/generics.html) on `Input` are recognized throughout the entire `.marko` template (excluding [static statements](./language.md#static)).
+[Type parameters](https://www.typescriptlang.org/docs/handbook/2/generics.html) declared on `Input` are in scope throughout the template body (excluding module-level [`static` statements](./language.md#static)):
 
 ```marko
 export interface Input<T> {
@@ -69,15 +62,14 @@ export interface Input<T> {
 }
 
 static function staticFn() {
-  // can NOT use `T` here
+  // ❌ `T` is not in scope in module-level statements
 }
 
 <const/instanceFn(val: T) {
-  // can use `T` here
+  // ✅ `T` is in scope in the template body
 }/>
 
-// can use `as T` here
-<select onInput(evt) { input.onSelect(options[evt.target.value] as T) }>
+<select onInput(_evt, el) { input.onSelect(input.options[+el.value]) }>
   <for|value, i| of=input.options>
     <option value=i>${value}</option>
   </for>
@@ -86,7 +78,7 @@ static function staticFn() {
 
 ### Tag Documentation
 
-A doc comment above the exported `Input` documents the template itself. Editors show it when hovering the tag's name wherever the template is used, along with JSDoc tags such as `@deprecated` and `@see`.
+A JSDoc comment above `export interface Input` (or the `@typedef Input` comment in a JavaScript template) documents the tag itself. Editors display it on hover at every call site, including JSDoc tags such as `@deprecated` and `@see`:
 
 ```marko
 /**
@@ -103,91 +95,63 @@ export interface Input {
 </span>
 ```
 
-In a JavaScript template, the comment holding the `Input` [`@typedef`](#jsdoc-support) documents the template the same way.
-
 ## Built-in Marko Types
 
-Marko exposes common [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) through the `Marko` [TypeScript namespace](https://www.typescriptlang.org/docs/handbook/namespaces.html):
+Marko exposes its [type definitions](https://github.com/marko-js/marko/blob/main/packages/runtime-tags/index.d.ts) under the global `Marko` namespace:
 
-- **`Marko.Template<Input, Return>`**
-  - The type of a `.marko` file
-  - `typeof import("./template.marko")`
-- **`Marko.TemplateInput<Input>`**
-  - The object accepted by the render methods of a template. It includes the template's `Input` and `$global` values.
-- **`Marko.Body<Params, Return>`**
-  - Used to type [tag content](./language.md#tag-content)
-- **`Marko.Renderable`**
-  - All values accepted by the [`<${dynamic}/>` tag](./language.md#dynamic-tags)
-  - `string | Marko.Template | Marko.Body | { content: Marko.Body | Marko.Template | string }`
-- **`Marko.Global`**
-  - The type of [the `$global` object](./language.md#global)
-  - Extended with [application specific properties](#typing-global)
-- **`Marko.RenderedTemplate`**
-  - The result of [rendering a Marko template](./template.md#templaterenderinput)
-  - `ReturnType<Marko.Template["render"]>`
-- **`Marko.MountedTemplate<Input, Return>`**
-  - The result of [mounting a Marko template](./template.md#templatemountinput-node-position)
-  - `ReturnType<Marko.Template["mount"]>`
-- **`Marko.NativeTags`**
-  - An object containing all [native tags](./native-tag.md) and their types
-  - Each entry is a `Marko.NativeTag`, so `div` attributes are `Marko.NativeTags["div"]["input"]`
-- **`Marko.NativeTag<Input, Return>`**
-  - The type of a single entry in `Marko.NativeTags`
-  - `Input` types the tag's attributes, `Return` the element from its [tag variable](./native-tag.md#element-references)
-- **`Marko.HTMLAttributes<T>`** and **`Marko.SVGAttributes<T>`**
-  - The global attributes and events shared by all HTML tags and all SVG tags, respectively
-  - `T` types the element passed to `on*` handlers, defaulting to `Element`
-- **`Marko.Input<TagName>`** and **`Marko.Return<TagName>`**
-  - Helpers to extract the input and return types from native tags (when a string is passed) or custom tags.
-- **`Marko.BodyParameters<Body>`** and **`Marko.BodyReturnType<Body>`**
-  - Helper to extract the parameters and return types from a `Marko.Body`
-- **`Marko.AttrTag<T>`**
-  - Used to represent types for [attributes tags](./language.md#attribute-tags)
-  - A single attribute tag, with a `[Symbol.iterator]` to consume any repeated tags
+| Type                                                        | Description                                                                                                                                 |
+| :---------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Marko.Template<Input, Return>`                             | Default export of a `.marko` file (`typeof import("./template.marko").default`)                                                             |
+| `Marko.TemplateOf<Signature>`                               | Generic template type emitted by `mtc` for parameterized templates                                                                          |
+| `Marko.TemplateInput<Input>`                                | Object accepted by `render` and `mount`, combining `Input` with `$global`                                                                   |
+| `Marko.Body<Params, Return>`                                | [Tag content](./language.md#tag-content) accepting parameter tuple `Params` and `<return>` attributes `Return`                              |
+| `Marko.Renderable`                                          | Any value accepted by [`<${dynamic}/>`](./language.md#dynamic-tags): `string \| Marko.Template \| Marko.Body<any, any> \| { content: ... }` |
+| `Marko.Global`                                              | Type of [`$global`](./language.md#global), extensible via [module augmentation](#typing-global)                                             |
+| `Marko.RenderedTemplate`                                    | Return type of [`Template.render`](./template.md#templaterenderinput)                                                                       |
+| `Marko.MountedTemplate<Input, Ret>`                         | Return type of [`Template.mount`](./template.md#templatemountinput-node-position)                                                           |
+| `Marko.NativeTags`                                          | Map of all [native tags](./native-tag.md) to `Marko.NativeTag` entries (`Marko.NativeTags["div"]["input"]`)                                 |
+| `Marko.NativeTag<Input, Return>`                            | Single entry in `Marko.NativeTags`: `Input` types attributes, `Return` types the [element ref](./native-tag.md#element-references)          |
+| `Marko.HTMLAttributes<T>`                                   | Global attributes and events shared by HTML elements (`T` types handler target, defaulting to `Element`)                                    |
+| `Marko.SVGAttributes<T>`                                    | Global attributes and events shared by SVG elements (`T` types handler target, defaulting to `Element`)                                     |
+| `Marko.Input<Tag>` / `Marko.Return<Tag>`                    | Extract input or return types from a native tag name, custom tag, or `Marko.Body`                                                           |
+| `Marko.BodyParameters<Body>` / `Marko.BodyReturnType<Body>` | Extract parameter tuple or return type from a `Marko.Body`                                                                                  |
+| `Marko.AttrTag<T>`                                          | [Attribute tag](./language.md#attribute-tags) type combining the first instance with `[Symbol.iterator]` for repeated tags                  |
 
 ### Class API Types
 
-Types for the [Class API](https://v5.markojs.com/docs/typescript/#built-in-marko-types), such as `Marko.Component`, `Marko.Out`, and `Marko.Emitter`, are no longer included in Marko 6. They remain available through the `marko@5` package when [using multiple Marko versions](../guide/marko-5-interop.md).
+Marko 5 Class API types (`Marko.Component`, `Marko.Out`, `Marko.Emitter`) have been removed; they remain available from `marko@5` when [using Marko 5 interop](../guide/marko-5-interop.md).
 
 ### Typing `content`
 
-A commonly used type from the `Marko` namespace is `Marko.Body` which can be used to type the [content](./language.md#tag-content) in `input.content`:
+Use `Marko.Body` to type [`input.content`](./language.md#tag-content):
 
 ```marko
-/* child.marko */
+/* tags/child.marko */
 export interface Input {
   content?: Marko.Body;
 }
 ```
 
-Here, all of the following are acceptable:
-
 ```marko
 /* index.marko */
 <child/>
-<child>Text in render body</child>
+<child>Text in body</child>
 <child>
-  <div>Any combination of components</div>
+  <div>Any combination of tags</div>
 </child>
 ```
 
-Passing other values (including components) causes a type error:
-
-```marko
-/* index.marko */
-import OtherTag from "<other-tag>";
-<child content=OtherTag/>
-```
+Passing a non-`Body` value (such as a component reference directly to `content=`) fails type checking.
 
 #### Typing Tag Parameters
 
-Tag parameters are provided to the `content` by the child tag. For this reason, `Marko.Body` allows typing of its parameters:
+Pass a tuple of parameter types as the first type argument to `Marko.Body`:
 
 ```marko
-/* for-by-two.marko */
+/* tags/for-by-two.marko */
 export interface Input {
   to: number;
-  content: Marko.Body<[number]>
+  content: Marko.Body<[number]>;
 }
 
 <for|i| from=0 to=input.to step=2>
@@ -204,12 +168,11 @@ export interface Input {
 
 ### Typing Attribute Tags
 
-All attribute tags are typed as iterable with a `[Symbol.iterator]`, regardless of intent. This means all attribute tag inputs must be wrapped in `Marko.AttrTag`.
+All attribute tags are iterable even when passed once, so wrap attribute tag inputs in `Marko.AttrTag`:
 
 ```marko
-/* my-select.marko */
 export interface Input {
-  option: Marko.AttrTag<Marko.HTML.Option>
+  option: Marko.AttrTag<Marko.HTML.Option>;
 }
 
 <select>
@@ -219,12 +182,11 @@ export interface Input {
 </select>
 ```
 
-### Extending native tag types within a Marko tag
+### Extending Native Tags
 
-The types for native tags are accessed via the global `Marko.HTML` namespace. Here's an example of a component that extends the `button` html tag:
+Extend native HTML types from `Marko.HTML` or SVG types from `Marko.SVG`:
 
 ```marko
-/* color-button.marko */
 export interface Input extends Marko.HTML.Button {
   color: string;
 }
@@ -235,16 +197,14 @@ export interface Input extends Marko.HTML.Button {
 ```
 
 > [!TIP]
-> Since Marko 6, native tags have supported including [`content`](./native-tag.md#content) as an attribute so there is no need to inject manually
+> Native tags accept [`content`](./native-tag.md#content) as an attribute, so `<button ...attrs/>` forwards `input.content` automatically without an explicit body:
 >
 > ```marko
 > <button style=`color: ${color}` ...attrs>
->   // no longer required!
+>   // no longer required
 >   <${input.content}/>
 > </button>
 > ```
-
-SVG tag types live in the parallel `Marko.SVG` namespace.
 
 ```marko
 export interface Input extends Marko.SVG.Path {
@@ -256,72 +216,81 @@ export interface Input extends Marko.SVG.Path {
 <path fill="none" stroke-dasharray=dashed && "6 3" ...attrs/>
 ```
 
-### Registering a new native tag (e.g. for custom elements)
+### Custom Elements
 
-A custom element is declared as an HTML tag in the project's `marko.json`, which [tag discovery](./custom-tag.md) reads:
+First register the custom element as a native tag in [`marko.json`](./custom-tag.md#native-tag-registration), then augment `Marko.NativeTags`:
 
 ```json
 /* marko.json */
 {
-  "<range-slider>": { "html": true }
+  "<x-datepicker>": { "html": true }
 }
 ```
 
-Its types are added to the `Marko.NativeTags` interface:
-
 ```ts
-/* range-slider.ts */
-export class RangeSliderElement extends HTMLElement {
-  value = 0;
+/* x-datepicker.ts */
+export class DatepickerElement extends HTMLElement {
+  static observedAttributes = ["value"];
+  get value() {
+    return this.getAttribute("value") ?? "";
+  }
 }
 
-interface RangeSliderAttributes extends Marko.HTMLAttributes<RangeSliderElement> {
-  value?: number;
-  step?: number;
+interface DatepickerAttributes
+  extends Omit<Marko.HTMLAttributes<DatepickerElement>, "onChange"> {
+  value?: string;
+  onChange?: (e: CustomEvent<string>, target: DatepickerElement) => void;
+  onDateSelect?: (e: CustomEvent<string>, target: DatepickerElement) => void;
 }
 
 declare global {
   namespace Marko {
     interface NativeTags {
-      "range-slider": Marko.NativeTag<RangeSliderAttributes, RangeSliderElement>;
+      "x-datepicker": Marko.NativeTag<DatepickerAttributes, DatepickerElement>;
     }
   }
 }
 ```
 
-Extending `Marko.HTMLAttributes` carries over the global HTML attributes and events, and its type parameter types the element passed to those event handlers.
-
 ```marko
 /* index.marko */
-<let/threshold=20/>
-<range-slider/sliderEl value=threshold step=5 onChange(evt, target) { threshold = target.value }/>
-<button onClick() { sliderEl().focus() }>Adjust</button>
+<let/picked="2026-01-01">
+<x-datepicker/picker
+  value=picked
+  onChange(evt) { picked = evt.detail }
+/>
+<button onClick() { picker().focus() }>Focus</button>
 ```
 
-### Registering new "global" HTML Attributes
+Extending `Marko.HTMLAttributes<T>` inherits global HTML attributes and events with `T` as the handler's second parameter. Declare `CustomEvent<T>` handlers directly on the attributes interface; when a custom event name collides with a standard DOM event (such as `onChange`), `Omit` that key from `Marko.HTMLAttributes<T>` first.
+
+> [!NOTE]
+> Marko writes attributes on registered custom elements via `setAttribute`, never as JavaScript properties. Declare `observedAttributes` on the custom element class to observe attribute updates, or assign properties through an element reference inside [`<script>`](./core-tag.md#script).
+
+### Global HTML Attributes
+
+Augment `Marko.HTMLAttributes` (or `Marko.SVGAttributes` for SVG) to add non-standard global attributes:
 
 ```ts
 declare global {
   namespace Marko {
     interface HTMLAttributes {
-      "my-non-standard-attribute"?: string; // Adds this attribute as available on all HTML tags.
+      "my-non-standard-attribute"?: string;
     }
   }
 }
 ```
 
-SVG tags take their global attributes from `Marko.SVGAttributes`, augmented the same way.
+### CSS Properties
 
-### Registering CSS Properties (eg for custom properties)
-
-The [`style=` object](./native-tag.md#style) is typed with `Marko.CSS.Properties`, which extends [csstype](https://github.com/frenic/csstype)'s `PropertiesHyphen`, so keys are hyphen-case CSS property names.
+The [`style=` object](./native-tag.md#style) uses `Marko.CSS.Properties` (extending [csstype](https://github.com/frenic/csstype)'s `PropertiesHyphen`). Augment it to type CSS custom properties:
 
 ```ts
 declare global {
   namespace Marko {
     namespace CSS {
       interface Properties {
-        "--foo"?: string; // adds a support for a custom `--foo` css property.
+        "--accent"?: string;
       }
     }
   }
@@ -330,7 +299,7 @@ declare global {
 
 ### Typing `$global`
 
-`Marko.Global` includes an index signature, so any property may be placed on [`$global`](./language.md#global), but undeclared properties read back as `unknown`. Declaring them types `$global` in every template and [render call](./template.md#inputglobal). In a dedicated declaration file, the leading `export {}` makes `declare global` apply.
+`Marko.Global` includes an index signature so undeclared properties read as `unknown`. Augment `Marko.Global` in a declaration file (using a leading `export {}` to treat the file as a module) to type application-wide [`$global`](./language.md#global) properties:
 
 ```ts
 export {};
@@ -346,11 +315,11 @@ declare global {
 ```
 
 > [!WARNING]
-> A property declared without `?` is required in every `$global` passed to `render` or `mount`, since `Marko.TemplateInput` types `$global` as the whole `Marko.Global`.
+> Properties declared without `?` become required on every `$global` passed to `render` or `mount`.
 
 ## TypeScript Syntax in `.marko`
 
-Any JavaScript expression in Marko can also be written as a TypeScript expression.
+Any JavaScript expression inside a `.marko` file accepts TypeScript syntax:
 
 ```marko
 <my-tag foo=1 as any>
@@ -360,16 +329,20 @@ Any JavaScript expression in Marko can also be written as a TypeScript expressio
 
 ### Tag Type Parameters
 
+Declare generic type parameters on [tag parameters](./language.md#tag-parameters) before the pipe list:
+
 ```marko
 <child <T>|value: T|>
-  ...
+  <div>${value}</div>
 </child>
 ```
 
 ### Tag Type Arguments
 
+Supply explicit type arguments on a tag when inference is insufficient, or when initializing a `<let>` to `null` under `strictNullChecks`:
+
 ```marko
-/* components/child.marko */
+/* tags/child.marko */
 export interface Input<T> {
   value: T;
 }
@@ -377,42 +350,34 @@ export interface Input<T> {
 
 ```marko
 /* index.marko */
-// number would be inferred in this case, but we can be explicit
-<child<number> value=1 />
+<child<number> value=1/>
+<let<string | null>/selected=null>
 ```
 
-### Method Shorthand Type Parameters
+### Method Type Parameters
+
+Method shorthands accept TypeScript type parameters directly after the method name:
 
 ```marko
-<child process<T>() { /* ... */ } />
+<child process<T>(item: T) { return item }/>
 ```
 
 ### Attribute Type Assertions
 
-The types of attribute values can _usually_ be inferred. When needed, you can assert values to be more specific with [TypeScript’s `as` keyword](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions):
+Narrow inferred attribute or `<let>` types with TypeScript's [`as` operator](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions):
 
 ```marko
-<some-component
-  number=1 as const
-  names=[] as string[]
-/>
+<let/handler=null as (() => void) | null>
+<some-component number=1 as const names=[] as string[]/>
 ```
 
 ## JSDoc Support
 
-For existing projects that want to incrementally add type safety, adding full TypeScript support is a big leap. This is why Marko also includes full support for [incremental typing via JSDoc](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html).
+JavaScript projects can adopt type checking incrementally through [JSDoc annotations](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html).
 
 ### Setup
 
-You can enable type checking in an existing `.marko` file by adding a `// @ts-check` comment at the top:
-
-```js
-// @ts-check
-```
-
-If you want to enable type checking for all Marko & JavaScript files in a JavaScript project, you can switch to using a [`jsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#using-tsconfigjson-or-jsconfigjson). You can skip checking some files by adding a `// @ts-nocheck` comment to files.
-
-Once that has been enabled, you can start by typing the input with JSDoc. Here's an example component with typed `input`:
+Enable checking per file by adding `// @ts-check` at the top, or check all `.marko` and `.js` files project-wide with a [`jsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#using-tsconfigjson-or-jsconfigjson) setting `"checkJs": true` (opting individual files out with `// @ts-nocheck`):
 
 ```marko
 // @ts-check
@@ -424,16 +389,20 @@ Once that has been enabled, you can start by typing the input with JSDoc. Here's
  * }} Input
  */
 
-<div>${firstName} ${lastName}</div>
+<div>${input.firstName} ${input.lastName}</div>
 ```
 
 ## CI Type Checking
 
-For type checking Marko files outside of your editor there is the [`@marko/type-check` cli](https://github.com/marko-js/language-server/tree/main/packages/type-check). See the CLI documentation for more information.
+Run [`@marko/type-check`](https://github.com/marko-js/language-server/tree/main/packages/type-check) via its `mtc` CLI to check `.marko` files in CI and emit declarations for libraries:
+
+```sh
+npx mtc
+```
 
 ## Profiling Performance
 
-The [`--generateTrace`](https://www.typescriptlang.org/tsconfig/#generateTrace) flag can be used to determine the parts of a codebase which are using the most resources during type checking.
+Pass [`--generateTrace`](https://www.typescriptlang.org/tsconfig/#generateTrace) to `mtc` to profile slow type checks:
 
 ```sh
 mtc --generateTrace TRACE_DIR

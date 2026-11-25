@@ -2,13 +2,15 @@
 
 > [!TLDR]
 >
-> Marko builds on top of HTML, enabling components and JavaScript-based interpolation
+> - Marko builds on HTML with JavaScript expressions and component tags
+> - Files in `tags/` become reusable components automatically
+> - Core tags like `<if>` and `<for>` handle control flow directly in markup
 
-Marko is designed to feel familiar if you know HTML, while making it easy to build dynamic, interactive websites. Let's walk through the core concepts.
+Marko feels familiar to anyone who writes HTML, while adding dynamic expressions, components, and control flow. Let's walk through the fundamentals.
 
 ## Templates are HTML
 
-Nearly any valid HTML is also valid Marko code. We can start with regular HTML and gradually add features as needed.
+Nearly any valid HTML is valid Marko. We can start with plain HTML and layer in dynamic features only where needed:
 
 ```marko
 <h1>My Blog</h1>
@@ -20,19 +22,19 @@ Nearly any valid HTML is also valid Marko code. We can start with regular HTML a
 
 ## Attributes are JS
 
-Almost all valid JavaScript expressions can be written as attribute values.
+Attribute values accept JavaScript expressions directly:
 
 ```marko
-<a href=`/user/${user.id}`>My Profile</a>
+<a href=`/user/${input.user.id}`>Profile</a>
 <a href=getRandomPage()>Discover Something New</a>
 ```
 
 > [!NOTE]
-> The Reference Docs explain [more about Attributes](../reference/language.md#attributes) including how they support [`...spreads`](../reference/language.md#spread-attributes) and [`methods()`](../reference/language.md#shorthand-methods).
+> See [Attributes](../reference/language.md#attributes) for [`...spreads`](../reference/language.md#spread-attributes), [`methods()`](../reference/language.md#shorthand-methods), and other shorthands.
 
 ## Dynamic Content
 
-Tag content in Marko is similar to [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) in JavaScript, so dynamic text can be added with [interpolated `${expressions}`](../reference/language.md#dynamic-text)
+Tag content behaves like a JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), so dynamic values interpolate with [`${expression}`](../reference/language.md#dynamic-text):
 
 ```marko
 <p>Today is ${new Date().toDateString()}</p>
@@ -41,7 +43,7 @@ Tag content in Marko is similar to [template literals](https://developer.mozilla
 
 ## Components
 
-To reuse code, we can move it into a separate file. Each `.marko` file is a component that can be used like an HTML tag.
+Each `.marko` file is a component that can be used like an HTML tag. Placing a file in a `tags/` directory makes it available by filename:
 
 ```marko
 /* tags/card.marko */
@@ -52,9 +54,8 @@ To reuse code, we can move it into a separate file. Each `.marko` file is a comp
 </div>
 ```
 
-This `<card>` component can now be used anywhere in the page:
-
 ```marko
+/* index.marko */
 <h1>Our Team</h1>
 <card/>
 <card/>
@@ -62,19 +63,19 @@ This `<card>` component can now be used anywhere in the page:
 ```
 
 > [!NOTE]
-> Components in the `tags/` directory are [automatically discovered](../reference/custom-tag.md#custom-tag-discovery). No need to `import` them.
+> Components in `tags/` are [discovered automatically](../reference/custom-tag.md#relative-custom-tags), so no `import` is required.
 
 <!---->
 
 > [!TIP]
-> We can also write multiple "components" in a single file using the [`<define>` tag](../reference/core-tag.md#define).
+> Reusable markup snippets can also live in the same file with [`<define>`](../reference/core-tag.md#define).
 
-### Passing Data to Components
+### Passing Data
 
-Attributes on custom components are available through a special object called [`input`](../reference/language.md#input).
+Attributes passed to a component are available on [`input`](../reference/language.md#input):
 
 ```marko
-/* card.marko */
+/* tags/card.marko */
 export interface Input {
   name: string;
   role: string;
@@ -88,9 +89,8 @@ export interface Input {
 </div>
 ```
 
-Now we can pass different data to each instance of `card`:
-
 ```marko
+/* index.marko */
 <h1>Our Team</h1>
 <card name="Alice" role="Designer" year=2023/>
 <card name="Bob" role="Developer" year=2024/>
@@ -98,14 +98,20 @@ Now we can pass different data to each instance of `card`:
 ```
 
 > [!NOTE]
-> Also check out [attribute tags](../reference/language.md#attribute-tags) which we can use to pass named content to a component
+> Components can also accept named sections of markup with [attribute tags](../reference/language.md#attribute-tags).
 
 ## Core Tags
 
-Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, we can use [`<if>` and `<else>`](../reference/core-tag.md#if--else) to show or hide content based on conditions.
+Marko ships built-in [core tags](../reference/core-tag.md) for control flow and state. Use [`<if>` and `<else>`](../reference/core-tag.md#if--else) for conditional markup:
 
 ```marko
 /* tags/product.marko */
+export interface Input {
+  name: string;
+  price: number;
+  stock: number;
+}
+
 <div>
   <h3>${input.name}</h3>
   <p>$${input.price}</p>
@@ -118,18 +124,23 @@ Marko provides many helpful [Core Tags](../reference/core-tag.md). For example, 
 </div>
 ```
 
-Now we can show different states based on the product data:
-
 ```marko
+/* index.marko */
 <product name="T-Shirt" price=25 stock=10/>
 <product name="Hoodie" price=45 stock=0/>
 <product name="Hat" price=15 stock=5/>
 ```
 
-And we can use the [`<for>` tag](../reference/core-tag.md#for) to display repeated content
+Use [`<for>`](../reference/core-tag.md#for) to render a list:
 
 ```marko
-<for|product| of=productsList>
+static const products = [
+  { name: "T-Shirt", price: 25, stock: 10 },
+  { name: "Hoodie", price: 45, stock: 0 },
+  { name: "Hat", price: 15, stock: 5 },
+];
+
+<for|product| of=products>
   <product name=product.name price=product.price stock=product.stock/>
 </for>
 ```

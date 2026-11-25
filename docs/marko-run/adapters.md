@@ -1,42 +1,36 @@
 # Adapters
 
-Adapters change the development, build, and preview process to fit different deployment platforms and runtimes. Application code stays written in [web standard APIs](./runtime.md#context). By swapping the adapter, the same routes can be served by a Node process, deployed to an edge platform, or rendered to static files.
+Adapters tailor Marko Run's dev server, build output, and preview process to a target runtime or deployment platform. Application routes stay written in [Web standard APIs](./runtime.md#context), so swapping the adapter moves the same app across Node.js, Cloudflare Workers, Vercel, Netlify, or static files.
 
 ## Choosing an Adapter
 
 [Marko Run's Vite plugin](./vite-plugin.md) resolves the adapter in this order:
 
-1. The `adapter` specified in the plugin options
-2. The first dependency in `package.json` whose name starts with `@marko/run-adapter` or contains `marko-run-adapter`
-3. The default Node-based adapter that ships with `@marko/run`
+1. An `adapter` passed explicitly in plugin options
+2. The first dependency in `package.json` starting with `@marko/run-adapter` or containing `marko-run-adapter`
+3. The built-in Node adapter shipped with `@marko/run`
 
-For most applications, installing an adapter package is all that is needed. To configure an adapter (or choose between several installed ones), pass it to the plugin explicitly:
+In most projects, installing the adapter package is enough. Pass it explicitly in `vite.config.ts` only to configure options or choose among multiple installed adapters:
 
 ```ts
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
-import netlify from "@marko/run-adapter-netlify"; // Import the adapter
+import staticAdapter from "@marko/run-adapter-static";
 
 export default defineConfig({
-  plugins: [
-    marko({
-      adapter: netlify({ edge: true }), // Configure and apply the adapter
-    }),
-  ],
+  plugins: [marko({ adapter: staticAdapter() })],
 });
 ```
 
 ## Node
 
-[`@marko/run-adapter-node`](https://github.com/marko-js/run/tree/main/packages/adapters/node) previews and deploys apps on Connect-style servers such as Express.
+[`@marko/run-adapter-node`](https://github.com/marko-js/run/tree/main/packages/adapters/node) deploys Marko Run apps on Node.js and provides Connect/Express-compatible middleware for embedding inside an existing server:
 
 ```sh
 npm install @marko/run-adapter-node
 ```
 
-Beyond building a standalone server, this adapter provides middleware that converts Connect-style requests into [WHATWG requests](https://developer.mozilla.org/en-US/docs/Web/API/Request) and writes [WHATWG responses](https://developer.mozilla.org/en-US/docs/Web/API/Response) back. This lets an application mount its Marko Run routes inside an existing server.
-
-The **router middleware** fully handles requests that match a route:
+`routerMiddleware(options?)` handles matching routes end to end (`options` accepts `origin`, `trustProxy`, and `createPlatform`):
 
 ```ts
 import express from "express";
@@ -44,44 +38,41 @@ import { routerMiddleware } from "@marko/run-adapter-node/middleware";
 
 express()
   .use("/assets", express.static("assets"))
-  .use(routerMiddleware()) // register the router middleware
+  .use(routerMiddleware())
   .listen(8080);
 ```
 
-The **match middleware** instead attaches the matched route onto the request object, where it can be invoked later. This is useful when other middleware needs to run between finding a match and invoking the route:
+To inspect matched route metadata before invoking the route, pair `matchMiddleware()` with `invokeMiddleware(options?)`:
 
 ```ts
 import express from "express";
-import { matchMiddleware } from "@marko/run-adapter-node/middleware";
+import {
+  matchMiddleware,
+  invokeMiddleware,
+} from "@marko/run-adapter-node/middleware";
 
 express()
   .use("/assets", express.static("assets"))
-  .use(matchMiddleware()) // register the match middleware
+  .use(matchMiddleware())
   .use((req, res, next) => {
     if (req.route) {
-      // `req.route.config` contains the route's metadata
+      // `req.route.config` holds the matched route's metadata
     }
     next();
   })
-  .use((req, res, next) => {
-    if (req.route) {
-      req.route.invoke(req, res, next); // finally invoke the route
-    } else {
-      next();
-    }
-  })
+  .use(invokeMiddleware())
   .listen(8080);
 ```
 
 ## Static
 
-[`@marko/run-adapter-static`](https://github.com/marko-js/run/tree/main/packages/adapters/static) builds the application into static files that can be served from any file server or CDN.
+[`@marko/run-adapter-static`](https://github.com/marko-js/run/tree/main/packages/adapters/static) pre-renders routes to static HTML files for any file server or CDN:
 
 ```sh
 npm install @marko/run-adapter-static
 ```
 
-At build time, the adapter renders every statically known route and crawls relative anchor links in the rendered pages to discover more. The `urls` option provides additional entry points beyond those discovered automatically:
+During build, the adapter renders every static route and crawls same-origin `<a>` (excluding `download` and `nofollow`/`enclosure`/`external`), qualifying `<link>`, and `<iframe>` references. Use `urls` (an array or async function receiving discovered routes) to add extra entry points:
 
 ```ts
 import { defineConfig } from "vite";
@@ -99,29 +90,61 @@ export default defineConfig({
 });
 ```
 
-> [!NOTE]
-> The `urls` option can also be an async function that receives the discovered routes and returns URL strings.
+Each crawled route writes HTML files matching [`trailingSlashes`](./vite-plugin.md#trailingslashes) (default `RedirectWithout`). For `/about`:
 
-Each crawled page is written to an HTML file named after its path. The [`trailingSlashes`](./vite-plugin.md#trailingslashes) option, `RedirectWithout` by default, decides which file answers each form of a path. For a page at `/about`:
+| Value             | Without trailing slash                                    | With trailing slash                                                          |
+| :---------------- | :-------------------------------------------------------- | :--------------------------------------------------------------------------- |
+| `RedirectWithout` | `about.html`                                              | `about/index.html` (redirecting to `/about` when linked as `/about/`)        |
+| `RedirectWith`    | `about.html` (redirecting to `/about/`)                   | `about/index.html`                                                           |
+| `RewriteWithout`  | `about.html`                                              | `about.html` (when the host serves it for `/about/`)                         |
+| `RewriteWith`     | `about/index.html` (when the host serves it for `/about`) | `about/index.html`                                                           |
 
-| Value             | Path without trailing slash                              | Path with trailing slash                                                    |
-| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `RedirectWithout` | `about.html`                                             | `about/index.html`, redirecting to `/about`, when a page links to `/about/` |
-| `RedirectWith`    | `about.html`, redirecting to `/about/`                   | `about/index.html`                                                          |
-| `RewriteWithout`  | `about.html`                                             | `about.html`, when the host serves it for `/about/`                         |
-| `RewriteWith`     | `about/index.html`, when the host serves it for `/about` | `about/index.html`                                                          |
+Hosts that only resolve directory index files (`about/index.html`) pair best with `RedirectWith` or `RewriteWith`.
 
-File servers resolve `/about/` to `about/index.html`, but not every host resolves `/about` to `about.html`, so `RedirectWith` or `RewriteWith` suits hosts that do not.
+## Cloudflare
+
+[`@marko/run-adapter-cloudflare`](https://github.com/marko-js/run/tree/main/packages/adapters/cloudflare) runs routes inside Cloudflare Workers (`workerd` during dev via `@cloudflare/vite-plugin`) and builds a Worker bundle ready for `wrangler deploy`:
+
+```sh
+npm install @marko/run-adapter-cloudflare
+npm install -D wrangler
+```
+
+The adapter defaults `compatibility_date`, `nodejs_compat`, and an `ASSETS` binding automatically when no `wrangler.jsonc` / `wrangler.toml` overrides them, and types `ctx.platform` as `CloudflarePlatformInfo`. Local `marko-run preview` uses `wrangler dev` against the built Worker output.
+
+## Vercel
+
+[`@marko/run-adapter-vercel`](https://github.com/marko-js/run/tree/main/packages/adapters/vercel) emits a Vercel [Build Output API v3](https://vercel.com/docs/build-output-api/v3) bundle under `.vercel/output` with streaming Node.js Functions and types `ctx.platform` as `VercelPlatformInfo`:
+
+```sh
+npm install @marko/run-adapter-vercel
+```
+
+Optional function settings (`runtime`, `regions`, `memory`, `maxDuration`) can be passed to the adapter in `vite.config.ts`:
+
+```ts
+import { defineConfig } from "vite";
+import marko from "@marko/run/vite";
+import vercel from "@marko/run-adapter-vercel";
+
+export default defineConfig({
+  plugins: [
+    marko({
+      adapter: vercel({ regions: ["iad1"], maxDuration: 30 }),
+    }),
+  ],
+});
+```
 
 ## Netlify
 
-[`@marko/run-adapter-netlify`](https://github.com/marko-js/run/tree/main/packages/adapters/netlify) deploys apps to Netlify Functions or Edge Functions.
+[`@marko/run-adapter-netlify`](https://github.com/marko-js/run/tree/main/packages/adapters/netlify) deploys to Netlify Functions or Edge Functions (`marko-run preview` requires `netlify-cli`):
 
 ```sh
 npm install @marko/run-adapter-netlify
 ```
 
-Netlify applications require a [`netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) configuration. This example is a starting point for apps deployed to Netlify Functions:
+Configure `netlify.toml` for Netlify Functions:
 
 ```toml
 [build]
@@ -130,25 +153,21 @@ Netlify applications require a [`netlify.toml`](https://docs.netlify.com/configu
   functions = "dist"
 ```
 
-To build for [Edge Functions](https://docs.netlify.com/edge-functions/overview/) instead, configure the adapter with `edge: true`:
+For [Edge Functions](https://docs.netlify.com/edge-functions/overview/), pass `edge: true` in `vite.config.ts` and set `edge_functions` in `netlify.toml`:
 
 ```ts
+/* vite.config.ts */
 import { defineConfig } from "vite";
 import marko from "@marko/run/vite";
-import netlifyAdapter from "@marko/run-adapter-netlify";
+import netlify from "@marko/run-adapter-netlify";
 
 export default defineConfig({
-  plugins: [
-    marko({
-      adapter: netlifyAdapter({ edge: true }),
-    }),
-  ],
+  plugins: [marko({ adapter: netlify({ edge: true }) })],
 });
 ```
 
-and specify the `edge_functions` directory in `netlify.toml` instead of `functions`:
-
 ```toml
+/* netlify.toml */
 [build]
   command = "marko-run build"
   publish = "dist/public"
@@ -157,7 +176,7 @@ and specify the `edge_functions` directory in `netlify.toml` instead of `functio
 
 ## Custom Adapters
 
-An adapter is an object implementing the `Adapter` interface from `@marko/run/vite`, with hooks into the dev server, build, and preview lifecycle. The [official adapters](https://github.com/marko-js/run/tree/main/packages/adapters) serve as reference implementations.
+An adapter implements the `Adapter` interface from `@marko/run/vite` with hooks for dev, build, and preview. See the [official adapters](https://github.com/marko-js/run/tree/main/packages/adapters) as reference implementations.
 
 ## Next Steps
 

@@ -1,34 +1,29 @@
-# Concise syntax
+# Concise Syntax
 
-Marko's concise syntax is very similar to the HTML syntax, except it's more... concise. Angle brackets are removed, and nesting is indentation-based.
+Marko's concise syntax omits angle brackets and closing tags, using indentation to express nesting.
 
-All Marko files are in concise mode by default, and switch to HTML mode once there is a tag that uses the HTML syntax.
+Every `.marko` file starts in concise mode. An HTML-mode tag switches to HTML mode for its own body, returning to concise mode once closed so both syntaxes can coexist in one file.
 
 ```marko no-format
 div class="thumbnail"
-    img src="https://example.com/thumb.png"
+  img src="https://example.com/thumb.png"
 
 // identical to
-
-<div class="thumbnail"><img src="https://example.com/thumb.png" /></div>
+<div class="thumbnail"><img src="https://example.com/thumb.png"/></div>
 ```
 
 ## Attributes on multiple lines
 
-Attributes may be comma-separated in all Marko tags.
+Attributes can be comma-separated on a single line or split across lines with trailing commas:
 
 ```marko no-format
 div id="hello", class=["class1", "class2", "class3"], style={ border: "1px solid red" }
-```
 
-Since commas indicate that another attribute is expected, they may be used to spread attributes across multiple lines.
-
-```marko no-format
 div id="hello" class="world",
   style={ border: "1px solid red" }
 ```
 
-By convention, readability is improved if commas are organized at the _beginning_ of each line with attributes.
+Indented lines beginning with a leading comma also attach attributes to the preceding tag, which is the conventional multiline style:
 
 ```marko no-format
 div
@@ -40,28 +35,24 @@ div
 
 ## Text
 
-Two or more hyphens (`--`) followed by whitespace may be used to begin [content](./language.md#tag-content).
-
-If text immediately follows the hyphens, the content is terminated at the end of the line.
+Two or more hyphens (`--`) followed by whitespace begin [tag content](./language.md#tag-content). When text follows on the same line, the text ends at the newline:
 
 ```marko no-format
 -- Hello world
 div -- Hello world
 ```
 
-If hyphens are followed by a newline, the content is terminated by the same number of hyphens or at the next dedent.
+When `--` is followed by a newline, the text block runs until a matching run of hyphens or the next dedent. HTML-mode tags can appear freely inside text blocks:
 
 ```marko no-format
 --
 This is
-a bunch of
-text at the
-root of
-the tag
+multiline text at the
+root of the template
 --
 details
   --
-  since this is normal tag content,
+  Since this is normal tag content,
   regular <strong>HTML Mode</strong>
   tags may be used freely.
   --
@@ -71,7 +62,7 @@ details
 ```
 
 > [!TIP]
-> There may be _more_ than two hyphens if necessary, but the number hyphens in the open and close must match.
+> Use more than two hyphens when the text itself contains `--`; the closing delimiter must use the same number of hyphens as the opening one.
 >
 > ```marko no-format
 > pre
@@ -84,68 +75,20 @@ details
 >   ---------------------
 > ```
 
-### Root level text
+### Root Level Text
 
-The Marko parser starts out in the concise mode. Therefore, given the following template:
+Because templates begin in concise mode, bare root text is parsed as tags with attributes:
 
 ```marko no-format
 Hello World
 Welcome to Marko
-```
 
-The output is:
-
-```marko no-format
+// parsed as
 <Hello World></Hello><Welcome to Marko></Welcome>
 ```
 
-The proper way to include root level text is with [code fences](#text).
+Prefix root-level text with `--` delimiters:
 
 ```marko no-format
 -- Welcome to Marko
 ```
-
-<!--
-
-The proper way to include root level text is with [string literals or code fences](#text).
-
-```marko no-format
-"Hello World"
--- Welcome to Marko
-```
-
-## Line Termination
-
-A semicolon (`;`) indicates a newline
-
-```marko no-format
-div; span; p
-
-// identical to
-
-div
-span
-p
-```
-
-A right angle bracket (`>`) indicates a newline _with_ a tab (i. e. nested content).
-
-```marko no-format
-div > span > p
-
-// identical to
-
-div
-  span
-    p
-```
-
-> [!TIP]
-> You can use the nesting syntax (`>`) to limit the amount of space before deeply nested content
->
-> ```
-> div.shell > div.wrapper > p
->   -- This text belongs to the paragraph
-> ```
-
--->

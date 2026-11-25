@@ -1,15 +1,16 @@
 # Nested Reactivity
 
 > [!TLDR]
-> Three approaches are explored for managing nested state
+>
+> - Keep state local to the loop item or child component whenever outer code does not read it
+> - Hoist nested state into a parent collection only when ancestor UI depends on it
+> - Use immutable updates (or a helper like Immer) to propagate hoisted changes cleanly
 
-It is often the case in application development that state is stored in a top-level object which is then represented and mutated throughout the component tree. This guide will outline 3 ways of handling this type of pattern, using a To-Do List example as a base.
+Applications frequently render collections where individual items have interactive state. Keeping that state as close to its usage as possible minimizes complexity and update work; hoist it into a parent collection only when surrounding UI needs to read or coordinate across items.
 
-Each method in this guide is more complex and has more overhead than those before it. Generally, you should use the _least_ complex method that still addresses the needs of your application.
+## Base Example
 
-## Core Example: To-Do List
-
-Each example in this guide will build on the following client-side To-Do list application.
+Consider a client-side to-do list:
 
 ```marko
 <let/todos=[
@@ -23,31 +24,30 @@ Each example in this guide will build on the following client-side To-Do list ap
       <id/checkboxId>
       <input type="checkbox" id=checkboxId>
       <label for=checkboxId>${todo.text}</label>
-      <button title="delete" onClick() {
-        todos = todos.toSpliced(i, 1);
-      }>&times;</button>
+      <button title="delete" onClick() { todos = todos.toSpliced(i, 1) }>
+        &times;
+      </button>
     </li>
   </for>
 </ul>
 
 <let/nextId=2/>
-<form onSubmit(e) {
+<form onSubmit(e, form) {
   e.preventDefault();
-  todos = todos.concat({
-    id: nextId++,
-    text: e.target.text.value,
-  })
+  const data = new FormData(form);
+  const text = String(data.get("text") || "").trim();
+  if (!text) return;
+  todos = todos.concat({ id: nextId++, text });
+  form.reset();
 }>
   <input name="text" placeholder="Another Item">
   <button type="submit">Add</button>
 </form>
 ```
 
-## Case 1: Local State
+## Local State
 
-The first rule of nested reactivity is that you should try to avoid nested reactivity. Generally, **state should be managed as close to its uses as possible**. Before jumping right into hoisting state into a global object, _please_ consider whether it actually makes sense to do so.
-
-In most cases, it makes more sense to create local state than to add a value to some global store. For example, maybe we want to disable deleting items that haven't yet been completed. For this, we need to hoist state out of the input.
+State should stay local whenever no ancestor needs to read it. For example, disabling each item's delete button until its checkbox is checked only concerns that single `<li>`:
 
 ```marko
 <let/todos=[
@@ -65,60 +65,61 @@ In most cases, it makes more sense to create local state than to add a value to 
       <button
         title="delete"
         disabled=!done
-        onClick() {
-          todos = todos.toSpliced(i, 1);
-        }
-      >&times;</button>
+        onClick() { todos = todos.toSpliced(i, 1) }
+      >
+        &times;
+      </button>
     </li>
   </for>
 </ul>
 ```
 
-Notice that for this feature, there is _no need_ to modify the `todos` object at the top level. State can stay local, so nested reactivity on that object is unnecessary.
+Because `done` lives inside the `<for>` body and the loop is keyed with `by="id"`, toggling one checkbox updates only that row without touching the `todos` array.
 
-## Case 2: Simple Hoisted State
+## Hoisted State
 
-Sometimes, it _does_ make sense to hoist state up to a global object. Suppose we want to add a feature where clicking a button shows the first item in the list that isn't done yet. For that information to be known, we need to include the state in the `todos` object:
+Hoist item state into the parent array when sibling or ancestor UI depends on it, such as displaying the next unfinished task outside the list:
 
 ```marko
 <let/todos=[
   { id: 0, text: "Learn Marko", done: false },
   { id: 1, text: "Make a Website", done: false },
 ]>
+<const/nextTodo=todos.find((todo) => !todo.done)>
+
+<p>Next up: ${nextTodo ? nextTodo.text : "All done!"}</p>
 
 <ul>
   <for|todo, i| of=todos by="id">
     <li>
       <id/checkboxId>
-      <let/done=todo.done valueChange(done) {
-        todos = todos.toSpliced(i, 1, { ...todo, done })
+      <let/done=todo.done valueChange(nextDone) {
+        todos = todos.toSpliced(i, 1, { ...todo, done: nextDone });
       }>
       <input type="checkbox" checked:=done id=checkboxId>
       <label for=checkboxId>${todo.text}</label>
       <button
         title="delete"
         disabled=!done
-        onClick() {
-          todos = todos.toSpliced(i, 1);
-        }
-      >&times;</button>
+        onClick() { todos = todos.toSpliced(i, 1) }
+      >
+        &times;
+      </button>
     </li>
   </for>
 </ul>
 ```
 
-Modifying state trees directly like this is often tedious and hard to follow, so we could also use a library like [immer](https://immerjs.github.io/immer/) to handle state updates:
+Replacing the updated item immutably with `toSpliced` keeps `todos` [immutable](./immutable-state.md) so `nextTodo` recomputes automatically while `by="id"` preserves every row's DOM.
+
+For deeply nested structures where manual copying becomes verbose, an immutable update helper such as [Immer](https://immerjs.github.io/immer/) integrates directly inside `valueChange`:
 
 ```marko
-import { produce } from "immer"
+import { produce } from "immer";
 
-<let/done=todo.done valueChange(done) {
-  todos = produce(todos, draft => {
-    draft[i].done = done
+<let/done=todo.done valueChange(nextDone) {
+  todos = produce(todos, (draft) => {
+    draft[i].done = nextDone;
   });
 }>
 ```
-
-## Case 3: Complex Hoisted State
-
-<!-- TODO: discuss `<mut>` tag -->

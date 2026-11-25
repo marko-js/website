@@ -1,48 +1,42 @@
 # Template API Reference
 
-All `.marko` files expose the same API on their [default export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export).
-These methods are used to generate an HTML string on the server, and to modify the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) in the browser.
-
-[Targeted compilation](../explanation/targeted-compilation.md) puts [`render`](#templaterenderinput) in server output and [`mount`](#templatemountinput-node-position) in browser output, so each build carries the method for its environment.
+Every `.marko` file exposes its runtime API on its [default export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export). [Targeted compilation](../explanation/targeted-compilation.md) emits [`render`](#templaterenderinput) in server builds and [`mount`](#templatemountinput-node-position) in browser builds.
 
 ## `Template.render(input)`
 
-| Parameter | Default | Details                                                                                                                 |
-| :-------- | :------ | :---------------------------------------------------------------------------------------------------------------------- |
-| `input`   | `{}`    | The [`input` object](./language.md#input) for the template. May also include [`$global`](#inputglobal) for global state |
+| Parameter | Default | Details                                                                                                              |
+| :-------- | :------ | :------------------------------------------------------------------------------------------------------------------- |
+| `input`   | `{}`    | Template [`input`](./language.md#input) object; may also include [`$global`](#inputglobal) for render-scoped globals |
 
-For use on the **server**, the `.render()` API on a Marko template provides an object containing a variety of ways to generate an HTML string. Its first parameter becomes the [`input`](./language.md#input) available within the template.
+Available in **server** builds. Returns a render result that can be consumed as a stream, async iterable, `ReadableStream`, promise, or synchronous string.
 
 > [!WARNING]
-> A render result holds a single render and the first consumer takes it. Every consumer after that fails with `Cannot read from a consumed render result`, thrown, rejected, or raised as a stream error depending on the consumer. Awaiting more than once is the exception, since the first `await` caches the promise and later ones resolve with the same string.
+> A render result can only be consumed once; later consumers fail (thrown, rejected, or emitted as a stream error). Awaiting the same result multiple times is the sole exception because the first `await` caches its promise.
 
 ### Async Iterator
 
-The render result contains an [async iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols), which allows consumption through a [`for await` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of).
+The render result implements the [async iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) for [`for await...of`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of), yielding HTML `string` chunks:
 
 ```js
 import Template from "./template.marko";
 
 for await (const chunk of Template.render({})) {
-  // send the html chunk somewhere.
+  // write the HTML chunk
 }
 ```
 
-Each iteration yields the HTML flushed since the previous one; a render with no asynchronous content yields a single chunk.
-
-Abandoning the loop with `break`, `return`, or a thrown exception aborts a pending render with the error `Iterator returned before consumed.`, and a later pull rejects with it. The iterator's `throw(reason)` method aborts with the given reason instead.
+Each iteration yields HTML flushed since the previous pull; synchronous renders yield a single chunk. Exiting the loop early (`break`, `return`, or throw) aborts any pending render, and calling `iterator.throw(reason)` aborts with `reason`.
 
 ### Pipe
 
-The `.pipe()` method in the render result object sends the HTML into a [NodeJS `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable). Any object with `write(chunk)` and `end()` serves as a target, and a `flush()` method, if present, is called after every chunk to keep a buffering transform such as [`zlib.createGzip()`](https://nodejs.org/api/zlib.html#zlibcreategzipoptions) streaming.
+`.pipe(target)` streams rendered HTML into a [Node.js `stream.Writable`](https://nodejs.org/api/stream.html#class-streamwritable) (or any object implementing `write(chunk)` and `end()`). If `target.flush()` exists, it is called after each chunk so buffering transforms such as [`zlib.createGzip()`](https://nodejs.org/api/zlib.html#zlibcreategzipoptions) flush incrementally:
 
 ```js
-import Template from "./template.marko";
 import http from "node:http";
+import Template from "./template.marko";
 
 http
   .createServer((req, res) => {
-    // Stream rendered html into the server response.
     Template.render({}).pipe(res);
   })
   .listen(3000);
@@ -50,67 +44,57 @@ http
 
 ### ReadableStream
 
-The `.toReadable()` method in the render result object returns a [WHATWG ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream). This can be used in environments that support web apis, eg in a web worker.
+`.toReadable()` returns a [WHATWG `ReadableStream<Uint8Array>`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) yielding UTF-8 encoded chunks, suitable for Web APIs such as `Response` and edge runtimes:
 
 ```js
-const webHTMLResponse = new Response(Template.render({}).toReadable(), {
+const response = new Response(Template.render({}).toReadable(), {
   headers: { "content-type": "text/html" },
 });
 ```
 
-Reading is deferred to the stream's first pull, so wrapping it in a `Response` that is never read leaves the result unconsumed. Cancelling the stream aborts the render with the cancellation reason.
+Consumption starts on the stream's first pull, so an unread `Response` leaves the render unconsumed. Cancelling the stream aborts the render with the cancellation reason.
 
 ### Thenable
 
-The render result is a [thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#thenables), so the `.then()`, `.catch()` or `.finally()` methods return a `Promise<string>` that resolves with a buffered HTML string. This may be handled implicitly with the [`await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await) keyword.
+The render result is a [thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#thenables) whose resolved value is the full buffered HTML `string`, supporting `await`, `.then()`, `.catch()`, and `.finally()`:
 
 ```js
 const html = await Template.render({});
 ```
 
 > [!NOTE]
-> Awaiting buffers the entire document into a string, opting out of streaming.
+> Awaiting buffers the full HTML document into a single string rather than streaming chunks.
 
-#### toString
+### `toString`
 
-The result implements a `toString()` that returns the buffered `html` synchronously if possible.
+`.toString()` returns the rendered HTML synchronously when the template has no asynchronous content:
 
 ```js
 const html = Template.render({}).toString();
 ```
 
 > [!CAUTION]
-> Any async behavior (i.e. an [`<await>` tag](./core-tag.md#await)) makes this method throw `Cannot consume asynchronous render with 'toString'` instead of returning partial HTML. An already aborted render, for example through an aborted [`$global.signal`](#globalsignal), throws the abort reason.
+> Any asynchronous rendering (such as [`<await>`](./core-tag.md#await)) or an already aborted [`$global.signal`](#globalsignal) causes `.toString()` to throw rather than return partial HTML.
 
 ## `Template.mount(input, node, position?)`
 
-| Parameter  | Default       | Details                                                                                                                                                                                       |
-| :--------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `input`    | `{}`          | The [`input` object](./language.md#input) for the template. May also include [`$global`](#inputglobal) for global state                                                                       |
-| `node`     | `undefined`   | A reference to the DOM node where the template will be rendered                                                                                                                               |
-| `position` | `"beforeend"` | Location to render the template, relative to `node`. Value follows the [Element.insertAdjacentHTML API](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position) |
+| Parameter  | Default       | Details                                                                                                                                                           |
+| :--------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `input`    | `{}`          | Template [`input`](./language.md#input) object; may also include [`$global`](#inputglobal)                                                                        |
+| `node`     | *(required)*  | Light DOM `Element` where the template is inserted                                                                                                                |
+| `position` | `"beforeend"` | Insertion point relative to `node`, matching [`Element.insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position) |
 
-For use in the **browser/client**, The `.mount()` API on a Marko template builds up a [reactive](./reactivity.md) DOM and inserts it at the specified `node` and `position`. The `input` argument becomes the [`input`](./language.md#input) available within the template.
-
-```js
-template.mount({}, document.body); // append to the body.
-```
-
-Or with a `position` override
+Available in **browser** builds. Builds the [reactive](./reactivity.md) DOM and inserts it relative to `node`:
 
 ```js
-template.mount({}, document.body, "afterbegin"); // prepended to the body
+Template.mount({}, document.body); // append inside body
+Template.mount({}, document.body, "afterbegin"); // prepend inside body
 ```
+
+`node` must be a light DOM `Element` (not a `ShadowRoot` or `DocumentFragment`): Marko inherits the element's HTML namespace during parsing and delegates events on `document`.
 
 > [!NOTE]
-> Valid values for `position` are based on [`insertAdjacentHTML()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position):
->
-> - `"beforebegin"`: Before the element.
-> - `"afterbegin"`: Just inside the element, before its first child.
-> - `"beforeend"`: Just inside the element, after its last child.
-> - `"afterend"`: After the element.
->
-> which, if the element is this `<p>`, can be visualized as
+> Supported `position` values match [`insertAdjacentHTML()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML#position):
 >
 > ```html
 > <!-- "beforebegin" -->
@@ -122,38 +106,36 @@ template.mount({}, document.body, "afterbegin"); // prepended to the body
 > <!-- "afterend" -->
 > ```
 
-### Render Result
+### Mounted Instance
 
-The [`.mount()` API](#templatemountinput-node-position) returns an object with helpers used to update and destroy the instance of the template and DOM that was built, and to access its [return value](#instancevalue).
+`Template.mount()` returns a mounted instance with methods to update or destroy the template and read its [return value](#instancevalue):
 
 ```js
-const instance = template.mount({ name: "foo" }, document.body);
+const instance = Template.mount({ name: "foo" }, document.body);
 ```
 
-> [!Warning]
-> This API is **not** the recommended way to update/destroy Marko templates. It is primarily intended to be used in exclusively client rendered environments and/or while testing. Instead the [reactive system](./reactivity.md) should be used.
+> [!WARNING]
+> Use `instance.update()` and `instance.destroy()` only at client-only mount boundaries or in tests. Within Marko templates, manage updates through the [reactive system](./reactivity.md).
 
-#### instance.update(input)
+#### `instance.update(input)`
 
-The `.update()` method allows providing new [`input`](./language.md#input) to the instance of the template with a reactive update.
+Applies new [`input`](./language.md#input) synchronously as a reactive update. `$global` is fixed at mount time and ignored on updates:
 
 ```js
 instance.update({ name: "bar" });
 ```
 
-This update to the `input` is applied synchronously. The instance's [`$global`](#inputglobal) is fixed at mount, so a `$global` on the update input is stripped and ignored.
+#### `instance.destroy()`
 
-#### instance.destroy()
-
-The `.destroy()` method causes every [`$signal`](./language.md#signal) to be aborted and runs cleanup for the instance.
+Removes the template's DOM nodes, aborts every [`$signal`](./language.md#signal), and runs cleanup hooks:
 
 ```js
 instance.destroy();
 ```
 
-#### instance.value
+#### `instance.value`
 
-The `.value` property reflects the [tag variable](./language.md#tag-variables) exposed by the template's [`<return>` tag](./core-tag.md#return).
+Reflects the [tag variable](./language.md#tag-variables) exposed by the template's [`<return>`](./core-tag.md#return):
 
 ```marko
 /* color-picker.marko */
@@ -163,30 +145,23 @@ The `.value` property reflects the [tag variable](./language.md#tag-variables) e
 ```
 
 ```js
+/* index.js */
 import ColorPicker from "./color-picker.marko";
 
 const instance = ColorPicker.mount({}, document.body);
-
-instance.value; // The currently selected color
-```
-
-When the `<return>` has an [assignable value](./core-tag.md#assignable-return-value), assigning to `.value` updates the template through its `valueChange`.
-
-```js
-instance.value = "#0080ff";
+instance.value; // "#ff8000"
+instance.value = "#0080ff"; // invokes `valueChange` when return is assignable
 ```
 
 ## `input.$global`
 
-When a template is rendered via the [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) APIs, the `input` object may specify a `$global` property which will be stripped off and used as [`$global`](./language.md#global) within all rendered `.marko` templates.
-
-Some properties on the `$global` are picked up by Marko itself and have predefined functionality. Application specific properties sit alongside them, typed by extending [`Marko.Global`](./typescript.md#typing-global).
+A `$global` property passed in `input` to [`render`](#templaterenderinput) or [`mount`](#templatemountinput-node-position) is stripped from `input` and exposed as [`$global`](./language.md#global) across every template in the render tree. Application-specific globals sit alongside Marko's built-in properties and are typed on [`Marko.Global`](./typescript.md#typing-global).
 
 ### `$global.serializedGlobals`
 
 > `string[] | Record<string, boolean> | undefined`
 
-`$global` stays on the server. Naming a property here also writes its value into the page, which makes it readable as [`$global`](./language.md#global) from client code such as an event handler.
+`$global` stays server-only by default. Properties listed in `serializedGlobals` are also serialized into the HTML so browser code can read them on [`$global`](./language.md#global):
 
 ```js
 Template.render({
@@ -198,34 +173,30 @@ Template.render({
 });
 ```
 
-Above, `$global.locale` can be read in the browser and `$global.apiToken` cannot. An object selects the same properties and suits a list assembled in more than one place, which is how [Marko Run](../marko-run/runtime.md#context) exposes it as `ctx.serializedGlobals`.
+An object form suits lists assembled across middleware, matching [Marko Run](../marko-run/runtime.md#context)'s `ctx.serializedGlobals`:
 
 ```js
 serializedGlobals: { locale: true, apiToken: false }
 ```
 
-A named property holding `undefined` is left out.
+Properties holding `undefined` are omitted.
 
 > [!WARNING]
-> Serialized values are written into the HTML and can be read by anyone who loads the page. Secrets belong in properties left off the list.
+> Serialized values are embedded in the HTML response and visible to clients. Keep secrets off `serializedGlobals`.
 
 ### `$global.signal`
 
 > <code>[AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) | undefined</code>
 
-When `signal` is included in `$global`, Marko will listen to it and automatically clean up any pending async rendering activity when it is aborted.
-
-This is used to, for example, prevent continued rendering after an incoming request is aborted.
+Aborts pending async rendering and cleans up active work when signaled, such as when an incoming HTTP request disconnects.
 
 ### `$global.cspNonce`
 
 > `string | undefined`
 
-Marko writes this [CSP nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce) as the `nonce` attribute on the `<script>` and `<style>` elements it renders: the [`<html-script>` and `<html-style>`](./core-tag.md#html-script--html-style) tags, the `<style>` element rendered for a [`<style>` tag with dynamic values](./core-tag.md#dynamic-values), and the inline scripts written to stream and resume the page.
+Adds a `nonce` attribute to Marko-rendered `<script>` and `<style>` elements: [`<html-script>` and `<html-style>`](./core-tag.md#html-script--html-style), dynamic [`<style>`](./core-tag.md#dynamic-values) elements, and inline streaming/resume scripts. An explicit `nonce` attribute (or spread) on an element takes precedence.
 
-An explicit `nonce`, written on the element or supplied by a [spread](./language.md#spread-attributes), takes precedence over the injected value.
-
-A `<script>` or `<style>` rendered in the browser reads `cspNonce` from the client [`$global`](./language.md#global), which holds the properties named in [`serializedGlobals`](#globalserializedglobals).
+Marko automatically serializes `cspNonce` to the client whenever it is set on `$global`, so it does not need to be listed in `serializedGlobals`.
 
 ```js
 const cspNonce = crypto.randomUUID();
@@ -236,7 +207,7 @@ res.setHeader(
 );
 
 Template.render({
-  $global: { cspNonce, serializedGlobals: ["cspNonce"] },
+  $global: { cspNonce },
 }).pipe(res);
 ```
 
@@ -244,11 +215,9 @@ Template.render({
 
 > `string | undefined`
 
-The `renderId` isolates one render from every other render sharing a runtime in the same document. It always has a value, `"_"` by default.
+Isolates multiple independent renders sharing one runtime in the same document. Defaults to `"_"`, except for non-page templates (whose rendered tag tree contains no `html`, `head`, or `body` element) compiled with [`linkAssets`](./compiler.md#linkassets), which receive a fresh random ID per `render()` call. `mount()` always defaults to `"_"`.
 
-A template with no `html`, `head`, or `body` tag, compiled with the [`linkAssets`](./lazy-loading.md#bundler-support) compiler option that [`@marko/vite`](https://github.com/marko-js/vite) configures, instead gets a fresh random value on every [`render()`](#templaterenderinput) call, so such renders never collide in one document. [`mount()`](#templatemountinput-node-position) always defaults to `"_"`.
-
-Set an explicit value when several renders of a page template share a document, so each one resumes against its own data.
+Set an explicit `renderId` when multiple renders of page templates share a document:
 
 ```js
 Template.render({
@@ -257,12 +226,12 @@ Template.render({
 ```
 
 > [!WARNING]
-> `renderId` and `runtimeId` become JavaScript identifiers in the inline resume-data scripts, so each must start with a letter or underscore and contain only letters, numbers, and underscores. A UUID, or a hyphenated name such as `my-app`, is not a valid value.
+> `renderId` and `runtimeId` become JavaScript identifiers in inline resume scripts and must match `/^[A-Za-z_][A-Za-z0-9_]*$/` (no UUIDs or hyphens).
 
 ### `$global.runtimeId`
 
 > `string | undefined`
 
-The `runtimeId` names the global variable holding the resume data for every render in the document, and defaults to `"M"`. Overriding it isolates multiple copies of Marko sharing a page. It follows the same identifier rule as [`renderId`](#globalrenderid).
+Names the global variable holding resume data for a Marko runtime instance (default `"M"`), isolating multiple Marko runtimes on the same page. Follows the same identifier rule as [`renderId`](#globalrenderid).
 
-Server and browser builds must agree on the value, so it belongs in the bundler configuration rather than an individual render. [`@marko/vite`](https://github.com/marko-js/vite) accepts a `runtimeId` option and bakes it into the generated entries, which apply it to `$global.runtimeId`.
+Server and browser builds must match, so configure `runtimeId` in the bundler (for example `@marko/vite`'s `runtimeId` option) rather than per render call.

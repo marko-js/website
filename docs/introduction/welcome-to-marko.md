@@ -1,28 +1,24 @@
 <!-- markdownlint-disable-next-line MD026 punctuation -->
 # Welcome to Marko!
 
-Marko is a language designed to make it easier to write performant and "correct" websites. It offers a unique and compelling approach to web development, built upon core principles and features that set it apart.
+Marko is a declarative, HTML-based language designed for fast, maintainable web applications.
 
-## What's Missing from Vanilla HTML, CSS, and JavaScript?
+## Beyond Vanilla HTML
 
-The rise of frameworks in the frontend ecosystem didn't happen for no reason. For complex applications, vanilla technologies fall short in a few important areas.
+Plain HTML, CSS, and JavaScript excel at static documents, but complex interfaces expose three structural limits: imperative DOM updates tangle state with presentation, global CSS creates naming collisions, and manual DOM coordination degrades both maintainability and performance as features grow.
 
-- **Scalability**: Maintaining large applications is challenging due to the imperative nature of JavaScript and the global scope of CSS
-- **Performance**: Manual DOM manipulation is unwieldy and hard to follow, and it can lead to performance bottlenecks unless executed properly
-- **Maintainability**: Verbose HTML and complex JavaScript logic can make codebases difficult to understand and maintain
-
-Frameworks and languages for the web address these issues through concepts like component-based architecture, declarative UI, and managed state. Marko provides a familiar but unique solution for each of these common problems.
+Marko addresses these limits by extending HTML itself with components, reactive state, and compile-time optimization.
 
 ## Declarative Language
 
-Marko embraces a [declarative approach](https://en.wikipedia.org/wiki/Declarative_programming), allowing developers to describe what the UI should look like instead of how it should be rendered. This paradigm enables powerful compiler optimizations and simplifies state management.
+Marko templates describe what the interface renders for a given state rather than the imperative steps to mutate the DOM.
 
 ### Components
 
-Marko's component model promotes reusability and modularity, simplifying the construction of complex UIs.
+Every `.marko` file is a reusable component that composes like a native HTML tag.
 
 ```marko
-/* hello.marko */
+/* tags/hello.marko */
 export interface Input {
   name: string;
 }
@@ -37,7 +33,7 @@ export interface Input {
 
 ### State Management
 
-The Marko language allows developers to declare state within markup, which automatically propagates updates, while imperative blocks and statements allow for control over side effects.
+State lives directly in markup through [tag variables](../reference/language.md#tag-variables). Reassigning state propagates updates automatically, while event handlers and [`<script>`](../reference/core-tag.md#script) blocks handle side effects.
 
 ```marko
 <let/count=0>
@@ -46,48 +42,56 @@ The Marko language allows developers to declare state within markup, which autom
 </button>
 ```
 
-## Performance-first Architecture
+## Performance-First Architecture
 
-Marko prioritizes performance at the architectural level, maximizing developer experience while ensuring that the experience of the website's users is never sacrificed.
+Marko shifts framework overhead from the browser to the build step.
 
 ### Targeted Compilation
 
-Marko compiles every template twice; once for the server, and once for the browser. Server code is optimized for speed, while client code for bundle size. At compile time, the Marko compiler also figures out which parts of your application _need_ to be sent to the client and which can stay on the server.
+Each template compiles twice: once for the server and once for the browser. Server output concatenates strings directly into an HTML stream for maximum throughput; browser output targets bundle size and ships code only for expressions that can change on the client.
 
 ```marko
+<let/expanded=false>
+
 <div>
-  <p>
-    This paragraph isn't stateful, so it will be rendered by the server in raw HTML
-  </p>
-  <if=someState>
-    This section depends on state, so JavaScript will be included about how to manage it
+  <p>Static markup renders on the server and ships zero client JavaScript.</p>
+  <button onClick() { expanded = !expanded }>Toggle details</button>
+  <if=expanded>
+    <p>Only this branch and its state ship to the browser.</p>
   </if>
 </div>
 ```
 
-#### Fine-grained Reactivity
+### Fine-Grained Reactivity
 
-Marko determines at compile time which changes need to happen to the page whenever state is updated, so granular updates are ensured to improve client-side performance.
+The compiler traces dependencies between state and DOM nodes at build time. When state changes, the browser updates only the affected nodes with no virtual DOM diffing or runtime dependency tracking.
 
 ### Streaming
 
-Marko takes advantage of HTML streaming to send content to the client as soon as it becomes available. Both in-order _and_ out-of-order streaming are supported, enabling developers to decide how to show content as quickly as possible.
+Marko streams HTML to the browser as chunks become ready. Both in-order and out-of-order streaming are built into the language with [`<await>`](../reference/core-tag.md#await) and [`<try>`](../reference/core-tag.md#try).
 
 ```marko
 <header>Sent immediately</header>
-<await=Promise((res) => setTimeout(res, 500))>
-  <p>Sent after 500 milliseconds</p>
-</await>
+<try>
+  <await=new Promise((resolve) => setTimeout(resolve, 500))>
+    <p>Streamed after 500ms</p>
+  </await>
+  <@placeholder>
+    <p>Loading...</p>
+  </@placeholder>
+</try>
 ```
 
 ### Resumability
 
-When Marko streams HTML, it also includes serialized values for state so the client can pick up where the server left off without performing any extra calculations. This ensures a faster time-to-interactive and reduced client-side JavaScript.
+Alongside streamed HTML, Marko serializes only the state needed for interactivity. The browser attaches event listeners and resumes from the server-rendered DOM without re-executing component setup or re-rendering templates.
 
 ## The Marko Mindset
 
-Marko aims to provide a developer experience that feels as close to writing declarative HTML as possible, while enabling the capabilities of complex applications.
+Write declarative HTML first, introduce state and components where needed, and let the compiler handle server streaming, code splitting, and DOM updates.
 
 ## Next Steps
 
 - [Installation](./installation.md)
+- [Why Marko?](./why-marko.md)
+- [Marko Fundamentals](../tutorial/fundamentals.md)

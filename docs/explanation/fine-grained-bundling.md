@@ -2,25 +2,23 @@
 
 > [!TLDR]
 >
-> - Marko bundles only interactive JavaScript at compile time
-> - Static content requires zero client-side JavaScript
-> - Bundle size depends on interactivity, not architecture
+> - Marko analyzes templates at compile time to bundle only interactive JavaScript
+> - Static markup ships zero client-side JavaScript
+> - Bundle size scales with interactivity rather than component boundaries
 
-Marko uses **compile-time analysis** to generate minimal JavaScript bundles by identifying which parts of templates actually need interactivity. Instead of shipping entire component trees, only the code necessary for dynamic behavior reaches the browser. This means that Marko is **zero-JS by default**, and interactive pages only ship JavaScript for the parts that truly need it.
+Marko uses **compile-time analysis** to determine which expressions in a template can change in the browser. Static markup renders on the server and ships zero client JavaScript, so browser bundles contain only the code required for interactive behavior.
 
 ## Beyond Islands
 
-Some frameworks, including older versions of Marko, use the [islands architecture](https://www.patterns.dev/vanilla/islands-architecture/) to reduce JavaScript in each page bundle. Islands are determined at the **component** level, so applications authored in an islands-based framework need clear distinction between _server_ components and _client_ components.
+[Islands architectures](https://www.patterns.dev/vanilla/islands-architecture/) reduce client JavaScript at the **component** boundary, requiring explicit separation between server components and client components.
 
-In Marko 6 the compiler decides which code to is interactive based on the _state_ tree, and only includes what is necessary in the browser bundle. Consider this tag that includes an interactive "watch" button:
+Marko analyzes reactivity at the **expression** level across the state graph. Consider a product card containing a single interactive toggle:
 
 ```marko
-/* shop-item.marko */
 <div>
   <h3>${input.name}</h3>
-
   <${input.content}/>
-  
+
   // Interactive toggle
   <let/watching:=input.watching>
   <button onClick() { watching = !watching }>
@@ -29,14 +27,10 @@ In Marko 6 the compiler decides which code to is interactive based on the _state
 </div>
 ```
 
-Only the JavaScript for toggling `watching` and updating the button text is included. JavaScript for rendering static content or creating the button element is not included.
+Only the click listener, `watching` state, and button text update ship to the browser. Code for rendering the heading, wrapping `<div>`, and static content stays on the server.
 
-## Automatic Optimization
+## Architecture Independence
 
-Marko's compiler automatically determines what needs JavaScript without manual configuration.
+Because the compiler traces reactivity across component boundaries, splitting one template into many small components (or combining several into one) produces the same browser bundle size. Component boundaries follow [separation of concerns](./separation-of-concerns.md) without imposing hydration or bundle penalties.
 
-Whether an application is structured as one large component or split into many small ones, the bundle size remains the same, determined purely by the amount of interactivity, not by component architecture. The compiler extracts only the interactive portions regardless of how the code is organized. This way, component can be split up according to [separation of concerns](./separation-of-concerns.md).
-
-This creates a development experience where good performance emerges naturally from the compilation process. Architectural decisions become about maintainability and developer experience, while the compiler handles optimization automatically.
-
-When even the interactive JavaScript should be deferred, such as for a heavy component below the fold, tags can be [lazily loaded](../reference/lazy-loading.md) into their own bundles with declarative triggers.
+When interactive JavaScript itself should wait until needed (such as for a heavy below-the-fold widget), tags can be [lazily loaded](../reference/lazy-loading.md) into separate bundles with declarative triggers.

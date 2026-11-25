@@ -1,31 +1,30 @@
 # Runtime
 
-At build time, Marko Run generates a router from the application's [route files](./file-based-routing.md). For each request, the router creates a **context** object that flows through middleware, handlers, and templates. When using an [adapter](./adapters.md), the runtime is abstracted away. It can also be [embedded](#embedding) in an existing server.
+At build time, Marko Run compiles [route files](./file-based-routing.md) into a router that creates a **context** object for each request and passes it through middleware, handlers, and templates. [Adapters](./adapters.md) wire this router into deployment targets automatically, or it can be [embedded](#embedding) directly in an existing server.
 
 ## Context
 
-The context is passed to middleware and handler functions as the first parameter, conventionally named `ctx`. In Marko templates, it is available as [`$global`](../reference/language.md#global). It contains information about the current request:
+Passed as the first argument (`ctx`) to middleware and handlers, and available as [`$global`](../reference/language.md#global) in templates:
 
-| Property   | Description                                                                                                                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `route`    | A string identifying the current route's path pattern                                                                                            |
-| `request`  | The current [WHATWG `Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) instance                                                |
-| `method`   | HTTP method of the current request                                                                                                               |
-| `url`      | [WHATWG `URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL) instance of the current request                                             |
-| `params`   | The route's path parameters, transformed by any [`params` validators](./validation.md#params-and-search)                                         |
-| `search`   | The request's query string values, transformed by any [`search` validators](./validation.md#params-and-search)                                   |
-| `body`     | Promise for the parsed request body when the route configures a [`json` or `form` option](./validation.md#request-bodies), otherwise `undefined` |
-| `data`     | Data passed from upstream middleware and handlers via [`next(data)`](./data-loading.md)                                                          |
-| `meta`     | Metadata loaded from the current route's [`+meta` file](./file-based-routing.md#meta)                                                            |
-| `platform` | Additional data provided by the [adapter](./adapters.md)                                                                                         |
-| `parent`   | The calling context when the request was made with [`ctx.fetch`](#fetch), otherwise `undefined`                                                  |
+| Property   | Description                                                                                                                             |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| `route`    | Matched route path pattern string                                                                                                       |
+| `request`  | [WHATWG `Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) for the incoming request                                   |
+| `method`   | HTTP method string                                                                                                                      |
+| `url`      | [WHATWG `URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL) for the request                                                    |
+| `signal`   | [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) that aborts on client disconnect (`$global.signal`)       |
+| `params`   | Path parameters, transformed by any [`params` validator](./validation.md#params-and-search)                                             |
+| `search`   | Query string values, transformed by any [`search` validator](./validation.md#params-and-search)                                         |
+| `body`     | Lazy promise for the validated body when a [`json` or `form` validator](./validation.md#request-bodies) is configured, else `undefined` |
+| `data`     | Values passed downstream via [`next(data)`](./data-loading.md)                                                                          |
+| `meta`     | Static metadata from [`+meta`](./file-based-routing.md#meta)                                                                            |
+| `platform` | Adapter-specific platform data                                                                                                          |
+| `parent`   | Calling context for internal [`ctx.fetch`](#fetch) requests, else `undefined`                                                           |
 
 > [!NOTE]
-> In templates, `$global.params` and `$global.url` are serialized to the browser by default, so client-side code can read them after hydration. Other context properties can be included by setting them in `ctx.serializedGlobals`, which is the same list described under [`$global.serializedGlobals`](../reference/template.md#globalserializedglobals).
+> `$global.params` and `$global.url` are serialized to the browser by default so client code can read them after resume. Add other properties through `ctx.serializedGlobals` (see [`$global.serializedGlobals`](../reference/template.md#globalserializedglobals)).
 
 ## Context Methods
-
-The context also provides helpers for producing responses.
 
 ### `fetch`
 
@@ -33,7 +32,7 @@ The context also provides helpers for producing responses.
 fetch(resource: string | URL | Request, init?: RequestInit): Promise<Response>;
 ```
 
-Creates a response by making a new request to the router. This method has the same signature as native [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch). Relative URLs resolve against the current request's URL, and the new request's context has this context as its `parent`.
+Dispatches an internal request through the router using the standard [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) signature. Relative URLs resolve against `ctx.url`, and the child request's `ctx.parent` points to the caller's context.
 
 ### `render`
 
@@ -41,7 +40,7 @@ Creates a response by making a new request to the router. This method has the sa
 render<T>(template: Marko.Template<T>, input: T, init?: ResponseInit): Response;
 ```
 
-Creates a response that streams the given Marko template and sets the `Content-Type` header to `text/html`.
+Streams a Marko template as a `Response` (default status `200`, `Content-Type: text/html;charset=UTF-8` unless set in `init.headers`, empty body for `HEAD`).
 
 ### `redirect`
 
@@ -49,7 +48,7 @@ Creates a response that streams the given Marko template and sets the `Content-T
 redirect(to: string | URL, status?: number): Response;
 ```
 
-Creates a redirect response, resolving relative paths against the current URL. The status defaults to `302` and must be one of `301`, `302`, `303`, `307`, or `308`.
+Returns a redirect response resolving relative paths against `ctx.url`. Defaults to `302`; accepts `301`, `302`, `303`, `307`, or `308`.
 
 ### `back`
 
@@ -57,36 +56,34 @@ Creates a redirect response, resolving relative paths against the current URL. T
 back(fallback?: string | URL, status?: number): Response;
 ```
 
-Creates a redirect response that uses the current request's `Referer` header, or the fallback (default `/`) when there is none.
+Redirects to the request's `Referer` header when it shares the **same origin** as `ctx.url`, otherwise falls back to `fallback` (default `"/"`).
 
 ## Typed URLs
 
-The runtime also provides `Run.href`, which builds URLs for the application's routes with type checking of the path, params, search, and hash. The path is typed against the routes the application actually serves. Renaming or moving a route turns every stale link into a compile-time error instead of a broken `<a>` tag.
+`Run.href` builds URI-encoded URLs checked against the application's routes at compile time when [generated types](./typescript.md#generated-types) are enabled:
 
 ```marko
 <a href=Run.href("/projects/$projectId/members", {
   params: { projectId: 42 },
   search: { sort: "name" },
   hash: "top",
-})>Members</a>
+})>
+  Members
+</a>
 ```
 
-| Option   | Description                                                                                                                                                                             |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `params` | Values for the path's [dynamic segments](./file-based-routing.md#path-structure). Required exactly when the path has them. Catch-all (`$$`) params also accept arrays, joined with `/`. |
-| `search` | Query string values. When the route declares a [`search` validator](./validation.md#params-and-search), the keys are typed against it.                                                  |
-| `hash`   | Fragment appended after `#`.                                                                                                                                                            |
-
-All params, search values, and the hash are URI-encoded automatically.
-
-The full path checking relies on [generated types](./typescript.md#generated-types), so a TSConfig file must be present in the project root for `Run.href` to validate paths and params at compile time. The function still builds correct URLs without it.
+| Option   | Description                                                                                                                            |
+| :------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `params` | Values for [dynamic segments](./file-based-routing.md#path-structure); required when present; `$$` also accepts arrays joined with `/` |
+| `search` | Query string values, typed against the route's [`search` validator](./validation.md#params-and-search) when declared                   |
+| `hash`   | Fragment appended after `#`                                                                                                            |
 
 > [!NOTE]
-> In client builds, Marko Run rewrites statically analyzable `Run.href(...)` calls at compile time, so most calls cost nothing at runtime.
+> In client builds, Marko Run compiles direct `Run.href(...)` calls away when statically analyzable. Call `Run.href` directly in browser code rather than aliasing or destructuring `Run`.
 
 ## Embedding
 
-When more control is needed than an [adapter](./adapters.md) provides, the router can be imported directly and embedded in an existing server:
+Import `@marko/run/router` directly to embed routing inside a custom server:
 
 ```ts
 import * as router from "@marko/run/router";
@@ -98,14 +95,12 @@ import * as router from "@marko/run/router";
 function fetch(request: Request, platform: unknown): Promise<Response | void>;
 ```
 
-This asynchronous function takes a [WHATWG `Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and an object containing any platform-specific data made available as `ctx.platform`. It returns any of
+Executes the matched route for a [WHATWG `Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) with `platform` exposed as `ctx.platform`. Returns:
 
-- a [WHATWG `Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) generated from executing the matched route files
-- `undefined` if the request was not explicitly handled
-- a `404` status response if no route matches the requested path
-- a `500` status response if an uncaught error occurs
-
-Express example:
+- a [WHATWG `Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) from the matched route
+- `undefined` if the route exited unhandled (`throw null`)
+- a `404` response if no route matched
+- a `500` response if an uncaught error occurred
 
 ```ts
 import express from "express";
@@ -113,12 +108,11 @@ import * as router from "@marko/run/router";
 
 express()
   .use(async (req, res, next) => {
-    const request = createWHATWGRequest(req); // code to create a WHATWG Request from `req`
-
+    const request = createWHATWGRequest(req);
     const response = await router.fetch(request, { req, res });
 
     if (response) {
-      applyResponse(response, res); // code to apply a WHATWG Response to `res`
+      applyResponse(response, res);
     } else {
       next();
     }
@@ -127,27 +121,28 @@ express()
 ```
 
 > [!TIP]
-> When targeting Node.js servers, the [Node adapter's middleware](./adapters.md#node) already performs this request and response conversion for Connect-style servers like Express.
+> For Express and Connect-style Node.js servers, the [Node adapter's middleware](./adapters.md#node) handles request/response conversion automatically.
 
 ### `router.match`
 
 ```ts
-function match(method: string, pathname: string): Route | null;
+function match(method: string, pathname: string): RouteMatch | null;
 ```
 
-This synchronous function takes an HTTP method and path name. It returns an object representing the best matching route (`params` and `meta`), or `null` if no route matches. This is useful when other parts of a server need to know whether a route exists before creating a response.
+Synchronously matches an HTTP method and pathname, returning a `RouteMatch` (`params`, `meta`, `path`, `handler`, `options`) or `null` when unmatched.
 
 ### `router.invoke`
 
 ```ts
 function invoke(
-  route: Route,
+  route: RouteMatch | null,
   request: Request,
   platform: unknown,
+  url?: URL,
 ): Promise<Response | void>;
 ```
 
-This asynchronous function takes a route object returned by [`router.match`](#routermatch), along with the request and platform data. It produces a response in the same way [`router.fetch`](#routerfetch) does. Together, `match` and `invoke` split `fetch` into its two steps so that other middleware can run in between:
+Executes a `RouteMatch` returned by [`router.match`](#routermatch) (passing `null` triggers 404 handling), letting custom middleware inspect route metadata between matching and invocation:
 
 ```ts
 import express from "express";
@@ -158,20 +153,18 @@ express()
     res.locals.match = router.match(req.method, req.path);
     next();
   })
-
-  // ...other middleware which can check `res.locals.match`
-
+  // middleware that inspects `res.locals.match`
   .use(async (req, res, next) => {
     if (!res.locals.match) {
       next();
       return;
     }
 
-    const request = createWHATWGRequest(req); // code to create a WHATWG Request from `req`
+    const request = createWHATWGRequest(req);
     const response = await router.invoke(res.locals.match, request, { req, res });
 
     if (response) {
-      applyResponse(response, res); // code to apply a WHATWG Response to `res`
+      applyResponse(response, res);
     } else {
       next();
     }

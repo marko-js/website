@@ -1,6 +1,6 @@
 # Compiler API
 
-The `@marko/compiler` package compiles `.marko` templates into JavaScript modules. The [bundler integrations](../introduction/integrations.md#bundlers) call it for every template, so applications rarely use it directly. It is the API for building a bundler integration, a test transform, or other tooling around Marko templates.
+`@marko/compiler` compiles `.marko` templates into JavaScript modules. [Bundler integrations](../introduction/integrations.md#bundlers) invoke it automatically; use this API directly when building bundler plugins, test transforms, or custom tooling.
 
 ```js
 import * as compiler from "@marko/compiler";
@@ -13,19 +13,17 @@ const { code, map } = await compiler.compileFile("./src/card.marko", {
 
 ## Compile Functions
 
-Each compile function has an asynchronous form and a synchronous `*Sync` form with the same arguments.
+Each compile function provides an async form and a synchronous `*Sync` counterpart with identical arguments.
 
 ### `compile(src, filename, options)`
 
-| Parameter  | Details                                                        |
-| :--------- | :------------------------------------------------------------- |
-| `src`      | The template source as a string                                |
-| `filename` | The template's path, used to resolve tags, imports and its id  |
-| `options`  | Optional [options](#options) that override the configured ones |
+| Parameter  | Details                                                          |
+| :--------- | :--------------------------------------------------------------- |
+| `src`      | Template source string                                           |
+| `filename` | Template path used to resolve tags, relative imports, and its ID |
+| `options`  | Optional [options](#options) overriding configured defaults      |
 
-Returns a `Promise` of the [compile result](#compile-result). `compileSync(src, filename, options)` returns the result directly.
-
-The `filename` does not need to exist on disk, which suits sources a bundler holds in memory. Tag discovery and relative imports resolve from its directory.
+Returns a `Promise` of the [compile result](#compile-result); `compileSync(src, filename, options)` returns it synchronously. `filename` does not need to exist on disk.
 
 ```js
 import { compileSync } from "@marko/compiler";
@@ -38,56 +36,68 @@ const { code } = compileSync(
 
 ### `compileFile(filename, options)`
 
-Reads `filename` through the [`fileSystem`](#filesystem) option, then compiles it as `compile` does. `compileFileSync(filename, options)` is the synchronous form.
+Reads `filename` via [`fileSystem`](#filesystem) and compiles it. `compileFileSync(filename, options)` is the synchronous form.
 
 ## Compile Result
 
-| Property | Details                                                                                 |
-| :------- | :-------------------------------------------------------------------------------------- |
-| `code`   | The compiled JavaScript, or `null` when [`code`](#code) is `false`                      |
-| `map`    | The source map when [`sourceMaps`](#sourcemaps) is `true` or `"both"`, otherwise `null` |
-| `ast`    | The final Babel AST when [`ast`](#ast) is `true`, otherwise `null`                      |
-| `meta`   | Metadata gathered while compiling the template                                          |
+| Property | Details                                                                                                                |
+| :------- | :--------------------------------------------------------------------------------------------------------------------- |
+| `code`   | Compiled JavaScript, or `null` when [`code`](#code) is `false`                                                         |
+| `map`    | Source map when [`sourceMaps`](#sourcemaps) is `true` or `"both"` (and `code` is enabled without `entry`), else `null` |
+| `ast`    | Final Babel AST when [`ast`](#ast) is `true`, otherwise `null`                                                         |
+| `meta`   | Metadata gathered during compilation                                                                                   |
 
 ### Metadata
 
-| Property       | Details                                                                                                    |
-| :------------- | :--------------------------------------------------------------------------------------------------------- |
-| `id`           | The template's id, shared by its server and browser output                                                 |
-| `watchFiles`   | Files other than the template that affected the output, such as `marko.json` files, for a bundler to watch |
-| `analyzedTags` | Templates whose analysis this template used, which invalidate it when they change                          |
-| `diagnostics`  | Errors, warnings, deprecations and suggestions, each with a `type`, a `label` and a source `loc`           |
-| `api`          | The component API the template uses, `"tags"` or `"class"`                                                 |
+| Property       | Details                                                                                                     |
+| :------------- | :---------------------------------------------------------------------------------------------------------- |
+| `id`           | Template ID shared between server and browser outputs                                                       |
+| `watchFiles`   | Non-template files affecting output (such as `marko.json`) for bundler file watching                        |
+| `analyzedTags` | Optional list of templates whose analysis informed this compile and invalidate it on change                 |
+| `diagnostics`  | Errors, warnings, deprecations, and suggestions with `type`, `label`, `loc`, and optional `fix`             |
+| `api`          | Component API (`"tags"` or `"class"`), or `undefined` for custom translators without `preferAPI`            |
 
 ### Errors
 
-A template that fails to compile throws a `CompileError`. Its `message` carries the file position and a code frame, so logging the error shows where it occurred. Integrations that print errors in their own format read its other properties.
+Failed compiles throw a `CompileError` (check `err.name === "CompileError"` or `"CompileErrors"`, as these classes are not exported). Its `message` includes the file location and code frame; integrations formatting their own diagnostics read:
 
-| Property   | Details                                                    |
-| :--------- | :--------------------------------------------------------- |
-| `label`    | The error text without position or code frame              |
-| `loc`      | The source range, with `start` and `end` lines and columns |
-| `frame`    | The code frame                                             |
-| `filename` | The template the error belongs to                          |
+| Property   | Details                                                           |
+| :--------- | :---------------------------------------------------------------- |
+| `label`    | Error text without location or code frame                         |
+| `loc`      | Optional source range (`start`, optional `end` lines and columns) |
+| `frame`    | Formatted code frame                                              |
+| `filename` | Template path                                                     |
 
-When a template has several errors, a single `CompileErrors` is thrown with the individual `CompileError`s in its `errors` array.
+Multiple errors throw a `CompileErrors` object with an `errors` array of `CompileError` instances.
 
 ## Configuration
 
-`configure(options)` sets the default [options](#options) for every later compile. Each call replaces the defaults from the previous one. Options passed to a compile function override the configured defaults for that call only.
+`configure(options)` replaces the default [options](#options) for all subsequent compiles. Per-call options override defaults for that call only. Initial defaults can also be supplied as a JSON string in the `MARKO_CONFIG` environment variable.
 
 ```js
 import * as compiler from "@marko/compiler";
 
 compiler.configure({ sourceMaps: true, modules: "cjs" });
 
-// Compiled with `sourceMaps: true` and `modules: "esm"`.
+// Compiled with `sourceMaps: true` and `modules: "esm"`
 const result = await compiler.compileFile("./src/receipt.marko", {
   modules: "esm",
 });
 ```
 
-The `MARKO_CONFIG` environment variable, when set to a JSON object, provides the initial defaults.
+## Require Hook
+
+`@marko/compiler/register` installs a Node.js CommonJS `require` hook for `.marko` files (always compiling with `modules: "cjs"`):
+
+```js
+const register = require("@marko/compiler/register");
+
+register({
+  output: "html",
+  sourceMaps: "inline",
+  extensions: [".marko"],
+});
+```
 
 ## Options
 
@@ -95,32 +105,30 @@ The `MARKO_CONFIG` environment variable, when set to a JSON object, provides the
 
 | Value       | Output                                                               |
 | :---------- | :------------------------------------------------------------------- |
-| `"html"`    | Server output that renders HTML (the default)                        |
+| `"html"`    | Server output that renders HTML (default)                            |
 | `"dom"`     | Browser output that renders and updates the DOM                      |
-| `"migrate"` | The template source after running migrations, without translating it |
-| `"source"`  | The template source as parsed, useful with [`ast`](#ast)             |
+| `"migrate"` | Template source after running migrations, without translating        |
+| `"source"`  | Parsed template source, useful with [`ast`](#ast)                    |
 
-A template compiled once with `"html"` and once with `"dom"` produces the server and browser halves of the same component. See [targeted compilation](../explanation/targeted-compilation.md).
+Compiling the same template with `"html"` and `"dom"` produces its server and browser halves (see [Targeted Compilation](../explanation/targeted-compilation.md)).
 
 ### `entry`
 
-Compiles the template as an entry point instead of a plain module. Requires [`linkAssets`](#linkassets).
+Compiles the template as an entry point rather than a plain module. Requires [`linkAssets`](#linkassets).
 
-| Value    | Entry                                                                                                                                        |
-| :------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"page"` | With `output: "html"`, the server entry that renders a page and writes its asset tags. With `output: "dom"`, the browser entry for that page |
-| `"load"` | With `output: "dom"`, the browser entry for a template imported [lazily](./lazy-loading.md)                                                  |
+| Value    | Entry                                                                                                                                    |
+| :------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `"page"` | With `output: "html"`, wraps the page to write its asset tags. With `output: "dom"`, emits the browser entry for that page               |
+| `"load"` | With `output: "dom"`, emits the browser entry for a [lazily loaded](./lazy-loading.md) template                                          |
 
 ### `linkAssets`
 
-Connects the server output to the browser assets a bundler builds. It belongs on every compile, server and browser alike.
+Connects server output to browser asset bundles. Pass the same `linkAssets` configuration to both server and browser compiles, and render pages through their `entry: "page"` module so asset tags flush into the HTML.
 
-| Property  | Details                                                                                                                                                                                                                                                                                                                              |
-| :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onAsset` | Called as `onAsset(kind, file, id)` when a server compile finds a page entry (`kind` is `"page"`) or a lazily imported template (`"load"`). Asset `id` needs a browser entry, built by compiling `file` with `output: "dom"` and `entry: kind`                                                                                       |
-| `runtime` | The module that server output imports to write asset tags. Every template imports it by this id, so it is usually absolute or virtual. It exports `flush($global, type, id)`, which returns the HTML tags for asset `id`: the render-blocking ones, such as stylesheets, when `type` is `"block"`, and the rest when it is `"defer"` |
-
-The server build compiles each page with `entry: "page"`, which reports the page, and each template it bundles with `output: "html"`, which reports the templates they load lazily. Each reported asset then gets a browser entry.
+| Property  | Details                                                                                                                                |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `onAsset` | `onAsset(kind, file, id)` called for each page (`"page"`) or lazy import (`"load"`) needing a matching `output: "dom"` entry           |
+| `runtime` | Absolute or virtual module ID imported by server output; exports `flush($global, type, id)` returning `"block"` or `"defer"` HTML tags |
 
 ```js
 /* build.js */
@@ -155,8 +163,6 @@ for (const [id, { kind, file }] of assets) {
 }
 ```
 
-The runtime module reads the tags the build recorded.
-
 ```js
 /* asset-runtime.js */
 import manifest from "./dist/asset-manifest.json" with { type: "json" };
@@ -168,16 +174,16 @@ export function flush($global, type, id) {
 
 ### `resolveVirtualDependency`
 
-A template can produce more than one module. Each `<style>` block becomes its own stylesheet, and some generated modules register values for the browser. The compiler calls `resolveVirtualDependency(filename, dep)` for each one and imports the path it returns.
+Templates can emit auxiliary virtual modules for `<style>` blocks and browser registration helpers. The compiler calls `resolveVirtualDependency(filename, dep)` for each virtual module and imports the returned specifier:
 
-| Parameter         | Details                                                |
-| :---------------- | :----------------------------------------------------- |
-| `filename`        | The template that produced the module                  |
-| `dep.virtualPath` | A suggested path, such as `./card.marko.css`           |
-| `dep.code`        | The module's contents                                  |
-| `dep.map`         | Its source map, when [`sourceMaps`](#sourcemaps) is on |
+| Parameter         | Details                                                                          |
+| :---------------- | :------------------------------------------------------------------------------- |
+| `filename`        | Template that produced the virtual module                                        |
+| `dep.virtualPath` | Suggested path (such as `./card.marko.css`)                                      |
+| `dep.code`        | Virtual module source                                                            |
+| `dep.map`         | Source map when [`sourceMaps`](#sourcemaps) is `true` or `"both"`                |
 
-The bundler serves the returned path with `dep.code`. A path that keeps the extension of `virtualPath` gets the bundler's usual handling for stylesheets and scripts. Without this option, `<style>` block contents are left out of the output.
+Preserving `virtualPath`'s extension lets the bundler apply standard CSS/JS handling. Without this option, `<style>` blocks are omitted from output; browser builds with cross-template registered imports require it.
 
 ```js
 import path from "node:path";
@@ -193,85 +199,85 @@ function resolveVirtualDependency(filename, { virtualPath, code, map }) {
 
 ### `modules`
 
-The module format of the output, `"esm"` (the default) or `"cjs"`.
+Output module format: `"esm"` (default) or `"cjs"`.
 
 ### `optimize`
 
-Compiles for production: templates import the production runtime instead of its debug build and use shorter internal names. By default it is on when `NODE_ENV` is set to anything other than `"development"`. A `MARKO_DEBUG` environment variable overrides that, turning it off unless set to `false` or `0`.
+Enables production output: imports the production runtime and shortens internal identifiers. Defaults to `true` when `NODE_ENV` is set to anything other than `"development"`. `MARKO_DEBUG` overrides this, disabling optimization unless set to `false` or `0`.
 
 ### `optimizeKnownTemplates`
 
-A list of template paths that receive short, sequential ids when [`optimize`](#optimize) is on. Server and browser compiles must use the same list.
+Ordered list of template paths assigned short sequential IDs when [`optimize`](#optimize) is enabled. Server and browser builds must share the same list.
 
 ### `runtimeId`
 
-Distinguishes the Marko runtimes on a page that loads more than one of them. It must start with a letter or underscore and contain only letters, numbers and underscores.
+Isolates multiple Marko runtimes on one page. Must start with a letter or underscore and contain only letters, numbers, and underscores.
 
 ### `sourceMaps`
 
 | Value      | Output                                   |
 | :--------- | :--------------------------------------- |
-| `false`    | No source map (the default)              |
-| `true`     | A source map in the result's `map`       |
-| `"inline"` | A source map comment inlined into `code` |
-| `"both"`   | Both of the above                        |
+| `false`    | No source map (default)                  |
+| `true`     | Source map in result `map`               |
+| `"inline"` | Source map comment inlined into `code`   |
+| `"both"`   | Both `map` and inline comment            |
 
 ### `code`
 
-When `false`, skips generating `code`, which saves time when only `meta` or `ast` is needed. Defaults to `true`.
+Defaults to `true`. Set to `false` to skip code generation when only `meta` or `ast` is needed.
 
 ### `ast`
 
-When `true`, includes the final Babel AST in the result. Defaults to `false`.
+Defaults to `false`. Set to `true` to include the final Babel AST in the result.
 
 ### `stripTypes`
 
-Removes TypeScript types from the output. When unset, types are removed for every `output` except `"source"` and `"migrate"`.
+Strips TypeScript syntax from output. Defaults to `true` for every `output` except `"source"` and `"migrate"`.
 
 ### `translator`
 
-The translator that turns templates into JavaScript, as a module id or a translator object. By default it is the translator of the installed `marko` package, or of a `@marko/runtime-*` package listed in the application's `package.json`.
+Translator module ID or object. Defaults to the installed `marko` package's translator (or a `@marko/runtime-*` dependency in `package.json`).
 
 ### `fileSystem`
 
-An `fs`-compatible object the compiler reads through, providing `readFileSync`, `statSync` and `readdirSync` (and `readFile` for `compileFile`). It may also provide `realpathSync`, which resolves links in installed packages' paths, as in a pnpm store; without it, paths are kept as found. Defaults to Node's `fs`, and lets a bundler share its own cached file system.
+An `fs`-compatible object (`readFileSync`, `statSync`, `readdirSync`, plus `readFile` for `compileFile`, and optional `realpathSync` to resolve symlinked packages such as pnpm stores). Defaults to Node's `fs`.
 
 ### `cache`
 
-A `Map` that holds compiled templates, so a template used by several others is analyzed once. Entries are reused until the template or a file it depends on changes. Since each template's analysis is reused between them, compiles that share a cache are expected to use the same options apart from `output`. By default every compile shares one `Map`.
+A `Map` caching analyzed templates across compiles until a template or dependency changes. Compiles sharing a cache must use identical options apart from `output` and `entry` (`"source"` and `"migrate"` bypass the cache). Defaults to a shared process-wide `Map`.
 
 ### `babelConfig`
 
-[Babel options](https://babeljs.io/docs/options) merged into the configuration the compiler uses to parse and generate code.
+[Babel options](https://babeljs.io/docs/options) merged into the compiler's parse and generate configuration.
 
 ### `getTemplateId`
 
-A function `(filename) => id` that replaces the default template id, the template's percent-encoded path relative to the project root.
+A `(filename) => id` hook overriding the default top-level template ID (percent-encoded root-relative path, or short hash/sequential ID when `optimize` is enabled). Unsafe characters in the returned ID are percent-encoded.
 
 ### `errorRecovery`
 
-When `true`, recoverable errors are recorded in the result's `meta.diagnostics` instead of being thrown, so tools such as editors can report every problem in a template.
+When `true`, records recoverable errors in `meta.diagnostics` instead of throwing (skipping translation and returning empty `code` when errors occur), useful for editor tooling.
 
 ### `applyFixes`
 
-Selects which migration fixes run. When set, only diagnostics whose index is a key of this `Map` apply their fix, receiving the mapped value. By default every fix applies.
+A `Map` selecting which migration fixes apply by diagnostic index and passing each mapped value to its fix. Defaults to applying all fixes.
 
 ## Tag Libraries
 
-The `taglib` namespace controls how the compiler discovers tags.
+The `taglib` namespace controls tag discovery:
 
-| Function                                                   | Details                                                                                                                                                                                                                                                                                |
-| :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `register(id, props)`                                      | Registers a tag library. Without `props`, loads the `marko.json` at the path or package `id`                                                                                                                                                                                           |
-| `excludeDir(dirname)`                                      | Stops tag discovery from searching `dirname`                                                                                                                                                                                                                                           |
-| `excludePackage(name)`                                     | Stops tag discovery from loading tags from the package `name`                                                                                                                                                                                                                          |
-| `buildLookup(dirname, translator?, onError?, fileSystem?)` | Returns the tags available to templates in `dirname`, read through `fileSystem` (by default the configured [`fileSystem`](#filesystem)) for `translator` (by default the configured one). `onError` receives the error of a tag library that fails to load, instead of it being thrown |
-| `clearCaches()`                                            | Clears cached tag libraries, so lookups built afterward see added or removed tags and edited `marko.json`, `marko-tag.json` and `package.json` files. Clearing the [`cache`](#cache) too recompiles the templates that use them                                                        |
+| Function                                                   | Details                                                                                                                                                     |
+| :--------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register(id, props)`                                      | Registers a tag library. Without `props`, loads a `.json` file path directly or `<id>/marko.json` for a package name                                        |
+| `excludeDir(dirname)`                                      | Excludes `dirname` from tag discovery                                                                                                                       |
+| `excludePackage(name)`                                     | Excludes package `name` from tag discovery                                                                                                                  |
+| `buildLookup(dirname, translator?, onError?, fileSystem?)` | Builds the tag lookup for `dirname` using configured defaults; `onError` handles failed tag libraries without throwing                                      |
+| `clearCaches()`                                            | Clears cached tag libraries after editing `marko.json`, `marko-tag.json`, or `package.json` (also clear [`cache`](#cache) to recompile dependent templates) |
 
 ## Runtime Information
 
-| Export                         | Details                                                                                |
-| :----------------------------- | :------------------------------------------------------------------------------------- |
-| `getRuntimeEntryFiles(output)` | The runtime modules templates compiled for `output` import, for a bundler to prebundle |
-| `getRuntimeVersion()`          | The version of the runtime the translator targets                                      |
-| `version`                      | The version of `@marko/compiler`                                                       |
+| Export                                      | Details                                                                              |
+| :------------------------------------------ | :----------------------------------------------------------------------------------- |
+| `getRuntimeEntryFiles(output, translator?)` | Runtime modules imported by compiled templates for `output`, for bundler prebundling |
+| `getRuntimeVersion(translator?)`            | Runtime version targeted by the translator                                           |
+| `version`                                   | Installed `@marko/compiler` version                                                  |

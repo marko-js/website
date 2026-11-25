@@ -1,29 +1,29 @@
 # Validation
 
-Handlers and middleware are written using the verb helpers defined on the global `Run` namespace. Beyond declaring which HTTP method a handler responds to, these helpers accept validation options that check, transform, and type a route's path parameters, query string, and request body.
+The global `Run` verb helpers declare HTTP handlers and attach validation options that parse, transform, and type path parameters, query strings, and request bodies.
 
 ## Verb Helpers
 
-Each verb helper (`Run.GET`, `Run.HEAD`, `Run.POST`, `Run.PUT`, `Run.DELETE`, `Run.PATCH`, `Run.OPTIONS`, `Run.QUERY`, and `Run.ALL`) accepts a handler function or an array of handler functions, optionally preceded by validation options:
+Each verb helper (`Run.GET`, `Run.HEAD`, `Run.POST`, `Run.PUT`, `Run.DELETE`, `Run.PATCH`, `Run.OPTIONS`, `Run.QUERY`, and `Run.ALL`) accepts a handler function or array of functions, with optional validation options first:
 
 ```ts
-Run.POST(handler); // a handler function
-Run.POST([auth, handler]); // an array of handlers, composed in order
-Run.POST(options, handler); // validation options plus a handler
-Run.POST(options, [auth, handler]); // validation options plus an array of handlers
+Run.POST(handler); // single handler
+Run.POST([auth, handler]); // composed handlers
+Run.POST(options, handler); // validation options + handler
+Run.POST(options, [auth, handler]); // validation options + composed handlers
 Run.POST(options); // options only, validates and passes through
 ```
 
-In a [`+handler` file](./file-based-routing.md#handler), export the result under the matching verb name. In a [`+middleware` file](./file-based-routing.md#middleware), use the default export. Handlers created for a specific verb only run for requests with that method. `Run.ALL`, available in middleware, runs for every method.
+Export verb helpers by method name in [`+handler` files](./file-based-routing.md#handler) or as the `default` export in [`+middleware` files](./file-based-routing.md#middleware).
 
 > [!NOTE]
-> The `Run` namespace is a global, so no imports are needed in route files. See [TypeScript](./typescript.md#run-namespace) for the types it provides.
+> `Run` is global in route files with no imports needed. See [TypeScript](./typescript.md#run-namespace).
 
 ## Params and Search
 
-The `params` and `search` options validate, and can transform, the route's [path parameters](./file-based-routing.md#path-structure) and query string. A validator is either a function or a [Standard Schema](https://github.com/standard-schema/standard-schema) (Zod, Valibot, ArkType, etc.).
+The `params` and `search` options validate and transform [path parameters](./file-based-routing.md#path-structure) and query string values. Without a validator, `ctx.params` is a string map and `ctx.search` is a parsed query object (repeated keys become string arrays).
 
-Consider a middleware that normalizes a `page` query parameter for every route below it, and a handler that converts its `id` path parameter to a number:
+A validator is either a function or a [Standard Schema](https://github.com/standard-schema/standard-schema) (Valibot, Zod, ArkType, etc.):
 
 ```ts
 /* +middleware.ts */
@@ -39,7 +39,9 @@ export default Run.ALL({
 export const GET = Run.GET(
   {
     params(value) {
-      return { id: Number(value.id) };
+      const id = Number(value.id);
+      if (Number.isNaN(id)) throw new Response("Invalid ID", { status: 400 });
+      return { id };
     },
   },
   (ctx) => {
@@ -49,58 +51,18 @@ export const GET = Run.GET(
 );
 ```
 
-Function validators replace the value with whatever they return. Standard Schema validators produce a [`[value, issues]` tuple](#standard-schema).
+Function validators replace the value with their return value (and reject invalid input by throwing a `Response`). Standard Schema validators produce a [`[value, issues]` tuple](#standard-schema).
 
-Validators are lazy. `ctx.params` and `ctx.search` do not run their validators until the property is accessed. The first access runs the validator and caches the result for later reads. A request that never touches these properties never pays for their validation.
+Validation is lazy: `ctx.params` and `ctx.search` run on first property access and cache the result for subsequent reads.
 
 > [!WARNING]
-> Standard Schema validation must be synchronous. Passing a schema whose validation resolves asynchronously throws at runtime.
+> Standard Schema validators must be synchronous; async schemas throw at runtime.
 
 ## Request Bodies
 
-`POST`, `PUT`, `PATCH`, and `QUERY` handlers declare how request bodies are read with the `json` and `form` options. When either is configured, `ctx.body` is a promise for the parsed and validated body. Otherwise `ctx.body` is `undefined`.
+`POST`, `PUT`, `PATCH`, and `QUERY` handlers declare body parsing and validation with `json` or `form`. When either option configures a **validator**, `ctx.body` is a lazy promise for the parsed and validated body; without a validator, `ctx.body` is `undefined` (even if size limits are passed; use an identity validator such as `json: (value) => value` to accept raw parsed data).
 
 ```ts
-import * as v from "valibot";
-
-export const POST = Run.POST(
-  {
-    form: v.object({
-      name: v.string(),
-      age: v.pipe(v.string(), v.toNumber()),
-    }),
-  },
-  async (ctx) => {
-    const [data, issues] = await ctx.body;
-    if (issues) {
-      return Response.json({ issues }, { status: 400 });
-    }
-    return Response.json(data);
-  },
-);
-```
-
-Like `params` and `search`, `ctx.body` is lazy. The body is only read, parsed, and validated when the promise is consumed, meaning it is awaited or its `.then` method is called. A handler that rejects a request early does so without reading the body at all.
-
-Function validators resolve `ctx.body` to their return value. Standard Schema validators resolve it to a [`[value, issues]` tuple](#standard-schema). With no validator, it resolves to the raw parsed body. Requests exceeding the configured size limits below are rejected.
-
-> [!NOTE]
-> `ctx.body` is a promise, not a function. Read the parsed body with `await ctx.body`, there is nothing to call.
-
-Aside from runtime safety and typing convenience, validation makes reading request bodies declarative and avoids manual parsing.
-
-```ts
-// ❌ Bypasses validation and the size limits below
-export const POST = Run.POST(async (ctx) => {
-  const note = await ctx.request.json();
-  return new Response(JSON.stringify(createNote(note)), {
-    headers: { "content-type": "application/json" },
-  });
-});
-```
-
-```ts
-// ✅ Parsed, validated, and typed
 import * as v from "valibot";
 
 const NoteSchema = v.object({ text: v.pipe(v.string(), v.nonEmpty()) });
@@ -114,33 +76,81 @@ export const POST = Run.POST({ json: NoteSchema }, async (ctx) => {
 });
 ```
 
+The body is read and parsed only when `ctx.body` is awaited (or `.then` is called), so early rejections avoid reading the request stream. Malformed bodies fail with `400`, bodies exceeding configured limits fail with `413`, and mismatched `Content-Type` headers fail with `415`.
+
+> [!NOTE]
+> `ctx.body` is a promise, not a function. Read it with `await ctx.body`; there is nothing to call.
+
+<!---->
+
+> [!WARNING]
+> Calling `ctx.request.json()` or `ctx.request.formData()` directly bypasses validation and size limits. Configure `json` or `form` on the verb helper and read `await ctx.body` instead.
+
 ### `json`
 
-Handles requests with an `application/json` content type. The option can be a validator, or an options object:
+Handles `application/json` requests. Accepts a validator directly or an options object:
 
 | Option      | Default        | Description                                     |
-| ----------- | -------------- | ----------------------------------------------- |
+| :---------- | :------------- | :---------------------------------------------- |
 | `validator` |                | Function or Standard Schema for the parsed JSON |
 | `maxBytes`  | 1048576 (1MiB) | Maximum request body size in bytes              |
 
 ### `form`
 
-Handles requests with an `application/x-www-form-urlencoded` or `multipart/form-data` content type. Repeated field names become arrays. The option can be a validator, or an options object:
+Handles `application/x-www-form-urlencoded` and `multipart/form-data` requests. Repeated field names (for both text fields and uploaded files) collapse into arrays. Uploaded multipart files arrive in the parsed record as `File` instances carrying an extra `fieldName` property, or as the return value of `onFile` when provided.
 
-| Option         | Default                   | Description                                        |
-| -------------- | ------------------------- | -------------------------------------------------- |
-| `validator`    |                           | Function or Standard Schema for the parsed form    |
-| `maxBytes`     | `maxFiles * maxFileBytes` | Maximum request body size in bytes                 |
-| `maxParts`     | 1000                      | Maximum number of parts in a multipart request     |
-| `maxFiles`     | 20                        | Maximum number of files in a multipart request     |
-| `maxFileBytes` | 1048576 (1MiB)            | Maximum size of each uploaded file in bytes        |
-| `onFile`       |                           | `(ctx, file) => any` called for each uploaded file |
+| Option         | Default                   | Description                                                      |
+| :------------- | :------------------------ | :--------------------------------------------------------------- |
+| `validator`    |                           | Function or Standard Schema for the parsed form                  |
+| `maxBytes`     | `maxFiles * maxFileBytes` | Maximum request body size in bytes                               |
+| `maxParts`     | 1000                      | Maximum number of parts in a multipart request                   |
+| `maxFiles`     | 20                        | Maximum number of files in a multipart request                   |
+| `maxFileBytes` | 1048576 (1MiB)            | Maximum size of each uploaded file in bytes                      |
+| `onFile`       |                           | `(ctx, file) => any` called per file; return value replaces file |
+
+Multipart upload example:
+
+```marko
+/* +page.marko */
+<form method="post" enctype="multipart/form-data">
+  <input name="title" required>
+  <input name="avatar" type="file" accept="image/*" required>
+  <button type="submit">Upload</button>
+</form>
+```
+
+```ts
+/* +handler.ts */
+import * as v from "valibot";
+
+const UploadSchema = v.object({
+  title: v.pipe(v.string(), v.nonEmpty()),
+  avatar: v.instance(File),
+});
+
+export const POST = Run.POST(
+  {
+    form: {
+      validator: UploadSchema,
+      maxFiles: 1,
+      maxFileBytes: 5 * 1024 * 1024,
+    },
+  },
+  async (ctx) => {
+    const [upload, issues] = await ctx.body;
+    if (issues) {
+      return Response.json({ issues }, { status: 422 });
+    }
+    const bytes = await upload.avatar.arrayBuffer();
+    await storeAvatar(upload.title, upload.avatar.name, bytes);
+    return ctx.redirect("/profile", 303);
+  },
+);
+```
 
 ## Standard Schema
 
-When a validator is a Standard Schema, the validated result is a `[value, issues]` tuple. On success, `issues` is `undefined` and `value` holds the parsed output. On failure, `value` holds the raw input and `issues` describes each problem.
-
-TypeScript treats the tuple as a discriminated union: checking `issues` is what narrows `value` to the parsed type. Narrowing applies to one read of the tuple at a time, so every place that uses the result needs its own check.
+Standard Schema validators resolve to a `[value, issues]` discriminated tuple: on success, `issues` is `undefined` and `value` has the parsed type; on failure, `value` holds the raw input and `issues` lists validation errors. Checking `issues` narrows `value` for that read:
 
 ```ts
 export const POST = Run.POST({ form: signupSchema }, async (ctx, next) => {
@@ -148,18 +158,16 @@ export const POST = Run.POST({ form: signupSchema }, async (ctx, next) => {
   if (issues) {
     return next({ issues });
   }
-  return next({ signup }); // downstream sees the narrowed type
+  return next({ signup }); // downstream receives the narrowed type
 });
 ```
 
 > [!TIP]
-> Check `issues` once in the handler and pass the narrowed data to the page with [`next`](./data-loading.md). The template then receives already-validated values instead of repeating the check.
+> Check `issues` once in the handler and pass narrowed values to the page via [`next`](./data-loading.md) so templates receive validated data directly.
 
 ## Merging Options
 
-All options declared for a route, across its middleware and handler, are merged into a single set. When the same option is declared more than once, the last validator wins and object forms are merged shallowly. A `maxBytes` limit declared in one place combines with a `validator` declared in another.
-
-This makes middleware a natural home for shared validation. An options-only `Run.ALL({ search: ... })` in a [`+middleware` file](./file-based-routing.md#middleware) applies to every route below it.
+Options declared across middleware and handlers for the same route merge shallowly: the last validator wins, while object options combine (for example, `maxBytes` in middleware merges with `validator` in a handler). Options-only middleware (`Run.ALL({ search: ... })`) applies shared validation to every nested route.
 
 ## Next Steps
 

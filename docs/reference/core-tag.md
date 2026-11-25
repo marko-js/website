@@ -2,14 +2,9 @@
 
 ## `<if>` / `<else>`
 
-The `<if>` and `<else>` control flow tags are used to conditionally display content or apply [attribute tags](./language.md#attribute-tags).
+Conditionally renders content or applies [attribute tags](./language.md#attribute-tags).
 
-An `<if>` is applied when its `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and may be followed by an `<else>`.
-
-The `<else>` tag may have its own condition as an `if=` attribute.
-When it has a condition, the condition is checked before the `<else>` is applied and another `<else>` may follow.
-
-Expressions in the if/else chain are evaluated in order.
+An `<if>` renders when its `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy). An `<else>` may include an `if=` condition to chain branches, evaluated in order:
 
 ```marko
 <if=EXPRESSION>
@@ -24,11 +19,11 @@ Expressions in the if/else chain are evaluated in order.
 ```
 
 > [!TIP]
-> The content of an `<if>` is discarded when its condition stops matching, and rebuilt with fresh state when it matches again. To toggle the visibility of content while preserving its state, use [`<show>`](#show).
+> `<if>` discards its DOM and state when hidden and rebuilds fresh state when shown again. To toggle visibility while preserving state, use [`<show>`](#show).
 
 ## `<show>`
 
-The `<show>` tag toggles whether its [content](./language.md#tag-content) is displayed. The content is displayed when the `value=` attribute ([shorthand used below](./language.md#shorthand-value)) is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) and hidden otherwise.
+Toggles whether its [content](./language.md#tag-content) is attached to the document based on whether `value=` is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy):
 
 ```marko
 <show=EXPRESSION>
@@ -36,14 +31,12 @@ The `<show>` tag toggles whether its [content](./language.md#tag-content) is dis
 </show>
 ```
 
-Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and stays mounted. The value only controls whether the content's nodes are in the document, so state within the content, including [tag variables](./language.md#tag-variables), form values, and the DOM nodes themselves, persists across toggles.
+Unlike [`<if>`](#if--else), `<show>` renders its content once and keeps it mounted. Toggling `value=` only attaches or detaches the DOM nodes, preserving [tag variables](./language.md#tag-variables), form values, and DOM state:
 
 ```marko
 <let/showFilters=false>
 
-<button onClick() { showFilters = !showFilters }>
-  Filters
-</button>
+<button onClick() { showFilters = !showFilters }>Filters</button>
 
 <show=showFilters>
   <input type="search" name="brand" placeholder="Brand">
@@ -54,27 +47,23 @@ Unlike [`<if>`](#if--else), the content of a `<show>` is always rendered and sta
 </show>
 ```
 
-Collapsing this filter panel keeps whatever was typed and selected, and reopening it picks up exactly where things were left. With an `<if>` in its place, the inputs would be discarded when hidden and recreated empty when displayed again.
-
-Since the content always exists exactly once, the compiler builds it directly into the surrounding template rather than splitting it into a conditional branch. This also changes what a stateful condition ships to the browser: an `<if>` whose condition can change client side must bundle its content so the branch can be rendered from scratch, but a changing `<show>` value never requires the content's template, only a small helper that moves the already rendered nodes. When the value is statically known, the tag compiles to plain markup with no runtime at all.
+Because the content is built inline in the surrounding template, a reactive `<show>` ships only a small toggle helper rather than the template code to recreate its body. A statically truthy `<show>` compiles to plain markup with no runtime overhead.
 
 > [!TIP]
-> Prefer `<show>` for content that toggles often, holds state worth keeping (form fields, stateful components, or an expensive-to-initialize [`<lifecycle>`](#lifecycle) widget, which mounts once and survives toggles), or is bulky markup that should not have to ship to the browser just to be toggled. Prefer [`<if>`](#if--else) when hidden content should not render at all, such as content that is costly to create, rarely revealed, or should not be present in the server rendered HTML.
+> Use `<show>` for content that toggles frequently, holds state worth preserving (form inputs, stateful components, or [`<lifecycle>`](#lifecycle) widgets), or contains bulky static markup. Use [`<if>`](#if--else) when hidden content should not render or appear in server HTML.
 
 <!---->
 
 > [!NOTE]
-> Hidden content still renders on the server and is sent to the browser inside a wrapper element with the [`hidden` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden), which allows it to resume without re-rendering. Once the value changes in the browser, hidden content is instead detached from the document entirely. Because hiding removes the content's nodes from the document rather than hiding them with CSS, transient state such as focus and text selection does not survive being hidden.
+> Hidden content renders on the server inside a wrapper with the [`hidden`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden) attribute so it can resume without re-rendering; once toggled in the browser, hidden nodes are detached from the document. Because nodes leave the document, transient browser state such as focus and text selection resets on hide.
 
-The `<show>` tag requires [content](./language.md#tag-content) and accepts only the `value=` attribute. It has no `<else>` counterpart, and unlike `<if>` it cannot be used to apply [attribute tags](./language.md#attribute-tags).
+`<show>` requires [content](./language.md#tag-content) and accepts only `value=`.
 
 ## `<for>`
 
-The `<for>` control flow tag allows for writing content or applying [attribute tags](./language.md#attribute-tags) while iterating. Its [content](./language.md#tag-content) has access to information about each iteration through the [Tag Parameters](./language.md#tag-parameters).
+Iterates over collections or numeric ranges to render [content](./language.md#tag-content) or apply [attribute tags](./language.md#attribute-tags), exposing iteration values via [tag parameters](./language.md#tag-parameters):
 
-The `<for>` tag can iterate over:
-
-- Arrays and [Iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with the `of=` attribute
+- Arrays and [iterables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with `of=`:
 
   ```marko
   <for|item, index| of=["a", "b", "c"]>
@@ -82,15 +71,15 @@ The `<for>` tag can iterate over:
   </for>
   ```
 
-- Object properties and values with the `in=` attribute
+- Object entries with `in=`:
 
   ```marko
-  <for|key, value| in={a: 1, b: 2, c: 3}>
+  <for|key, value| in={ a: 1, b: 2, c: 3 }>
     ${key}: ${value}
   </for>
   ```
 
-- **Exclusive** ranges of numbers with the `until=`, `from=`, and `step=` attributes
+- **Exclusive** numeric ranges with `until=`, `from=`, and `step=`:
 
   ```marko
   <for|num| until=5>${num}</for>
@@ -103,7 +92,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8
   ```
 
-- **Inclusive** ranges of numbers with the `to=`, `from=`, and `step=` attributes
+- **Inclusive** numeric ranges with `to=`, `from=`, and `step=`:
 
   ```marko
   <for|num| to=5>${num}</for>
@@ -116,7 +105,7 @@ The `<for>` tag can iterate over:
   // 2 4 6 8 10
   ```
 
-The `step=` attribute may be negative, counting down from a larger `from=`, or fractional.
+`step=` accepts negative or fractional values:
 
 ```marko
 <for|num| from=10 to=0 step=-5>${num}</for>
@@ -126,44 +115,25 @@ The `step=` attribute may be negative, counting down from a larger `from=`, or f
 // 0 0.25 0.5 0.75 1
 ```
 
-A nullish `of=` or `in=` renders nothing, so an optional value such as a [repeated attribute tag](./language.md#repeated-attribute-tags) may be iterated directly.
+A nullish `of=` or `in=` renders nothing, so optional values such as [repeated attribute tags](./language.md#repeated-attribute-tags) can be iterated directly.
 
-The `<for>` tag has a `by=` attribute which helps preserve state while reordering content within the loop. The value should be a function (which receives the same parameters as the loop itself) that is used to give each iteration a unique key.
+Pass `by=` on a content-rendering `<for>` to key each iteration so DOM nodes and local state persist across reorderings. `by=` accepts a function receiving the loop parameters, or a property name string when using `of=`:
 
 ```marko
-<for|user| of=users by=user => user.id>
+<for|user| of=users by=(user) => user.id>
   ${user.firstName} ${user.lastName}
 </for>
-```
 
-The `by=` attribute above keys each iteration by its `user.id` property.
-
-Additionally, when using the `of=` attribute, `by=` may be a string. This will key the items by the corresponding property on each item.
-
-This means the previous example can simplified to:
-
-```marko
 <for|user| of=users by="id">
   ${user.firstName} ${user.lastName}
 </for>
 ```
 
-Each key must be a string or a number, and must be unique within a single loop. An object item is keyed by a stable identifier it carries, such as the `id` above.
-
-> [!WARNING]
-> The `by=` attribute keys a `<for>` that renders [content](./language.md#tag-content). Including it on a `<for>` that [applies attribute tags](./language.md#conditional-attribute-tags) is a compile error.
+Each key must be a string or number unique within the loop.
 
 ## `<let>`
 
-The `<let>` tag introduces mutable state through its [Tag Variable](./language.md#tag-variables).
-
-```marko
-<let/x=1>
-```
-
-The `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) provides an initial value for its state.
-
-When a tag variable is updated, everywhere it is used also re-runs. This is the core of Marko's reactive system.
+Declares mutable reactive state through its [tag variable](./language.md#tag-variables), initialized from `value=`:
 
 ```marko
 <let/count=1>
@@ -173,10 +143,10 @@ When a tag variable is updated, everywhere it is used also re-runs. This is the 
 </button>
 ```
 
-In this template, `count` is incremented when the button is clicked. Since `count` is a [Tag Variable](./language.md#tag-variables), it will cause any downstream expression (in this case the text in the button) to be updated every time it changes.
+Reassigning `count` updates every expression that reads it.
 
 > [!NOTE]
-> The `<let>` tag is not reactive to changes in its `value=` attribute unless it is [controllable](#controllable-let). Its tag variable updates only through direct assignment or its change handler.
+> An uncontrolled `<let>` uses `value=` only as its initial value. Subsequent changes to the initializing expression do not overwrite the variable unless the `<let>` is [controllable](#controllable-let).
 >
 > ```marko
 > export interface Input {
@@ -187,28 +157,29 @@ In this template, `count` is incremented when the button is clicked. Since `coun
 > <p>Count: ${count}</p>
 > <p>Input Count: ${input.initialCount}</p>
 > ```
->
-> Here, even if `input.initialCount` changes, `count` remains at its initial value.
+
+Under TypeScript's `strictNullChecks`, a `<let>` initialized to `null` keeps the type `null` without widening. Supply a [type argument or assertion](./typescript.md#tag-type-arguments):
+
+```marko
+<let<string | null>/selected=null>
+<let/selected=null as string | null>
+```
 
 ### Controllable Let
 
-The `<let>` tag can be made **controllable** using its `valueChange=` attribute, similarly to [native tag change handlers](./native-tag.md#change-handlers). This enables interception and transformation of state changes, or synchronization of state between parent and child components.
+Adding `valueChange=` makes `<let>` controllable, matching [native tag change handlers](./native-tag.md#change-handlers). Writes to the tag variable invoke `valueChange` instead of mutating local state directly:
 
 ```marko
 <let/value="HELLO">
-<let/controlled_value=value valueChange(newValue) { value = newValue.toUpperCase() }>
+<let/controlledValue=value valueChange(newValue) {
+  value = newValue.toUpperCase();
+}>
 ```
 
-In this example:
-
-1. `value` holds the base state with an initial value of "HELLO"
-2. `controlled_value` reflects the value of `value`, but its `valueChange` handler ensures all updates are uppercase
-3. Any changes to `controlled_value` are intercepted, transformed to uppercase, and stored in `value`
-
-A more common use case is creating state that can be optionally controlled by a parent component:
+In components, forwarding `input.count` via [two-way binding](./language.md#shorthand-change-handlers-two-way-binding) (`<let/count:=input.count>`, shorthand for `<let/count=input.count valueChange=input.countChange>`) lets callers choose uncontrolled or controlled mode:
 
 ```marko
-/* counter.marko */
+/* tags/counter.marko */
 export interface Input {
   count: number;
   countChange?: (count: number) => void;
@@ -221,29 +192,26 @@ export interface Input {
 </button>
 ```
 
-This creates two possible behaviors:
+```marko
+/* index.marko */
+// Uncontrolled: counter manages its own state starting at 0
+<counter count=0/>
 
-1. **Uncontrolled**: If the parent only provides `count=`, the child maintains its own state:
+// Controlled: parent owns state
+<let/count=0>
+<counter count:=count/>
+<button onClick() { count = 0 }>Reset</button>
+```
 
-   ```marko
-   <counter count=0/>
-   ```
+To make `count?: number` optional with a default value, pass `value=` and `valueChange=` explicitly since `:=` cannot take a fallback such as `?? 0`:
 
-2. **Controlled**: If the parent provides both `count=` and `countChange=`, the parent takes control of the state:
-
-   ```marko
-   <let/count=0>
-   <counter count:=count/>
-   <button onClick() { count = 0 }>
-     Reset
-   </button>
-   ```
+```marko
+<let/count=(input.count ?? 0) valueChange=input.countChange>
+```
 
 ## `<const>`
 
-The `<const>` tag exposes its `value=` attribute (usually with a [shorthand](./language.md#shorthand-value)) through its [Tag Variable](./language.md#tag-variables).
-
-Extending the [`<let>`](#let) example we could derive data from the `count` state like so:
+Declares a reactive derived value computed from `value=` and exposed through its [tag variable](./language.md#tag-variables):
 
 ```marko
 <let/count=1>
@@ -255,18 +223,17 @@ Extending the [`<let>`](#let) example we could derive data from the `count` stat
 </button>
 ```
 
-Because updates are queued, reassigning `count` does not recompute `doubleCount` until the queue is flushed. Reading `doubleCount` inside the handler yields the value computed from the previous `count`, as described in [Stale Derived Values](./reactivity.md#stale-derived-values).
+Because updates are batched, reassigning `count` updates `doubleCount` when the queue flushes rather than synchronously inside the handler (see [Stale Derived Values](./reactivity.md#stale-derived-values)).
 
 > [!NOTE]
-> The `<const>` tag is locally scoped and will be initialized for every instance of a component. If your goal is to expose a program wide constant, you should use [`static const`](./language.md#static) instead.
+> `<const>` is initialized per component instance. For module-wide constants shared across all instances, use [`static const`](./language.md#static).
 
 <!---->
 
 > [!TIP]
-> The implementation of the [`<const>`](#const) tag is conceptually identical to [`<return>`](#return)ing its `input.value`. 🤯
+> `<const>` is conceptually equivalent to a component returning `input.value`:
 >
 > ```marko
-> /* const.marko */
 > export interface Input<T> {
 >   value: T;
 > }
@@ -276,58 +243,52 @@ Because updates are queued, reassigning `count` does not recompute `doubleCount`
 
 ## `<return>`
 
-The `<return>` tag allows any [custom tag](./custom-tag.md) to expose a [Tag Variable](./language.md#tag-variables).
-
-The `value=` attribute (usually expressed via the [shorthand](./language.md#shorthand-value)) is made available as the tag variable of the template.
+Exposes a [tag variable](./language.md#tag-variables) from a [custom tag](./custom-tag.md) via `value=`:
 
 ```marko
-/* answer.marko */
+/* tags/answer.marko */
 <return=42>
 ```
 
-The return value may then be used in the parent template:
-
 ```marko
+/* index.marko */
 <answer/value/>
-
 <div>${value}</div>
 ```
 
 > [!WARNING]
-> A template or [tag content](./language.md#tag-content) holds at most one `<return>`, at its top level. A value that varies is expressed within `value=` rather than by nesting a `<return>` under [`<if>`](#if--else) or [`<for>`](#for).
+> Each template or [tag content](./language.md#tag-content) body may contain at most one `<return>` at its top level. Express conditional return values inside `value=` rather than placing `<return>` inside `<if>` or `<for>`.
 
 ### Assignable Return Value
 
-By default, an exposed variable can not be assigned a value. Value assignment may be enabled with the `valueChange=` attribute on the `<return>`.
-
-If a `valueChange=` attribute is provided, it is called whenever the tag variable is assigned a value.
+Provide `valueChange=` on `<return>` to allow callers to assign to the exposed tag variable:
 
 ```marko
-/* uppercase.marko */
+/* tags/uppercase.marko */
 export interface Input {
   value: string;
 }
 
-<let/value = input.value.toUpperCase()>
+<let/value=input.value.toUpperCase()>
 
 <return=value valueChange(newValue) {
   value = newValue.toUpperCase();
 }/>
 ```
 
-In the above example, the exposed tag variable is initialized to an UPPERCASE version of `input.value` and when new values are assigned it will first UPPERCASE the value before storing it in state.
-
 ```marko
+/* index.marko */
 <uppercase/value=""/>
-<input onInput(e) { value = e.target.value }/>
-<div>${value}</div> // value is always transformed to uppercase
+<input onInput(e, el) { value = el.value }>
+// `value` is always uppercase
+<div>${value}</div>
 ```
 
 ### Content Return
 
-[Tag content](./language.md#tag-content) may hold its own `<return>`, which is read through a [tag variable](./language.md#tag-variables) on the tag that renders that content.
+A [tag content](./language.md#tag-content) block may also contain `<return>`, read via a tag variable on the tag that renders that content.
 
-A [`<define>`](#define) can hold state alongside its markup and expose it where the snippet is rendered.
+With [`<define>`](#define), a snippet can encapsulate state and expose it at its call site:
 
 ```marko
 <define/ZoomControls>
@@ -341,10 +302,10 @@ A [`<define>`](#define) can hold state alongside its markup and expose it where 
 <img alt="Floor plan" src="/blueprint.png" style=`scale: ${zoom}`>
 ```
 
-Content received by a [custom tag](./custom-tag.md) is read the same way. The second type argument of [`Marko.Body`](./typescript.md#typing-content) declares the attributes of the `<return>`, so the tag variable is typed by its `value`.
+For custom tags receiving `input.content`, pass the return type as the second type argument to [`Marko.Body`](./typescript.md#typing-content):
 
 ```marko
-/* char-limit.marko */
+/* tags/char-limit.marko */
 export interface Input {
   max: number;
   content: Marko.Body<[], { value: string }>;
@@ -365,11 +326,9 @@ export interface Input {
 
 ## `<script>`
 
-The `<script>` tag has special behavior in Marko.
+Runs reactive side effects in the browser after the DOM has mounted and updated, including child tag DOM.
 
-The content of a `<script>` tag is executed first when the template has finished rendering and is mounted in the browser.
-It will also be executed _again_ after any [Tag Variable](./language.md#tag-variables) or [Tag Parameter](./language.md#tag-parameters) it references has changed.
-It always runs after the DOM has updated, including the DOM of child tags. The order between scripts (and [`<lifecycle>`](#lifecycle) handlers) is not guaranteed.
+A `<script>` re-runs whenever any reactive [tag variable](./language.md#tag-variables), [tag parameter](./language.md#tag-parameters), or `input` property read inside its body changes. Reading a DOM element getter (such as `myButton()`) or assigning to a `<let>` without reading it does not subscribe the effect.
 
 ```marko
 <let/count=1>
@@ -378,13 +337,12 @@ It always runs after the DOM has updated, including the DOM of child tags. The o
 </button>
 
 <script>
-  // Runs in the browser for each instance of this tag.
-  // Also runs when either `myButton` or `count` updates
+  // Runs on mount and whenever `count` changes
   console.log("clicked", myButton(), count, "times");
 </script>
 ```
 
-Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signal) to apply some side effect, and cleanup afterward.
+Pair `<script>` with [`$signal`](./language.md#signal) to clean up listeners, timers, or subscriptions before each re-run and on unmount:
 
 ```marko
 <script>
@@ -396,9 +354,12 @@ Often the `<script>` tag is coupled with the [`$signal` api](./language.md#signa
 </script>
 ```
 
+> [!NOTE]
+> Execution order between separate `<script>` tags (and [`<lifecycle>`](#lifecycle) hooks) is not guaranteed by source order. A `<script>` that reads a reactive tag variable attaches to that variable's initialization, so it can run before an earlier `<script>` that reads no reactive state. Additionally, reading a reactive variable anywhere inside `<script>` (including inside a registered event callback) subscribes the effect and aborts `$signal` on every change. For run-once setup that reads state in callbacks, or for paired restore-and-persist flows, use [`<lifecycle>`](#lifecycle).
+
 ### Function Value
 
-The effect may also be supplied through the `value=` attribute, usually written with the `=` shorthand. The function receives no arguments and re-runs under the same conditions as a body.
+An effect can also be supplied via `value=` (written with `=`), receiving no arguments and re-running under the same rules:
 
 ```marko
 <video/clip src=input.src controls/>
@@ -406,19 +367,17 @@ The effect may also be supplied through the `value=` attribute, usually written 
 <script=() => (clip().muted = input.muted)/>
 ```
 
-A function declared elsewhere, such as a [`<const>`](#const), may be referenced directly.
-
 ```marko
 <const/remember() {
-  sessionStorage.setItem("sidebar", input.collapsed);
+  sessionStorage.setItem("sidebar", String(input.collapsed));
 }>
 
 <script=remember/>
 ```
 
-### Await
+### Async Effects
 
-An `await` in a `<script>` body compiles it to an async function. The effect starts that function and returns at the first `await`, so other effects run without waiting for it.
+Using `await` in a `<script>` body compiles it to an async function that runs without blocking other effects:
 
 ```marko
 <img/photo>
@@ -431,16 +390,16 @@ An `await` in a `<script>` body compiles it to an async function. The effect sta
 ```
 
 > [!WARNING]
-> Each [`$signal`](./language.md#signal) reference resolves to the current run's signal, so after an `await` it may no longer belong to the suspended body. Capture it in a local before awaiting.
+> `$signal` resolves to the active run's signal, so capture it in a local variable before any `await`.
 
 <!---->
 
 > [!TIP]
-> There are very few cases where you should be using a _real_ `<script>` tag, but if you absolutely need it you can use the [`<html-script>`](#html-script--html-style) fallback.
+> To emit a literal HTML `<script>` element instead of a Marko effect, use [`<html-script>`](#html-script--html-style).
 
 ## `<style>`
 
-The `<style>` tag has special behavior in Marko. No matter how many times a component renders, its styles are only loaded once.
+Extracts and bundles CSS so each stylesheet loads once regardless of how many times a template renders:
 
 ```marko
 <style>
@@ -451,47 +410,41 @@ The `<style>` tag has special behavior in Marko. No matter how many times a comp
 </style>
 ```
 
-The `<style>` may include a file extension to enable css preprocessors such as [scss](https://sass-lang.com/documentation/syntax/#scss) and [less](https://lesscss.org/).
+Append an extension to use a CSS preprocessor such as [SCSS](https://sass-lang.com/documentation/syntax/#scss) or [Less](https://lesscss.org/):
 
 ```marko
 <style.scss>
   $primary-color: green;
-
-  .fancy-scss {
-    color: $primary-color;
-  }
+  .fancy-scss { color: $primary-color; }
 </style>
 
 <div class="fancy-scss">Hello!</div>
 
 <style.less>
   @primary-color: blue;
-
-  .fancy-less {
-    color: @primary-color;
-  }
+  .fancy-less { color: @primary-color; }
 </style>
 
 <div class="fancy-less">Hello!</div>
 ```
 
-If the `<style>` tag has a [Tag Variable](./language.md#tag-variables), it leverages [CSS Modules](https://github.com/css-modules/css-modules) to expose its classes as an object.
+Adding a [tag variable](./language.md#tag-variables) compiles `<style>` as a [CSS Module](https://github.com/css-modules/css-modules), exposing scoped class names as an object:
 
 ```marko
 <style/styles>
-  .foo { border: 1px solid red }
-  .bar { color: green }
+  .foo { border: 1px solid red; }
+  .bar { color: green; }
 </style>
 
-<div class=styles.foo />
-<div class=[styles.foo, styles.bar] />
-<div class={ [styles.bar]: true } />
-<div.${styles.foo} />
+<div class=styles.foo/>
+<div class=[styles.foo, styles.bar]/>
+<div class={ [styles.bar]: true }/>
+<div.${styles.foo}/>
 ```
 
 ### Dynamic Values
 
-The `<style>` tag also supports dynamic values, written as `${...}` interpolations.
+`<style>` accepts `${...}` interpolations in CSS declaration value positions:
 
 ```marko
 <style>
@@ -504,23 +457,19 @@ The `<style>` tag also supports dynamic values, written as `${...}` interpolatio
 <div class="toast">Saved!</div>
 ```
 
-The stylesheet itself remains fully static. The compiler replaces each interpolation with a reference to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) and extracts the css into the bundle as usual. At runtime a small `<style>` element is rendered in place of the tag, assigning the custom property values to the elements after it. When state referenced by an interpolation changes, only the custom property values update.
+The stylesheet remains static and extracted into the CSS bundle. Each interpolation compiles to a [CSS custom property](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) scoped via a small runtime `<style>` element to subsequent sibling elements and their descendants, updating only the custom property when state changes. Values are escaped so untrusted input cannot break out of the stylesheet.
 
 > [!NOTE]
-> Dynamic values only apply to elements rendered after the `<style>` tag, so it must be placed above the content it styles. The compiler warns when renderable content precedes the tag.
+> Place a `<style>` tag with dynamic values before the sibling elements it styles.
 
-Dynamic values are escaped, so arbitrary user input cannot break out of the stylesheet.
-
-Because custom properties only resolve where css expects a declaration value, interpolations cannot appear in selectors, at-rule preludes, property names, or quoted strings. The compiler reports an error in these positions.
-
-A unit also cannot be written directly against an interpolation (`${size}px` would produce invalid css, since css does not re-tokenize the substituted value). Include the unit in the value itself, or multiply by one unit with `calc()`:
+Interpolations are valid in CSS declaration values (not selectors, at-rule preludes, property names, quoted strings, unquoted `url(...)`, or concatenated directly with adjacent tokens like `${size}px` or `10${x}`). Include units in the value or multiply with `calc()`:
 
 ```marko
 <style>
   .dropzone {
-    /* The value resolves to complete css, e.g. "2px dashed teal" */
+    /* Complete CSS value, e.g. "2px dashed teal" */
     outline: ${input.outline};
-    /* Or multiply a unitless number by one unit */
+    /* Unitless number multiplied by a unit */
     outline-offset: calc(${input.offset} * 1px);
   }
 </style>
@@ -529,16 +478,16 @@ A unit also cannot be written directly against an interpolation (`${size}px` wou
 ```
 
 > [!TIP]
-> There are very few cases where you should be using a _real_ inline `<style>` tag but if needed you can use the fallback [`<html-style>`](#html-script--html-style) tag.
+> To emit a literal inline HTML `<style>` element, use [`<html-style>`](#html-script--html-style).
 
 ## `<define>`
 
-The `<define>` tag is primarily used to create reusable snippets of markup that can be shared across the template.
+Creates reusable local markup snippets within a template:
 
 ```marko
 <define/MyTag|input: { name: string }| foo=1>
   <span>Hello ${input.name}</span>
-</>
+</define>
 
 <MyTag name="HTML"/>
 <MyTag name="Marko"/>
@@ -546,36 +495,36 @@ The `<define>` tag is primarily used to create reusable snippets of markup that 
 <div>${MyTag.foo}</div>
 ```
 
-The [Tag Variable](./language.md#tag-variables) reflects the attributes the `<define>` tag was provided (including the [content](./language.md#tag-content)). A `<return>` in the body is exposed separately, at the tag that renders the snippet (see [Content Return](#content-return)).
+The [tag variable](./language.md#tag-variables) exposes all attributes passed to `<define>` (including its `content`). A `<return>` inside the body is exposed at the call site where the snippet renders (see [Content Return](#content-return)).
 
 > [!TIP]
-> The implementation of the `<define>` tag above is conceptually identical to [`<return>`](#return)ing its `input`. 🤯
+> `<define>` is conceptually equivalent to a component returning `input`:
 >
 > ```marko
-> /* define.marko */
 > export type Input<T> = T;
+>
 > <return=input>
 > ```
 
 ## `<lifecycle>`
 
-The `<lifecycle>` tag is used to synchronize side-effects from imperative client APIs.
+Synchronizes imperative browser APIs across mount, update, and destroy phases:
 
 ```marko
 <lifecycle
   onMount() {
-    // Called once this tag is attached to the dom, and never again.
+    // Runs once when attached to the DOM
   }
   onUpdate() {
-    // Called every time a value read by any of this tag's attributes changes.
+    // Runs when any reactive value read by the tag's attributes changes
   }
   onDestroy() {
-    // Called once this tag is removed from the dom.
+    // Runs once when removed from the DOM
   }
 />
 ```
 
-A change to any value the tag's attributes read calls `onUpdate`, including values read inside `onMount`, `onDestroy`, and the functions they create. Attributes are reassigned onto `this` before each `onUpdate`, so a value passed as an attribute stays current for the callbacks `onMount` registers, while `onUpdate` applies it to the instance.
+Any reactive value read by the tag's attributes triggers `onUpdate`, including values read inside `onMount`, `onDestroy`, or callbacks they create. Before each `onUpdate`, tag attributes are reassigned onto `this`, keeping `this` consistent across the tag's lifetime so callbacks registered in `onMount` always read fresh values. This also fits restore-and-persist flows (restore once in `onMount`, persist changes in `onUpdate`).
 
 ```marko
 client import { createEditor } from "code-editor";
@@ -600,13 +549,13 @@ client import { createEditor } from "code-editor";
 />
 ```
 
-The `this` is consistent across the lifetime of the `<lifecycle>` tag. It contains all attributes of the tag, plus any properties in the object returned from `onMount`. Returning from `onMount` is the way to keep instances of imperative APIs around for the other handlers, and their types are inferred automatically.
+Returning an object from `onMount` attaches its properties to `this` with automatic type inference:
 
 ```marko
 client import { WorldMap } from "world-map-api";
 
-<let/latitude = 0>
-<let/longitude = 0>
+<let/latitude=0>
+<let/longitude=0>
 <div/container/>
 <lifecycle
   onMount() {
@@ -622,9 +571,9 @@ client import { WorldMap } from "world-map-api";
 ```
 
 > [!WARNING]
-> Attributes of the `<lifecycle>` tag are reassigned onto `this` on every update, so `onMount` must not overwrite existing properties, whether by assignment or from its returned object. In development, doing so throws an error.
+> Because tag attributes are reassigned onto `this` on every update, `onMount` must not return or assign property names that collide with attributes on the `<lifecycle>` tag.
 
-`this` may also be extended by direct assignment, providing the extra properties as an explicit type argument.
+Extra properties can also be assigned directly onto `this` by supplying a type argument:
 
 ```marko
 client import { BarChart } from "bar-chart";
@@ -642,7 +591,7 @@ client import { BarChart } from "bar-chart";
 
 ## `<id>`
 
-The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a short unique id string (compatible with [`id=` and aria attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)).
+Exposes a short, unique ID string through its [tag variable](./language.md#tag-variables), suitable for HTML [`id`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id) and ARIA attributes:
 
 ```marko
 <id/cheeseId/>
@@ -650,10 +599,9 @@ The `<id>` tag exposes a [Tag Variable](./language.md#tag-variables) with a shor
 <input id=cheeseId type="checkbox" name="cheese">
 ```
 
-The `value=` attribute is used instead of the generated id when it is a non-empty string. `null`, `false`, and `""` fall back to the generated one.
+When `value=` is a non-empty string, `<id>` returns that value instead; `undefined`, `null`, `false`, and `""` fall back to the generated ID:
 
 ```marko
-/* textbox.marko */
 export interface Input {
   id?: string;
   description: string;
@@ -667,9 +615,7 @@ export interface Input {
 
 ## `<log>`
 
-The `<log>` tag performs a [console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) of its `value=` attribute (shown here using [the shorthand](./language.md#shorthand-value)).
-
-The log is re-executed each time its tag variable updates.
+Calls [`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/console/log_static) with `value=` on initial render (server and client) and whenever any reactive value read in `value=` changes:
 
 ```marko
 <let/count=0>
@@ -677,23 +623,22 @@ The log is re-executed each time its tag variable updates.
 <button onClick() { count++ }>Log</button>
 ```
 
-This logs `Current count: 0` on both server and client and again whenever `count` changes.
-
 ## `<debug>`
 
-The `<debug>` tag injects a [`debugger` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) within the template that will be executed once the tag renders.
+Inserts a [`debugger`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) statement that pauses when the tag renders:
 
 ```marko
 export interface Input {
-  stuff: any;
+  stuff: unknown;
 }
 
-<const/{ stuff } = input>
+<const/{ stuff }=input>
 
-<debug/> // Can be useful to inspect render-scoped variables with a debugger.
+// Pause to inspect render-scoped variables
+<debug/>
 ```
 
-If a `value=` attribute is included, the debugger will be executed whenever it changes.
+When given a `value=` attribute, `<debug>` runs on initial render and whenever any reactive dependency in `value=` changes:
 
 ```marko
 export interface Input {
@@ -704,11 +649,9 @@ export interface Input {
 <debug=[input.firstName, input.lastName]>
 ```
 
-This debugger executes on the initial render and whenever `input.firstName` or `input.lastName` changes.
-
 ## `<await>`
 
-The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#shorthand-value) and exposes it through a [tag parameter](./language.md#tag-parameters).
+Unwraps a promise from `value=` and passes its resolved value through a [tag parameter](./language.md#tag-parameters). Non-promise values render synchronously without triggering a placeholder:
 
 ```marko
 <await|user|=getUser()>
@@ -717,7 +660,7 @@ The `<await>` tag unwraps the promise in its [`value=` attribute](./language.md#
 </await>
 ```
 
-If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder), the placeholder content is shown while the promise is pending.
+When nested inside a [`<try>`](#try) tag with [`@placeholder`](#placeholder), the placeholder displays while the promise is pending:
 
 ```marko
 <try>
@@ -727,79 +670,71 @@ If this tag has a [`<try>`](#try) ancestor with a [`@placeholder`](#placeholder)
     </await>
   </div>
 
-  <@placeholder>
-    Loading...
-  </@placeholder>
-
-  <@catch|err|>
-    ${err.message}
-  </@catch>
+  <@placeholder>Loading...</@placeholder>
+  <@catch|err|>${err.message}</@catch>
 </try>
 ```
 
 ## `<try>`
 
-The `<try>` tag is used for catching runtime errors and managing asynchronous boundaries. It has two optional [attribute tags](./language.md#attribute-tags): `@catch` and `@placeholder`.
+Defines error and async boundaries around its content. Accepts `@catch` and `@placeholder` [attribute tags](./language.md#attribute-tags); at least one must be provided.
 
 ### `@catch`
 
-When a runtime error occurs in the [content](./language.md#tag-content) of the `<try>` or its `@placeholder` attribute tag, the content is replaced with the content of the `@catch` attribute tag. The thrown `error` is made available as the [tag parameter](./language.md#tag-parameters) of the `@catch`.
+Catches errors thrown while rendering the `<try>` content or its `@placeholder`, including rejected [`<await>`](#await) promises and failed [lazy-loaded tag](./lazy-loading.md#placeholders--errors) fetches. The thrown error is passed as the `@catch` [tag parameter](./language.md#tag-parameters):
 
 ```marko
 <try>
-  <const/foo = { bar: { baz: 1 } }>
-  ${foo.baz.bar} // 💥 boom! 👇
+  <const/data=JSON.parse(input.rawJson)>
+  <p>${data.title}</p>
 
   <@catch|err|>
-    ${err.message} // "Cannot read property `bar` of undefined"
+    <p>Invalid data: ${err.message}</p>
   </@catch>
 </try>
 ```
 
+Errors thrown inside event handlers, [`<script>`](#script) bodies, or [`<lifecycle>`](#lifecycle) hooks occur outside the render path and propagate to the standard window error handler rather than `@catch`.
+
 ### `@placeholder`
 
-The [content](./language.md#tag-content) of the `@placeholder` [attribute tag](./language.md#attribute-tags) will be displayed while an [`<await>` tag](#await) is pending inside of the content of the `<try>`.
+Displays fallback content while any nested [`<await>`](#await) promise is pending, or while a [lazily loaded tag](./lazy-loading.md#placeholders--errors) is waiting for its trigger or loading its bundle in the browser.
 
 ## `<html-comment>`
 
-By default, [html comments](./language.md#comments) are stripped from the output. The `<html-comment>` tag is used to output a literal `<!-- comment -->`.
+Outputs a literal HTML `<!-- comment -->` (standard [comments](./language.md#comments) are stripped). Interpolations inside `<html-comment>` escape `>` to `&gt;`:
 
 ```marko
 <html-comment>Hello, view source</html-comment>
 ```
 
-This tag also exposes a [tag variable](./language.md#tag-variables) which contains a getter to the reference of the [comment node](https://developer.mozilla.org/en-US/docs/Web/API/Comment) in the DOM.
+Exposes a [tag variable](./language.md#tag-variables) getter returning the DOM [`Comment`](https://developer.mozilla.org/en-US/docs/Web/API/Comment) node:
 
 ```marko
 <html-comment/commentNode/>
 
 <return() {
-  return commentNode().parentNode.getBoundingClientRect()
+  return commentNode().parentElement?.getBoundingClientRect();
 }/>
 ```
 
 ## `<html-script>` & `<html-style>`
 
-The [`<script>`](./native-tag.md#script) and [`<style>`](./native-tag.md#style) tags are enhanced to enable best practices and help developers avoid common foot guns.
-
-Though not typically needed, vanilla versions of these tags may be written via the `<html-script>` and `<html-style>` tags respectively.
-
-> [!CAUTION]
-> The `<html-*>` tags are only used for specialized use cases, and should _almost never_ be used over [`<script>`](./native-tag.md#script) or [`<style>`](./native-tag.md#style).
+Marko's [`<script>`](#script) and [`<style>`](#style) tags provide reactive browser effects and bundled CSS. When a literal HTML `<script>` or `<style>` element is required (such as an import map or inline JSON data), use `<html-script>` and `<html-style>`:
 
 ```marko
-// Literally written out as a `<script>` html tag.
+// Emits a literal HTML `<script>` element
 <html-script type="importmap">
   { "imports": { "square": "./module/shapes/square.js" } }
 </html-script>
 
-// Literally written out as a `<style>` html tag.
+// Emits a literal HTML `<style>` element
 <html-style>
-  @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
 </html-style>
 ```
 
 > [!CAUTION]
-> The contents of these tags are executed as code, and interpolations are escaped only enough to keep them from closing the element, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never interpolate user-provided content into them.
+> Contents of `<html-script>` and `<html-style>` execute as code, and interpolations escape only enough to avoid closing the element, so untrusted values expose the page to [XSS](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS). Never interpolate user-provided content into them.
 >
-> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math) these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.
+> Inside [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) or [`<math>`](https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math), these tags parse as markup rather than raw text, so an interpolated `<` opens a real element. Never nest them in SVG or MathML with user-provided content.

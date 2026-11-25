@@ -1,68 +1,62 @@
 # Install Marko
 
 > [!NOTE]
-> If you'd like to experiment and learn about Marko directly in your browser, head over to our [Playground](/playground). You can develop a Marko application right there without any local setup.
+> Experiment with Marko directly in the browser using the [Playground](/playground) with no local setup.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/en) `v18`, `v20`, `v22` or higher.
-- IDE - We recommend [VS Code](https://code.visualstudio.com/) and our [Official Marko extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode)
-- Terminal - You will use the command-line interface (CLI) to set up and start the application.
+- [Node.js](https://nodejs.org/en) `22.12` or higher (see [Supported Environments](../reference/supported-environments.md)).
+- An editor: [VS Code](https://code.visualstudio.com/) with the [Official Marko extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode), or any editor configured with the [Marko Language Server](./integrations.md#editor-tooling).
+- A terminal for running the CLI and development server.
 
-## Marko Run Setup (Recommended)
+## Marko Run
 
-[Marko Run](https://github.com/marko-js/run) makes it easy to get started with minimal configuration and is the recommended starting point for a new Marko project. It's the official application framework from the Marko team and powered by [Vite](https://vite.dev/).
-
-To set up your project:
+[Marko Run](../marko-run/getting-started.md) is the official application framework, powered by [Vite](https://vite.dev/). It is the recommended starting point for new projects.
 
 ```bash
-npm init marko -- -t basic
-cd ./my-marko-application
+npm init marko -- -t basic -n my-marko-app
+cd my-marko-app
 npm run dev
 ```
 
-Open `src/routes/+page.marko` in your editor to modify the index page. See the [routing documentation](https://github.com/marko-js/run#file-based-routing) to learn how to add additional pages to your project.
+Available starter templates come from [`marko-js/examples`](https://github.com/marko-js/examples/tree/main/examples):
+
+| Template       | Description                                               |
+| :------------- | :-------------------------------------------------------- |
+| `basic`        | Marko Run starter with file-based routing                 |
+| `app`          | Full Marko Run application with testing and styling setup |
+| `library`      | Reusable component library with TypeScript and Storybook  |
+| `vite-express` | Custom Express server integrated with `@marko/vite`       |
+
+Non-interactive environments (CI, piped stdin) accept defaults automatically. Pass flags to control scaffolding directly: `-t` for the template, `-n` / `--name` for the project directory, `-y` / `--yes` to accept defaults, `--no-install` to skip dependency installation, and `--no-git` to skip Git initialization.
+
+Edit `src/routes/+page.marko` to modify the index page, and see [File-based Routing](../marko-run/file-based-routing.md) to add routes.
 
 ## Manual Setup
 
-If you prefer to create your own application structure, you can set up your project using your preferred bundler. The Marko team maintains the plugins for [Vite](https://github.com/marko-js/vite), [Webpack](https://github.com/marko-js/webpack), and [Rollup](https://github.com/marko-js/rollup). The following guide will help you set up Vite.
+Projects with custom server or bundler architectures can configure Marko directly with [`@marko/vite`](https://github.com/marko-js/vite) or another [supported bundler](./integrations.md#bundlers).
 
-1. **Create your project directory**
+### Vite with Express
 
-   Create an empty directory with your project's name and navigate into it:
+1. Initialize an ESM project:
 
    ```bash
-   mkdir my-marko-application
-   cd my-marko-application
+   mkdir my-marko-app
+   cd my-marko-app
+   npm init -y
+   npm pkg set type=module
    ```
 
-   Once inside the directory, initialize your `package.json` file, which is used to manage your project's dependencies:
+2. Install Marko, Express, and Vite:
 
    ```bash
-   npm init --yes
-   ```
-
-1. **Install Marko**
-
-   Let's install the dependencies required for Marko.
-
-   First, install `marko` as your dependency.
-
-   ```bash
-   npm install marko
-   ```
-
-   Next, install Vite and the Marko plugin as development dependencies using the npm `-D` flag:
-
-   ```bash
+   npm install marko express
    npm install -D vite @marko/vite
    ```
 
-1. **Create the `vite.config.ts` file**
+3. Register the Marko plugin in `vite.config.ts`:
 
-   Create `vite.config.ts` file to export the [Vite configuration](https://vite.dev/config/) and add the `marko()` plugin to the `plugins` list.
-
-   ```typescript
+   ```ts
    import { defineConfig } from "vite";
    import marko from "@marko/vite";
 
@@ -71,11 +65,10 @@ If you prefer to create your own application structure, you can set up your proj
    });
    ```
 
-1. **Create your first Marko page**
-
-   In your text editor, create a `src/routes/index.marko` file. This will be your first Marko page of the project. Copy and paste the following content into the new file:
+4. Create a template at `src/routes/index.marko` and a route module at `src/routes/index.js`:
 
    ```marko
+   /* src/routes/index.marko */
    <html lang="en">
      <body>
        <h1>Hello Marko!</h1>
@@ -83,62 +76,81 @@ If you prefer to create your own application structure, you can set up your proj
    </html>
    ```
 
-1. **Add a server**
+   ```js
+   /* src/routes/index.js */
+   import template from "./index.marko";
 
-   By default, the `marko()` plugin requires the use of [Vite Server Side Rendering (SSR) mode](https://vite.dev/guide/ssr.html#server-side-rendering-ssr) (this can be disabled with the Marko plugin's `linked` option). Therefore, you need to create a server file to start your application. This guide will use [`express`](https://expressjs.com/).
-
-   First, install `express`:
-
-   ```bash
-   npm install express
+   export default function (_req, res) {
+     res.header("Content-Type", "text/html");
+     template.render().pipe(res);
+   }
    ```
 
-   Now, create the server logic inside an `index.js` file. This code sets up an Express server and integrates with Vite for handling server-side rendering of a Marko template. For simplicity, this setup is intended for development environments only. For more examples, refer to the [Marko JS examples repository](https://github.com/marko-js/examples/tree/master/examples).
+   The page template rendered by a server route module is treated as a page entry by `@marko/vite`, which automatically injects client assets when rendered.
 
-   ```javascript
+5. Create a development server in `index.js`:
+
+   ```js
    import express from "express";
    import { createServer } from "vite";
 
    const app = express();
-
    const vite = await createServer({
-     server: {
-       middlewareMode: true,
-     },
+     server: { middlewareMode: true },
      appType: "custom",
    });
 
    app.use(vite.middlewares);
-
-   app.get("/", async (req, res) => {
-     const template = (
-       await vite.ssrLoadModule("./src/routes/index.marko?marko-server-entry")
-     ).default;
-     const result = template.render();
-     res.header("Content-Type", "text/html");
-     result.pipe(res);
+   app.get("/", async (req, res, next) => {
+     const handler = (await vite.ssrLoadModule("./src/routes/index.js"))
+       .default;
+     handler(req, res, next);
    });
 
    app.listen(3000);
    ```
 
-   Note that `?marko-server-entry` is used to indicate the server code's entry point to the Vite plugin.
+   For production builds and full server examples, see the [`vite-express` example](https://github.com/marko-js/examples/tree/main/examples/vite-express).
 
-1. **Start the application**
-
-   You can now start the application using the command below and access <http://localhost:3000> to see the preview of your code while you build your app!
+6. Start the development server and open <http://localhost:3000>:
 
    ```bash
    node index.js
    ```
 
-## Set up TypeScript
+### Browser-Only Setup
 
-Marko’s TypeScript support offers in-editor error checking, makes refactoring less scary, verifies that data matches expectations, and even helps with API design.
+By default, `@marko/vite` links a server build with a browser build. For client-only applications without a server build, pass `linked: false` to `marko()` and mount the root template with [`Template.mount`](../reference/template.md#templatemountinput-node-position):
 
-Or perhaps you simply want more autocomplete in VS Code—that works too!
+```ts
+/* vite.config.ts */
+import { defineConfig } from "vite";
+import marko from "@marko/vite";
 
-To add TypeScript support to your Marko application, add a `tsconfig.json` file in the project's root directory. You can use the following `tsconfig.json` as a starting point:
+export default defineConfig({
+  plugins: [marko({ linked: false })],
+});
+```
+
+```html
+/* index.html */
+<div id="app"></div>
+<script type="module" src="/src/main.ts"></script>
+```
+
+```ts
+/* src/main.ts */
+import App from "./app.marko";
+
+App.mount({}, document.getElementById("app")!);
+```
+
+> [!NOTE]
+> With `linked: false`, `@marko/vite` cannot code-split [lazy-loaded tags](../reference/lazy-loading.md#bundler-support); `with { load }` imports compile as eager imports.
+
+## TypeScript Setup
+
+Adding a `tsconfig.json` at the project root enables TypeScript inside `.marko` templates:
 
 ```json
 {
@@ -156,32 +168,26 @@ To add TypeScript support to your Marko application, add a `tsconfig.json` file 
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
+    "types": ["vite/client"],
     "verbatimModuleSyntax": true
   }
 }
 ```
 
-For type checking Marko files in the CLI, you can install `@marko/type-check` in your project with the following command:
+For CLI and CI type checking, install `@marko/type-check` and run `mtc` instead of `tsc`:
 
 ```bash
 npm install -D @marko/type-check
+npx mtc
 ```
 
-You can then use `mtc` (Marko type check) instead of `tsc`:
+See the [TypeScript reference](../reference/typescript.md) for full type syntax and configuration details.
 
-```bash
-mtc
-```
+## IDE Support
 
-For more information about working with Marko and TypeScript check [this reference page](../reference/typescript.md).
+The [Marko VS Code extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) bundles syntax highlighting, formatting, TypeScript checking, and IntelliSense. Other editors can connect to the [Marko Language Server](./integrations.md#editor-tooling).
 
-## IDE Plugin
-
-The Marko team maintains a [Marko VS Code extension](https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode) that provides Marko syntax highlighting, pretty-printing, TypeScript, IntelliSense, and more.
-
-For other editors, you can use the Marko [language server](https://github.com/marko-js/language-server/tree/main) to enhance the developer experience with Marko in your IDE.
-
-## Next steps
+## Next Steps
 
 - [Syntax Fundamentals](../tutorial/fundamentals.md)
 - [Components & Reactivity](../tutorial/components-and-reactivity.md)
