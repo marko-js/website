@@ -25,6 +25,9 @@ An uncontrolled component owns its state internally through [`<let>`](../referen
 ```marko
 /* parent.marko */
 <counter/>
+
+// 🤔 How can we access `count` out here?
+<output>${count}</output>
 ```
 
 Because `count` lives inside `counter.marko`, callers use `<counter/>` with zero boilerplate, but a parent cannot read or reset `count` externally.

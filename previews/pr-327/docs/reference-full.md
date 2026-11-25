@@ -221,10 +221,10 @@ A valueless attribute evaluates to `true`. On native tags, `true` emits the attr
 > [ARIA enumerated attributes](https://developer.mozilla.org/en-US/docs/Glossary/Enumerated#aria_enumerated_attributes) expect explicit string values (`"true"` / `"false"`), not HTML boolean attributes:
 >
 > ```marko
-> // Incorrect: emits `<button aria-pressed></button>`
+> // ❌ emits `<button aria-pressed></button>`
 > <button aria-pressed=isPressed/>
 >
-> // Correct: emits `<button aria-pressed=true></button>` or `"false"`
+> // ✅ emits `<button aria-pressed=true></button>` or `"false"`
 > <button aria-pressed=String(isPressed)/>
 > ```
 
@@ -630,7 +630,7 @@ Hoisted references are readable only in code that runs after render: [`<script>`
 > Attributes, [`<const>`](./core-tag.md#const), and [interpolations](#dynamic-text) evaluate during render, before hoisted references are readable:
 >
 > ```marko
-> // Incorrect: `myInput` is read while the template renders
+> // ❌ `myInput` is read while the template renders
 > <div>${myInput().value}</div>
 > ```
 
@@ -1887,10 +1887,10 @@ Object keys write verbatim as hyphen-case CSS property names.
 > Unlike [the DOM `style` API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style), keys are not converted from camelCase:
 >
 > ```marko
-> // Incorrect: renders `backgroundColor:red`
+> // ❌ renders `backgroundColor:red`
 > <div style={ backgroundColor: "red" }/>
 >
-> // Correct
+> // ✅
 > <div style={ "background-color": "red" }/>
 > ```
 
@@ -2106,6 +2106,11 @@ Supports `valueChange=` (for editable input types), `checkedChange=`, and `check
 >
 > ```marko
 > <let/count=0>
+>
+> // ❌ sets `count` to a string on update
+> <input type="number" value:=count>
+>
+> // ✅ converts the string value to a number
 > <input type="number" value:parseFloat:=count>
 > ```
 

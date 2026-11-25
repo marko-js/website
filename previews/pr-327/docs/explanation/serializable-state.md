@@ -82,10 +82,10 @@ Functions and closures defined directly inside `.marko` templates are compiler-r
 Keep reactive state as plain serializable data rather than custom class instances or DOM references:
 
 ```marko
-// Serializable plain data
+// ✅ serializable plain data
 <let/cart={ items: [{ id: 1, qty: 2 }] }>
 
-// Unserializable values (custom class instance or DOM node)
+// ❌ unserializable values (custom class instance or DOM node)
 <let/invalidCart=new Cart()>
 <let/invalidDom={ el: document.body }>
 ```

@@ -20,11 +20,14 @@ Marko detects changes when a [`<let>`](../reference/core-tag.md#let) tag variabl
     <li>${item}</li>
   </for>
 </ul>
-<button onClick() { items = items.concat("gamma") }>Add</button>
-```
+<button onClick() {
+  // ❌ in-place mutation keeps the same reference and does not trigger updates
+  items.push("gamma");
 
-> [!WARNING]
-> Mutating an existing object or array in place (such as `items.push("gamma")` or `user.clicks++`) keeps the same reference and does not trigger a reactive update.
+  // ✅ immutable reassignment triggers a reactive update
+  items = items.concat("gamma");
+}>Add</button>
+```
 
 ## Functional UI
 
@@ -34,7 +37,13 @@ Because every update replaces the state reference rather than mutating fields be
 <let/user={ name: "Ada", clicks: 0 }>
 
 <p>Hello, ${user.name}! (${user.clicks} clicks)</p>
-<button onClick() { user = { ...user, clicks: user.clicks + 1 } }>
+<button onClick() {
+  // ❌ in-place mutation
+  user.clicks++;
+
+  // ✅ immutable update
+  user = { ...user, clicks: user.clicks + 1 };
+}>
   Visit
 </button>
 ```

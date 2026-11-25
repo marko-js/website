@@ -76,10 +76,10 @@ Object keys write verbatim as hyphen-case CSS property names.
 > Unlike [the DOM `style` API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style), keys are not converted from camelCase:
 >
 > ```marko
-> // Incorrect: renders `backgroundColor:red`
+> // ❌ renders `backgroundColor:red`
 > <div style={ backgroundColor: "red" }/>
 >
-> // Correct
+> // ✅
 > <div style={ "background-color": "red" }/>
 > ```
 
@@ -295,6 +295,11 @@ Supports `valueChange=` (for editable input types), `checkedChange=`, and `check
 >
 > ```marko
 > <let/count=0>
+>
+> // ❌ sets `count` to a string on update
+> <input type="number" value:=count>
+>
+> // ✅ converts the string value to a number
 > <input type="number" value:parseFloat:=count>
 > ```
 
